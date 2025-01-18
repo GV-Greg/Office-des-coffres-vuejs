@@ -81,7 +81,7 @@ onMounted(() => {
       <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <!-- Message -->
-          <div class="flex-grow text-slate-700 dark:text-slate-200">
+          <div class="flex-grow text-slate-700">
             <h2 class="text-lg font-semibold mb-2">{{ t('Cookies.Banner.Title') }}</h2>
             <p class="text-sm">{{ t('Cookies.Banner.Description') }}</p>
           </div>
