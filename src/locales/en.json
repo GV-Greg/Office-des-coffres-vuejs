@@ -1,0 +1,55 @@
+{
+  "Cookies": {
+    "Banner": {
+      "Title": "Cookie Management",
+      "Description": "Our site only uses two types of cookies essential for the site to function, and no advertising or tracking cookies:",
+      "CookieTypes": {
+        "Essential": "• An essential and mandatory cookie for the technical operation of the site",
+        "Session": "• A session cookie, optional but necessary to log into your account"
+      },
+      "NoTracking": "We respect your privacy: no advertising or tracking cookies are used."
+    },
+    "Preferences": {
+      "Functional": {
+        "Title": "Functional Cookie (required)",
+        "Description": "This cookie contains a token. With this token, your login session can be resumed even after the 2-hour session cookie validity period. This cookie is only set if you have activated the 'Stay logged in' option when logging in. This cookie is removed when you log out.",
+        "Label": "Essential cookie"
+      },
+      "Session": {
+        "Title": "Session Cookie",
+        "Description": "This cookie contains a token. With this token, your current session can be continued while using the site. This cookie is valid for 2 hours after creation and is renewed each time you change pages on this site.",
+        "Label": "Session cookie"
+      }
+    },
+    "Modal": {
+      "Title": "Manage Cookie Preferences"
+    },
+    "Button": {
+      "Preferences": "Manage preferences",
+      "Accept": "Accept",
+      "AcceptAuto": "Accept automatically",
+      "Decline": "Decline automatically",
+      "Cancel": "Cancel",
+      "Save": "Save my choices"
+    },
+    "Required": "Required",
+    "SessionWarning": "Warning: Without session cookies, you will not be able to log into your account."
+  },
+  "Common": {
+    "Theme": {
+      "Title": "Theme",
+      "Light": "Light mode",
+      "Dark": "Dark mode",
+      "System": "System theme"
+    },
+    "Language": {
+      "Title": "Language",
+      "French": "French",
+      "English": "English"
+    }
+  },
+  "username": "username",
+  "password": "password",
+  "email": "email",
+  "confirmation": "password confirmation"
+}

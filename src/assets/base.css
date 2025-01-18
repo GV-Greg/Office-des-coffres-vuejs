@@ -1,0 +1,116 @@
+/* Variables de couleur pour l'Office des Coffres */
+:root {
+  /* Couleurs principales */
+  --odc-primary: #3b82f6;    /* blue-500 */
+  --odc-success: #22c55e;    /* green-500 */
+  --odc-danger: #ef4444;     /* red-500 */
+  --odc-warning: #f59e0b;    /* amber-500 */
+  --odc-info: #06b6d4;       /* cyan-500 */
+
+  /* Nuances de gris */
+  --odc-gray-50: #f8fafc;
+  --odc-gray-100: #f1f5f9;
+  --odc-gray-200: #e2e8f0;
+  --odc-gray-300: #cbd5e1;
+  --odc-gray-400: #94a3b8;
+  --odc-gray-500: #64748b;
+  --odc-gray-600: #475569;
+  --odc-gray-700: #334155;
+  --odc-gray-800: #1e293b;
+  --odc-gray-900: #0f172a;
+
+  /* Couleurs sémantiques */
+  --odc-background: var(--odc-gray-800);
+  --odc-background-soft: var(--odc-gray-700);
+  --odc-background-mute: var(--odc-gray-600);
+
+  --odc-border: var(--odc-gray-600);
+  --odc-border-hover: var(--odc-gray-500);
+
+  --odc-heading: var(--odc-gray-50);
+  --odc-text: var(--odc-gray-100);
+  --odc-text-muted: var(--odc-gray-400);
+
+  /* Espacement */
+  --odc-spacing-xs: 0.25rem;   /* 4px */
+  --odc-spacing-sm: 0.5rem;    /* 8px */
+  --odc-spacing-md: 1rem;      /* 16px */
+  --odc-spacing-lg: 1.5rem;    /* 24px */
+  --odc-spacing-xl: 2rem;      /* 32px */
+
+  /* Bordures */
+  --odc-border-radius-sm: 0.25rem;
+  --odc-border-radius: 0.375rem;
+  --odc-border-radius-lg: 0.5rem;
+  --odc-border-radius-xl: 1rem;
+
+  /* Transitions */
+  --odc-transition-fast: 150ms;
+  --odc-transition-normal: 250ms;
+  --odc-transition-slow: 350ms;
+
+  /* Z-index */
+  --odc-z-negative: -1;
+  --odc-z-normal: 1;
+  --odc-z-dropdown: 10;
+  --odc-z-sticky: 20;
+  --odc-z-fixed: 30;
+  --odc-z-modal: 40;
+  --odc-z-popover: 50;
+  --odc-z-tooltip: 60;
+}
+
+/* Reset de base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  position: relative;
+}
+
+/* Styles de base */
+body {
+  min-height: 100vh;
+  background: var(--odc-background);
+  color: var(--odc-text);
+  line-height: 1.6;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: color var(--odc-transition-normal), background-color var(--odc-transition-normal);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--odc-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--odc-background-soft);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--odc-gray-500);
+  border-radius: var(--odc-border-radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--odc-gray-400);
+}
+
+/* Selection styles */
+::selection {
+  background: var(--odc-primary);
+  color: white;
+}

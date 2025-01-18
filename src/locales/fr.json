@@ -1,0 +1,56 @@
+{
+  "Cookies": {
+    "Banner": {
+      "Title": "Gestion de vos cookies",
+      "Description": "Notre site utilise uniquement deux types de cookies essentiels au fonctionnement du site, et aucun cookie publicitaire ou de traçage :",
+      "CookieTypes": {
+        "Essential": "• Un cookie essentiel et obligatoire pour le fonctionnement technique du site",
+        "Session": "• Un cookie de session, optionnel mais nécessaire pour vous connecter à votre compte"
+      },
+      "NoTracking": "Nous respectons votre vie privée : aucun cookie publicitaire ou de traçage n'est utilisé."
+    },
+    "Preferences": {
+      "Functional": {
+        "Title": "Cookie fonctionnel (requis)",
+        "Description": "Ce cookie contient un jeton. Avec l'aide de ce jeton, votre session de connexion peut être reprise même après les 2 heures de validité du cookie de session. Ce cookie n'est défini que si vous avez activé l'option 'Rester connecté' lors de la connexion. Ce cookie est supprimé lorsque vous vous déconnectez.",
+        "Label": "Cookie essentiel"
+      },
+      "Session": {
+        "Title": "Cookie de session",
+        "Description": "Ce cookie contient un jeton. Avec l'aide de ce jeton, votre session actuelle peut être poursuivie lors de l'utilisation du site. Ce cookie est valable 2 heures après sa création et est renouvelé à chaque changement de page sur ce site.",
+        "Label": "Cookie de session"
+      }
+    },
+    "Modal": {
+      "Title": "Gérer mes préférences de cookies",
+      "Description": "Nous utilisons deux types de cookies pour vous offrir la meilleure expérience possible :"
+    },
+    "Button": {
+      "Preferences": "Gérer mes préférences",
+      "Accept": "Accepter",
+      "AcceptAuto": "Accepter automatiquement",
+      "Decline": "Refuser automatiquement",
+      "Cancel": "Annuler",
+      "Save": "Enregistrer mes choix"
+    },
+    "Required": "Requis",
+    "SessionWarning": "Attention : Sans les cookies de session, vous ne pourrez pas vous connecter à votre compte."
+  },
+  "Common": {
+    "Theme": {
+      "Title": "Thème",
+      "Light": "Mode clair",
+      "Dark": "Mode sombre",
+      "System": "Thème système"
+    },
+    "Language": {
+      "Title": "Langue",
+      "French": "Français",
+      "English": "Anglais"
+    }
+  },
+  "username": "nom d'utilisateur",
+  "password": "mot de passe",
+  "email": "email",
+  "confirmation": "confirmation du mot de passe"
+}
