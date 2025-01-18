@@ -1,41 +1,88 @@
-# odc-front
+# Office des Coffres - Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Application web moderne pour la gestion de coffres-forts virtuels, développée avec Vue 3 et Tailwind CSS.
 
-## Recommended IDE Setup
+## 🚀 Technologies
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- Vue 3 avec Composition API
+- Vite pour le bundling
+- Tailwind CSS pour le styling
+- Pinia pour la gestion d'état
+- Axios pour les requêtes HTTP
+- Docker pour le développement et la production
 
-## Customize configuration
+## 🛠️ Installation
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### Prérequis
 
-## Project Setup
+- Docker et Docker Compose
+- Git
 
-```sh
-npm install
+### Configuration
+
+1. Clonez le dépôt :
+```bash
+git clone https://github.com/GV-Greg/Office-des-coffres-vuejs.git
+cd office-des-coffres-vuejs
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
+2. Copiez le fichier d'environnement :
+```bash
+cp .env.example .env
 ```
 
-### Compile and Minify for Production
+3. Configurez les variables d'environnement dans `.env`
 
-```sh
-npm run build
+## 🔧 Développement
+
+Démarrer l'environnement de développement :
+```bash
+docker compose up
+```
+L'application sera disponible sur `http://localhost:5173`
+
+## 🏗️ Production
+
+1. Build de l'image de production :
+```bash
+docker compose -f docker-compose.prod.yml build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+2. Démarrer le conteneur de production :
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+L'application sera disponible sur `http://localhost:80`
 
-```sh
-npm run test:unit
+## 📦 Déploiement
+
+Pour déployer sur le serveur de production (o2switch) :
+```bash
+./deploy.sh
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## 🧪 Tests
 
-```sh
-npm run lint
+Les tests sont exécutés dans le conteneur Docker :
+```bash
+docker compose exec app npm run test
 ```
+
+## 📚 Documentation
+
+- [Vue 3 Documentation](https://vuejs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Vite](https://vitejs.dev/)
+- [Pinia](https://pinia.vuejs.org/)
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créez votre branche (`git checkout -b feature/AmazingFeature`)
+3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push sur la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrez une Pull Request
+
+## 📝 License
+
+[MIT](LICENSE)

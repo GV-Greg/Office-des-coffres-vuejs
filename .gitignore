@@ -19,8 +19,9 @@ coverage
 
 # Editor directories and files
 .vscode/*
+.codegpt/
+.idea/
 !.vscode/extensions.json
-.idea
 *.suo
 *.ntvs*
 *.njsproj
@@ -33,5 +34,3 @@ coverage
 .env
 .env.*
 !.env.example
-
-.codegpt
