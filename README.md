@@ -56,7 +56,7 @@ L'application sera disponible sur `http://localhost:80`
 
 ## 📦 Déploiement
 
-Pour déployer sur le serveur de production (o2switch) :
+Pour déployer sur un serveur de production via Git bash :
 ```bash
 ./deploy.sh
 ```

@@ -1,9 +1,27 @@
 #!/bin/bash
+set -x  # Active le mode debug
+set -e  # Quitte en cas d'erreur
 
 # Couleurs pour les messages
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
+
+# Variables
+DOCKER_COMPOSE_FILE="docker-compose.prod.yml"
+LOG_FILE="deploy.log"
+
+# Vérifier si Docker et LFTP sont installés
+if ! command -v docker &> /dev/null; then
+    echo -e "${RED}Erreur: Docker n'est pas installé${NC}"
+    exit 1
+fi
+
+if ! command -v lftp &> /dev/null; then
+    echo -e "${RED}Erreur: LFTP n'est pas installé${NC}"
+    echo "Installez LFTP avec : sudo apt-get install lftp"
+    exit 1
+fi
 
 # Vérifier si le fichier .env existe
 if [ ! -f .env ]; then
@@ -23,12 +41,12 @@ fi
 
 # Build de production avec Docker
 echo -e "${GREEN}🔨 Construction de l'application...${NC}"
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f $DOCKER_COMPOSE_FILE build >> $LOG_FILE 2>&1
+docker compose -f $DOCKER_COMPOSE_FILE up -d >> $LOG_FILE 2>&1
 
 # Attendre que le build soit terminé et copier les fichiers
 echo -e "${GREEN}📦 Préparation des fichiers pour le déploiement...${NC}"
-docker cp $(docker compose -f docker-compose.prod.yml ps -q prod):/usr/share/nginx/html/. ./dist_prod
+docker cp $(docker compose -f $DOCKER_COMPOSE_FILE ps -q prod):/usr/share/nginx/html/. ./dist_prod
 
 # Vérifier que le dossier dist_prod existe et contient des fichiers
 if [ ! -d "./dist_prod" ]; then
@@ -54,6 +72,7 @@ bye
 # Nettoyage
 echo -e "${GREEN}🧹 Nettoyage...${NC}"
 rm -rf ./dist_prod
-docker compose -f docker-compose.prod.yml down --remove-orphans
+docker compose -f $DOCKER_COMPOSE_FILE down --remove-orphans >> $LOG_FILE 2>&1
 
 echo -e "${GREEN}✅ Déploiement terminé !${NC}"
+
