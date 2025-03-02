@@ -2,9 +2,9 @@
 import { useI18n } from "vue-i18n";
 import { useCookieStore } from '@/stores/cookieStore';
 import { computed, watch, ref } from 'vue';
-import PrimaryButton from './buttons/PrimaryButton.vue';
 import SuccessButton from './buttons/SuccessButton.vue';
 import DangerButton from './buttons/DangerButton.vue';
+import SwitchButton from './buttons/SwitchButton.vue';
 
 const props = defineProps({
   show: {
@@ -79,12 +79,12 @@ const handleCancel = () => {
 
 <template>
   <Transition name="modal">
-    <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto">
+    <div v-if="show" class="fixed w-full inset-0 z-50 overflow-y-auto flex justify-center">
       <!-- Overlay -->
       <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" @click="handleCancel"></div>
 
       <!-- Modal -->
-      <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      <div class="flex min-h-full max-w-6xl items-center justify-center p-4 text-center sm:p-0">
         <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
           <!-- Header -->
           <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3">
@@ -109,14 +109,11 @@ const handleCancel = () => {
                 <div class="space-y-4">
                   <div v-for="item in category.items" :key="item.value" class="flex items-start">
                     <div class="flex h-5 items-center">
-                      <input
-                        :id="item.value"
-                        type="checkbox"
+                      <SwitchButton
                         :checked="isCookieChecked(item)"
                         :disabled="isRequired(item)"
-                        @change="handleCookieChange(item, $event.target.checked)"
-                        class="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary-600 focus:ring-primary-500"
-                      >
+                        @update:checked="(value) => handleCookieChange(item, value)"
+                      />
                     </div>
                     <div class="ml-3">
                       <label :for="item.value" class="text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -133,13 +130,13 @@ const handleCancel = () => {
           </div>
 
           <!-- Footer -->
-          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
-            <SuccessButton @click="handleSave">
-              {{ t('Cookies.Button.Save') }}
-            </SuccessButton>
+          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3 flex justify-between">
             <DangerButton @click="handleCancel">
               {{ t('Cookies.Button.Cancel') }}
             </DangerButton>
+            <SuccessButton @click="handleSave">
+              {{ t('Cookies.Button.Save') }}
+            </SuccessButton>
           </div>
         </div>
       </div>

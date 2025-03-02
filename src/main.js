@@ -10,8 +10,9 @@ import messages from '@intlify/unplugin-vue-i18n/messages'
 import { createNotivue } from 'notivue'
 import VueCookieComply from '@ipaat/vue3-tailwind3-cookie-comply'
 
-import 'notivue/notifications.css'
-import 'notivue/animations.css'
+// Importez le style de Notivue
+import 'notivue/notifications.css' // Style de base
+import 'notivue/animations.css'   // Animations (optionnel)
 
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import {
@@ -69,6 +70,18 @@ const i18n = createI18n({
   messages
 })
 
+// Configuration de Notivue
+const notivue = createNotivue({
+  position: 'top-right',
+  limit: 4,
+  enqueue: true,
+  avoidDuplicates: true,
+  notifications: {
+    global: {
+      duration: 10000
+    }
+  }
+})
 const app = createApp(App)
 
 app.use(createPinia())
@@ -77,17 +90,6 @@ app.use(i18n)
 app.component('VueCookieComply', VueCookieComply)
 app.component('v-icon', OhVueIcon)
 
-app.use(
-  createNotivue({
-    position: 'top-right',
-    limit: 4,
-    enqueue: true,
-    notifications: {
-      global: {
-        duration: 3000
-      }
-    }
-  })
-)
+app.use(notivue)
 
 app.mount('#app')

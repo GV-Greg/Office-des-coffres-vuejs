@@ -4,14 +4,14 @@
 */
   import { reactive } from 'vue'
   import { RouterLink, useRouter } from 'vue-router'
-  import InputText from "../../components/forms/InputText.vue"
-  import InputEmail from "../../components/forms/InputEmail.vue"
-  import InputPassword from "../../components/forms/InputPassword.vue"
-  import InputConfirm from "../../components/forms/InputConfirm.vue"
-  import DefaultSubmitButton from "../../components/buttons/DefaultSubmitButton.vue"
-  import validation from "../../modules/SubmitValidator";
-  import { useAuthStore } from "../../stores/authStore";
-  import Toast from "../../directives/toast";
+  import InputText from "@/components/forms/InputText.vue"
+  import InputEmail from "@/components/forms/InputEmail.vue"
+  import InputPassword from "@/components/forms/InputPassword.vue"
+  import InputConfirm from "@/components/forms/InputConfirm.vue"
+  import DefaultSubmitButton from "@/components/buttons/DefaultSubmitButton.vue"
+  import validation from '@/directives/validation'
+  import { useAuthStore } from "@/stores/authStore"
+  import { push } from 'notivue'
 
 /*
   form data
@@ -42,35 +42,39 @@
             router.push('/login/')
           })
           .catch(error => {
-            Toast(400,'error', 'top-right', error.response.data.message)
+            push.error(error.response.data.message)
           })
     }
   }
 </script>
 
 <template>
-  <div class="mx-0 w-full tablet:w-1/3 flex flex-col text-white">
-    <h1 class="mb-0 text-4xl laptop:text-5xl text-center text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600">
-      Office des coffres
-    </h1>
-    <div class="flex flex-col items-center">
-      <div class="w-1/3 px-3 grid grid-cols-1 justify-items-center text-white text-2xl font-bold hover:text-gray-800 transform hover:translate-y-px hover:translate-x-px shadow-md">
-        <RouterLink to="/login" class="w-full flex justify-center items-center pb-2.5 pt-2 text-center font-bold bg-gradient-to-br from-red-600 to-orange-400 rounded-md align-middle">
-          <v-icon name="fa-arrow-alt-circle-left" scale="2" />
-          <span class="ml-2 mb-0.5">Retour</span>
-        </RouterLink>
-      </div>
-      <div class="w-11/12 laptop:w-12/12 my-2 pb-2 bg-gray-200 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl">
-        <div class="w-full mt-2 md:mt-3 px-7 overflow-y-auto">
-          <h2>Cr&eacute;ation votre compte</h2>
-          <form class="mb-2" v-on:submit.prevent="register">
-            <InputText v-model="user.username" name="username" label="pseudo" placeholder="Entrez votre pseudo" />
-            <InputEmail v-model="user.email" name="email" label="email" placeholder="Entrez votre email" />
-            <InputPassword v-model="user.password" name="password" label="mot de passe" placeholder="Entrez votre mot de passe"/>
-            <InputConfirm v-model="user.confirmation" confirmField="password" :confirmValue="user.password"
-                          name="confirmation" label="confirmation mot de passe" placeholder="Confirmez votre mot de passe"/>
-            <DefaultSubmitButton text="S'enregistrer" />
-          </form>
+  <div class="page-container">
+    <h1 >Office des coffres</h1>
+    <div class="page-content grid grid-cols-3 gap-0 justify-items-center">
+      <div class="w-full col-start-2 col-span-1">
+          <!-- Bouton retour -->
+          <div class="w-full flex justify-center">
+            <div class="w-6/12 mb-1 grid grid-cols-1 text-center text-white text-3xl font-black hover:text-gray-800 transform hover:translate-y-px hover:translate-x-px shadow-inner">
+              <RouterLink to="/login" class="pb-2.5 pt-1.5 font-bold bg-gradient-to-br from-red-600 to-orange-400 rounded-xl">
+                <v-icon name="fa-arrow-alt-circle-left" scale="2" class="mb-1" />
+                <span class="ml-2">Retour</span>
+              </RouterLink>
+            </div>
+          </div>
+
+        <div class="w-12/12 my-5 bg-gray-200 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl">
+          <div class="w-full mt-2 md:mt-5 px-7 overflow-y-auto">
+            <h2>Cr&eacute;ation votre compte</h2>
+            <form class="mt-6" v-on:submit.prevent="register">
+              <InputText v-model="user.username" name="username" label="pseudo" placeholder="Entrez votre pseudo" />
+              <InputEmail v-model="user.email" name="email" label="email" placeholder="Entrez votre email" />
+              <InputPassword v-model="user.password" name="password" label="mot de passe" placeholder="Entrez votre mot de passe"/>
+              <InputConfirm v-model="user.confirmation" confirmField="password" :confirmValue="user.password"
+                name="confirmation" label="confirmation mot de passe" placeholder="Confirmez votre mot de passe"/>
+              <DefaultSubmitButton text="S'enregistrer" />
+            </form>
+          </div>
         </div>
       </div>
     </div>

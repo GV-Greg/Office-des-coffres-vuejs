@@ -77,23 +77,23 @@ onMounted(() => {
 
 <template>
   <Transition name="slide-up">
-    <div v-if="showBanner" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-300 dark:bg-slate-800 shadow-lg z-50">
-      <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-          <!-- Message -->
-          <div class="flex-grow text-slate-700">
+    <div v-if="showBanner" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-300 dark:bg-slate-900 shadow-lg z-50">
+      <div class="max-w-screen-lg mx-auto">
+        <div class="flex flex-row items-center justify-between gap-4">
+          <!-- Message (aligné à gauche) -->
+          <div class="flex-grow text-slate-700 dark:text-slate-200 text-center">
             <h2 class="text-lg font-semibold mb-2">{{ t('Cookies.Banner.Title') }}</h2>
             <p class="text-sm">{{ t('Cookies.Banner.Description') }}</p>
           </div>
 
-          <!-- Boutons -->
-          <div class="flex flex-col sm:flex-row gap-2 min-w-fit">
-            <DangerButton @click="handleDeclineAll">
-              {{ t('Cookies.Button.Decline') }}
-            </DangerButton>
+          <!-- Boutons (alignés à droite) -->
+          <div class="flex flex-row gap-x-8">
             <PrimaryButton @click="showModal = true">
               {{ t('Cookies.Button.Preferences') }}
             </PrimaryButton>
+            <DangerButton @click="handleDeclineAll">
+              {{ t('Cookies.Button.Decline') }}
+            </DangerButton>
             <SuccessButton @click="handleAcceptAll">
               {{ t('Cookies.Button.Accept') }}
             </SuccessButton>
@@ -105,7 +105,7 @@ onMounted(() => {
 
   <!-- Modal des préférences -->
   <CookiesModal
-    v-if="showModal"
+    :show="showModal"
     :preferences="preferences"
     @close="handleModalClose"
     @save="handleSavePreferences"

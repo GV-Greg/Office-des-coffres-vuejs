@@ -1,14 +1,14 @@
 <script setup>
-import { useRouter } from 'vue-router'
-import SettingsMenu from '@/components/SettingsMenu.vue'
-const router = useRouter()
+  import { useRouter } from 'vue-router'
+  import SelectorMenu from '@/components/SelectorMenu.vue'
+  const router = useRouter()
 </script>
 
 <template>
   <div class="relative min-h-screen">
     <!-- Settings Menu -->
     <div class="absolute top-4 right-4">
-      <SettingsMenu />
+      <SelectorMenu />
     </div>
 
     <!-- Main Content -->

@@ -4,9 +4,6 @@ FROM node:20-alpine as builder
 # Définition du répertoire de travail
 WORKDIR /app
 
-# Installation des dépendances globales et mise à jour de npm
-RUN npm install -g npm@latest
-
 # Copie des fichiers de configuration
 COPY package*.json ./
 
@@ -25,7 +22,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Étape de production avec nginx
-FROM nginx:stable-alpine
+FROM nginx:stable-alpine as production-stage
 
 # Copie de la configuration nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf

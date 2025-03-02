@@ -12,7 +12,7 @@
   }
 
   h1 {
-    @apply my-2 font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600;
+    @apply my-2 font-extrabold text-4xl laptop:text-5xl text-center text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600;
   }
 
   h2 {
@@ -46,6 +46,10 @@
   }
 
   /* Variantes de boutons */
+  .btn-default {
+      @apply font-bold text-lg rounded px-3 text-white bg-blue-600 hover:bg-blue-400;
+  }
+
   .btn-primary {
     @apply bg-blue-600 hover:bg-blue-700;
     @apply ring-blue-400;
@@ -87,10 +91,34 @@
     @apply underline;
   }
 
+  .btn-yellow {
+    @apply bg-yellow-600 hover:bg-yellow-500 ring-yellow-400 ring-opacity-30;
+  }
+
+  .btn-salmon {
+      @apply bg-salmon-600 hover:bg-salmon-500 ring-salmon-400 ring-opacity-30;
+  }
+
+  .btn-teal {
+      @apply bg-teal-600 hover:bg-teal-500 ring-teal-400 ring-opacity-30;
+  }
+
+  .btn-slate {
+      @apply bg-slate-600 hover:bg-slate-500 ring-slate-400 ring-opacity-30;
+  }
+
+  .btn-menu-rounded {
+      @apply rounded-full ring-4 shadow-inner;
+  }
+
   /* États des boutons */
   .btn:disabled {
     @apply opacity-50 cursor-not-allowed;
     @apply hover:bg-current;
+  }
+
+  .btn-default:disabled {
+    @apply font-bold text-lg rounded px-3 text-white bg-blue-600;
   }
 
   /* Tailles des boutons */
@@ -104,7 +132,7 @@
 
   /* Layouts communs */
   .page-container {
-    @apply flex flex-col min-h-screen;
+    @apply mx-0 w-full flex flex-col text-white;
   }
 
   .page-header {
@@ -115,12 +143,8 @@
     @apply container mx-auto px-4 py-2;
   }
 
-  .page-title {
-    @apply text-4xl laptop:text-5xl text-center;
-  }
-
   .page-content {
-    @apply flex-grow container mx-auto px-4 py-6;
+    @apply w-full grid grid-cols-3 gap-0 justify-items-center;
   }
 
   /* Formulaires */
@@ -136,18 +160,20 @@
     @apply mb-1 uppercase font-bold text-slate-500;
   }
 
-  .form-input {
-    @apply mt-1 block w-full px-3 py-2;
-    @apply bg-white dark:bg-gray-700;
-    @apply border border-gray-300 dark:border-gray-600;
-    @apply rounded-md shadow-sm;
-    @apply text-gray-900 dark:text-white;
-    @apply placeholder-gray-400 dark:placeholder-gray-400;
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600;
+  .form-field, .form-field-error {
+    @apply p-2 rounded-md text-gray-800;
+  }
+
+  .form-field {
+      @apply border border-slate-500;
+  }
+
+  .form-field-error {
+      @apply border-2 border-red-500;
   }
 
   .form-error {
-    @apply text-red-600 text-sm ml-2;
+      @apply text-red-600 text-sm ml-2;
   }
 
   /* Cards */

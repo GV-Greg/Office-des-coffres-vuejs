@@ -28,11 +28,24 @@ docker compose -f docker-compose.prod.yml up -d
 
 # Attendre que le build soit terminé et copier les fichiers
 echo -e "${GREEN}📦 Préparation des fichiers pour le déploiement...${NC}"
-docker cp $(docker compose -f docker-compose.prod.yml ps -q app):/app/dist ./dist_prod
+docker cp $(docker compose -f docker-compose.prod.yml ps -q prod):/usr/share/nginx/html/. ./dist_prod
+
+# Vérifier que le dossier dist_prod existe et contient des fichiers
+if [ ! -d "./dist_prod" ]; then
+  echo -e "${RED}Erreur: Le dossier dist_prod n'a pas été créé${NC}"
+  exit 1
+fi
+
+if [ -z "$(ls -A ./dist_prod)" ]; then
+  echo -e "${RED}Erreur: Le dossier dist_prod est vide${NC}"
+  exit 1
+fi
 
 # Déployer via FTP
 echo -e "${GREEN}🚀 Déploiement vers O2Switch...${NC}"
 lftp -c "
+set ftp:ssl-allow no;  # Désactive SSL (si possible)
+set ssl:verify-certificate no;  # Ignore la vérification du certificat
 open ftp://$FTP_USERNAME:$FTP_PASSWORD@$FTP_SERVER
 mirror -R --parallel=4 --delete ./dist_prod/ /
 bye
@@ -41,6 +54,6 @@ bye
 # Nettoyage
 echo -e "${GREEN}🧹 Nettoyage...${NC}"
 rm -rf ./dist_prod
-docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml down --remove-orphans
 
 echo -e "${GREEN}✅ Déploiement terminé !${NC}"

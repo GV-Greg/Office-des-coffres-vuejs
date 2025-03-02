@@ -9,8 +9,24 @@ export default {
   ],
   darkMode: 'class',
   safelist: [
-    { pattern: /(bg|text|border|hover:bg|hover:text|hover:border)-./ },
-    { pattern: /(ring|ring-offset|hover:ring|hover:ring-offset)-./ },
+    {
+      pattern: /text-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern: /bg-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern: /border-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern: /hover:(text|bg|border)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern: /(ring|ring-offset|hover:ring|hover:ring-offset)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern: /btn-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)/,
+    },
   ],
   theme: {
     screens: {

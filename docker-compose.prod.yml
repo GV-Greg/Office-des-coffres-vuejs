@@ -1,0 +1,10 @@
+services:
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: vuejs_prod
+    ports:
+      - "80:80"
+    volumes:
+      - ./dist:/app/dist

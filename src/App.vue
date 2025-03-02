@@ -1,7 +1,7 @@
 <script setup>
-  import { onMounted } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { RouterView } from 'vue-router'
-  import { Notivue, Notification } from 'notivue'
+  import { Notivue, Notification, materialTheme } from 'notivue'
   import { useCookieStore } from './stores/cookieStore'
   import CookiesBanner from './components/CookiesBanner.vue'
 
@@ -18,24 +18,23 @@
       document.documentElement.classList.remove('dark')
     }
   })
+
+
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-slate-200 dark:bg-slate-900 transition-colors duration-200">
+  <div class="min-h-screen w-full bg-slate-200 dark:bg-slate-800 transition-colors duration-200">
     <RouterView name="Nav" />
     <RouterView />
 
     <CookiesBanner />
-    <Notivue v-slot="notivue">
-      <Notification v-bind="notivue" />
+    <Notivue  v-slot="item">
+      <Notification :item="item" :theme="materialTheme" />
     </Notivue>
   </div>
 </template>
 
 <style>
-@import '@/assets/base.css';
-@import '@/assets/style.css';
-
 /* Notivue : Gap & z-index */
 :root {
   --nv-gap: 1rem;
