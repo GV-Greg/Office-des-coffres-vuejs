@@ -10,22 +10,22 @@ export default {
   darkMode: 'class',
   safelist: [
     {
-      pattern: /text-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+      pattern:
+        /(text|bg|border)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
     },
     {
-      pattern: /bg-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+      pattern:
+        /(hover:text|hover:bg|hover:border)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
     },
     {
-      pattern: /border-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+      pattern:
+        /(ring|ring-offset|hover:ring|hover:ring-offset)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
     },
     {
-      pattern: /hover:(text|bg|border)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+      pattern: /btn-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)/,
     },
     {
-      pattern: /(ring|ring-offset|hover:ring|hover:ring-offset)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
-    },
-    {
-      pattern: /btn-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|violet|fuchsia|rose)/,
+      pattern: /hover:btn-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)/,
     },
   ],
   theme: {
@@ -41,8 +41,8 @@ export default {
       center: true,
     },
     colors: {
-      transparent: 'transparent',
-      current: 'currentColor',
+      transparent: "transparent",
+      current: "currentColor",
       black: colors.black,
       white: colors.white,
       slate: colors.slate,
@@ -54,10 +54,11 @@ export default {
       green: colors.green,
       teal: colors.teal,
       cyan: colors.cyan,
-      blue: colors.sky,
-      indigo: colors.violet,
-      pink: colors.fuchsia,
-      salmon: colors.rose,
+      blue: colors.blue,
+      indigo: colors.indigo,
+      violet: colors.violet,
+      fuchsia: colors.fuchsia,
+      rose: colors.rose,
     },
     fontSize: {
       'xs': '.75rem',

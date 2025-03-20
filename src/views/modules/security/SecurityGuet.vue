@@ -12,6 +12,9 @@
   })
   const list_yesterday = ref()
   const list_today = ref()
+  const array_today = reactive({
+    value: []
+  })
   const outputs = reactive({
     value: []
   })
@@ -38,20 +41,27 @@
 
   function result() {
     let array_yesterday = transform(list_yesterday)
-    let array_today = transform(list_today)
-    outputs.value = array_yesterday.filter(x => !array_today.includes(x))
-    inputs.value = array_today.filter(x => !array_yesterday.includes(x))
+    array_today.value = transform(list_today)
+    outputs.value = array_yesterday.filter(x => !array_today.value.includes(x))
+    inputs.value = array_today.value.filter(x => !array_yesterday.includes(x))
     loading.value = true
   }
 
   function to_export() {
+    result_press_papier.value = "[size=15][color=blue][i]Liste des villageois (" + (array_today.value.length) + ")[/i][/color][/size][quote]"
+    for (let index in array_today.value) {
+      index ==='0' ? 
+        result_press_papier.value += "[url=https://www.lesroyaumes.com/FichePersonnage.php?login=" + array_today.value[index] + "]" + array_today.value[index] + "[/url]" :
+        result_press_papier.value += "\n[url=https://www.lesroyaumes.com/FichePersonnage.php?login=" + array_today.value[index] + "]" + array_today.value[index] + "[/url]"
+    }
+    result_press_papier.value += "[/quote]\n"
     result_press_papier.value += "[size=15][color=blue][i]Entrées (" + inputs.value.length + ")[/i][/color][/size]\n[quote]"
     for (let input in inputs.value) {
       input ==='0' ? result_press_papier.value += "[char]" + inputs.value[input] + "[/char]" : result_press_papier.value += "\n[char]" + inputs.value[input] + "[/char]"
     }
     result_press_papier.value += "[/quote]\n[size=15][color=blue][i]Sorties (" + outputs.value.length + ")[/i][/color][/size]\n[quote]"
     for (let output in outputs.value) {
-      output ==='0' ? result_press_papier.value += "[char]" + outputs.value[output] + "[/char]" : "\n[char]" + outputs.value[output] + "[/char]"
+      output ==='0' ? result_press_papier.value += "[char]" + outputs.value[output] + "[/char]" : result_press_papier.value += "\n[char]" + outputs.value[output] + "[/char]"
     }
     result_press_papier.value += "[/quote]"
     navigator.clipboard.writeText(result_press_papier.value)
