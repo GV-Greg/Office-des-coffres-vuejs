@@ -1,88 +1,123 @@
-# Office des Coffres - Frontend
+# Office des Coffres — Frontend
 
-Application web moderne pour la gestion de coffres-forts virtuels, développée avec Vue 3 et Tailwind CSS.
+> Outil communautaire non officiel pour le jeu [Renaissance Kingdoms](https://www.renaissancekingdoms.com/).
+> Ce site n'est pas affilié à Celsius Online, l'éditeur du jeu.
 
-## 🚀 Technologies
+Site : [officedescoffres.creacube.be](https://officedescoffres.creacube.be)
+Dépôt backend : [Office-des-coffres-backend](https://github.com/GV-Greg/Office-des-coffres-backend)
 
-- Vue 3 avec Composition API
-- Vite pour le bundling
-- Tailwind CSS pour le styling
-- Pinia pour la gestion d'état
-- Axios pour les requêtes HTTP
-- Docker pour le développement et la production
+---
 
-## 🛠️ Installation
+## Stack technique
 
-### Prérequis
+| Outil | Version | Rôle |
+|---|---|---|
+| Vue.js | 3.4 | Framework (Composition API) |
+| Vite | 6.2 | Bundler |
+| Tailwind CSS | 3.4 | Styling utilitaire |
+| Pinia | 2.1 | État global |
+| Vue Router | 4.2 | Routage SPA |
+| vue-i18n | 9.9 | Internationalisation (FR/EN) |
+| notivue | 2.4 | Notifications toast |
+| Axios | 1.6 | Requêtes HTTP |
 
-- Docker et Docker Compose
-- Git
+---
 
-### Configuration
+## Structure du projet
 
-1. Clonez le dépôt :
-```bash
-git clone https://github.com/GV-Greg/Office-des-coffres-vuejs.git
-cd office-des-coffres-vuejs
+```
+src/
+├── views/
+│   ├── WelcomeView.vue          # Page d'accueil pré-connexion (cadenas animé)
+│   ├── HomeView.vue             # Dashboard post-connexion
+│   ├── auth/                   # Login, Register, Profil
+│   └── modules/
+│       ├── security/           # Module Guet (export BBcode)
+│       ├── economy/            # Module Économie (en développement)
+│       ├── animation/          # Module Animation (en développement)
+│       └── company/            # Module Compagnie (en développement)
+├── stores/
+│   ├── authStore.js            # Authentification (Pinia)
+│   └── cookieStore.js          # Consentement cookies (Pinia)
+├── services/
+│   ├── auth.service.js         # Appels API auth
+│   ├── anim.service.js         # Appels API animation
+│   └── http-common.js          # Instance Axios configurée
+├── components/
+│   ├── NavBar.vue              # Barre de navigation (routes /app/*)
+│   ├── NavMenu.vue             # Menu circulaire des modules
+│   ├── CookiesBanner.vue       # Bannière RGPD
+│   └── CookiesModal.vue        # Gestion détaillée des cookies
+├── router/index.js             # Routes : /, /login, /register, /app/*
+├── i18n/                       # Traductions FR/EN
+└── assets/
+    └── style.css               # Styles globaux Tailwind (@layer components)
 ```
 
-2. Copiez le fichier d'environnement :
+---
+
+## Démarrage rapide (Docker)
+
+L'environnement complet (frontend + backend + BDD) se lance depuis la racine du workspace :
+
 ```bash
-cp .env.example .env
+cd /chemin/vers/ODC
+docker compose -f docker-compose.dev.yml up
 ```
 
-3. Configurez les variables d'environnement dans `.env`
+Le frontend est disponible sur **http://localhost:5001**.
 
-## 🔧 Développement
+### Développement standalone (sans Docker)
 
-Démarrer l'environnement de développement :
 ```bash
-docker compose up
-```
-L'application sera disponible sur `http://localhost:5173`
-
-## 🏗️ Production
-
-1. Build de l'image de production :
-```bash
-docker compose -f docker-compose.prod.yml build
+npm install
+npm run dev       # Serveur dev Vite sur http://localhost:5173
 ```
 
-2. Démarrer le conteneur de production :
-```bash
-docker compose -f docker-compose.prod.yml up -d
+Variables d'environnement à configurer dans `.env` :
 ```
-L'application sera disponible sur `http://localhost:80`
-
-## 📦 Déploiement
-
-Pour déployer sur un serveur de production via Git bash :
-```bash
-./deploy.sh
+VITE_API_URL=http://localhost:8000/api/v1
 ```
 
-## 🧪 Tests
+---
 
-Les tests sont exécutés dans le conteneur Docker :
+## Déploiement
+
+Le frontend est déployé sur **GitHub Pages** via un build Vite statique :
+
 ```bash
-docker compose exec app npm run test
+npm run build     # Génère dist/
 ```
 
-## 📚 Documentation
+Le domaine custom `officedescoffres.creacube.be` est configuré dans les paramètres GitHub Pages du dépôt.
 
-- [Vue 3 Documentation](https://vuejs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Vite](https://vitejs.dev/)
-- [Pinia](https://pinia.vuejs.org/)
+---
 
-## 🤝 Contribution
+## Modules
 
-1. Fork le projet
-2. Créez votre branche (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push sur la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
+| Module | Route | État |
+|---|---|---|
+| Accueil | `/app/` | Fonctionnel |
+| Sécurité — Guet | `/app/secu/guet` | Fonctionnel (bug parsing connu) |
+| Économie | `/app/eco` | En développement |
+| Animation | `/app/anim` | En développement |
+| Compagnie | `/app/company` | En développement |
+| Profil | `/app/profil` | Fonctionnel (auth requise) |
 
-## 📝 License
+---
 
-[MIT](LICENSE)
+## Tests
+
+```bash
+npm run test              # Tests unitaires (Vitest)
+npm run test:coverage     # Couverture de code
+```
+
+---
+
+## Conventions
+
+- Toujours prévoir les traductions FR **et** EN pour toute nouvelle vue
+- Toujours afficher la mention "outil non officiel"
+- Cookies : essentiels et session uniquement — aucun cookie publicitaire ni traçage
+- Branches : `feat/<nom>`, `fix/<nom>`, `chore/<nom>` — jamais directement sur `main`

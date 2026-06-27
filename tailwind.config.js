@@ -15,17 +15,10 @@ export default {
     },
     {
       pattern:
-        /(hover:text|hover:bg|hover:border)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
-    },
-    {
-      pattern:
-        /(ring|ring-offset|hover:ring|hover:ring-offset)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
+        /(ring|ring-offset)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
     },
     {
       pattern: /btn-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)/,
-    },
-    {
-      pattern: /hover:btn-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)/,
     },
   ],
   theme: {
