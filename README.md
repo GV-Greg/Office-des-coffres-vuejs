@@ -56,40 +56,25 @@ src/
 
 ---
 
-## Démarrage rapide (Docker)
+## Déploiement
 
-L'environnement complet (frontend + backend + BDD) se lance depuis la racine du workspace :
+### Production
 
-```bash
-cd /chemin/vers/ODC
-docker compose -f docker-compose.dev.yml up
-```
+Déploiement automatique via **GitHub Actions** sur push `main` :
+1. Build Vite (`npm run build`) — variable `VITE_API_ENDPOINT_PROD` injectée depuis les secrets GitHub
+2. Transfert FTP du dossier `dist/` vers `officedescoffres.creacube.be` (O2Switch, dossier `/front/`)
 
-Le frontend est disponible sur **http://localhost:5001**.
-
-### Développement standalone (sans Docker)
+### Développement local
 
 ```bash
 npm install
 npm run dev       # Serveur dev Vite sur http://localhost:5173
 ```
 
-Variables d'environnement à configurer dans `.env` :
+Variable d'environnement à configurer dans `.env` :
 ```
 VITE_API_URL=http://localhost:8000/api/v1
 ```
-
----
-
-## Déploiement
-
-Le frontend est déployé sur **GitHub Pages** via un build Vite statique :
-
-```bash
-npm run build     # Génère dist/
-```
-
-Le domaine custom `officedescoffres.creacube.be` est configuré dans les paramètres GitHub Pages du dépôt.
 
 ---
 
@@ -98,26 +83,18 @@ Le domaine custom `officedescoffres.creacube.be` est configuré dans les paramè
 | Module | Route | État |
 |---|---|---|
 | Accueil | `/app/` | Fonctionnel |
-| Sécurité — Guet | `/app/secu/guet` | Fonctionnel (bug parsing connu) |
+| Sécurité — Guet | `/app/secu/guet` | Fonctionnel (bug parsing sorties connu) |
 | Économie | `/app/eco` | En développement |
 | Animation | `/app/anim` | En développement |
 | Compagnie | `/app/company` | En développement |
-| Profil | `/app/profil` | Fonctionnel (auth requise) |
-
----
-
-## Tests
-
-```bash
-npm run test              # Tests unitaires (Vitest)
-npm run test:coverage     # Couverture de code
-```
+| Profil | `/app/profil` | Fonctionnel |
 
 ---
 
 ## Conventions
 
-- Toujours prévoir les traductions FR **et** EN pour toute nouvelle vue
+- Toujours prévoir les traductions FR **et** EN pour toute nouvelle vue ou composant
 - Toujours afficher la mention "outil non officiel"
 - Cookies : essentiels et session uniquement — aucun cookie publicitaire ni traçage
 - Branches : `feat/<nom>`, `fix/<nom>`, `chore/<nom>` — jamais directement sur `main`
+- Commits et push uniquement à la demande explicite
