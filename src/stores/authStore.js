@@ -1,115 +1,106 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import { ref, computed } from 'vue'
+import { http } from '@/api.js'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
-  const user = ref(null)
-  const token = ref(localStorage.getItem('token') || null)
-  const isLoggedIn = ref(false)
+  const user  = ref(JSON.parse(localStorage.getItem('auth_user') || 'null'))
+  const token = ref(localStorage.getItem('auth_token') || null)
 
   // Getters
-  const getUser = computed(() => user.value)
-  const getToken = computed(() => token.value)
-  const getIsLoggedIn = computed(() => isLoggedIn.value)
+  const isLoggedIn     = computed(() => !!token.value)
+  const getUser        = computed(() => user.value)
+  const getToken       = computed(() => token.value)
+  const getPseudo      = computed(() => user.value?.pseudo ?? null)
+  const getIsValidated = computed(() => user.value?.is_validated ?? false)
 
-  // Actions
+  // Persistance locale
   const setToken = (newToken) => {
     token.value = newToken
     if (newToken) {
-      localStorage.setItem('token', newToken)
-      isLoggedIn.value = true
+      localStorage.setItem('auth_token', newToken)
     } else {
-      localStorage.removeItem('token')
-      isLoggedIn.value = false
+      localStorage.removeItem('auth_token')
     }
   }
 
   const setUser = (userData) => {
     user.value = userData
+    if (userData) {
+      localStorage.setItem('auth_user', JSON.stringify(userData))
+    } else {
+      localStorage.removeItem('auth_user')
+    }
+  }
+
+  // Actions
+  const register = async (userData) => {
+    const response = await http.post('auth/register', {
+      username:     userData.username,
+      email:        userData.email,
+      password:     userData.password,
+      confirmation: userData.confirmation,
+    })
+    setToken(response.data.token)
+    setUser(response.data.user)
+    return response.data
   }
 
   const login = async (credentials) => {
-    try {
-      const response = await axios.post('/api/auth/login', credentials)
-      const { token: newToken, user: userData } = response.data
-      setToken(newToken)
-      setUser(userData)
-      return { success: true }
-    } catch (error) {
-      console.error('Login error:', error)
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Une erreur est survenue lors de la connexion'
-      }
-    }
+    const response = await http.post('auth/login', {
+      username: credentials.username,
+      password: credentials.password,
+    })
+    setToken(response.data.token)
+    setUser(response.data.user)
+    return response.data
   }
 
-  const register = async (userData) => {
+  const logout = async () => {
     try {
-      const response = await axios.post('/api/auth/register', userData)
-      const { token: newToken, user: newUser } = response.data
-      setToken(newToken)
-      setUser(newUser)
-      return { success: true }
-    } catch (error) {
-      console.error('Register error:', error)
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Une erreur est survenue lors de l\'inscription'
-      }
+      await http.post('auth/logout', {}, {
+        headers: { Authorization: `Bearer ${token.value}` },
+      })
+    } finally {
+      setToken(null)
+      setUser(null)
     }
-  }
-
-  const logout = () => {
-    setToken(null)
-    setUser(null)
   }
 
   const checkAuth = async () => {
-    if (!token.value) {
-      isLoggedIn.value = false
-      return false
-    }
+    if (!token.value) return false
 
     try {
-      const response = await axios.get('/api/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token.value}`
-        }
+      const response = await http.get('auth/me', {
+        headers: { Authorization: `Bearer ${token.value}` },
       })
-      setUser(response.data)
-      isLoggedIn.value = true
+      setUser(response.data.user)
       return true
-    } catch (error) {
-      console.error('Check auth error:', error)
+    } catch {
       setToken(null)
       setUser(null)
-      isLoggedIn.value = false
       return false
     }
   }
 
-  // Initialisation
+  // Hydratation au démarrage
   if (token.value) {
     checkAuth()
   }
 
   return {
-    // State
     user,
     token,
     isLoggedIn,
-    // Getters
     getUser,
     getToken,
-    getIsLoggedIn,
-    // Actions
+    getPseudo,
+    getIsValidated,
     login,
     register,
     logout,
     checkAuth,
     setToken,
-    setUser
+    setUser,
   }
 })
