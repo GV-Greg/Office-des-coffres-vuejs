@@ -79,7 +79,7 @@ const handleCancel = () => {
 
 <template>
   <Transition name="modal">
-    <div v-if="show" class="fixed w-full inset-0 z-50 overflow-y-auto flex justify-center">
+    <div v-if="show" class="cookie-modal fixed w-full inset-0 z-50 overflow-y-auto flex justify-center">
       <!-- Overlay -->
       <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" @click="handleCancel"></div>
 

@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import CookiesModal from '../../src/components/CookiesModal.vue'
-import { useCookieStore } from '../../src/stores/cookieStore'
+import SwitchButton from '../../src/components/buttons/SwitchButton.vue'
 
 // Mock translations
 const i18n = createI18n({
@@ -16,7 +16,7 @@ const i18n = createI18n({
         },
         Button: {
           Save: 'Enregistrer mes choix',
-          Decline: 'Refuser'
+          Cancel: 'Annuler'
         },
         Required: 'Requis'
       }
@@ -26,7 +26,6 @@ const i18n = createI18n({
 
 describe('CookiesModal', () => {
   let wrapper
-  let store
 
   const mockPreferences = [
     {
@@ -68,7 +67,6 @@ describe('CookiesModal', () => {
         ]
       }
     })
-    store = useCookieStore()
   })
 
   it('should not show modal when show prop is false', async () => {
@@ -81,36 +79,50 @@ describe('CookiesModal', () => {
   })
 
   it('should have required cookies checked and disabled', () => {
-    const requiredCheckbox = wrapper.find('input[type="checkbox"][disabled]')
-    expect(requiredCheckbox.element.checked).toBe(true)
-    expect(requiredCheckbox.element.disabled).toBe(true)
+    const switches = wrapper.findAllComponents(SwitchButton)
+    const requiredSwitch = switches[0] // seul item de la 1ère catégorie, isRequired: true
+
+    expect(requiredSwitch.props('checked')).toBe(true)
+    expect(requiredSwitch.props('disabled')).toBe(true)
   })
 
-  it('should emit save event with required cookies when declining', async () => {
-    const declineButton = wrapper.find('button:contains("Refuser")')
-    await declineButton.trigger('click')
-    
-    const emitted = wrapper.emitted('decline')
+  it('should not toggle a required (disabled) switch on click', async () => {
+    const switches = wrapper.findAllComponents(SwitchButton)
+    const requiredSwitch = switches[0]
+
+    await requiredSwitch.find('button').trigger('click')
+
+    // handleCookieChange ignore les items requis : aucun 'save' ne doit
+    // refléter un changement, la prop reste inchangée
+    expect(requiredSwitch.props('checked')).toBe(true)
+  })
+
+  it('should emit save event with selected cookies when saving', async () => {
+    const sessionSwitch = wrapper.findAllComponents(SwitchButton)[1] // catégorie session, isRequired: false
+    await sessionSwitch.find('button').trigger('click')
+
+    const saveButton = wrapper.findAll('button').find((b) => b.text().includes('Enregistrer mes choix'))
+    await saveButton.trigger('click')
+
+    const emitted = wrapper.emitted('save')
+    expect(emitted).toBeTruthy()
+    expect(emitted[0][0]).toContain('session')
+    expect(emitted[0][0]).toContain('functional') // Cookie requis toujours inclus
+  })
+
+  it('should always include required cookies when saving, even without changes', async () => {
+    const saveButton = wrapper.findAll('button').find((b) => b.text().includes('Enregistrer mes choix'))
+    await saveButton.trigger('click')
+
+    const emitted = wrapper.emitted('save')
     expect(emitted).toBeTruthy()
     expect(emitted[0][0]).toEqual(['functional'])
   })
 
-  it('should emit save event with selected cookies when saving', async () => {
-    // Simulate selecting session cookie
-    const sessionCheckbox = wrapper.find('input[type="checkbox"]:not([disabled])')
-    await sessionCheckbox.setValue(true)
-    
-    const saveButton = wrapper.find('button:contains("Enregistrer mes choix")')
-    await saveButton.trigger('click')
-    
-    const emitted = wrapper.emitted('save')
-    expect(emitted).toBeTruthy()
-    expect(emitted[0][0]).toContain('session')
-    expect(emitted[0][0]).toContain('functional') // Required cookie should always be included
-  })
+  it('should emit close event when cancelling', async () => {
+    const cancelButton = wrapper.findAll('button').find((b) => b.text().includes('Annuler'))
+    await cancelButton.trigger('click')
 
-  it('should automatically include required cookies in preferences', async () => {
-    await wrapper.vm.$nextTick()
-    expect(store.acceptedCookies).toContain('functional')
+    expect(wrapper.emitted('close')).toBeTruthy()
   })
 })

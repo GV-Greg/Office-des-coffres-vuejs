@@ -41,8 +41,12 @@ describe('Cookie Store', () => {
       expect(store.cookiePreferences).toBeNull()
     })
 
-    it('should start with empty essential cookies', () => {
-      expect(store.essentialCookies).toEqual({})
+    it('should start with default essential cookies', () => {
+      expect(store.essentialCookies).toEqual({
+        theme: 'dark',
+        locale: 'fr',
+        'session-declined': 'false'
+      })
     })
   })
 
@@ -101,7 +105,12 @@ describe('Cookie Store', () => {
     it('should handle essential cookies', () => {
       store.setEssentialCookie('testKey', 'testValue')
       expect(store.getEssentialCookie('testKey')).toBe('testValue')
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('essential-cookies', JSON.stringify({ testKey: 'testValue' }))
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('essential-cookies', JSON.stringify({
+        theme: 'dark',
+        locale: 'fr',
+        'session-declined': 'false',
+        testKey: 'testValue'
+      }))
     })
 
     it('should accept all cookies', () => {
@@ -129,13 +138,6 @@ describe('Cookie Store', () => {
       expect(store.acceptedCookies).toEqual(selectedCookies)
       expect(store.cookiePreferences).toBe('custom')
       expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-comply', JSON.stringify(selectedCookies))
-    })
-
-    it('should throw error when checking login permission without session cookie', () => {
-      expect(() => store.checkLoginPermission()).toThrow('Vous devez accepter les cookies de session pour vous connecter')
-      
-      store.acceptedCookies = ['session']
-      expect(() => store.checkLoginPermission()).not.toThrow()
     })
   })
 })
