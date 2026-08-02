@@ -49,6 +49,14 @@
       "English": "Anglais"
     }
   },
+  "Profil": {
+    "Title": "Profil de {pseudo}",
+    "Validated": "Votre compte est validé.",
+    "Pending": {
+      "Title": "Compte en attente de validation",
+      "Description": "Contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider votre compte. Une fois validé, vous aurez accès à l'ensemble des fonctionnalités."
+    }
+  },
   "username": "nom d'utilisateur",
   "password": "mot de passe",
   "email": "email",
