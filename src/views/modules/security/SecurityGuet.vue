@@ -30,10 +30,17 @@
     let list_array = list._rawValue.split("\n")
     let list_pseudos = []
     for (let el in list_array) {
-      let pseudo_temp = list_array[el].split("\t", 1)
-      let pseudo = pseudo_temp[0].split(" ", 1)
-      if(pseudo[0].length > 0) {
-        list_pseudos.push(pseudo[0])
+      let line = list_array[el]
+      // Seules les lignes du tableau (pseudo + PR séparés par tabulation) sont
+      // de vrais villageois : le texte descriptif collé au-dessus (maire, adjoints,
+      // rappel "noblesse d'épée"...) et l'en-tête "Liste des villageois (N)" n'ont
+      // pas de tabulation et doublonnaient/polluaient le comptage.
+      if (!line.includes("\t")) continue
+      // Le premier mot avant un éventuel espace est le vrai pseudo : le reste est
+      // le nom personnalisé affiché pour les comptes ayant un pack noblesse.
+      let pseudo = line.split("\t")[0].split(" ")[0].trim()
+      if (pseudo.length > 0) {
+        list_pseudos.push(pseudo)
       }
     }
     return list_pseudos

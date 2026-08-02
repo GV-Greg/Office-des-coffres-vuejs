@@ -1,0 +1,141 @@
+Fichier de test — Bug export sorties (Module Sécurité / Guet)
+==============================================================
+
+But : reproduire le bug "sorties incomplètes" de SecurityGuet.vue avec de vraies
+données, pour corriger le parsing (transform()) et écrire un test Vitest de
+non-régression fiable basé dessus.
+
+Cause identifiée : le texte collé contient un préambule descriptif (maire, adjoints,
+tribun, rappel "noblesse d'épée du village" avec les noms complets SANS tabulation)
+avant l'en-tête "Liste des villageois (N)" et le vrai tableau (tabulé). L'ancien code
+essayait de parser CHAQUE ligne, y compris ce préambule, ce qui gonflait les comptes
+et dupliquait les membres "noblesse d'épée" (une fois via le préambule, une fois via
+le tableau). Le correctif ignore toute ligne sans tabulation.
+
+Structure :
+- HIER_DEBUT / HIER_FIN : texte collé complet (préambule + en-tête + tableau) du jour précédent
+- AUJOURDHUI_DEBUT / AUJOURDHUI_FIN : idem pour le jour courant
+- SORTIES_ATTENDUES / ENTREES_ATTENDUES : vrais pseudos (premier mot, sans le titre de
+  noblesse) que l'outil doit produire, un par ligne — confirmés avec Greg le 02/08/2026.
+
+--- HIER_DEBUT ---
+Le maire est Gregor.
+L'adjoint à l'urbanisme est Artifice
+L'adjoint aux animations est Pepito.felino
+Le tribun est Ludwigvonbek2
+La noblesse d'épée du village
+Ils permettent à la ville de s'épanouir,
+et en plus ils sentent bon.
+Brennos de Lapin
+Lucas_ d'Irissarri👑🦁
+Nolanne d'Alessandrini-Aklvruzar
+Wouchi du Bois Hardent
+Innocentius de Rome
+Thymotee_bilal de Sempyerre
+Ambre_line de Rennes sur Loue
+Liste des villageois (39)
+Brennos de Lapin	255PR
+Lucas_ d'Irissarri👑🦁	255PR
+Nolanne d'Alessandrini-Aklvruzar	255PR
+Wouchi du Bois Hardent	255PR
+Innocentius de Rome	254PR
+Thymotee_bilal de Sempyerre	253PR
+Ambre_line de Rennes sur Loue	69PR
+Serval_le_poilu de CIGAREFUMANT	255PR
+Adely	255PR
+Altis	255PR
+Artifice	255PR
+Aurelia.	255PR
+Aventura	255PR
+Bebars	255PR
+Clemence_	255PR
+Damonkael	255PR
+Emmie....	255PR
+Gregor.	255PR
+Ivo5rov	255PR
+Jean_de_bien	255PR
+Leonin	255PR
+Loup	255PR
+Ludwigvonbek2	255PR
+Marion.irissarri	255PR
+Maureen_o_sullyvan	255PR
+Melicent	255PR
+Nina..	255PR
+Pepito.felino	255PR
+Romerio	255PR
+Sefrian	255PR
+Shalee	255PR
+William._	255PR
+Yselda.maria	255PR
+Zantet	254PR
+Thibault_w	127PR
+Maureen.o.hara	100PR
+Benedict_von_wettin	12PR
+Carroll	12PR
+Almondo	4PR
+--- HIER_FIN ---
+
+--- AUJOURDHUI_DEBUT ---
+Le maire est Gregor.
+L'adjoint à l'urbanisme est Artifice
+L'adjoint aux animations est Pepito.felino
+Le tribun est Ludwigvonbek2
+La noblesse d'épée du village
+Ils permettent à la ville de s'épanouir,
+et en plus ils sentent bon.
+Brennos de Lapin
+Lucas_ d'Irissarri👑🦁
+Nolanne d'Alessandrini-Aklvruzar
+Wouchi du Bois Hardent
+Ambre_line de Rennes sur Loue
+Liste des villageois (36)
+Brennos de Lapin	255PR
+Lucas_ d'Irissarri👑🦁	255PR
+Nolanne d'Alessandrini-Aklvruzar	255PR
+Wouchi du Bois Hardent	255PR
+Ambre_line de Rennes sur Loue	69PR
+Serval_le_poilu de CIGAREFUMANT	255PR
+Adely	255PR
+Altis	255PR
+Artifice	255PR
+Aurelia.	255PR
+Aventura	255PR
+Bebars	255PR
+Clemence_	255PR
+Damonkael	255PR
+Emmie....	255PR
+Gregor.	255PR
+Ivo5rov	255PR
+Jean_de_bien	255PR
+Leonin	255PR
+Loup	255PR
+Bidon	255PR
+Buldo	255PR
+Ludwigvonbek2	255PR
+Marion.irissarri	255PR
+Maureen_o_sullyvan	255PR
+Melicent	255PR
+Nina..	255PR
+Pepito.felino	255PR
+Romerio	255PR
+Sefrian	255PR
+Yselda.maria	255PR
+Zantet	254PR
+Thibault_w	127PR
+Maureen.o.hara	100PR
+Carroll	12PR
+Almondo	4PR
+--- AUJOURDHUI_FIN ---
+
+--- SORTIES_ATTENDUES ---
+Innocentius
+Thymotee_bilal
+Shalee
+William._
+Benedict_von_wettin
+--- SORTIES_FIN ---
+
+--- ENTREES_ATTENDUES ---
+Bidon
+Buldo
+--- ENTREES_FIN ---
