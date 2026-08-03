@@ -22,12 +22,12 @@
       }
     },
     "Modal": {
-      "Title": "Manage Cookie Preferences"
+      "Title": "Manage Cookie Preferences",
+      "Description": "We use two types of cookies to offer you the best possible experience:"
     },
     "Button": {
       "Preferences": "Manage preferences",
       "Accept": "Accept",
-      "AcceptAuto": "Accept automatically",
       "Decline": "Decline automatically",
       "Cancel": "Cancel",
       "Save": "Save my choices"
@@ -36,6 +36,8 @@
     "SessionWarning": "Warning: Without session cookies, you will not be able to log into your account."
   },
   "Common": {
+    "SiteName": "Office des coffres",
+    "Placeholder": "Test",
     "Theme": {
       "Title": "Theme",
       "Light": "Light mode",
@@ -47,6 +49,88 @@
       "French": "French",
       "English": "English"
     }
+  },
+  "Profil": {
+    "Title": "Profile of {pseudo}",
+    "Status": {
+      "Validated": "Account validated.",
+      "PendingTitle": "Account pending validation",
+      "PendingMessage": "Contact me in-game via my profile \"Artifice\" and ask me to validate your account. Once validated, you will be able to enjoy all the site's features."
+    }
+  },
+  "Validation": {
+    "Required": "The \"{field}\" field is required.",
+    "MinLength": "The {field} must contain more than {min} characters.",
+    "MaxLength": "The {field} must contain fewer than {max} characters.",
+    "InvalidEmail": "A valid email is required.",
+    "NotConfirmed": "Does not match {field}."
+  },
+  "Welcome": {
+    "ClickHint": "click"
+  },
+  "Home": {
+    "WelcomeMessage": "The {brand} welcomes you!",
+    "Description": "It provides tools (\"coffres\") to help you with certain tasks related to animation, security or economy.",
+    "UnderConstruction": "The Office is currently under construction..."
+  },
+  "NotFound": {
+    "Title": "Page not found"
+  },
+  "Auth": {
+    "UsernamePlaceholder": "Enter your username",
+    "PasswordPlaceholder": "Enter your password",
+    "EmailPlaceholder": "Enter your email",
+    "ConfirmationPlaceholder": "Confirm your password",
+    "Errors": {
+      "RequiredFields": "You have not filled in all required fields!",
+      "UsernameTooLong": "The username must be fewer than 190 characters!",
+      "EmailTooLong": "The email must be fewer than 190 characters!",
+      "PasswordTooShort": "The password must be more than 8 characters!",
+      "PasswordTooLong": "The password must be fewer than 190 characters!",
+      "ConfirmationMismatch": "The password confirmation does not match!"
+    }
+  },
+  "Login": {
+    "EnterWithoutAccount": "Enter without an account",
+    "Heading": "Log in",
+    "SubmitButton": "Log in",
+    "NoAccount": "Don't have an account?",
+    "RegisterLink": "Sign up!",
+    "UnvalidatedWarning": "If you have just registered, contact me in-game via my profile \"Artifice\" and ask me to validate your account. Once validated, you will be able to log into your account."
+  },
+  "Register": {
+    "BackLink": "Back",
+    "Heading": "Create your account",
+    "SubmitButton": "Sign up"
+  },
+  "NavBar": {
+    "Home": "Home"
+  },
+  "NavMenu": {
+    "Home": "Home",
+    "Economy": "Eco",
+    "Security": "Sec",
+    "Animation": "Anim",
+    "Profile": "Profile"
+  },
+  "Security": {
+    "Title": "Security Chest",
+    "EntriesExits": "Entries/Exits",
+    "YesterdayLabel": "Yesterday's villager list:",
+    "TodayLabel": "Today's villager list:",
+    "GenerateButton": "Generate entries/exits",
+    "EntriesLabel": "Entries",
+    "ExitsLabel": "Exits",
+    "ExportButton": "Export"
+  },
+  "Economy": {
+    "Title": "Economy Chest"
+  },
+  "Animation": {
+    "Title": "Animation Chest"
+  },
+  "Company": {
+    "Title": "Company"
   },
   "username": "username",
   "password": "password",

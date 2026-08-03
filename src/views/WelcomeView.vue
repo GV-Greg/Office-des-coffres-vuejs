@@ -1,7 +1,9 @@
 <script setup>
   import { useRouter } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
   import SelectorMenu from '@/components/SelectorMenu.vue'
   const router = useRouter()
+  const { t } = useI18n()
 </script>
 
 <template>
@@ -16,7 +18,7 @@
       <div class="max-w-4xl w-full space-y-12">
         <div class="text-center">
           <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600 mb-6">
-            Office des coffres
+            {{ t('Common.SiteName') }}
           </h1>
         </div>
 
@@ -39,7 +41,7 @@
               <v-icon name="gi-broadhead-arrow" scale="2" class="text-slate-800 dark:text-slate-200" />
             </div>
             <p class="text-slate-800 dark:text-slate-200 text-lg font-medium">
-              click
+              {{ t('Welcome.ClickHint') }}
             </p>
           </div>
         </div>

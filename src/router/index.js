@@ -6,8 +6,8 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 import SecurityGuetView from '@/views/modules/security/SecurityGuet.vue'
 import { push } from 'notivue'
 
-const redirectToHomeIfNotLoggedIn = (to, from, next) => {
-  if (!useAuthStore().getIsLoggedIn) {
+export const redirectToHomeIfNotLoggedIn = (to, from, next) => {
+  if (!useAuthStore().isLoggedIn) {
       push.error("Accès non autorisé")
       next({ name: "login" })
   } else {

@@ -1,10 +1,11 @@
 <script setup>
-
+  import { useI18n } from 'vue-i18n'
+  const { t } = useI18n()
 </script>
 
 <template>
   <div>
-    Page 404
+    {{ t('NotFound.Title') }}
   </div>
 </template>
 

@@ -2,24 +2,27 @@
 /*
   imports
 */
+  import { computed } from 'vue'
   import { RouterLink } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
   import { useAuthStore } from '@/stores/authStore'
 
 /*
   User data
 */
   const authUser = useAuthStore()
+  const { t } = useI18n()
 
 /*
   Menu items
 */
-  const pages = [
-    { name: "Accueil", link: "/app/", icon:"gi-medieval-pavilion", color: "slate", status: "public"},
-    { name: "Éco", link: "/app/eco", icon:"gi-crown-coin", color: "yellow", status: "public"},
-    { name: "Sécu", link: "/app/secu/guet", icon:"gi-swords-emblem", color: "rose", status: "public"},
-    { name: "Anim", link: "/app/anim", icon:"gi-rolling-dice-cup", color: "teal", status: "public"},
-    { name: "Profil", link: "/app/profil", icon:"gi-barbute", color: "slate", status: "private"},
-  ]
+  const pages = computed(() => [
+    { name: t('NavMenu.Home'), link: "/app/", icon:"gi-medieval-pavilion", color: "slate", status: "public"},
+    { name: t('NavMenu.Economy'), link: "/app/eco", icon:"gi-crown-coin", color: "yellow", status: "public"},
+    { name: t('NavMenu.Security'), link: "/app/secu/guet", icon:"gi-swords-emblem", color: "rose", status: "public"},
+    { name: t('NavMenu.Animation'), link: "/app/anim", icon:"gi-rolling-dice-cup", color: "teal", status: "public"},
+    { name: t('NavMenu.Profile'), link: "/app/profil", icon:"gi-barbute", color: "slate", status: "private"},
+  ])
 </script>
 
 <template>

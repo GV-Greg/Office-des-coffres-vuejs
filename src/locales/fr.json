@@ -28,7 +28,6 @@
     "Button": {
       "Preferences": "Gérer mes préférences",
       "Accept": "Accepter",
-      "AcceptAuto": "Accepter automatiquement",
       "Decline": "Refuser automatiquement",
       "Cancel": "Annuler",
       "Save": "Enregistrer mes choix"
@@ -37,6 +36,8 @@
     "SessionWarning": "Attention : Sans les cookies de session, vous ne pourrez pas vous connecter à votre compte."
   },
   "Common": {
+    "SiteName": "Office des coffres",
+    "Placeholder": "Test",
     "Theme": {
       "Title": "Thème",
       "Light": "Mode clair",
@@ -49,7 +50,89 @@
       "English": "Anglais"
     }
   },
-  "username": "nom d'utilisateur",
+  "Profil": {
+    "Title": "Profil de {pseudo}",
+    "Status": {
+      "Validated": "Compte validé.",
+      "PendingTitle": "Compte en attente de validation",
+      "PendingMessage": "Contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider votre compte. Une fois validé, vous pourrez profiter de toutes les fonctionnalités du site."
+    }
+  },
+  "Validation": {
+    "Required": "Le champ \"{field}\" est requis.",
+    "MinLength": "Le {field} doit contenir plus de {min} caractères.",
+    "MaxLength": "Le {field} doit contenir moins de {max} caractères.",
+    "InvalidEmail": "Un email valide est requis.",
+    "NotConfirmed": "Ne correspond pas à {field}."
+  },
+  "Welcome": {
+    "ClickHint": "cliquez"
+  },
+  "Home": {
+    "WelcomeMessage": "L'{brand} vous souhaite la bienvenue !",
+    "Description": "Elle met à disposition des coffres qui vous aideront dans certaines tâches liées à l'animation, à la sécurité ou à l'économie.",
+    "UnderConstruction": "L'Office est actuellement en construction..."
+  },
+  "NotFound": {
+    "Title": "Page introuvable"
+  },
+  "Auth": {
+    "UsernamePlaceholder": "Entrez votre pseudo",
+    "PasswordPlaceholder": "Entrez votre mot de passe",
+    "EmailPlaceholder": "Entrez votre email",
+    "ConfirmationPlaceholder": "Confirmez votre mot de passe",
+    "Errors": {
+      "RequiredFields": "Vous n'avez pas rempli les champs requis !",
+      "UsernameTooLong": "Le pseudo doit contenir moins de 190 caractères !",
+      "EmailTooLong": "L'email doit contenir moins de 190 caractères !",
+      "PasswordTooShort": "Le mot de passe doit contenir plus de 8 caractères !",
+      "PasswordTooLong": "Le mot de passe doit contenir moins de 190 caractères !",
+      "ConfirmationMismatch": "La confirmation du mot de passe n'est pas identique à celui-ci !"
+    }
+  },
+  "Login": {
+    "EnterWithoutAccount": "Entrez sans compte",
+    "Heading": "Connectez-vous",
+    "SubmitButton": "Se connecter",
+    "NoAccount": "Vous n'avez pas de compte ?",
+    "RegisterLink": "Enregistrez-vous!",
+    "UnvalidatedWarning": "Si vous venez de vous enregistrer, contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider votre compte. Une fois validé, vous pourrez vous connecter sur votre compte."
+  },
+  "Register": {
+    "BackLink": "Retour",
+    "Heading": "Créez votre compte",
+    "SubmitButton": "S'enregistrer"
+  },
+  "NavBar": {
+    "Home": "Accueil"
+  },
+  "NavMenu": {
+    "Home": "Accueil",
+    "Economy": "Éco",
+    "Security": "Sécu",
+    "Animation": "Anim",
+    "Profile": "Profil"
+  },
+  "Security": {
+    "Title": "Coffres Sécurité",
+    "EntriesExits": "Entrées/sorties",
+    "YesterdayLabel": "Liste des villageois d'hier :",
+    "TodayLabel": "Liste des villageois d'aujourd'hui :",
+    "GenerateButton": "Générer les entrées/sorties",
+    "EntriesLabel": "Entrées",
+    "ExitsLabel": "Sorties",
+    "ExportButton": "Exporter"
+  },
+  "Economy": {
+    "Title": "Coffres Économie"
+  },
+  "Animation": {
+    "Title": "Coffres Animation"
+  },
+  "Company": {
+    "Title": "Compagnie"
+  },
+  "username": "pseudo",
   "password": "mot de passe",
   "email": "email",
   "confirmation": "confirmation du mot de passe"
