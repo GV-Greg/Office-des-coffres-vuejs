@@ -51,11 +51,12 @@
     }
   },
   "Profil": {
-    "Title": "Profil de {pseudo}",
+    "Title": "Mon profil",
+    "NoCharacter": "Vous n'avez pas encore de personnage.",
+    "AddCharacter": "Ajouter un personnage",
     "Status": {
-      "Validated": "Compte validé.",
-      "PendingTitle": "Compte en attente de validation",
-      "PendingMessage": "Contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider votre compte. Une fois validé, vous pourrez profiter de toutes les fonctionnalités du site."
+      "Validated": "Personnage validé.",
+      "PendingMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce personnage."
     }
   },
   "Validation": {
@@ -83,7 +84,6 @@
     "ConfirmationPlaceholder": "Confirmez votre mot de passe",
     "Errors": {
       "RequiredFields": "Vous n'avez pas rempli les champs requis !",
-      "UsernameTooLong": "Le pseudo doit contenir moins de 190 caractères !",
       "EmailTooLong": "L'email doit contenir moins de 190 caractères !",
       "PasswordTooShort": "Le mot de passe doit contenir plus de 8 caractères !",
       "PasswordTooLong": "Le mot de passe doit contenir moins de 190 caractères !",
@@ -96,12 +96,38 @@
     "SubmitButton": "Se connecter",
     "NoAccount": "Vous n'avez pas de compte ?",
     "RegisterLink": "Enregistrez-vous!",
-    "UnvalidatedWarning": "Si vous venez de vous enregistrer, contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider votre compte. Une fois validé, vous pourrez vous connecter sur votre compte."
+    "UnverifiedWarning": "Votre email n'est pas encore vérifié. Vérifiez votre boîte mail, ou demandez un nouveau lien ci-dessous.",
+    "ResendButton": "Renvoyer l'email de vérification"
   },
   "Register": {
     "BackLink": "Retour",
     "Heading": "Créez votre compte",
-    "SubmitButton": "S'enregistrer"
+    "SubmitButton": "S'enregistrer",
+    "CheckEmailTitle": "Vérifiez votre boîte mail",
+    "CheckEmailMessage": "Un email de confirmation vient de vous être envoyé. Cliquez sur le lien qu'il contient pour activer votre compte."
+  },
+  "VerifyEmail": {
+    "Verifying": "Vérification en cours...",
+    "InvalidLink": "Ce lien de vérification est invalide ou a expiré.",
+    "ResendPrompt": "Entrez votre email pour recevoir un nouveau lien.",
+    "ResendButton": "Renvoyer le lien",
+    "ResendSuccess": "Un nouveau lien vient de vous être envoyé si ce compte existe."
+  },
+  "AddCharacter": {
+    "Heading": "Ajoutez votre personnage",
+    "KingdomLabel": "Royaume",
+    "KingdomPlaceholder": "Choisissez un royaume",
+    "ProvinceLabel": "Province",
+    "ProvincePlaceholder": "Choisissez une province",
+    "CityLabel": "Ville",
+    "CityPlaceholder": "Choisissez une ville",
+    "SubmitButton": "Créer mon personnage",
+    "LoadingMap": "Chargement de la carte...",
+    "MapError": "Impossible de charger la liste des villes.",
+    "Errors": {
+      "PseudoRequired": "Le pseudo est requis !",
+      "CityRequired": "Veuillez choisir une ville !"
+    }
   },
   "NavBar": {
     "Home": "Accueil"

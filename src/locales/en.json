@@ -51,11 +51,12 @@
     }
   },
   "Profil": {
-    "Title": "Profile of {pseudo}",
+    "Title": "My profile",
+    "NoCharacter": "You don't have a character yet.",
+    "AddCharacter": "Add a character",
     "Status": {
-      "Validated": "Account validated.",
-      "PendingTitle": "Account pending validation",
-      "PendingMessage": "Contact me in-game via my profile \"Artifice\" and ask me to validate your account. Once validated, you will be able to enjoy all the site's features."
+      "Validated": "Character validated.",
+      "PendingMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this character."
     }
   },
   "Validation": {
@@ -83,7 +84,6 @@
     "ConfirmationPlaceholder": "Confirm your password",
     "Errors": {
       "RequiredFields": "You have not filled in all required fields!",
-      "UsernameTooLong": "The username must be fewer than 190 characters!",
       "EmailTooLong": "The email must be fewer than 190 characters!",
       "PasswordTooShort": "The password must be more than 8 characters!",
       "PasswordTooLong": "The password must be fewer than 190 characters!",
@@ -96,12 +96,38 @@
     "SubmitButton": "Log in",
     "NoAccount": "Don't have an account?",
     "RegisterLink": "Sign up!",
-    "UnvalidatedWarning": "If you have just registered, contact me in-game via my profile \"Artifice\" and ask me to validate your account. Once validated, you will be able to log into your account."
+    "UnverifiedWarning": "Your email is not verified yet. Check your inbox, or request a new link below.",
+    "ResendButton": "Resend verification email"
   },
   "Register": {
     "BackLink": "Back",
     "Heading": "Create your account",
-    "SubmitButton": "Sign up"
+    "SubmitButton": "Sign up",
+    "CheckEmailTitle": "Check your inbox",
+    "CheckEmailMessage": "A confirmation email was just sent to you. Click the link inside it to activate your account."
+  },
+  "VerifyEmail": {
+    "Verifying": "Verifying...",
+    "InvalidLink": "This verification link is invalid or has expired.",
+    "ResendPrompt": "Enter your email to receive a new link.",
+    "ResendButton": "Resend link",
+    "ResendSuccess": "A new link has just been sent if this account exists."
+  },
+  "AddCharacter": {
+    "Heading": "Add your character",
+    "KingdomLabel": "Kingdom",
+    "KingdomPlaceholder": "Choose a kingdom",
+    "ProvinceLabel": "Province",
+    "ProvincePlaceholder": "Choose a province",
+    "CityLabel": "City",
+    "CityPlaceholder": "Choose a city",
+    "SubmitButton": "Create my character",
+    "LoadingMap": "Loading the map...",
+    "MapError": "Could not load the list of cities.",
+    "Errors": {
+      "PseudoRequired": "The username is required!",
+      "CityRequired": "Please choose a city!"
+    }
   },
   "NavBar": {
     "Home": "Home"

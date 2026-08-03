@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/authStore"
 import WelcomeView from '@/views/WelcomeView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
+import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import SecurityGuetView from '@/views/modules/security/SecurityGuet.vue'
 import { push } from 'notivue'
 
@@ -36,6 +37,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView,
+    },
+    {
+      path: '/verify-email',
+      name: 'verify-email',
+      component: VerifyEmailView,
     },
     {
       path: '/app/',
@@ -90,6 +96,15 @@ const router = createRouter({
       components: {
         Nav,
         default: () => import('@/views/auth/ProfilView.vue'),
+      },
+      beforeEnter: redirectToHomeIfNotLoggedIn,
+    },
+    {
+      path: '/app/character/new',
+      name: 'character-new',
+      components: {
+        Nav,
+        default: () => import('@/views/auth/AddCharacterView.vue'),
       },
       beforeEnter: redirectToHomeIfNotLoggedIn,
     },

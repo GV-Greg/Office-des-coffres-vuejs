@@ -24,7 +24,11 @@ const localStorageMock = (() => {
 })()
 Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
-const mockUser = { id: 1, email: 'test@test.com', pseudo: 'Artifice', is_validated: false }
+const mockUser = {
+  id: 1,
+  email: 'test@test.com',
+  characters: [{ id: 1, pseudo: 'Artifice', city_id: 5, is_validated: false }],
+}
 
 describe('Auth Store', () => {
   let store
@@ -51,45 +55,47 @@ describe('Auth Store', () => {
   })
 
   describe('register()', () => {
-    it('stocke token et user après inscription réussie', async () => {
-      http.post.mockResolvedValueOnce({ data: { success: true, token: 'tok123', user: mockUser } })
+    it("n'authentifie pas l'utilisateur — le compte doit d'abord être vérifié par email", async () => {
+      http.post.mockResolvedValueOnce({ data: { success: true, message: 'Compte créé.' } })
 
       const result = await store.register({
-        username: 'Artifice', email: 'test@test.com', password: 'pass1234', confirmation: 'pass1234'
+        email: 'test@test.com', password: 'pass1234', confirmation: 'pass1234'
       })
 
       expect(result.success).toBe(true)
-      expect(store.token).toBe('tok123')
-      expect(store.user).toEqual(mockUser)
-      expect(store.isLoggedIn).toBe(true)
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', 'tok123')
+      expect(http.post).toHaveBeenCalledWith('auth/register', {
+        email: 'test@test.com', password: 'pass1234', confirmation: 'pass1234'
+      })
+      expect(store.token).toBeNull()
+      expect(store.isLoggedIn).toBe(false)
     })
 
     it('propage l\'erreur en cas d\'échec', async () => {
-      http.post.mockRejectedValueOnce({ response: { data: { message: 'Pseudo déjà pris.' } } })
+      http.post.mockRejectedValueOnce({ response: { data: { message: 'Email déjà utilisé.' } } })
 
       await expect(store.register({
-        username: 'Pris', email: 'x@x.com', password: 'pass1234', confirmation: 'pass1234'
+        email: 'x@x.com', password: 'pass1234', confirmation: 'pass1234'
       })).rejects.toBeDefined()
     })
   })
 
   describe('login()', () => {
-    it('stocke token et user après connexion réussie', async () => {
+    it('stocke token et user (avec ses personnages) après connexion réussie', async () => {
       http.post.mockResolvedValueOnce({ data: { success: true, token: 'tok456', user: mockUser } })
 
-      const result = await store.login({ username: 'Artifice', password: 'pass1234' })
+      const result = await store.login({ email: 'test@test.com', password: 'pass1234' })
 
       expect(result.success).toBe(true)
       expect(store.token).toBe('tok456')
       expect(store.user).toEqual(mockUser)
       expect(store.isLoggedIn).toBe(true)
+      expect(http.post).toHaveBeenCalledWith('auth/login', { email: 'test@test.com', password: 'pass1234' })
     })
 
     it('propage l\'erreur en cas de mauvais identifiants', async () => {
       http.post.mockRejectedValueOnce({ response: { data: { message: 'Identifiants incorrects.' } } })
 
-      await expect(store.login({ username: 'Artifice', password: 'mauvais' })).rejects.toBeDefined()
+      await expect(store.login({ email: 'test@test.com', password: 'mauvais' })).rejects.toBeDefined()
     })
   })
 
@@ -147,24 +153,33 @@ describe('Auth Store', () => {
     })
   })
 
+  describe('createCharacter()', () => {
+    it('crée un personnage et resynchronise la liste via checkAuth', async () => {
+      store.setToken('tok123')
+      http.post.mockResolvedValueOnce({ data: { success: true, character: { id: 2, pseudo: 'Buldo', city_id: 3, is_validated: false } } })
+      http.get.mockResolvedValueOnce({ data: { success: true, user: { ...mockUser, characters: [...mockUser.characters, { id: 2, pseudo: 'Buldo' }] } } })
+
+      await store.createCharacter({ pseudo: 'Buldo', city_id: 3 })
+
+      expect(http.post).toHaveBeenCalledWith('characters', { pseudo: 'Buldo', city_id: 3 }, expect.anything())
+      expect(store.getCharacters).toHaveLength(2)
+    })
+  })
+
   describe('Getters', () => {
-    it('getPseudo retourne le pseudo du user', () => {
+    it('getCharacters retourne la liste des personnages du user', () => {
       store.setUser(mockUser)
-      expect(store.getPseudo).toBe('Artifice')
+      expect(store.getCharacters).toEqual(mockUser.characters)
     })
 
-    it('getPseudo retourne null si pas de user', () => {
-      expect(store.getPseudo).toBeNull()
+    it('getCharacters retourne un tableau vide si pas de user', () => {
+      expect(store.getCharacters).toEqual([])
     })
 
-    it('getIsValidated retourne false si compte non validé', () => {
+    it('hasCharacters reflète si le compte a au moins un personnage', () => {
+      expect(store.hasCharacters).toBe(false)
       store.setUser(mockUser)
-      expect(store.getIsValidated).toBe(false)
-    })
-
-    it('getIsValidated retourne true si compte validé', () => {
-      store.setUser({ ...mockUser, is_validated: true })
-      expect(store.getIsValidated).toBe(true)
+      expect(store.hasCharacters).toBe(true)
     })
   })
 })

@@ -8,11 +8,11 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('auth_token') || null)
 
   // Getters
-  const isLoggedIn     = computed(() => !!token.value)
-  const getUser        = computed(() => user.value)
-  const getToken       = computed(() => token.value)
-  const getPseudo      = computed(() => user.value?.pseudo ?? null)
-  const getIsValidated = computed(() => user.value?.is_validated ?? false)
+  const isLoggedIn  = computed(() => !!token.value)
+  const getUser     = computed(() => user.value)
+  const getToken    = computed(() => token.value)
+  const getCharacters = computed(() => user.value?.characters ?? [])
+  const hasCharacters = computed(() => getCharacters.value.length > 0)
 
   // Persistance locale
   const setToken = (newToken) => {
@@ -36,19 +36,21 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
   const register = async (userData) => {
     const response = await http.post('auth/register', {
-      username:     userData.username,
       email:        userData.email,
       password:     userData.password,
       confirmation: userData.confirmation,
     })
-    setToken(response.data.token)
-    setUser(response.data.user)
+    return response.data
+  }
+
+  const resendVerification = async (email) => {
+    const response = await http.post('auth/resend-verification', { email })
     return response.data
   }
 
   const login = async (credentials) => {
     const response = await http.post('auth/login', {
-      username: credentials.username,
+      email:    credentials.email,
       password: credentials.password,
     })
     setToken(response.data.token)
@@ -83,6 +85,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const createCharacter = async ({ pseudo, city_id }) => {
+    const response = await http.post('characters', { pseudo, city_id }, {
+      headers: { Authorization: `Bearer ${token.value}` },
+    })
+    await checkAuth() // resynchronise user.characters avec le nouveau personnage
+    return response.data
+  }
+
   // Hydratation au démarrage
   if (token.value) {
     checkAuth()
@@ -94,12 +104,14 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn,
     getUser,
     getToken,
-    getPseudo,
-    getIsValidated,
+    getCharacters,
+    hasCharacters,
     login,
     register,
+    resendVerification,
     logout,
     checkAuth,
+    createCharacter,
     setToken,
     setUser,
   }

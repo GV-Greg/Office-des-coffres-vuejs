@@ -30,19 +30,23 @@ const i18n = createI18n({
         SubmitButton: 'Se connecter',
         NoAccount: "Vous n'avez pas de compte ?",
         RegisterLink: 'Enregistrez-vous!',
-        UnvalidatedWarning: 'Contactez-moi dans le jeu.'
+        UnverifiedWarning: 'Vérifiez votre boîte mail.',
+        ResendButton: "Renvoyer l'email de vérification"
+      },
+      VerifyEmail: {
+        ResendSuccess: 'Un nouveau lien vient de vous être envoyé.'
       },
       Auth: {
-        UsernamePlaceholder: 'Entrez votre pseudo',
+        EmailPlaceholder: 'Entrez votre email',
         PasswordPlaceholder: 'Entrez votre mot de passe',
         Errors: {
           RequiredFields: "Vous n'avez pas rempli les champs requis !",
-          UsernameTooLong: 'Le pseudo doit contenir moins de 190 caractères !',
+          EmailTooLong: "L'email doit contenir moins de 190 caractères !",
           PasswordTooShort: 'Le mot de passe doit contenir plus de 8 caractères !',
           PasswordTooLong: 'Le mot de passe doit contenir moins de 190 caractères !'
         }
       },
-      username: 'pseudo',
+      email: 'email',
       password: 'mot de passe'
     }
   }
@@ -57,8 +61,8 @@ function mountLogin() {
   })
 }
 
-async function fillAndSubmit(wrapper, { username = 'Buldo', password = 'password123' } = {}) {
-  await wrapper.find('input[name="username"]').setValue(username)
+async function fillAndSubmit(wrapper, { email = 'buldo@test.com', password = 'password123' } = {}) {
+  await wrapper.find('input[name="email"]').setValue(email)
   await wrapper.find('input[name="password"]').setValue(password)
   await wrapper.find('form').trigger('submit')
   await wrapper.vm.$nextTick()
@@ -70,19 +74,19 @@ describe('LoginView', () => {
     expect(wrapper.findComponent(SelectorMenu).exists()).toBe(true)
   })
 
-  it("n'affiche pas le bandeau de compte non validé par défaut", () => {
+  it("n'affiche pas le bandeau email non vérifié par défaut", () => {
     const wrapper = mountLogin()
-    expect(wrapper.find('[data-testid="unvalidated-warning"]').isVisible()).toBe(false)
+    expect(wrapper.find('[data-testid="unverified-warning"]').isVisible()).toBe(false)
   })
 
-  it("affiche le bandeau si le compte n'est pas encore validé", async () => {
+  it("affiche le bandeau si l'email n'est pas encore vérifié", async () => {
     const wrapper = mountLogin()
     const authStore = useAuthStore()
-    authStore.login.mockRejectedValueOnce({ response: { data: { message: 'Compte non validé.' } } })
+    authStore.login.mockRejectedValueOnce({ response: { data: { message: 'Email non vérifié.' } } })
 
     await fillAndSubmit(wrapper)
 
-    expect(wrapper.find('[data-testid="unvalidated-warning"]').isVisible()).toBe(true)
+    expect(wrapper.find('[data-testid="unverified-warning"]').isVisible()).toBe(true)
   })
 
   it("n'affiche pas le bandeau pour une autre erreur (ex. mauvais mot de passe)", async () => {
@@ -92,6 +96,6 @@ describe('LoginView', () => {
 
     await fillAndSubmit(wrapper)
 
-    expect(wrapper.find('[data-testid="unvalidated-warning"]').isVisible()).toBe(false)
+    expect(wrapper.find('[data-testid="unverified-warning"]').isVisible()).toBe(false)
   })
 })
