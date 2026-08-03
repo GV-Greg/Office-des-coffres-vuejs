@@ -15,10 +15,10 @@ export default function useFormValidation() {
         errors[fieldName] = fieldValue === '' ? isRequired(fieldName, fieldValue) : minLength(fieldName, fieldValue, minSize) || maxLength(fieldName, fieldValue, maxSize)
     }
     const validateEmailField = (fieldName, fieldValue, maxSize) => {
-        errors[fieldName] = fieldValue === '' ? isRequired(fieldName, fieldValue) : isEmail(fieldName, fieldValue) || maxLength(fieldName, fieldValue, maxSize)
+        errors[fieldName] = fieldValue === '' ? isRequired(fieldName, fieldValue) : isEmail(fieldValue) || maxLength(fieldName, fieldValue, maxSize)
     }
     const validateConfirmField = (fieldName, fieldValue, confirmField, confirmValue) => {
-        errors[fieldName] = fieldValue === '' ? isRequired(fieldName, fieldValue) : isConfirmed(fieldName, fieldValue, confirmField, confirmValue)
+        errors[fieldName] = fieldValue === '' ? isRequired(fieldName, fieldValue) : isConfirmed(fieldValue, confirmField, confirmValue)
     }
 
     return { errors, validateMinField, validateMaxField, validateMinMaxField, validateEmailField, validateConfirmField }
