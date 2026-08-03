@@ -3,6 +3,9 @@
   imports
 */
   import { ref, reactive } from "vue";
+  import { useI18n } from "vue-i18n";
+
+  const { t } = useI18n()
 
 /*
   datas
@@ -78,18 +81,18 @@
 <template>
   <div class="w-full grid grid-cols-3 gap-4">
     <div>
-      <label class="w-full font-bold text-center">Liste des villageois d'hier :</label>
+      <label class="w-full font-bold text-center">{{ t('Security.YesterdayLabel') }}</label>
       <textarea v-model="list_yesterday" rows="18" class="textarea-autoresize w-full rounded-xl p-2"></textarea>
     </div>
     <div>
-      <label class="w-full font-bold text-center">Liste des villageois d'aujourd'hui :</label>
+      <label class="w-full font-bold text-center">{{ t('Security.TodayLabel') }}</label>
       <textarea v-model="list_today" rows="18" class="textarea-autoresize w-full rounded-xl p-2"></textarea>
     </div>
     <div class="flex flex-col items-center justify-start mt-7">
-      <button @click="result" class="h-12 btn btn-create">G&eacute;n&eacute;rer les entr&eacute;es/sorties</button>
+      <button @click="result" class="h-12 btn btn-create">{{ t('Security.GenerateButton') }}</button>
       <div v-if="loading.value" class="w-full mt-2">
         <div class="font-bold text-center">
-          Entr&eacute;es <span class="bg-blue-400 rounded-2xl px-1.5 pb-0.5 font-bold text-gray-200">{{ inputs.value.length }}</span> :
+          {{ t('Security.EntriesLabel') }} <span class="bg-blue-400 rounded-2xl px-1.5 pb-0.5 font-bold text-gray-200">{{ inputs.value.length }}</span> :
         </div>
         <div class="flex flex-wrap max-h-36 overflow-y-scroll">
           <div v-for="(input, index) in inputs.value" :key="index" class="mx-1 my-2">
@@ -104,7 +107,7 @@
       </div>
       <div v-if="loading.value" class="mt-2">
         <div class="font-bold text-center">
-          Sorties <span class="bg-blue-400 rounded-2xl px-1.5 pb-0.5 font-bold text-gray-200">{{ outputs.value.length }}</span> :
+          {{ t('Security.ExitsLabel') }} <span class="bg-blue-400 rounded-2xl px-1.5 pb-0.5 font-bold text-gray-200">{{ outputs.value.length }}</span> :
         </div>
         <div class="flex flex-wrap max-h-36 overflow-y-scroll">
           <div v-for="(output, index) in outputs.value" :key="index" class="mx-1 my-2">
@@ -117,7 +120,7 @@
           </div>
         </div>
       </div>
-      <button v-if="loading.value" @click="to_export" class="h-12 btn btn-primary mt-3">Exporter</button>
+      <button v-if="loading.value" @click="to_export" class="h-12 btn btn-primary mt-3">{{ t('Security.ExportButton') }}</button>
     </div>
   </div>
 </template>

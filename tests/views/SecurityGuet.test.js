@@ -2,7 +2,24 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
+import { createI18n } from 'vue-i18n'
 import SecurityGuet from '../../src/views/modules/security/SecurityGuet.vue'
+
+const i18n = createI18n({
+  locale: 'fr',
+  messages: {
+    fr: {
+      Security: {
+        YesterdayLabel: "Liste des villageois d'hier :",
+        TodayLabel: "Liste des villageois d'aujourd'hui :",
+        GenerateButton: 'Générer les entrées/sorties',
+        EntriesLabel: 'Entrées',
+        ExitsLabel: 'Sorties',
+        ExportButton: 'Exporter'
+      }
+    }
+  }
+})
 
 const fixturePath = resolve(process.cwd(), 'tests/fixtures/Bug_ExportSorties.txt')
 const fixture = readFileSync(fixturePath, 'utf8')
@@ -21,7 +38,7 @@ const entreesAttendues = extractBlock(fixture, '--- ENTREES_ATTENDUES ---', '---
   .split('\n').map(s => s.trim()).filter(Boolean)
 
 async function generateResult() {
-  const wrapper = mount(SecurityGuet)
+  const wrapper = mount(SecurityGuet, { global: { plugins: [i18n] } })
   const textareas = wrapper.findAll('textarea')
   await textareas[0].setValue(hier)
   await textareas[1].setValue(aujourdhui)
