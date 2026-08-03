@@ -21,7 +21,7 @@
   const { t } = useI18n()
   const cookieStore = useCookieStore()
 
-  const isDark = computed(() => cookieStore.essentialCookies.theme === 'dark')
+  const isDark = computed(() => cookieStore.comfortData.theme === 'dark')
 
   const toggleTheme = () => {
     console.log('Toggle theme clicked')
@@ -40,7 +40,7 @@
 
   onMounted(() => {
     console.log('Theme component mounted')
-    const currentTheme = cookieStore.essentialCookies.theme
+    const currentTheme = cookieStore.comfortData.theme
     if (currentTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {

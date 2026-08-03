@@ -39,12 +39,21 @@ donc redirigeait toujours vers `/login` même connecté), corrigé le 03/08/2026
   `login`, `logout`, `checkAuth` (auto-appelée si token présent au démarrage du store),
   `setToken`/`setUser`. Pas de notion de rôles côté frontend (n'existe que côté admin Blade).
 - **`cookieStore.js`** (style options) — flux consentement en 2 écrans : `CookiesBanner.vue`
-  (accepter/refuser/gérer) + `CookiesModal.vue` (granulaire). Catégories : `functional` (requis,
-  connexion persistante) et `session` (optionnel, nécessaire pour se connecter — `canUserLogin`).
-  Persisté `localStorage['cookie-comply']`. Séparément, `essentialCookies` (`theme`/`locale`/
-  `session-declined`) dans `localStorage['essential-cookies']` — préférences UI **hors
-  consentement RGPD** (pas de tracking). Palier 3 (données de jeu liées au compte) en réflexion,
-  non implémenté — voir mémoire `project_cookie_tiers` côté session Claude.
+  (accepter/refuser/gérer) + `CookiesModal.vue` (granulaire). Deux catégories, **toutes deux
+  optionnelles** : `session` (nécessaire pour se connecter — `canUserLogin`) et `comfort`
+  (persisté `localStorage['cookie-comply']`). **Modèle refondu le 03/08/2026** : `comfort`
+  remplace l'ancien `functional` (connexion persistante) et fusionne dedans ce qui était avant
+  hors-consentement (`essentialCookies` → renommé `comfortData`, `theme`/`locale`/
+  `session-declined`), plus toute donnée de confort par module (ex. `guet_last_list`, voir
+  `SecurityGuet.vue`). Stockage générique et réutilisable par n'importe quel module :
+  `getComfortData(key, fallback)` / `setComfortData(key, value)` — la lecture/écriture en
+  mémoire fonctionne toujours (dégradation gracieuse), seule la **persistance** en
+  `localStorage['comfort-cookies']` dépend du consentement `comfort`
+  (`hasAcceptedComfort`). Accepter `comfort` flush les changements faits en mémoire avant le
+  consentement ; le refuser/retirer purge les données déjà stockées
+  (`_syncComfortPersistence`). Palier 3 "compte" (données communautaires partagées, ex. future
+  liste rouge du module Douane) reste hors scope — nécessiterait une vraie table backend, pas du
+  cookie. Voir mémoire `project_cookie_tiers` côté session Claude.
 
 ## Services
 
@@ -72,13 +81,20 @@ donc redirigeait toujours vers `/login` même connecté), corrigé le 03/08/2026
   (`getIsValidated`). Corrigé le 03/08/2026 (référençait avant `getUsername`/`getRoles`,
   inexistants sur le store — la vue était cassée depuis le refactor de `authStore`).
 - **`modules/security/MainSecurity.vue`** — shell + lien vers `security-guet`.
-- **`modules/security/SecurityGuet.vue`** — seul module métier fonctionnel. Parse 2 listes
-  villageois (hier/aujourd'hui) collées depuis le jeu (tabulation = ligne valide, filtre le
-  préambule descriptif), diffe pour calculer entrées/sorties, génère du BBcode à copier sur le
-  forum du jeu. **Le BBcode généré reste en français fixe** (contenu de forum francophone,
-  indépendant de la langue de l'UI) — seuls les labels/boutons autour sont traduits. ⚠️ Domaine
-  incohérent entre le lien affiché (`renaissancekingdoms.com`) et le lien inséré dans le BBcode
-  exporté (`lesroyaumes.com`) — jamais confirmé avec Greg, à vérifier si ça pose problème en usage réel.
+- **`modules/security/SecurityGuet.vue`** — module public (pas de compte requis), pas juste un
+  outil isolé : c'est le futur pendant public du module **Douane** (privé, compte requis,
+  fonctionnalité pas encore spécifiée — étendra le Guet avec une liste rouge par province
+  partagée entre joueurs, donc future donnée backend, pas un cookie). Parse 2 listes villageois
+  (hier/aujourd'hui) collées depuis le jeu (tabulation = ligne valide, filtre le préambule
+  descriptif), diffe pour calculer entrées/sorties, génère du BBcode à copier sur le forum du
+  jeu. **Le BBcode généré reste en français fixe** (contenu de forum francophone, indépendant de
+  la langue de l'UI) — seuls les labels/boutons autour sont traduits. Depuis le 03/08/2026, la
+  liste "d'hier" est pré-remplie automatiquement à la visite suivante via
+  `cookieStore.getComfortData`/`setComfortData` (catégorie `comfort`) — dégradation gracieuse
+  sans consentement (rien n'est mémorisé, mais l'outil reste utilisable en resaisissant les deux
+  listes). ⚠️ Domaine incohérent entre le lien affiché (`renaissancekingdoms.com`) et le lien
+  inséré dans le BBcode exporté (`lesroyaumes.com`) — jamais confirmé avec Greg, à vérifier si ça
+  pose problème en usage réel.
 - **`modules/economy/MainEconomy.vue`**, **`modules/animation/MainAnimation.vue`**,
   **`modules/company/MainCompany.vue`** — squelettes vides (Phase 4/5), placeholder "Test" i18n
   minimal (`Common.Placeholder`).
@@ -123,7 +139,7 @@ validait correctement côté serveur.
 
 ## Tests (`frontend/tests/`)
 
-**60/60 verts** (`npx vitest run` — `npm run test` est en mode watch, ne pas l'utiliser tel
+**78/78 verts** (`npx vitest run` — `npm run test` est en mode watch, ne pas l'utiliser tel
 quel). Structure : `components/` (CookiesBanner, CookiesModal, NavBar, NavMenu),
 `stores/` (authStore, cookieStore), `views/` (HomeView, SecurityGuet, LoginView, RegisterView,
 ProfilView), `router/` (redirectToHomeIfNotLoggedIn), `fixtures/` (données réelles anonymisées

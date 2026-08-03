@@ -34,7 +34,7 @@ describe('CookiesModal', () => {
       items: [
         {
           label: 'Cookie essentiel',
-          value: 'functional',
+          value: 'required-example',
           isRequired: true
         }
       ]
@@ -107,7 +107,7 @@ describe('CookiesModal', () => {
     const emitted = wrapper.emitted('save')
     expect(emitted).toBeTruthy()
     expect(emitted[0][0]).toContain('session')
-    expect(emitted[0][0]).toContain('functional') // Cookie requis toujours inclus
+    expect(emitted[0][0]).toContain('required-example') // Cookie requis toujours inclus
   })
 
   it('should always include required cookies when saving, even without changes', async () => {
@@ -116,7 +116,7 @@ describe('CookiesModal', () => {
 
     const emitted = wrapper.emitted('save')
     expect(emitted).toBeTruthy()
-    expect(emitted[0][0]).toEqual(['functional'])
+    expect(emitted[0][0]).toEqual(['required-example'])
   })
 
   it('should emit close event when cancelling', async () => {

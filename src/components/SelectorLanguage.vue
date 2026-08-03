@@ -36,7 +36,7 @@ const toggleLocale = () => {
 }
 
 onMounted(() => {
-  const savedLocale = cookieStore.essentialCookies.locale || 'fr'
+  const savedLocale = cookieStore.comfortData.locale || 'fr'
   console.log('Initial locale:', savedLocale)
   if (['fr', 'en'].includes(savedLocale)) {
     applyLocale(savedLocale)

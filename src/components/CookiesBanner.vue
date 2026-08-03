@@ -15,13 +15,13 @@ const showModal = ref(false);
 // Préférence des cookies définies une seule fois
 const preferences = computed(() => [
   {
-    title: t('Cookies.Preferences.Functional.Title'),
-    description: t('Cookies.Preferences.Functional.Description'),
+    title: t('Cookies.Preferences.Comfort.Title'),
+    description: t('Cookies.Preferences.Comfort.Description'),
     items: [
       {
-        label: t('Cookies.Preferences.Functional.Label'),
-        value: 'functional',
-        isRequired: true,
+        label: t('Cookies.Preferences.Comfort.Label'),
+        value: 'comfort',
+        isRequired: false,
       },
     ],
   },

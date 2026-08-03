@@ -11,7 +11,7 @@
     cookieStore.initializeCookies()
 
     // Appliquer le thème initial
-    const theme = cookieStore.essentialCookies.theme
+    const theme = cookieStore.comfortData.theme
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {

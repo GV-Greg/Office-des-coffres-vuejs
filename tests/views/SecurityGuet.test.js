@@ -1,9 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
+import { createPinia, setActivePinia } from 'pinia'
 import SecurityGuet from '../../src/views/modules/security/SecurityGuet.vue'
+import { useCookieStore } from '../../src/stores/cookieStore'
 
 const i18n = createI18n({
   locale: 'fr',
@@ -11,6 +13,7 @@ const i18n = createI18n({
     fr: {
       Security: {
         YesterdayLabel: "Liste des villageois d'hier :",
+        YesterdayPrefilled: 'Pré-remplie automatiquement depuis votre dernière visite',
         TodayLabel: "Liste des villageois d'aujourd'hui :",
         GenerateButton: 'Générer les entrées/sorties',
         EntriesLabel: 'Entrées',
@@ -37,8 +40,20 @@ const sortiesAttendues = extractBlock(fixture, '--- SORTIES_ATTENDUES ---', '---
 const entreesAttendues = extractBlock(fixture, '--- ENTREES_ATTENDUES ---', '--- ENTREES_FIN ---')
   .split('\n').map(s => s.trim()).filter(Boolean)
 
+let pinia
+
+beforeEach(() => {
+  localStorage.clear()
+  pinia = createPinia()
+  setActivePinia(pinia)
+})
+
+function mountGuet() {
+  return mount(SecurityGuet, { global: { plugins: [pinia, i18n] } })
+}
+
 async function generateResult() {
-  const wrapper = mount(SecurityGuet, { global: { plugins: [i18n] } })
+  const wrapper = mountGuet()
   const textareas = wrapper.findAll('textarea')
   await textareas[0].setValue(hier)
   await textareas[1].setValue(aujourdhui)
@@ -74,5 +89,27 @@ describe('SecurityGuet — transform() sur données réelles (préambule + table
     expect(allNames).not.toContain('Ils')
     expect(allNames).not.toContain("L'adjoint")
     expect(allNames).not.toContain('Liste')
+  })
+})
+
+describe('SecurityGuet — mémorisation "confort" de la liste d\'hier', () => {
+  it("ne mémorise rien sans consentement 'comfort' (dégradation gracieuse)", async () => {
+    await generateResult() // cookieStore.acceptedCookies vide par défaut : pas de consentement
+
+    const secondVisit = mountGuet()
+    const textareas = secondVisit.findAll('textarea')
+    expect(textareas[0].element.value).toBeFalsy()
+    expect(secondVisit.find('.italic').exists()).toBe(false)
+  })
+
+  it("pré-remplit la liste d'hier à la visite suivante une fois 'comfort' accepté", async () => {
+    useCookieStore().acceptedCookies = ['comfort']
+    await generateResult()
+
+    const secondVisit = mountGuet()
+    await secondVisit.vm.$nextTick()
+    const textareas = secondVisit.findAll('textarea')
+    expect(textareas[0].element.value).toBe(aujourdhui)
+    expect(secondVisit.text()).toContain('Pré-remplie automatiquement depuis votre dernière visite')
   })
 })
