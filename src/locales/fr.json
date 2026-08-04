@@ -2,18 +2,18 @@
   "Cookies": {
     "Banner": {
       "Title": "Gestion de vos cookies",
-      "Description": "Notre site utilise uniquement deux types de cookies essentiels au fonctionnement du site, et aucun cookie publicitaire ou de traçage :",
+      "Description": "Notre site utilise deux types de cookies, tous deux optionnels, et aucun cookie publicitaire ou de traçage :",
       "CookieTypes": {
-        "Essential": "• Un cookie essentiel et obligatoire pour le fonctionnement technique du site",
-        "Session": "• Un cookie de session, optionnel mais nécessaire pour vous connecter à votre compte"
+        "Essential": "• Un cookie de confort, pour accélérer votre navigation (rester connecté, retenir vos préférences et vos saisies dans les outils)",
+        "Session": "• Un cookie de session, nécessaire pour vous connecter à votre compte"
       },
       "NoTracking": "Nous respectons votre vie privée : aucun cookie publicitaire ou de traçage n'est utilisé."
     },
     "Preferences": {
-      "Functional": {
-        "Title": "Cookie fonctionnel (requis)",
-        "Description": "Ce cookie contient un jeton. Avec l'aide de ce jeton, votre session de connexion peut être reprise même après les 2 heures de validité du cookie de session. Ce cookie n'est défini que si vous avez activé l'option 'Rester connecté' lors de la connexion. Ce cookie est supprimé lorsque vous vous déconnectez.",
-        "Label": "Cookie essentiel"
+      "Comfort": {
+        "Title": "Cookie de confort",
+        "Description": "Ce cookie retient vos préférences (thème, langue) et certaines données que vous saisissez dans les outils (par exemple la liste d'hier du Guet), pour vous éviter de tout ressaisir à chaque visite. Il permet aussi de rester connecté plus longtemps si vous avez activé l'option 'Rester connecté'. Rien n'est envoyé à un tiers, rien ne sert au suivi publicitaire — sans ce cookie, le site reste utilisable, juste sans mémorisation d'une visite à l'autre.",
+        "Label": "Cookie de confort"
       },
       "Session": {
         "Title": "Cookie de session",
@@ -51,11 +51,19 @@
     }
   },
   "Profil": {
-    "Title": "Profil de {pseudo}",
+    "Title": "Mon profil",
+    "NoCharacter": "Vous n'avez pas encore de personnage.",
+    "AddCharacter": "Ajouter un personnage",
+    "EditResidence": "Modifier la résidence",
+    "SaveResidence": "Enregistrer",
+    "CancelEdit": "Annuler",
+    "ResidenceUpdated": "Résidence mise à jour — en attente de validation.",
     "Status": {
-      "Validated": "Compte validé.",
-      "PendingTitle": "Compte en attente de validation",
-      "PendingMessage": "Contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider votre compte. Une fois validé, vous pourrez profiter de toutes les fonctionnalités du site."
+      "Validated": "Personnage validé.",
+      "PendingMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce personnage.",
+      "PendingResidenceChangeMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce changement de résidence.",
+      "ValidatedBadge": "Validé",
+      "PendingBadge": "En attente"
     }
   },
   "Validation": {
@@ -83,11 +91,11 @@
     "ConfirmationPlaceholder": "Confirmez votre mot de passe",
     "Errors": {
       "RequiredFields": "Vous n'avez pas rempli les champs requis !",
-      "UsernameTooLong": "Le pseudo doit contenir moins de 190 caractères !",
       "EmailTooLong": "L'email doit contenir moins de 190 caractères !",
       "PasswordTooShort": "Le mot de passe doit contenir plus de 8 caractères !",
       "PasswordTooLong": "Le mot de passe doit contenir moins de 190 caractères !",
-      "ConfirmationMismatch": "La confirmation du mot de passe n'est pas identique à celui-ci !"
+      "ConfirmationMismatch": "La confirmation du mot de passe n'est pas identique à celui-ci !",
+      "NetworkError": "Impossible de contacter le serveur. Réessayez plus tard."
     }
   },
   "Login": {
@@ -96,12 +104,41 @@
     "SubmitButton": "Se connecter",
     "NoAccount": "Vous n'avez pas de compte ?",
     "RegisterLink": "Enregistrez-vous!",
-    "UnvalidatedWarning": "Si vous venez de vous enregistrer, contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider votre compte. Une fois validé, vous pourrez vous connecter sur votre compte."
+    "UnverifiedWarning": "Votre email n'est pas encore vérifié. Vérifiez votre boîte mail, ou demandez un nouveau lien ci-dessous.",
+    "ResendButton": "Renvoyer l'email de vérification"
   },
   "Register": {
     "BackLink": "Retour",
     "Heading": "Créez votre compte",
-    "SubmitButton": "S'enregistrer"
+    "SubmitButton": "S'enregistrer",
+    "CheckEmailTitle": "Vérifiez votre boîte mail",
+    "CheckEmailMessage": "Un email de confirmation vient de vous être envoyé.\nCliquez sur le lien qu'il contient pour activer votre compte."
+  },
+  "VerifyEmail": {
+    "Verifying": "Vérification en cours...",
+    "InvalidLink": "Ce lien de vérification est invalide ou a expiré.",
+    "ResendPrompt": "Entrez votre email pour recevoir un nouveau lien.",
+    "ResendButton": "Renvoyer le lien",
+    "ResendSuccess": "Un nouveau lien vient de vous être envoyé si ce compte existe."
+  },
+  "AddCharacter": {
+    "BackLink": "Retour",
+    "Heading": "Ajoutez votre personnage",
+    "KingdomLabel": "Royaume",
+    "KingdomPlaceholder": "Choisissez un royaume",
+    "ProvinceLabel": "Province",
+    "ProvincePlaceholder": "Choisissez une province",
+    "CityLabel": "Ville",
+    "CityPlaceholder": "Choisissez une ville",
+    "SubmitButton": "Créer mon personnage",
+    "LoadingMap": "Chargement de la carte...",
+    "MapError": "Impossible de charger la liste des villes.",
+    "Errors": {
+      "PseudoRequired": "Le pseudo est requis !",
+      "KingdomRequired": "Veuillez choisir un royaume !",
+      "ProvinceRequired": "Veuillez choisir une province !",
+      "CityRequired": "Veuillez choisir une ville !"
+    }
   },
   "NavBar": {
     "Home": "Accueil"
@@ -117,6 +154,7 @@
     "Title": "Coffres Sécurité",
     "EntriesExits": "Entrées/sorties",
     "YesterdayLabel": "Liste des villageois d'hier :",
+    "YesterdayPrefilled": "Pré-remplie automatiquement depuis votre dernière visite",
     "TodayLabel": "Liste des villageois d'aujourd'hui :",
     "GenerateButton": "Générer les entrées/sorties",
     "EntriesLabel": "Entrées",

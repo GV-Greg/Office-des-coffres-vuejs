@@ -2,18 +2,18 @@
   "Cookies": {
     "Banner": {
       "Title": "Cookie Management",
-      "Description": "Our site only uses two types of cookies essential for the site to function, and no advertising or tracking cookies:",
+      "Description": "Our site uses two types of cookies, both optional, and no advertising or tracking cookies:",
       "CookieTypes": {
-        "Essential": "• An essential and mandatory cookie for the technical operation of the site",
-        "Session": "• A session cookie, optional but necessary to log into your account"
+        "Essential": "• A comfort cookie, to speed up your browsing (stay logged in, remember your preferences and what you type into tools)",
+        "Session": "• A session cookie, necessary to log into your account"
       },
       "NoTracking": "We respect your privacy: no advertising or tracking cookies are used."
     },
     "Preferences": {
-      "Functional": {
-        "Title": "Functional Cookie (required)",
-        "Description": "This cookie contains a token. With this token, your login session can be resumed even after the 2-hour session cookie validity period. This cookie is only set if you have activated the 'Stay logged in' option when logging in. This cookie is removed when you log out.",
-        "Label": "Essential cookie"
+      "Comfort": {
+        "Title": "Comfort Cookie",
+        "Description": "This cookie remembers your preferences (theme, language) and some of the data you type into tools (for example yesterday's Watch list), so you don't have to re-enter everything on each visit. It also lets you stay logged in longer if you activated the 'Stay logged in' option. Nothing is sent to a third party, nothing is used for advertising tracking — without this cookie, the site remains usable, just without memory from one visit to the next.",
+        "Label": "Comfort cookie"
       },
       "Session": {
         "Title": "Session Cookie",
@@ -51,11 +51,19 @@
     }
   },
   "Profil": {
-    "Title": "Profile of {pseudo}",
+    "Title": "My profile",
+    "NoCharacter": "You don't have a character yet.",
+    "AddCharacter": "Add a character",
+    "EditResidence": "Change residence",
+    "SaveResidence": "Save",
+    "CancelEdit": "Cancel",
+    "ResidenceUpdated": "Residence updated — pending validation.",
     "Status": {
-      "Validated": "Account validated.",
-      "PendingTitle": "Account pending validation",
-      "PendingMessage": "Contact me in-game via my profile \"Artifice\" and ask me to validate your account. Once validated, you will be able to enjoy all the site's features."
+      "Validated": "Character validated.",
+      "PendingMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this character.",
+      "PendingResidenceChangeMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this residence change.",
+      "ValidatedBadge": "Validated",
+      "PendingBadge": "Pending"
     }
   },
   "Validation": {
@@ -83,11 +91,11 @@
     "ConfirmationPlaceholder": "Confirm your password",
     "Errors": {
       "RequiredFields": "You have not filled in all required fields!",
-      "UsernameTooLong": "The username must be fewer than 190 characters!",
       "EmailTooLong": "The email must be fewer than 190 characters!",
       "PasswordTooShort": "The password must be more than 8 characters!",
       "PasswordTooLong": "The password must be fewer than 190 characters!",
-      "ConfirmationMismatch": "The password confirmation does not match!"
+      "ConfirmationMismatch": "The password confirmation does not match!",
+      "NetworkError": "Could not reach the server. Please try again later."
     }
   },
   "Login": {
@@ -96,12 +104,41 @@
     "SubmitButton": "Log in",
     "NoAccount": "Don't have an account?",
     "RegisterLink": "Sign up!",
-    "UnvalidatedWarning": "If you have just registered, contact me in-game via my profile \"Artifice\" and ask me to validate your account. Once validated, you will be able to log into your account."
+    "UnverifiedWarning": "Your email is not verified yet. Check your inbox, or request a new link below.",
+    "ResendButton": "Resend verification email"
   },
   "Register": {
     "BackLink": "Back",
     "Heading": "Create your account",
-    "SubmitButton": "Sign up"
+    "SubmitButton": "Sign up",
+    "CheckEmailTitle": "Check your inbox",
+    "CheckEmailMessage": "A confirmation email was just sent to you.\nClick the link inside it to activate your account."
+  },
+  "VerifyEmail": {
+    "Verifying": "Verifying...",
+    "InvalidLink": "This verification link is invalid or has expired.",
+    "ResendPrompt": "Enter your email to receive a new link.",
+    "ResendButton": "Resend link",
+    "ResendSuccess": "A new link has just been sent if this account exists."
+  },
+  "AddCharacter": {
+    "BackLink": "Back",
+    "Heading": "Add your character",
+    "KingdomLabel": "Kingdom",
+    "KingdomPlaceholder": "Choose a kingdom",
+    "ProvinceLabel": "Province",
+    "ProvincePlaceholder": "Choose a province",
+    "CityLabel": "City",
+    "CityPlaceholder": "Choose a city",
+    "SubmitButton": "Create my character",
+    "LoadingMap": "Loading the map...",
+    "MapError": "Could not load the list of cities.",
+    "Errors": {
+      "PseudoRequired": "The username is required!",
+      "KingdomRequired": "Please choose a kingdom!",
+      "ProvinceRequired": "Please choose a province!",
+      "CityRequired": "Please choose a city!"
+    }
   },
   "NavBar": {
     "Home": "Home"
@@ -117,6 +154,7 @@
     "Title": "Security Chest",
     "EntriesExits": "Entries/Exits",
     "YesterdayLabel": "Yesterday's villager list:",
+    "YesterdayPrefilled": "Automatically pre-filled from your last visit",
     "TodayLabel": "Today's villager list:",
     "GenerateButton": "Generate entries/exits",
     "EntriesLabel": "Entries",

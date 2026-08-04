@@ -10,15 +10,15 @@
 </script>
 
 <template>
-  <main class="md:w-3/4">
+  <main>
     <div class="overflow-y-auto flex flex-col flex-grow">
       <i18n-t keypath="Home.WelcomeMessage" tag="h2" scope="global">
         <template #brand>
           <span class="font-bold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600">{{ t('Common.SiteName') }}</span>
         </template>
       </i18n-t>
-      <p>{{ t('Home.Description') }}</p>
-      <p class="text-blue-500 font-bold mt-10 italic text-center">{{ t('Home.UnderConstruction') }}</p>
+      <p class="text-slate-800 dark:text-slate-800">{{ t('Home.Description') }}</p>
+      <p class="text-blue-500 dark:text-blue-500 font-bold mt-10 italic text-center">{{ t('Home.UnderConstruction') }}</p>
     </div>
     <NavMenu />
   </main>

@@ -2,10 +2,10 @@
 /*
   imports
 */
-  import { reactive } from 'vue'
+  import { reactive, ref } from 'vue'
   import { RouterLink, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
-  import InputText from '@/components/forms/InputText.vue'
+  import InputEmail from '@/components/forms/InputEmail.vue'
   import InputPassword from '@/components/forms/InputPassword.vue'
   import DefaultSubmitButton from '@/components/buttons/DefaultSubmitButton.vue'
   import SelectorMenu from '@/components/SelectorMenu.vue'
@@ -18,13 +18,14 @@
   form data
 */
   let user = reactive({
-    username: '',
+    email: '',
     password: '',
   })
 
   const error_message = reactive({
     value: ''
   })
+  const resendSent = ref(false)
 /*
   submit form
 */
@@ -32,20 +33,31 @@
   const authStore = useAuthStore()
 
   const connect = () => {
-    if(validation(!user.username || !user.password, t('Auth.Errors.RequiredFields'))) {
-    } else if(validation(user.username.length > 190, t('Auth.Errors.UsernameTooLong'))) {
+    if(validation(!user.email || !user.password, t('Auth.Errors.RequiredFields'))) {
+    } else if(validation(user.email.length > 190, t('Auth.Errors.EmailTooLong'))) {
     } else if(validation(user.password.length < 8, t('Auth.Errors.PasswordTooShort'))) {
     } else if(validation(user.password.length > 190, t('Auth.Errors.PasswordTooLong'))) {
     } else {
+      resendSent.value = false
       authStore.login(user)
           .then(() => {
-            router.push('/app/')
+            router.push(authStore.hasCharacters ? '/app/' : '/app/character/new')
           })
           .catch(error => {
-            error_message.value = error.response.data.message
-            push.error(error.response.data.message)
+            error_message.value = error.response?.data?.message ?? t('Auth.Errors.NetworkError')
+            push.error(error_message.value)
           })
     }
+  }
+
+  const resendVerification = () => {
+    authStore.resendVerification(user.email)
+      .then(() => {
+        resendSent.value = true
+      })
+      .catch(error => {
+        push.error(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
+      })
   }
 </script>
 
@@ -65,12 +77,12 @@
         </div>
 
         <!-- Formulaire de connexion -->
-        <div class="w-12/12 my-5 bg-gray-200 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl">
+        <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
           <div class="w-full mt-2 md:mt-5 px-7 overflow-y-auto">
-            <h2>{{ t('Login.Heading') }}</h2>
+            <h2 class="text-white dark:text-blue-800">{{ t('Login.Heading') }}</h2>
             <form class="mt-6" @submit.prevent="connect">
               <div class="form-group">
-                <InputText v-model="user.username" name="username" :label="t('username')" :placeholder="t('Auth.UsernamePlaceholder')" />
+                <InputEmail v-model="user.email" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
               </div>
               <div class="form-group">
                 <InputPassword v-model="user.password" name="password" :label="t('password')" :placeholder="t('Auth.PasswordPlaceholder')" />
@@ -80,13 +92,13 @@
 
             <!-- Lien d'inscription -->
             <div class="my-5 flex flex-col laptop:flex-row justify-center text-center">
-              <span class="text-base text-gray-500">
+              <span class="text-base text-gray-300 dark:text-gray-500">
                 {{ t('Login.NoAccount') }}
               </span>
               <span class="mt-2 laptop:mt-0 text-xl laptop:text-lg">
                 <RouterLink
                   to="/register"
-                  class="ml-1 font-bold text-blue-600"
+                  class="ml-1 font-bold text-blue-300 dark:text-blue-600"
                 >
                   {{ t('Login.RegisterLink') }}
                 </RouterLink>
@@ -96,13 +108,18 @@
         </div>
       </div>
 
-      <!-- Message de validation -->
+      <!-- Message email non vérifié -->
       <div class="w-10/12 col-start-3 col-span-1 place-self-center bg-red-500 opacity-80 py-6 px-7 rounded-xl"
-            data-testid="unvalidated-warning"
-            v-show="error_message.value === 'Compte non validé.'">
+            data-testid="unverified-warning"
+            v-show="error_message.value === 'Email non vérifié.'">
           <div class="opacity-100 text-xl text-white text-justify">
-            {{ t('Login.UnvalidatedWarning') }}
+            {{ t('Login.UnverifiedWarning') }}
         </div>
+        <button v-if="!resendSent" type="button" @click="resendVerification"
+                class="mt-3 px-3 py-1 rounded bg-white text-red-600 text-sm font-bold uppercase">
+          {{ t('Login.ResendButton') }}
+        </button>
+        <p v-else class="mt-3 text-white font-bold">{{ t('VerifyEmail.ResendSuccess') }}</p>
       </div>
     </div>
   </div>

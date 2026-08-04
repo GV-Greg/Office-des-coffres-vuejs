@@ -3,15 +3,27 @@ import { useAuthStore } from "@/stores/authStore"
 import WelcomeView from '@/views/WelcomeView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
+import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import SecurityGuetView from '@/views/modules/security/SecurityGuet.vue'
 import { push } from 'notivue'
 
-export const redirectToHomeIfNotLoggedIn = (to, from, next) => {
-  if (!useAuthStore().isLoggedIn) {
-      push.error("Accès non autorisé")
-      next({ name: "login" })
+export const redirectToHomeIfNotLoggedIn = async (to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (!authStore.isLoggedIn) {
+    push.error("Accès non autorisé")
+    next({ name: "login" })
+    return
+  }
+
+  // Le token peut être présent en local mais invalide côté serveur (session
+  // expirée, compte supprimé) : on vérifie réellement avant de laisser passer.
+  const stillValid = await authStore.checkAuth()
+  if (!stillValid) {
+    push.error("Accès non autorisé")
+    next({ name: "login" })
   } else {
-      next()
+    next()
   }
 };
 
@@ -36,6 +48,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView,
+    },
+    {
+      path: '/verify-email',
+      name: 'verify-email',
+      component: VerifyEmailView,
     },
     {
       path: '/app/',
@@ -91,6 +108,12 @@ const router = createRouter({
         Nav,
         default: () => import('@/views/auth/ProfilView.vue'),
       },
+      beforeEnter: redirectToHomeIfNotLoggedIn,
+    },
+    {
+      path: '/app/character/new',
+      name: 'character-new',
+      component: () => import('@/views/auth/AddCharacterView.vue'),
       beforeEnter: redirectToHomeIfNotLoggedIn,
     },
     {

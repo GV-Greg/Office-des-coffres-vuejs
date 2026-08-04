@@ -2,10 +2,14 @@
 /*
   imports
 */
-  import { ref, reactive } from "vue";
+  import { ref, reactive, onMounted } from "vue";
   import { useI18n } from "vue-i18n";
+  import { useCookieStore } from "@/stores/cookieStore";
 
   const { t } = useI18n()
+  const cookieStore = useCookieStore()
+
+  const GUET_LAST_LIST_KEY = 'guet_last_list'
 
 /*
   datas
@@ -15,6 +19,7 @@
   })
   const list_yesterday = ref()
   const list_today = ref()
+  const prefilled_from_comfort = ref(false)
   const array_today = reactive({
     value: []
   })
@@ -55,7 +60,20 @@
     outputs.value = array_yesterday.filter(x => !array_today.value.includes(x))
     inputs.value = array_today.value.filter(x => !array_yesterday.includes(x))
     loading.value = true
+
+    // Confort : mémorise la liste du jour pour pré-remplir "hier" à la prochaine visite.
+    // No-op silencieux (rien n'est persisté) si le cookie de confort n'a pas été accepté —
+    // le générateur reste utilisable dans tous les cas, juste sans mémorisation.
+    cookieStore.setComfortData(GUET_LAST_LIST_KEY, list_today.value ?? '')
   }
+
+  onMounted(() => {
+    const savedList = cookieStore.getComfortData(GUET_LAST_LIST_KEY)
+    if (savedList) {
+      list_yesterday.value = savedList
+      prefilled_from_comfort.value = true
+    }
+  })
 
   function to_export() {
     result_press_papier.value = "[size=15][color=blue][i]Liste des villageois (" + (array_today.value.length) + ")[/i][/color][/size][quote]"
@@ -82,6 +100,9 @@
   <div class="w-full grid grid-cols-3 gap-4">
     <div>
       <label class="w-full font-bold text-center">{{ t('Security.YesterdayLabel') }}</label>
+      <span v-if="prefilled_from_comfort" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic">
+        {{ t('Security.YesterdayPrefilled') }}
+      </span>
       <textarea v-model="list_yesterday" rows="18" class="textarea-autoresize w-full rounded-xl p-2"></textarea>
     </div>
     <div>

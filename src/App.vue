@@ -11,7 +11,7 @@
     cookieStore.initializeCookies()
 
     // Appliquer le thème initial
-    const theme = cookieStore.essentialCookies.theme
+    const theme = cookieStore.comfortData.theme
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
@@ -23,7 +23,7 @@
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-slate-200 dark:bg-slate-800 transition-colors duration-200">
+  <div class="min-h-screen w-full flex flex-col bg-slate-200 dark:bg-slate-800 transition-colors duration-200">
     <RouterView name="Nav" />
     <RouterView />
 

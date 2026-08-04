@@ -30,6 +30,7 @@ describe('Cookie Store', () => {
     setActivePinia(createPinia())
     store = useCookieStore()
     localStorageMock.clear()
+    vi.clearAllMocks()
   })
 
   describe('Initial State', () => {
@@ -41,8 +42,8 @@ describe('Cookie Store', () => {
       expect(store.cookiePreferences).toBeNull()
     })
 
-    it('should start with default essential cookies', () => {
-      expect(store.essentialCookies).toEqual({
+    it('should start with default comfort data', () => {
+      expect(store.comfortData).toEqual({
         theme: 'dark',
         locale: 'fr',
         'session-declined': 'false'
@@ -53,14 +54,14 @@ describe('Cookie Store', () => {
   describe('Getters', () => {
     it('should correctly identify if user has accepted cookies', () => {
       expect(store.hasAcceptedCookies).toBe(false)
-      store.acceptedCookies = ['functional']
+      store.acceptedCookies = ['comfort']
       expect(store.hasAcceptedCookies).toBe(true)
     })
 
-    it('should correctly identify if user has accepted functional cookies', () => {
-      expect(store.hasAcceptedFunctional).toBe(false)
-      store.acceptedCookies = ['functional']
-      expect(store.hasAcceptedFunctional).toBe(true)
+    it('should correctly identify if user has accepted comfort cookies', () => {
+      expect(store.hasAcceptedComfort).toBe(false)
+      store.acceptedCookies = ['comfort']
+      expect(store.hasAcceptedComfort).toBe(true)
     })
 
     it('should correctly identify if user has accepted session cookies', () => {
@@ -84,60 +85,112 @@ describe('Cookie Store', () => {
 
   describe('Actions', () => {
     it('should initialize cookies from localStorage', () => {
-      const savedPreferences = ['functional', 'session']
+      const savedPreferences = ['comfort', 'session']
       localStorageMock.setItem('cookie-comply', JSON.stringify(savedPreferences))
-      
+
       store.initializeCookies()
       expect(store.acceptedCookies).toEqual(savedPreferences)
       expect(store.cookiePreferences).toBe('saved')
     })
 
     it('should reset cookie state', () => {
-      store.acceptedCookies = ['functional']
+      store.acceptedCookies = ['comfort']
       store.cookiePreferences = 'saved'
-      
+
       store.resetCookieState()
       expect(store.acceptedCookies).toEqual([])
       expect(store.cookiePreferences).toBeNull()
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('cookie-comply')
     })
 
-    it('should handle essential cookies', () => {
-      store.setEssentialCookie('testKey', 'testValue')
-      expect(store.getEssentialCookie('testKey')).toBe('testValue')
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('essential-cookies', JSON.stringify({
-        theme: 'dark',
-        locale: 'fr',
-        'session-declined': 'false',
-        testKey: 'testValue'
-      }))
-    })
-
     it('should accept all cookies', () => {
-      const cookies = ['functional', 'session']
+      const cookies = ['comfort', 'session']
       store.acceptAllCookies(cookies)
-      
+
       expect(store.acceptedCookies).toEqual(cookies)
       expect(store.cookiePreferences).toBe('all')
       expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-comply', JSON.stringify(cookies))
     })
 
     it('should decline all non-required cookies', () => {
-      const requiredCookies = ['functional']
+      const requiredCookies = []
       store.declineAllCookies(requiredCookies)
-      
+
       expect(store.acceptedCookies).toEqual(requiredCookies)
       expect(store.cookiePreferences).toBe('minimal')
       expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-comply', JSON.stringify(requiredCookies))
     })
 
     it('should save custom preferences', () => {
-      const selectedCookies = ['functional', 'session']
+      const selectedCookies = ['comfort', 'session']
       store.savePreferences(selectedCookies)
-      
+
       expect(store.acceptedCookies).toEqual(selectedCookies)
       expect(store.cookiePreferences).toBe('custom')
       expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-comply', JSON.stringify(selectedCookies))
+    })
+  })
+
+  describe('Comfort data — lecture/écriture génériques', () => {
+    it('getComfortData retourne la valeur en mémoire', () => {
+      expect(store.getComfortData('theme')).toBe('dark')
+      expect(store.getComfortData('inexistant', 'fallback')).toBe('fallback')
+    })
+
+    it('setComfortData change la valeur en mémoire même sans consentement', () => {
+      store.setComfortData('theme', 'light')
+      expect(store.getComfortData('theme')).toBe('light')
+    })
+
+    it('setComfortData ne persiste PAS en localStorage sans consentement "comfort"', () => {
+      store.setComfortData('theme', 'light')
+      expect(localStorageMock.setItem).not.toHaveBeenCalledWith('comfort-cookies', expect.anything())
+    })
+
+    it('setComfortData persiste en localStorage une fois "comfort" accepté', () => {
+      store.acceptedCookies = ['comfort']
+      store.setComfortData('theme', 'light')
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'comfort-cookies',
+        JSON.stringify({ theme: 'light', locale: 'fr', 'session-declined': 'false' })
+      )
+    })
+
+    it('accepter "comfort" persiste les changements faits en mémoire avant le consentement', () => {
+      store.setComfortData('theme', 'light') // avant consentement : mémoire seulement
+      store.acceptAllCookies(['comfort'])
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'comfort-cookies',
+        JSON.stringify({ theme: 'light', locale: 'fr', 'session-declined': 'false' })
+      )
+    })
+
+    it('refuser/retirer "comfort" purge les données de confort déjà stockées', () => {
+      store.acceptedCookies = ['comfort']
+      store.setComfortData('theme', 'light')
+      localStorageMock.setItem.mockClear()
+
+      store.declineAllCookies([])
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('comfort-cookies')
+    })
+
+    it('initializeCookies charge les données de confort déjà persistées', () => {
+      localStorageMock.setItem('comfort-cookies', JSON.stringify({ theme: 'light', locale: 'en', 'session-declined': 'false' }))
+
+      store.initializeCookies()
+      expect(store.comfortData.theme).toBe('light')
+      expect(store.comfortData.locale).toBe('en')
+    })
+
+    it('setTheme et setLocale passent par le même mécanisme de confort', () => {
+      store.acceptedCookies = ['comfort']
+      store.setTheme('light')
+      store.setLocale('en')
+
+      expect(store.comfortData.theme).toBe('light')
+      expect(store.comfortData.locale).toBe('en')
     })
   })
 })
