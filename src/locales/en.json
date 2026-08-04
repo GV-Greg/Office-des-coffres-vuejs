@@ -54,9 +54,16 @@
     "Title": "My profile",
     "NoCharacter": "You don't have a character yet.",
     "AddCharacter": "Add a character",
+    "EditResidence": "Change residence",
+    "SaveResidence": "Save",
+    "CancelEdit": "Cancel",
+    "ResidenceUpdated": "Residence updated — pending validation.",
     "Status": {
       "Validated": "Character validated.",
-      "PendingMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this character."
+      "PendingMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this character.",
+      "PendingResidenceChangeMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this residence change.",
+      "ValidatedBadge": "Validated",
+      "PendingBadge": "Pending"
     }
   },
   "Validation": {
@@ -87,7 +94,8 @@
       "EmailTooLong": "The email must be fewer than 190 characters!",
       "PasswordTooShort": "The password must be more than 8 characters!",
       "PasswordTooLong": "The password must be fewer than 190 characters!",
-      "ConfirmationMismatch": "The password confirmation does not match!"
+      "ConfirmationMismatch": "The password confirmation does not match!",
+      "NetworkError": "Could not reach the server. Please try again later."
     }
   },
   "Login": {
@@ -104,7 +112,7 @@
     "Heading": "Create your account",
     "SubmitButton": "Sign up",
     "CheckEmailTitle": "Check your inbox",
-    "CheckEmailMessage": "A confirmation email was just sent to you. Click the link inside it to activate your account."
+    "CheckEmailMessage": "A confirmation email was just sent to you.\nClick the link inside it to activate your account."
   },
   "VerifyEmail": {
     "Verifying": "Verifying...",
@@ -114,6 +122,7 @@
     "ResendSuccess": "A new link has just been sent if this account exists."
   },
   "AddCharacter": {
+    "BackLink": "Back",
     "Heading": "Add your character",
     "KingdomLabel": "Kingdom",
     "KingdomPlaceholder": "Choose a kingdom",
@@ -126,6 +135,8 @@
     "MapError": "Could not load the list of cities.",
     "Errors": {
       "PseudoRequired": "The username is required!",
+      "KingdomRequired": "Please choose a kingdom!",
+      "ProvinceRequired": "Please choose a province!",
       "CityRequired": "Please choose a city!"
     }
   },

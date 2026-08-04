@@ -160,7 +160,8 @@
   }
 
   .form-field {
-    @apply border border-slate-500;
+    @apply bg-white border border-slate-500;
+    @apply disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-slate-300;
   }
 
   .form-field-error {
@@ -205,10 +206,9 @@ table tbody tr td {
 
 /* Layout principal */
 main {
-  @apply mx-5 mb-5 p-5;
+  @apply mx-2 mb-2 p-5;
   @apply bg-gray-200;
-  @apply w-11/12 h-full;
-  @apply flex flex-col items-center justify-center;
+  @apply flex-1 flex flex-col items-center justify-between;
   @apply border-2 border-gray-300 border-dashed;
   @apply rounded-3xl;
   @apply text-slate-800;

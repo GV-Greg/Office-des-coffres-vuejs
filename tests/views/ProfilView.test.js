@@ -16,7 +16,8 @@ const i18n = createI18n({
         AddCharacter: 'Ajouter un personnage',
         Status: {
           Validated: 'Personnage validé.',
-          PendingMessage: 'En attente de validation.'
+          PendingMessage: 'En attente de validation.',
+          PendingResidenceChangeMessage: 'En attente de validation du changement de résidence.'
         }
       }
     }
@@ -58,15 +59,29 @@ describe('ProfilView', () => {
       id: 1,
       email: 'artifice@test.com',
       characters: [
-        { id: 1, pseudo: 'Artifice', is_validated: true },
+        { id: 1, pseudo: 'Artifice', is_validated: true, city_name: 'Burgos', province_name: 'Reino de Castilla', kingdom_name: 'Corona de Castilla y León' },
         { id: 2, pseudo: 'Buldo', is_validated: false },
       ]
     })
 
     expect(wrapper.text()).toContain('Artifice')
     expect(wrapper.text()).toContain('Personnage validé.')
+    expect(wrapper.text()).toContain('Burgos, Reino de Castilla, Couronne de Castille et Léon')
     expect(wrapper.text()).toContain('Buldo')
     expect(wrapper.text()).toContain('En attente de validation.')
+  })
+
+  it('affiche un message différent quand le personnage est en attente suite à un changement de résidence', () => {
+    const wrapper = mountProfil({
+      id: 1,
+      email: 'artifice@test.com',
+      characters: [
+        { id: 1, pseudo: 'Artifice', is_validated: false, pending_residence_change: true },
+      ]
+    })
+
+    expect(wrapper.text()).toContain('En attente de validation du changement de résidence.')
+    expect(wrapper.text()).not.toContain('En attente de validation.')
   })
 
   it("propose d'ajouter un personnage même si le compte en a déjà un", () => {

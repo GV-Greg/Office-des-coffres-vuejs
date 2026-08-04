@@ -54,9 +54,16 @@
     "Title": "Mon profil",
     "NoCharacter": "Vous n'avez pas encore de personnage.",
     "AddCharacter": "Ajouter un personnage",
+    "EditResidence": "Modifier la résidence",
+    "SaveResidence": "Enregistrer",
+    "CancelEdit": "Annuler",
+    "ResidenceUpdated": "Résidence mise à jour — en attente de validation.",
     "Status": {
       "Validated": "Personnage validé.",
-      "PendingMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce personnage."
+      "PendingMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce personnage.",
+      "PendingResidenceChangeMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce changement de résidence.",
+      "ValidatedBadge": "Validé",
+      "PendingBadge": "En attente"
     }
   },
   "Validation": {
@@ -87,7 +94,8 @@
       "EmailTooLong": "L'email doit contenir moins de 190 caractères !",
       "PasswordTooShort": "Le mot de passe doit contenir plus de 8 caractères !",
       "PasswordTooLong": "Le mot de passe doit contenir moins de 190 caractères !",
-      "ConfirmationMismatch": "La confirmation du mot de passe n'est pas identique à celui-ci !"
+      "ConfirmationMismatch": "La confirmation du mot de passe n'est pas identique à celui-ci !",
+      "NetworkError": "Impossible de contacter le serveur. Réessayez plus tard."
     }
   },
   "Login": {
@@ -104,7 +112,7 @@
     "Heading": "Créez votre compte",
     "SubmitButton": "S'enregistrer",
     "CheckEmailTitle": "Vérifiez votre boîte mail",
-    "CheckEmailMessage": "Un email de confirmation vient de vous être envoyé. Cliquez sur le lien qu'il contient pour activer votre compte."
+    "CheckEmailMessage": "Un email de confirmation vient de vous être envoyé.\nCliquez sur le lien qu'il contient pour activer votre compte."
   },
   "VerifyEmail": {
     "Verifying": "Vérification en cours...",
@@ -114,6 +122,7 @@
     "ResendSuccess": "Un nouveau lien vient de vous être envoyé si ce compte existe."
   },
   "AddCharacter": {
+    "BackLink": "Retour",
     "Heading": "Ajoutez votre personnage",
     "KingdomLabel": "Royaume",
     "KingdomPlaceholder": "Choisissez un royaume",
@@ -126,6 +135,8 @@
     "MapError": "Impossible de charger la liste des villes.",
     "Errors": {
       "PseudoRequired": "Le pseudo est requis !",
+      "KingdomRequired": "Veuillez choisir un royaume !",
+      "ProvinceRequired": "Veuillez choisir une province !",
       "CityRequired": "Veuillez choisir une ville !"
     }
   },

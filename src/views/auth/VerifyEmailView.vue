@@ -43,7 +43,7 @@
         resendSent.value = true
       })
       .catch(error => {
-        push.error(error.response.data.message)
+        push.error(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
       })
   }
 </script>
@@ -57,19 +57,19 @@
           {{ t('VerifyEmail.Verifying') }}
         </div>
 
-        <div v-else class="my-5 bg-gray-200 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl p-6">
-          <p class="text-red-600 font-bold mb-4">{{ t('VerifyEmail.InvalidLink') }}</p>
+        <div v-else class="my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl p-6">
+          <p class="text-red-400 dark:text-red-600 font-bold mb-4">{{ t('VerifyEmail.InvalidLink') }}</p>
 
           <template v-if="!resendSent">
-            <p class="text-gray-700 text-sm mb-4">{{ t('VerifyEmail.ResendPrompt') }}</p>
+            <p class="text-gray-200 dark:text-gray-700 text-sm mb-4">{{ t('VerifyEmail.ResendPrompt') }}</p>
             <form class="w-full" @submit.prevent="resend">
               <InputEmail v-model="resendEmail.value" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
               <DefaultSubmitButton :text="t('VerifyEmail.ResendButton')" />
             </form>
           </template>
-          <p v-else class="text-green-700 font-bold">{{ t('VerifyEmail.ResendSuccess') }}</p>
+          <p v-else class="text-green-400 dark:text-green-700 font-bold">{{ t('VerifyEmail.ResendSuccess') }}</p>
 
-          <RouterLink to="/login" class="mt-4 font-bold text-blue-600">{{ t('Login.Heading') }}</RouterLink>
+          <RouterLink to="/login" class="mt-4 font-bold text-blue-300 dark:text-blue-600">{{ t('Login.Heading') }}</RouterLink>
         </div>
       </div>
     </div>

@@ -42,7 +42,7 @@
             registered.value = true
           })
           .catch(error => {
-            push.error(error.response.data.message)
+            push.error(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
           })
     }
   }
@@ -66,10 +66,10 @@
             </div>
           </div>
 
-        <div class="w-12/12 my-5 bg-gray-200 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl">
+        <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
           <div class="w-full mt-2 md:mt-5 px-7 overflow-y-auto">
             <template v-if="!registered">
-              <h2>{{ t('Register.Heading') }}</h2>
+              <h2 class="text-white dark:text-blue-800">{{ t('Register.Heading') }}</h2>
               <form class="mt-6" v-on:submit.prevent="register">
                 <InputEmail v-model="user.email" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
                 <InputPassword v-model="user.password" name="password" :label="t('password')" :placeholder="t('Auth.PasswordPlaceholder')"/>
@@ -79,8 +79,8 @@
               </form>
             </template>
             <div v-else class="py-6 text-center" data-testid="check-email-message">
-              <p class="text-green-700 font-bold mb-2">{{ t('Register.CheckEmailTitle') }}</p>
-              <p class="text-gray-700 text-sm">{{ t('Register.CheckEmailMessage') }}</p>
+              <h2 class="text-white dark:text-blue-800">{{ t('Register.CheckEmailTitle') }}</h2>
+              <p class="text-gray-200 dark:text-gray-700 whitespace-pre-line">{{ t('Register.CheckEmailMessage') }}</p>
             </div>
           </div>
         </div>

@@ -16,6 +16,7 @@ vi.mock('notivue', () => ({
 }))
 
 import { push } from 'notivue'
+import { http } from '../../src/api.js'
 
 // Mock localStorage (authStore.js le lit/écrit directement à l'initialisation)
 const localStorageMock = (() => {
@@ -36,22 +37,34 @@ describe('redirectToHomeIfNotLoggedIn', () => {
     setActivePinia(createPinia())
   })
 
-  it("redirige vers login si l'utilisateur n'est pas connecté", () => {
+  it("redirige vers login si l'utilisateur n'est pas connecté", async () => {
     const next = vi.fn()
 
-    redirectToHomeIfNotLoggedIn(null, null, next)
+    await redirectToHomeIfNotLoggedIn(null, null, next)
 
     expect(push.error).toHaveBeenCalled()
     expect(next).toHaveBeenCalledWith({ name: 'login' })
   })
 
-  it("laisse passer si l'utilisateur est connecté", () => {
+  it('laisse passer si le token est valide côté serveur', async () => {
     useAuthStore().setToken('tok123')
+    http.get.mockResolvedValueOnce({ data: { user: { id: 1, email: 'artifice@test.com', characters: [] } } })
     const next = vi.fn()
 
-    redirectToHomeIfNotLoggedIn(null, null, next)
+    await redirectToHomeIfNotLoggedIn(null, null, next)
 
     expect(push.error).not.toHaveBeenCalled()
     expect(next).toHaveBeenCalledWith()
+  })
+
+  it('redirige vers login si le token local est invalide côté serveur (session expirée, compte supprimé)', async () => {
+    useAuthStore().setToken('tok-perime')
+    http.get.mockRejectedValueOnce({ response: { status: 401 } })
+    const next = vi.fn()
+
+    await redirectToHomeIfNotLoggedIn(null, null, next)
+
+    expect(push.error).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith({ name: 'login' })
   })
 })

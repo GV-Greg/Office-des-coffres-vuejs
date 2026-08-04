@@ -7,7 +7,7 @@
 </script>
 
 <template>
-  <main class="md:w-3/4 overflow-y-scroll">
+  <main>
     <div class="w-full flex flex-cols-2 flex-grow mb-2">
       <div class="w-1/6 flex flex-col justify-start text-teal-600">
         <h3 class="text-center">{{ t('Animation.Title') }}</h3>

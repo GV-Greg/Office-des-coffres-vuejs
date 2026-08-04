@@ -93,6 +93,14 @@ export const useAuthStore = defineStore('auth', () => {
     return response.data
   }
 
+  const updateCharacterCity = async (characterId, city_id) => {
+    const response = await http.patch(`characters/${characterId}`, { city_id }, {
+      headers: { Authorization: `Bearer ${token.value}` },
+    })
+    await checkAuth() // resynchronise user.characters avec la nouvelle résidence
+    return response.data
+  }
+
   // Hydratation au démarrage
   if (token.value) {
     checkAuth()
@@ -112,6 +120,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     checkAuth,
     createCharacter,
+    updateCharacterCity,
     setToken,
     setUser,
   }

@@ -36,7 +36,13 @@ import {
   GiCrownCoin,
   FaUserTag,
   RiMoonFill,
-  RiSunFill
+  RiSunFill,
+  FaChevronDown,
+  FaUserPlus,
+  FaCheckCircle,
+  FaClock,
+  FaMapMarkerAlt,
+  FaEdit
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -60,7 +66,13 @@ addIcons(
   GiCrownCoin,
   FaUserTag,
   RiMoonFill,
-  RiSunFill
+  RiSunFill,
+  FaChevronDown,
+  FaUserPlus,
+  FaCheckCircle,
+  FaClock,
+  FaMapMarkerAlt,
+  FaEdit
 )
 
 const i18n = createI18n({

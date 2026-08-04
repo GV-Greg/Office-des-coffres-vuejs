@@ -10,7 +10,7 @@
 </script>
 
 <template>
-  <main class="md:w-3/4">
+  <main>
     <div class="w-full flex flex-cols-2 flex-grow mb-2">
       <div class="w-1/6 flex flex-col justify-start text-salmon-600">
         <h3 class="text-center">{{ t('Security.Title') }}</h3>

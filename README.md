@@ -30,7 +30,12 @@ src/
 ├── views/
 │   ├── WelcomeView.vue          # Page d'accueil pré-connexion (cadenas animé)
 │   ├── HomeView.vue             # Dashboard post-connexion
-│   ├── auth/                   # Login, Register, Profil
+│   ├── auth/
+│   │   ├── LoginView.vue        # Connexion par email + renvoi d'email de vérification
+│   │   ├── RegisterView.vue     # Inscription (email + mot de passe uniquement)
+│   │   ├── VerifyEmailView.vue  # Route /verify-email — connexion auto après clic sur le lien reçu
+│   │   ├── AddCharacterView.vue # Route /app/character/new — création de personnage (royaume→province→ville)
+│   │   └── ProfilView.vue       # Liste des personnages du compte, statut individuel
 │   └── modules/
 │       ├── security/           # Module Guet (export BBcode)
 │       ├── economy/            # Module Économie (en développement)
@@ -83,11 +88,17 @@ VITE_API_ENDPOINT_PROD=
 | Module | Route | État |
 |---|---|---|
 | Accueil | `/app/` | Fonctionnel |
-| Sécurité — Guet | `/app/secu/guet` | Fonctionnel (bug parsing sorties corrigé le 02/08/2026) |
+| Sécurité — Guet | `/app/secu/guet` | Fonctionnel (liste "d'hier" pré-remplie via cookie comfort) |
 | Économie | `/app/eco` | En développement |
 | Animation | `/app/anim` | En développement |
 | Compagnie | `/app/company` | En développement |
-| Profil | `/app/profil` | Fonctionnel (pseudo + statut de validation, FR/EN) |
+| Vérification email | `/verify-email` | Fonctionnel — connexion auto après clic sur le lien reçu |
+| Créer un personnage | `/app/character/new` | Fonctionnel — sélecteur royaume→province→ville en cascade |
+| Profil | `/app/profil` | Fonctionnel — liste des personnages du compte, statut individuel, FR/EN |
+
+Un compte s'inscrit désormais avec seulement email + mot de passe ; la création de personnage
+(pseudo + ville) se fait ensuite via `/app/character/new`, un compte pouvant avoir plusieurs
+personnages.
 
 ---
 
@@ -101,16 +112,19 @@ npx vitest run tests/stores/authStore.test.js         # Store auth uniquement
 ⚠️ `npm run test` lance Vitest en mode **watch** — ne pas l'utiliser tel quel en CI ou pour une
 vérification ponctuelle, préférer `npx vitest run`.
 
-51 tests verts au 03/08/2026, répartis dans `tests/{components,stores,router,views}` +
-fixtures réelles dans `tests/fixtures/` (données anonymisées pour le bug export sorties).
+86 tests verts au 03/08/2026, répartis dans `tests/{components,modules,router,stores,views}`
+(dont `VerifyEmailView`, `AddCharacterView`, `RegisterView`, `ProfilView`) + fixtures réelles
+dans `tests/fixtures/` (données anonymisées pour le bug export sorties). Toute vue utilisant
+`useI18n()` doit recevoir un plugin `createI18n({ legacy: false, ... })` dans
+`global.plugins` du test.
 
 ---
 
 ## Conventions
 
-- Toujours prévoir les traductions FR **et** EN pour toute nouvelle vue ou composant
+- Toujours prévoir les traductions FR **et** EN pour toute nouvelle vue ou composant, y compris l'existant dès qu'on le touche
 - Toujours afficher la mention "outil non officiel"
-- Cookies : essentiels et session uniquement — aucun cookie publicitaire ni traçage
+- Cookies : catégories "session" (connexion) et "comfort" (thème/langue/préférences par module, optionnelle, dégradation gracieuse) uniquement — aucun cookie publicitaire ni traçage
 - Tests Vitest obligatoires pour chaque nouvelle fonctionnalité, avant commit
 - Branches : `feat/<nom>`, `fix/<nom>`, `chore/<nom>` — jamais directement sur `main`
 - Commits et push uniquement à la demande explicite

@@ -2,13 +2,14 @@
 /*
   imports
 */
-  import { ref, computed, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { ref } from 'vue'
+  import { RouterLink, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import DefaultSubmitButton from '@/components/buttons/DefaultSubmitButton.vue'
+  import SelectorMenu from '@/components/SelectorMenu.vue'
+  import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
   import { useAuthStore } from '@/stores/authStore'
   import validation from '@/directives/validation'
-  import { http } from '@/api.js'
   import { push } from 'notivue'
 
   const { t } = useI18n()
@@ -19,38 +20,7 @@
   form data
 */
   const pseudo = ref('')
-  const kingdoms = ref([])
-  const selectedKingdomId = ref('')
-  const selectedProvinceId = ref('')
   const selectedCityId = ref('')
-  const loadingMap = ref(true)
-
-  const selectedKingdom = computed(() => kingdoms.value.find(k => k.id === Number(selectedKingdomId.value)))
-  const provinces = computed(() => selectedKingdom.value?.provinces ?? [])
-  const selectedProvince = computed(() => provinces.value.find(p => p.id === Number(selectedProvinceId.value)))
-  const cities = computed(() => selectedProvince.value?.cities ?? [])
-
-  const onKingdomChange = () => {
-    selectedProvinceId.value = ''
-    selectedCityId.value = ''
-  }
-  const onProvinceChange = () => {
-    selectedCityId.value = ''
-  }
-
-/*
-  charger la carte
-*/
-  onMounted(async () => {
-    try {
-      const response = await http.get('map')
-      kingdoms.value = response.data.kingdoms
-    } catch (error) {
-      push.error(t('AddCharacter.MapError'))
-    } finally {
-      loadingMap.value = false
-    }
-  })
 
 /*
   submit form
@@ -64,61 +34,41 @@
             router.push('/app/profil')
           })
           .catch(error => {
-            push.error(error.response.data.message)
+            push.error(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
           })
     }
   }
 </script>
 
 <template>
-  <main class="md:w-3/4">
+  <div class="page-container relative">
+    <div class="absolute top-4 right-4">
+      <SelectorMenu />
+    </div>
+    <h1>{{ t('Common.SiteName') }}</h1>
     <div class="page-content grid grid-cols-3 gap-0 justify-items-center">
-      <div class="col-start-2 col-span-1 w-full">
-        <div class="w-full my-5 bg-gray-200 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl">
+      <div class="w-full col-start-2 col-span-1">
+        <!-- Bouton retour -->
+        <div class="w-full flex justify-center">
+          <div class="w-6/12 mb-1 grid grid-cols-1 text-center text-white text-3xl font-black hover:text-gray-800 transform hover:translate-y-px hover:translate-x-px shadow-inner">
+            <RouterLink to="/app/profil" class="px-4 pb-2.5 pt-1.5 font-bold bg-gradient-to-br from-red-600 to-orange-400 rounded-xl">
+              <v-icon name="fa-arrow-alt-circle-left" scale="2" class="mb-1" />
+              <span class="ml-2">{{ t('AddCharacter.BackLink') }}</span>
+            </RouterLink>
+          </div>
+        </div>
+
+        <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
           <div class="w-full mt-2 md:mt-5 px-7 overflow-y-auto">
-            <h2>{{ t('AddCharacter.Heading') }}</h2>
+            <h2 class="text-white dark:text-blue-800">{{ t('AddCharacter.Heading') }}</h2>
 
             <form class="mt-6" @submit.prevent="submit">
               <div class="form-group">
-                <label class="form-label">{{ t('username') }}</label>
-                <input v-model="pseudo" type="text" :placeholder="t('Auth.UsernamePlaceholder')" class="form-field" />
+                <label class="form-label">{{ t('username') }} <span class="text-red-500">*</span></label>
+                <input v-model="pseudo" type="text" :placeholder="t('Auth.UsernamePlaceholder')" class="form-field" :class="{ 'border-green-500': pseudo, 'border-red-300': !pseudo }" />
               </div>
 
-              <div v-if="loadingMap" class="text-center text-sm text-gray-500 my-4">
-                {{ t('AddCharacter.LoadingMap') }}
-              </div>
-
-              <template v-else>
-                <div class="form-group">
-                  <label class="form-label">{{ t('AddCharacter.KingdomLabel') }}</label>
-                  <select v-model="selectedKingdomId" @change="onKingdomChange" class="form-field">
-                    <option value="" disabled>{{ t('AddCharacter.KingdomPlaceholder') }}</option>
-                    <option v-for="kingdom in kingdoms" :key="kingdom.id" :value="kingdom.id">
-                      {{ kingdom.kingdom_name }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">{{ t('AddCharacter.ProvinceLabel') }}</label>
-                  <select v-model="selectedProvinceId" @change="onProvinceChange" :disabled="!selectedKingdomId" class="form-field">
-                    <option value="" disabled>{{ t('AddCharacter.ProvincePlaceholder') }}</option>
-                    <option v-for="province in provinces" :key="province.id" :value="province.id">
-                      {{ province.province_name }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">{{ t('AddCharacter.CityLabel') }}</label>
-                  <select v-model="selectedCityId" :disabled="!selectedProvinceId" class="form-field">
-                    <option value="" disabled>{{ t('AddCharacter.CityPlaceholder') }}</option>
-                    <option v-for="city in cities" :key="city.id" :value="city.id">
-                      {{ city.city_name }}
-                    </option>
-                  </select>
-                </div>
-              </template>
+              <CityCascadeSelect v-model="selectedCityId" />
 
               <DefaultSubmitButton :text="t('AddCharacter.SubmitButton')" />
             </form>
@@ -126,5 +76,5 @@
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>

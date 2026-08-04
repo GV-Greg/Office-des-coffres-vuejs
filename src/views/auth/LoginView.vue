@@ -44,8 +44,8 @@
             router.push(authStore.hasCharacters ? '/app/' : '/app/character/new')
           })
           .catch(error => {
-            error_message.value = error.response.data.message
-            push.error(error.response.data.message)
+            error_message.value = error.response?.data?.message ?? t('Auth.Errors.NetworkError')
+            push.error(error_message.value)
           })
     }
   }
@@ -56,7 +56,7 @@
         resendSent.value = true
       })
       .catch(error => {
-        push.error(error.response.data.message)
+        push.error(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
       })
   }
 </script>
@@ -77,9 +77,9 @@
         </div>
 
         <!-- Formulaire de connexion -->
-        <div class="w-12/12 my-5 bg-gray-200 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl">
+        <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
           <div class="w-full mt-2 md:mt-5 px-7 overflow-y-auto">
-            <h2>{{ t('Login.Heading') }}</h2>
+            <h2 class="text-white dark:text-blue-800">{{ t('Login.Heading') }}</h2>
             <form class="mt-6" @submit.prevent="connect">
               <div class="form-group">
                 <InputEmail v-model="user.email" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
@@ -92,13 +92,13 @@
 
             <!-- Lien d'inscription -->
             <div class="my-5 flex flex-col laptop:flex-row justify-center text-center">
-              <span class="text-base text-gray-500">
+              <span class="text-base text-gray-300 dark:text-gray-500">
                 {{ t('Login.NoAccount') }}
               </span>
               <span class="mt-2 laptop:mt-0 text-xl laptop:text-lg">
                 <RouterLink
                   to="/register"
-                  class="ml-1 font-bold text-blue-600"
+                  class="ml-1 font-bold text-blue-300 dark:text-blue-600"
                 >
                   {{ t('Login.RegisterLink') }}
                 </RouterLink>

@@ -23,7 +23,7 @@
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-slate-200 dark:bg-slate-800 transition-colors duration-200">
+  <div class="min-h-screen w-full flex flex-col bg-slate-200 dark:bg-slate-800 transition-colors duration-200">
     <RouterView name="Nav" />
     <RouterView />
 
