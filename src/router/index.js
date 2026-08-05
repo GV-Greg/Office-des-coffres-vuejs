@@ -65,10 +65,18 @@ const router = createRouter({
     {
       path: '/app/eco',
       name: 'economy',
+      redirect: { name: 'economy-mines' },
       components: {
         Nav,
         default: () => import('@/views/modules/economy/MainEconomy.vue'),
       },
+      children: [
+        {
+          path: 'mines',
+          name: 'economy-mines',
+          component: () => import('@/views/modules/economy/EconomyMines.vue'),
+        },
+      ],
     },
     {
       path: '/app/secu',
