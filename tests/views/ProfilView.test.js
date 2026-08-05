@@ -15,7 +15,8 @@ const i18n = createI18n({
         NoCharacter: "Vous n'avez pas encore de personnage.",
         AddCharacter: 'Ajouter un personnage',
         Status: {
-          Validated: 'Personnage validé.',
+          ValidatedBadge: 'Validé',
+          PendingBadge: 'En attente',
           PendingMessage: 'En attente de validation.',
           PendingResidenceChangeMessage: 'En attente de validation du changement de résidence.'
         }
@@ -65,10 +66,13 @@ describe('ProfilView', () => {
     })
 
     expect(wrapper.text()).toContain('Artifice')
-    expect(wrapper.text()).toContain('Personnage validé.')
+    expect(wrapper.text()).toContain('Validé')
     expect(wrapper.text()).toContain('Burgos, Reino de Castilla, Couronne de Castille et Léon')
     expect(wrapper.text()).toContain('Buldo')
+    expect(wrapper.text()).toContain('En attente')
     expect(wrapper.text()).toContain('En attente de validation.')
+    // Pas de mention redondante avec le badge "Validé" pour un personnage validé
+    expect(wrapper.text()).not.toContain('Personnage validé.')
   })
 
   it('affiche un message différent quand le personnage est en attente suite à un changement de résidence', () => {

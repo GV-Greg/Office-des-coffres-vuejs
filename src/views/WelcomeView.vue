@@ -1,9 +1,16 @@
 <script setup>
+  import { computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import SelectorMenu from '@/components/SelectorMenu.vue'
   const router = useRouter()
   const { t } = useI18n()
+
+  const START_YEAR = 2026
+  const currentYear = new Date().getFullYear()
+  const developmentYears = computed(() => (
+    currentYear > START_YEAR ? `${START_YEAR}-${currentYear}` : `${START_YEAR}`
+  ))
 </script>
 
 <template>
@@ -45,7 +52,23 @@
             </p>
           </div>
         </div>
+
+        <p class="text-slate-800 dark:text-slate-200 text-center max-w-2xl mx-auto italic">
+          {{ t('Welcome.Intro') }}
+        </p>
       </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="absolute bottom-4 inset-x-0 text-center space-y-1">
+      <i18n-t keypath="Welcome.Disclaimer" tag="p" scope="global" class="text-slate-800 dark:text-slate-200 text-xs">
+        <template #link>
+          <a href="https://www.renaissancekingdoms.com/" target="_blank" rel="noopener noreferrer" class="underline hover:text-orange-500">Renaissance Kingdoms</a>
+        </template>
+      </i18n-t>
+      <p class="text-slate-800 dark:text-slate-200 text-xs">
+        {{ t('Welcome.Copyright', { years: developmentYears }) }}
+      </p>
     </div>
   </div>
 </template>

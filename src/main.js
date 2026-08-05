@@ -42,7 +42,8 @@ import {
   FaCheckCircle,
   FaClock,
   FaMapMarkerAlt,
-  FaEdit
+  FaEdit,
+  GiScrollUnfurled
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -72,7 +73,8 @@ addIcons(
   FaCheckCircle,
   FaClock,
   FaMapMarkerAlt,
-  FaEdit
+  FaEdit,
+  GiScrollUnfurled
 )
 
 const i18n = createI18n({

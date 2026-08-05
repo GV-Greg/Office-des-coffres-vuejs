@@ -34,25 +34,34 @@ src/
 │   │   ├── LoginView.vue        # Connexion par email + renvoi d'email de vérification
 │   │   ├── RegisterView.vue     # Inscription (email + mot de passe uniquement)
 │   │   ├── VerifyEmailView.vue  # Route /verify-email — connexion auto après clic sur le lien reçu
-│   │   ├── AddCharacterView.vue # Route /app/character/new — création de personnage (royaume→province→ville)
-│   │   └── ProfilView.vue       # Liste des personnages du compte, statut individuel
+│   │   ├── AddCharacterView.vue # Route /app/character/new — création de personnage (royaume→province→ville), résidence aussi modifiable depuis ProfilView
+│   │   └── ProfilView.vue       # Liste des personnages du compte, résidence, statut individuel, choix du personnage actif
 │   └── modules/
 │       ├── security/           # Module Guet (export BBcode)
-│       ├── economy/            # Module Économie (en développement)
+│       ├── economy/            # EconomyMines.vue — bilan des mines (export BBcode)
 │       ├── animation/          # Module Animation (en développement)
 │       └── company/            # Module Compagnie (en développement)
 ├── stores/
-│   ├── authStore.js            # Authentification (Pinia)
+│   ├── authStore.js            # Authentification (Pinia) + personnage actif (activeCharacter/setActiveCharacter)
 │   └── cookieStore.js          # Consentement cookies (Pinia)
 ├── api.js                       # Client HTTP Axios (baseURL VITE_API_ENDPOINT_*)
+├── data/
+│   └── whatsNew.json           # Entrées de la "Chronique de l'Office" (HomeView), scope public/private
+├── modules/
+│   ├── Validators.js            # Validation de formulaires
+│   ├── kingdomTranslations.js   # Traduction FR des noms de royaumes (alignée sur lang/fr.json backend)
+│   └── mineParser.js            # Parsing + calcul du bilan des mines (logique pure, testée isolément)
 ├── services/
 │   └── anim.service.js         # Appels API animation (utilise api.js)
 ├── components/
 │   ├── NavBar.vue              # Barre de navigation (routes /app/*)
 │   ├── NavMenu.vue             # Menu circulaire des modules
+│   ├── SelectorMenu.vue        # SelectorCharacter + SelectorTheme + SelectorLanguage
+│   ├── SelectorCharacter.vue   # Switch du personnage actif (visible si connecté et >1 personnage)
 │   ├── CookiesBanner.vue       # Bannière RGPD
-│   └── CookiesModal.vue        # Gestion détaillée des cookies
-├── router/index.js             # Routes : /, /login, /register, /app/*
+│   ├── CookiesModal.vue        # Gestion détaillée des cookies
+│   └── forms/CityCascadeSelect.vue  # Sélecteur royaume→province→ville, réutilisé par AddCharacterView et l'édition de résidence
+├── router/index.js             # Routes : /, /login, /register, /verify-email, /app/*
 ├── i18n/                       # Traductions FR/EN
 └── assets/
     └── style.css               # Styles globaux Tailwind (@layer components)
@@ -87,14 +96,14 @@ VITE_API_ENDPOINT_PROD=
 
 | Module | Route | État |
 |---|---|---|
-| Accueil | `/app/` | Fonctionnel |
+| Accueil | `/app/` | Fonctionnel — intègre la "Chronique de l'Office" (`whatsNew.json`), entrées publiques et privées (connecté) |
 | Sécurité — Guet | `/app/secu/guet` | Fonctionnel (liste "d'hier" pré-remplie via cookie comfort) |
-| Économie | `/app/eco` | En développement |
+| Économie — Bilan des mines | `/app/eco/mines` (`/app/eco` redirige) | Fonctionnel — colle le texte "mines" du jeu, bilan hebdo ou mise en forme du jour, export BBcode, mémorisation "confort" |
 | Animation | `/app/anim` | En développement |
 | Compagnie | `/app/company` | En développement |
 | Vérification email | `/verify-email` | Fonctionnel — connexion auto après clic sur le lien reçu |
 | Créer un personnage | `/app/character/new` | Fonctionnel — sélecteur royaume→province→ville en cascade |
-| Profil | `/app/profil` | Fonctionnel — liste des personnages du compte, statut individuel, FR/EN |
+| Profil | `/app/profil` | Fonctionnel — liste des personnages du compte, statut individuel, choix du personnage actif, FR/EN |
 
 Un compte s'inscrit désormais avec seulement email + mot de passe ; la création de personnage
 (pseudo + ville) se fait ensuite via `/app/character/new`, un compte pouvant avoir plusieurs
@@ -112,9 +121,11 @@ npx vitest run tests/stores/authStore.test.js         # Store auth uniquement
 ⚠️ `npm run test` lance Vitest en mode **watch** — ne pas l'utiliser tel quel en CI ou pour une
 vérification ponctuelle, préférer `npx vitest run`.
 
-86 tests verts au 03/08/2026, répartis dans `tests/{components,modules,router,stores,views}`
-(dont `VerifyEmailView`, `AddCharacterView`, `RegisterView`, `ProfilView`) + fixtures réelles
-dans `tests/fixtures/` (données anonymisées pour le bug export sorties). Toute vue utilisant
+129 tests verts au 05/08/2026, répartis dans `tests/{components,modules,router,stores,views}`
+(dont `VerifyEmailView`, `AddCharacterView`, `RegisterView`, `ProfilView`, `EconomyMines`,
+`mineParser`, personnage actif dans `authStore.test.js`, filtrage/tri de la Chronique de l'Office
+dans `HomeView.test.js`) + fixtures réelles dans `tests/fixtures/` (données anonymisées pour le
+bug export sorties). Toute vue utilisant
 `useI18n()` doit recevoir un plugin `createI18n({ legacy: false, ... })` dans
 `global.plugins` du test.
 

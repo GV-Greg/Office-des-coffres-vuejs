@@ -58,8 +58,9 @@
     "SaveResidence": "Enregistrer",
     "CancelEdit": "Annuler",
     "ResidenceUpdated": "Résidence mise à jour — en attente de validation.",
+    "ActiveCharacter": "Personnage actif à la connexion",
+    "SetActive": "Définir comme actif à la connexion",
     "Status": {
-      "Validated": "Personnage validé.",
       "PendingMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce personnage.",
       "PendingResidenceChangeMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce changement de résidence.",
       "ValidatedBadge": "Validé",
@@ -74,12 +75,16 @@
     "NotConfirmed": "Ne correspond pas à {field}."
   },
   "Welcome": {
-    "ClickHint": "cliquez"
+    "ClickHint": "cliquez",
+    "Intro": "Bienvenue sur l'Office des coffres, qui propose des coffres afin de vous épauler dans vos tâches liées à la sécurité, à l'économie ou à l'animation de votre ville et de votre province.",
+    "Disclaimer": "Site d'aide, non officiel, à la communauté du jeu {link}.",
+    "Copyright": "© {years} Office des coffres. Tous droits réservés."
   },
   "Home": {
     "WelcomeMessage": "L'{brand} vous souhaite la bienvenue !",
-    "Description": "Elle met à disposition des coffres qui vous aideront dans certaines tâches liées à l'animation, à la sécurité ou à l'économie.",
-    "UnderConstruction": "L'Office est actuellement en construction..."
+    "UnderConstruction": "L'Office est actuellement en construction...",
+    "News": "Chronique de l'Office",
+    "NewsMembers": "Membres"
   },
   "NotFound": {
     "Title": "Page introuvable"
@@ -141,7 +146,8 @@
     }
   },
   "NavBar": {
-    "Home": "Accueil"
+    "Home": "Accueil",
+    "CharacterSelector": "Changer de personnage"
   },
   "NavMenu": {
     "Home": "Accueil",
@@ -162,7 +168,37 @@
     "ExportButton": "Exporter"
   },
   "Economy": {
-    "Title": "Coffres Économie"
+    "Title": "Coffres Économie",
+    "MinesLink": "Bilan des mines"
+  },
+  "EconomyMines": {
+    "Title": "Bilan des mines",
+    "PasteLabel": "Colle ici le texte complet de la page \"mines\" du jeu (toutes les mines d'un coup)",
+    "PastePlaceholder": "Copie-colle ici le texte de la page mines du jeu...",
+    "PastePrefilled": "Fusionné avec ton dernier collage mémorisé sur cet appareil",
+    "PricesTitle": "Prix unitaires (écus)",
+    "PriceStone": "Pierre (quintal)",
+    "PriceIron": "Fer (kg)",
+    "PriceClay": "Argile (pain)",
+    "PriceSalt": "Sel (boisseau)",
+    "SalaryLabel": "Salaire des mineurs (à saisir toi-même)",
+    "GenerateButton": "Générer le bilan hebdomadaire",
+    "ExportButton": "Copier en BBcode",
+    "DayExportButton": "Mise en forme du jour",
+    "WeekIncompleteWarning": "Semaine incomplète : {count}/7 jours couverts (du {monday} au {sunday}). Le bilan reste calculé sur les données disponibles.",
+    "ColumnMine": "Mine",
+    "ColumnHours": "Heures",
+    "ColumnProduction": "Production",
+    "ColumnProductionValue": "Valeur production",
+    "ColumnStone": "Pierre",
+    "ColumnIron": "Fer",
+    "ColumnMaintenanceValue": "Valeur entretien",
+    "MaintenanceLabel": "Entretien",
+    "TotalLabel": "Total",
+    "NetLabel": "Net",
+    "NoDataError": "Aucune donnée reconnue. Vérifie que tu as bien collé le texte du jeu.",
+    "CopiedSuccess": "Copié dans le presse-papier.",
+    "CopyError": "Impossible de copier dans le presse-papier (autorisation refusée par le navigateur ?)."
   },
   "Animation": {
     "Title": "Coffres Animation"

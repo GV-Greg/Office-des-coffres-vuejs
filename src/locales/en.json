@@ -58,8 +58,9 @@
     "SaveResidence": "Save",
     "CancelEdit": "Cancel",
     "ResidenceUpdated": "Residence updated — pending validation.",
+    "ActiveCharacter": "Active character at login",
+    "SetActive": "Set as active at login",
     "Status": {
-      "Validated": "Character validated.",
       "PendingMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this character.",
       "PendingResidenceChangeMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this residence change.",
       "ValidatedBadge": "Validated",
@@ -74,12 +75,16 @@
     "NotConfirmed": "Does not match {field}."
   },
   "Welcome": {
-    "ClickHint": "click"
+    "ClickHint": "click",
+    "Intro": "Welcome to the Office des coffres, offering chests to support you with your city's and province's security, economy or animation.",
+    "Disclaimer": "Unofficial help site for the {link} community.",
+    "Copyright": "© {years} Office des coffres. All rights reserved."
   },
   "Home": {
     "WelcomeMessage": "The {brand} welcomes you!",
-    "Description": "It provides tools (\"coffres\") to help you with certain tasks related to animation, security or economy.",
-    "UnderConstruction": "The Office is currently under construction..."
+    "UnderConstruction": "The Office is currently under construction...",
+    "News": "Office chronicle",
+    "NewsMembers": "Members"
   },
   "NotFound": {
     "Title": "Page not found"
@@ -141,7 +146,8 @@
     }
   },
   "NavBar": {
-    "Home": "Home"
+    "Home": "Home",
+    "CharacterSelector": "Switch character"
   },
   "NavMenu": {
     "Home": "Home",
@@ -162,7 +168,37 @@
     "ExportButton": "Export"
   },
   "Economy": {
-    "Title": "Economy Chest"
+    "Title": "Economy Chest",
+    "MinesLink": "Mines report"
+  },
+  "EconomyMines": {
+    "Title": "Mines report",
+    "PasteLabel": "Paste the full text of the game's \"mines\" page here (all mines at once)",
+    "PastePlaceholder": "Paste the game's mines page text here...",
+    "PastePrefilled": "Merged with your last saved paste on this device",
+    "PricesTitle": "Unit prices (écus)",
+    "PriceStone": "Stone (quintal)",
+    "PriceIron": "Iron (kg)",
+    "PriceClay": "Clay (loaf)",
+    "PriceSalt": "Salt (bushel)",
+    "SalaryLabel": "Miners' wages (enter manually)",
+    "GenerateButton": "Generate the weekly report",
+    "ExportButton": "Copy as BBcode",
+    "DayExportButton": "Format today's report",
+    "WeekIncompleteWarning": "Incomplete week: {count}/7 days covered ({monday} to {sunday}). The report is still computed from the data available.",
+    "ColumnMine": "Mine",
+    "ColumnHours": "Hours",
+    "ColumnProduction": "Production",
+    "ColumnProductionValue": "Production value",
+    "ColumnStone": "Stone",
+    "ColumnIron": "Iron",
+    "ColumnMaintenanceValue": "Maintenance value",
+    "MaintenanceLabel": "Maintenance",
+    "TotalLabel": "Total",
+    "NetLabel": "Net",
+    "NoDataError": "No data recognized. Check that you pasted the game's text correctly.",
+    "CopiedSuccess": "Copied to clipboard.",
+    "CopyError": "Could not copy to clipboard (permission denied by the browser?)."
   },
   "Animation": {
     "Title": "Animation Chest"
