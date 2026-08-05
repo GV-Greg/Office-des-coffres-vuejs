@@ -182,4 +182,47 @@ describe('Auth Store', () => {
       expect(store.hasCharacters).toBe(true)
     })
   })
+
+  describe('Personnage actif', () => {
+    const twoCharactersUser = {
+      ...mockUser,
+      characters: [
+        { id: 1, pseudo: 'Artifice', city_id: 5, is_validated: false },
+        { id: 2, pseudo: 'Buldo', city_id: 3, is_validated: true },
+      ],
+    }
+
+    it('est null si le compte n\'a aucun personnage', () => {
+      expect(store.activeCharacter).toBeNull()
+    })
+
+    it('se rabat sur le premier personnage tant qu\'aucun n\'est explicitement choisi', () => {
+      store.setUser(twoCharactersUser)
+      expect(store.activeCharacter.id).toBe(1)
+    })
+
+    it('setActiveCharacter change le personnage actif', () => {
+      store.setUser(twoCharactersUser)
+      store.setActiveCharacter(2)
+      expect(store.activeCharacter.id).toBe(2)
+    })
+
+    it('se rabat sur le premier personnage si la sélection ne correspond plus à un personnage existant', () => {
+      store.setUser(twoCharactersUser)
+      store.setActiveCharacter(999)
+      expect(store.activeCharacter.id).toBe(1)
+    })
+
+    it('logout() réinitialise la sélection du personnage actif', async () => {
+      store.setUser(twoCharactersUser)
+      store.setToken('tok789')
+      store.setActiveCharacter(2)
+      http.post.mockResolvedValueOnce({ data: { success: true } })
+
+      await store.logout()
+      store.setUser(twoCharactersUser)
+
+      expect(store.activeCharacter.id).toBe(1)
+    })
+  })
 })

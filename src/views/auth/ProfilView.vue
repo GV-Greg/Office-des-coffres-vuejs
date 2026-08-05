@@ -57,70 +57,104 @@
       <div
         v-for="character in authStore.getCharacters"
         :key="character.id"
-        class="w-full my-2 p-4 rounded-xl bg-white shadow-md border border-gray-200"
+        class="w-full my-2 flex rounded-xl bg-white shadow-md overflow-hidden transition-shadow hover:shadow-lg"
       >
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 shrink-0 rounded-full bg-slate-700 flex items-center justify-center">
-              <v-icon name="gi-barbute" scale="1.1" class="text-white" />
-            </div>
-            <div>
-              <p class="font-bold text-slate-800 dark:text-slate-800">{{ character.pseudo }}</p>
-              <p v-if="character.city_name" class="text-xs text-gray-500 dark:text-gray-500 inline-flex items-center gap-1">
-                <v-icon name="fa-map-marker-alt" scale="0.7" />
-                {{ character.city_name }}<template v-if="character.province_name">, {{ character.province_name }}</template><template v-if="character.kingdom_name">, {{ translateKingdomName(character.kingdom_name, locale) }}</template>
-                <button
-                  v-if="editingCharacterId !== character.id"
-                  type="button"
-                  class="ml-1 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors"
-                  @click="startEditResidence(character)"
+        <div
+          class="w-1.5 shrink-0"
+          :class="character.is_validated ? 'bg-green-500' : 'bg-red-400'"
+        />
+        <div class="flex-1 p-4">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="relative h-11 w-11 shrink-0">
+                <div class="h-11 w-11 rounded-full bg-slate-700 flex items-center justify-center">
+                  <v-icon name="gi-barbute" scale="1.2" class="text-white" />
+                </div>
+                <div
+                  v-if="authStore.defaultCharacter?.id === character.id"
+                  class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-gradient-to-br from-orange-400 to-red-600 ring-2 ring-white flex items-center justify-center"
+                  :title="t('Profil.ActiveCharacter')"
                 >
-                  <v-icon name="fa-edit" scale="0.7" />
-                  {{ t('Profil.EditResidence') }}
-                </button>
-              </p>
+                  <v-icon name="gi-crown-coin" scale="0.55" class="text-white" />
+                </div>
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-800 dark:text-slate-800 text-lg leading-tight">{{ character.pseudo }}</p>
+                <p v-if="character.city_name" class="text-xs text-gray-500 dark:text-gray-500 inline-flex items-center gap-1">
+                  <v-icon name="fa-map-marker-alt" scale="0.7" />
+                  {{ character.city_name }}<template v-if="character.province_name">, {{ character.province_name }}</template><template v-if="character.kingdom_name">, {{ translateKingdomName(character.kingdom_name, locale) }}</template>
+                </p>
+              </div>
             </div>
+            <span
+              v-if="authStore.defaultCharacter?.id === character.id"
+              class="shrink-0 text-[0.65rem] uppercase tracking-wide font-bold text-orange-600 whitespace-nowrap"
+            >
+              {{ t('Profil.ActiveCharacter') }}
+            </span>
           </div>
-          <span
-            class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase whitespace-nowrap"
-            :class="character.is_validated ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-          >
-            <v-icon :name="character.is_validated ? 'fa-check-circle' : 'fa-clock'" scale="0.8" />
-            {{ character.is_validated ? t('Profil.Status.ValidatedBadge') : t('Profil.Status.PendingBadge') }}
-          </span>
-        </div>
-        <p class="mt-3 text-sm text-gray-500 dark:text-gray-500">
-          {{ character.is_validated
-            ? t('Profil.Status.Validated')
-            : character.pending_residence_change
+
+          <div class="mt-3 flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-3">
+              <span
+                class="inline-flex items-center gap-1 text-xs font-semibold"
+                :class="character.is_validated ? 'text-green-700' : 'text-red-600'"
+              >
+                <v-icon :name="character.is_validated ? 'fa-check-circle' : 'fa-clock'" scale="0.75" />
+                {{ character.is_validated ? t('Profil.Status.ValidatedBadge') : t('Profil.Status.PendingBadge') }}
+              </span>
+              <button
+                v-if="editingCharacterId !== character.id"
+                type="button"
+                class="btn btn-ghost text-blue-700 bg-blue-50 hover:bg-blue-100"
+                @click="startEditResidence(character)"
+              >
+                <v-icon name="fa-edit" scale="0.7" />
+                {{ t('Profil.EditResidence') }}
+              </button>
+            </div>
+            <button
+              v-if="authStore.defaultCharacter?.id !== character.id"
+              type="button"
+              class="btn btn-ghost text-slate-600 bg-gray-100 hover:bg-gray-200"
+              @click="authStore.setDefaultCharacter(character.id)"
+            >
+              <v-icon name="gi-barbute" scale="0.7" />
+              {{ t('Profil.SetActive') }}
+            </button>
+          </div>
+
+          <p v-if="!character.is_validated" class="mt-2 text-sm text-gray-500 dark:text-gray-500">
+            {{ character.pending_residence_change
               ? t('Profil.Status.PendingResidenceChangeMessage')
               : t('Profil.Status.PendingMessage') }}
-        </p>
+          </p>
 
-        <div v-if="editingCharacterId === character.id" class="mt-3 pt-3 border-t border-gray-200">
-          <CityCascadeSelect v-model="editCityId" />
-          <div class="flex items-center gap-2 mt-2">
-            <button
-              type="button"
-              class="px-3 py-1.5 rounded-md text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-              @click="saveResidence(character.id)"
-            >
-              {{ t('Profil.SaveResidence') }}
-            </button>
-            <button
-              type="button"
-              class="px-3 py-1.5 rounded-md text-sm font-semibold text-slate-700 bg-gray-100 hover:bg-gray-200 transition-colors"
-              @click="cancelEditResidence"
-            >
-              {{ t('Profil.CancelEdit') }}
-            </button>
+          <div v-if="editingCharacterId === character.id" class="mt-3 pt-3 border-t border-gray-200">
+            <CityCascadeSelect v-model="editCityId" />
+            <div class="flex items-center gap-2 mt-2">
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                @click="saveResidence(character.id)"
+              >
+                {{ t('Profil.SaveResidence') }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-ghost text-slate-600 bg-gray-100 hover:bg-gray-200"
+                @click="cancelEditResidence"
+              >
+                {{ t('Profil.CancelEdit') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <RouterLink
         to="/app/character/new"
-        class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+        class="btn btn-primary mt-4"
       >
         <v-icon name="fa-user-plus" scale="1" />
         {{ t('Profil.AddCharacter') }}
