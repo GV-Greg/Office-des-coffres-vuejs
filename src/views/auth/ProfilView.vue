@@ -106,20 +106,20 @@
               <button
                 v-if="editingCharacterId !== character.id"
                 type="button"
-                class="btn btn-ghost text-blue-700 bg-blue-50 hover:bg-blue-100"
+                class="btn btn-grad-blue btn-sm"
                 @click="startEditResidence(character)"
               >
-                <v-icon name="fa-edit" scale="0.7" />
+                <v-icon name="fa-edit" class="w-3.5 h-3.5" />
                 {{ t('Profil.EditResidence') }}
               </button>
             </div>
             <button
               v-if="authStore.defaultCharacter?.id !== character.id"
               type="button"
-              class="btn btn-ghost text-slate-600 bg-gray-100 hover:bg-gray-200"
+              class="btn btn-grad-slate btn-sm"
               @click="authStore.setDefaultCharacter(character.id)"
             >
-              <v-icon name="gi-barbute" scale="0.7" />
+              <v-icon name="gi-barbute" class="w-3.5 h-3.5" />
               {{ t('Profil.SetActive') }}
             </button>
           </div>
@@ -142,7 +142,7 @@
               </button>
               <button
                 type="button"
-                class="btn btn-ghost text-slate-600 bg-gray-100 hover:bg-gray-200"
+                class="btn btn-grad-slate btn-sm"
                 @click="cancelEditResidence"
               >
                 {{ t('Profil.CancelEdit') }}

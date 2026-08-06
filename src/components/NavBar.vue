@@ -4,11 +4,19 @@
 */
   import { RouterLink, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
+  import { push } from 'notivue'
   import SelectorMenu from '@/components/SelectorMenu.vue'
+  import { useAuthStore } from '@/stores/authStore'
 
   const router = useRouter()
   const { t } = useI18n()
+  const authStore = useAuthStore()
 
+  const logout = async () => {
+    await authStore.logout()
+    push.success(t('NavBar.LoggedOut'))
+    router.push({ name: 'welcome' })
+  }
 </script>
 
 <template>
@@ -17,7 +25,7 @@
       <div class="flex items-center justify-end p-4">
         <nav class="w-full grid grid-cols-3 justify-items-stretch">
           <div class="space-x-3 justify-self-start flex items-center">
-            <RouterLink :to="{ name: 'home' }" class="flex items-center rounded-lg pl-1.5 pr-3 py-0.5 no-underline font-semibold bg-blue-600 text-slate-800 hover:bg-blue-300 hover:text-slate-900">
+            <RouterLink :to="{ name: 'home' }" class="btn-grad-blue flex items-center rounded-lg pl-1.5 pr-3 py-0.5 no-underline font-semibold">
               <v-icon name="gi-medieval-pavilion" scale="2" class="mr-1"/><span class="font-bold text-xl">{{ t('NavBar.Home') }}</span>
             </RouterLink>
           </div>
@@ -29,6 +37,20 @@
           </div>
           <div class="space-x-3 justify-self-end flex items-center">
             <SelectorMenu />
+            <button
+              v-if="authStore.isLoggedIn"
+              type="button"
+              @click="logout"
+              class="btn-grad-red relative z-50 p-2 inline-flex items-center justify-center cursor-pointer rounded-md border border-red-600 hover:border-red-700 transition-colors duration-200 focus:outline-none"
+              :aria-label="t('NavBar.Logout')"
+              :title="t('NavBar.Logout')"
+            >
+              <v-icon
+                name="fa-power-off"
+                class="w-6 h-6 text-white"
+                scale="1.2"
+              />
+            </button>
           </div>
         </nav>
       </div>

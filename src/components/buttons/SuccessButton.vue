@@ -15,7 +15,7 @@ defineProps({
   <button
     :type="type"
     :disabled="disabled"
-    class="btn btn-success"
+    class="btn btn-grad-green"
   >
     <slot></slot>
   </button>

@@ -49,13 +49,11 @@
     <div class="page-content grid grid-cols-3 gap-0 justify-items-center">
       <div class="w-full col-start-2 col-span-1">
         <!-- Bouton retour -->
-        <div class="w-full flex justify-center">
-          <div class="w-6/12 mb-1 grid grid-cols-1 text-center text-white text-3xl font-black hover:text-gray-800 transform hover:translate-y-px hover:translate-x-px shadow-inner">
-            <RouterLink to="/app/profil" class="px-4 pb-2.5 pt-1.5 font-bold bg-gradient-to-br from-red-600 to-orange-400 rounded-xl">
-              <v-icon name="fa-arrow-alt-circle-left" scale="2" class="mb-1" />
-              <span class="ml-2">{{ t('AddCharacter.BackLink') }}</span>
-            </RouterLink>
-          </div>
+        <div class="w-full flex justify-center mb-1">
+          <RouterLink to="/app/profil" class="btn btn-grad-slate">
+            <v-icon name="fa-arrow-alt-circle-left" scale="1" />
+            {{ t('AddCharacter.BackLink') }}
+          </RouterLink>
         </div>
 
         <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">

@@ -124,8 +124,75 @@
     @apply bg-slate-600 hover:bg-slate-500 ring-slate-400 ring-opacity-30;
   }
 
+  .btn-blue {
+    @apply bg-blue-600 hover:bg-blue-500 ring-blue-400 ring-opacity-30;
+  }
+
   .btn-menu-rounded {
     @apply rounded-full ring-4 shadow-inner;
+  }
+
+  /*
+    Palette dégradée — actions secondaires "pleines" (ex. cartes ProfilView)
+    Même traitement visuel que .btn-primary (dégradé clair→foncé, assombri au
+    survol) mais dans une teinte différente, pour les actions qui doivent
+    avoir le même poids visuel qu'un bouton principal sans utiliser le
+    dégradé orange→rouge (réservé à l'action "primary" de la page). Classes
+    volontairement séparées des .btn-secondary/.btn-info/... ci-dessus, qui
+    restent inchangées ailleurs dans l'app (ex. menu circulaire NavMenu).
+  */
+  .btn-grad-blue {
+    @apply text-white bg-gradient-to-br from-blue-400 to-blue-600;
+    @apply hover:from-blue-500 hover:to-blue-700;
+    @apply focus-visible:ring-blue-300;
+  }
+
+  .btn-grad-slate {
+    @apply text-white bg-gradient-to-br from-slate-400 to-slate-600;
+    @apply hover:from-slate-500 hover:to-slate-700;
+    @apply focus-visible:ring-slate-300;
+  }
+
+  .btn-grad-red {
+    @apply text-white bg-gradient-to-br from-red-400 to-red-600;
+    @apply hover:from-red-500 hover:to-red-700;
+    @apply focus-visible:ring-red-300;
+  }
+
+  .btn-grad-green {
+    @apply text-white bg-gradient-to-br from-green-400 to-green-600;
+    @apply hover:from-green-500 hover:to-green-700;
+    @apply focus-visible:ring-green-300;
+  }
+
+  .btn-grad-yellow {
+    @apply text-white bg-gradient-to-br from-yellow-400 to-yellow-600;
+    @apply hover:from-yellow-500 hover:to-yellow-700;
+    @apply focus-visible:ring-yellow-300;
+  }
+
+  .btn-grad-cyan {
+    @apply text-white bg-gradient-to-br from-cyan-400 to-cyan-600;
+    @apply hover:from-cyan-500 hover:to-cyan-700;
+    @apply focus-visible:ring-cyan-300;
+  }
+
+  .btn-grad-purple {
+    @apply text-white bg-gradient-to-br from-purple-400 to-purple-600;
+    @apply hover:from-purple-500 hover:to-purple-700;
+    @apply focus-visible:ring-purple-300;
+  }
+
+  .btn-grad-light {
+    @apply text-slate-800 bg-gradient-to-br from-slate-100 to-slate-300;
+    @apply hover:from-slate-200 hover:to-slate-400;
+    @apply focus-visible:ring-slate-300;
+  }
+
+  .btn-grad-dark {
+    @apply text-white bg-gradient-to-br from-slate-700 to-slate-900;
+    @apply hover:from-slate-800 hover:to-black;
+    @apply focus-visible:ring-slate-500;
   }
 
   /* États des boutons */

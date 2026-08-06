@@ -147,7 +147,9 @@
   },
   "NavBar": {
     "Home": "Accueil",
-    "CharacterSelector": "Changer de personnage"
+    "CharacterSelector": "Changer de personnage",
+    "Logout": "Se déconnecter",
+    "LoggedOut": "Vous avez été déconnecté."
   },
   "NavMenu": {
     "Home": "Accueil",

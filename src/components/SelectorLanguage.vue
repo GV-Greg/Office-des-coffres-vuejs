@@ -1,11 +1,11 @@
 <template>
   <button
     @click="toggleLocale"
-    class="relative z-50 px-3 py-2 cursor-pointer bg-slate-300 dark:bg-slate-900 hover:bg-slate-600 dark:hover:bg-slate-700 rounded-md border border-slate-300 dark:border-slate-600 focus:outline-none"
+    class="btn-grad-slate relative z-50 px-3 py-2 cursor-pointer rounded-md border border-slate-300 dark:border-slate-600 focus:outline-none"
     :aria-label="t('Common.Language.Title')"
     type="button"
   >
-    <span class="w-6 h-6 text-slate-800 dark:text-slate-200 font-bold">
+    <span class="w-6 h-6 text-white font-bold">
       {{ currentLocale.toUpperCase() }}
     </span>
   </button>
