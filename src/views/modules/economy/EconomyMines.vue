@@ -191,7 +191,7 @@
       </div>
     </div>
 
-    <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3">
+    <div class="mt-4 grid grid-cols-2 laptop:grid-cols-5 gap-3">
       <div class="form-group">
         <label class="form-label">{{ t('EconomyMines.PriceStone') }}</label>
         <input v-model.number="prices.PIERRE" type="number" step="0.1" class="form-field" />

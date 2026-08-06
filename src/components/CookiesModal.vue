@@ -84,8 +84,8 @@ const handleCancel = () => {
       <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" @click="handleCancel"></div>
 
       <!-- Modal -->
-      <div class="flex min-h-full max-w-6xl items-center justify-center p-4 text-center sm:p-0">
-        <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+      <div class="flex min-h-full max-w-6xl items-center justify-center p-4 text-center tablet:p-0">
+        <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 text-left shadow-xl transition-all tablet:my-8 tablet:w-full tablet:max-w-lg">
           <!-- Header -->
           <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3">
             <h3 class="text-lg font-medium leading-6 text-slate-900 dark:text-slate-100">
