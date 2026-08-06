@@ -22,5 +22,13 @@
     "type": "fix",
     "fr": "Correction d'une icône manquante sur le tout nouveau Registre des Réparations.",
     "en": "Fixed a missing icon on the brand new Repairs Register."
+  },
+  {
+    "id": "discord-server-relaunch",
+    "date": "2026-08-06",
+    "scope": "public",
+    "type": "feature",
+    "fr": "Le serveur Discord de l'Office des coffres relance ses portes ! Rejoignez-nous : https://discord.gg/7U3u9bDepH",
+    "en": "The Office des coffres Discord server is back! Join us: https://discord.gg/7U3u9bDepH"
   }
 ]
