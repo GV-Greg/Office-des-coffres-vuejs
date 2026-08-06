@@ -40,7 +40,7 @@
       </i18n-t>
       <div
         v-if="visibleNews.length || visibleFixes.length"
-        class="mt-12 max-w-5xl mx-auto w-full px-4 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12"
+        class="mt-12 max-w-6xl mx-auto w-full px-4 grid grid-cols-1 tablet:grid-cols-2 gap-x-16 gap-y-12"
       >
         <section v-if="visibleNews.length" class="news">
           <h3 class="flex items-center gap-2 text-orange-500 dark:text-orange-500 uppercase tracking-widest text-xs font-bold mb-5">
@@ -51,7 +51,7 @@
             <li v-for="item in visibleNews" :key="item.id" class="relative pl-6">
               <span
                 class="absolute -left-[0.95rem] top-0 flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-gray-200 dark:ring-gray-200"
-                :class="item.scope === 'private' ? 'bg-green-600 dark:bg-green-600' : 'bg-gradient-to-br from-orange-400 to-red-600'"
+                :class="item.scope === 'private' ? 'bg-gradient-to-br from-green-400 to-green-600' : 'bg-gradient-to-br from-orange-400 to-red-600'"
               >
                 <v-icon name="gi-bugle-call" scale="0.65" class="text-white" />
               </span>
@@ -79,15 +79,15 @@
             <li v-for="item in visibleFixes" :key="item.id" class="relative pl-6">
               <span
                 class="absolute -left-[0.95rem] top-0 flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-gray-200 dark:ring-gray-200"
-                :class="item.scope === 'private' ? 'bg-green-600 dark:bg-green-600' : 'bg-gradient-to-br from-orange-400 to-red-600'"
+                :class="item.scope === 'private' ? 'bg-gradient-to-br from-purple-400 to-purple-600' : 'bg-gradient-to-br from-blue-400 to-blue-600'"
               >
-                <v-icon name="gi-hammer-nails" scale="0.65" class="text-white" />
+                <v-icon name="gi-bugle-call" scale="0.65" class="text-white" />
               </span>
               <div class="flex items-baseline gap-2 flex-wrap">
                 <time class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">{{ formatNewsDate(item.date) }}</time>
                 <span
                   v-if="item.scope === 'private'"
-                  class="text-[0.65rem] uppercase tracking-wide px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-100 dark:text-green-700"
+                  class="text-[0.65rem] uppercase tracking-wide px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-100 dark:text-purple-700"
                 >
                   {{ t('Home.NewsMembers') }}
                 </span>

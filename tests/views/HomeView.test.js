@@ -21,7 +21,7 @@ const i18n = createI18n({
       Common: { SiteName: 'Office des coffres' },
       Home: {
         WelcomeMessage: "L'{brand} vous souhaite la bienvenue !",
-        News: "Chronique de l'Office",
+        News: "Chroniques de l'Office",
         NewsMembers: 'Membres',
         Fixes: 'Le Registre des Réparations'
       }
