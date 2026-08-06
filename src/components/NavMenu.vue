@@ -28,7 +28,7 @@
 <template>
   <nav class="flex flex-wrap justify-center gap-2">
     <RouterLink v-for="(page, index) in pages" :key="index" :to="page.link" v-show="page.status === 'public' || (page.status === 'private' && authUser.isLoggedIn)"
-                class="mx-2 md:mx-5 h-20 w-20 p-4 flex flex-col items-center btn-menu-rounded"
+                class="mx-2 laptop:mx-5 h-20 w-20 p-4 flex flex-col items-center btn-menu-rounded"
                 :class="`btn-${page.color}`">
       <v-icon :name="page.icon" scale="2" class="text-4xl" :class="`text-${page.color}-100`"/>
       <span class="text-xs text-gray-100 font-bold">{{ page.name }}</span>

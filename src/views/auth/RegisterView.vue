@@ -65,7 +65,7 @@
           </div>
 
         <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
-          <div class="w-full mt-2 md:mt-5 px-7 overflow-y-auto">
+          <div class="w-full mt-2 laptop:mt-5 px-7 overflow-y-auto">
             <template v-if="!registered">
               <h2 class="text-white dark:text-blue-800">{{ t('Register.Heading') }}</h2>
               <form class="mt-6" v-on:submit.prevent="register">

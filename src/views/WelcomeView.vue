@@ -21,7 +21,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex flex-col items-center px-4 pt-16 sm:pt-24">
+    <div class="flex flex-col items-center px-4 pt-16 tablet:pt-24">
       <div class="max-w-4xl w-full space-y-12">
         <div class="text-center">
           <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600 mb-6">
