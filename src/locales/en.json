@@ -147,7 +147,9 @@
   },
   "NavBar": {
     "Home": "Home",
-    "CharacterSelector": "Switch character"
+    "CharacterSelector": "Switch character",
+    "Logout": "Log out",
+    "LoggedOut": "You have been logged out."
   },
   "NavMenu": {
     "Home": "Home",

@@ -1,13 +1,13 @@
 <template>
   <button
     @click="toggleTheme"
-    class="relative z-50 p-2 cursor-pointer bg-slate-300 dark:bg-slate-900 hover:bg-slate-600 dark:hover:bg-slate-700 rounded-md border border-slate-300 dark:border-slate-600 focus:outline-none"
+    class="btn-grad-slate relative z-50 p-2 cursor-pointer rounded-md border border-slate-300 dark:border-slate-600 focus:outline-none"
     :aria-label="t('Common.Theme.Title')"
     type="button"
   >
-    <v-icon 
-      :name="isDark ? 'ri-moon-fill' : 'ri-sun-fill'" 
-      class="w-6 h-6 text-slate-800 dark:text-slate-200"
+    <v-icon
+      :name="isDark ? 'ri-moon-fill' : 'ri-sun-fill'"
+      class="w-6 h-6 text-white"
       scale="1.2"
     />
   </button>

@@ -110,7 +110,7 @@
       <textarea v-model="list_today" rows="18" class="textarea-autoresize w-full rounded-xl p-2"></textarea>
     </div>
     <div class="flex flex-col items-center justify-start mt-7">
-      <button @click="result" class="h-12 btn btn-create">{{ t('Security.GenerateButton') }}</button>
+      <button @click="result" class="h-12 btn btn-grad-green">{{ t('Security.GenerateButton') }}</button>
       <div v-if="loading.value" class="w-full mt-2">
         <div class="font-bold text-center">
           {{ t('Security.EntriesLabel') }} <span class="bg-blue-400 rounded-2xl px-1.5 pb-0.5 font-bold text-gray-200">{{ inputs.value.length }}</span> :

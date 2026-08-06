@@ -187,7 +187,7 @@
       <textarea v-model="pastedText" rows="10" :placeholder="t('EconomyMines.PastePlaceholder')"
                 class="textarea-autoresize col-span-3 w-full rounded-xl p-2"></textarea>
       <div v-if="pastedText.trim()" class="flex flex-col items-center justify-start mt-7">
-        <button @click="formatDayForForum" class="h-12 btn btn-secondary">{{ t('EconomyMines.DayExportButton') }}</button>
+        <button @click="formatDayForForum" class="h-12 btn btn-grad-slate">{{ t('EconomyMines.DayExportButton') }}</button>
       </div>
     </div>
 
@@ -215,7 +215,7 @@
     </div>
 
     <div v-if="pastedText.trim()" class="mt-4">
-      <button @click="generate" class="h-12 btn btn-create">{{ t('EconomyMines.GenerateButton') }}</button>
+      <button @click="generate" class="h-12 btn btn-grad-green">{{ t('EconomyMines.GenerateButton') }}</button>
     </div>
 
     <div v-if="weekCheck && !weekCheck.complete" class="mt-2 text-sm text-amber-600 dark:text-amber-400">

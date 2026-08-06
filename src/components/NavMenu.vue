@@ -17,7 +17,7 @@
   Menu items
 */
   const pages = computed(() => [
-    { name: t('NavMenu.Home'), link: "/app/", icon:"gi-medieval-pavilion", color: "slate", status: "public"},
+    { name: t('NavMenu.Home'), link: "/app/", icon:"gi-medieval-pavilion", color: "blue", status: "public"},
     { name: t('NavMenu.Economy'), link: "/app/eco", icon:"gi-crown-coin", color: "yellow", status: "public"},
     { name: t('NavMenu.Security'), link: "/app/secu/guet", icon:"gi-swords-emblem", color: "rose", status: "public"},
     { name: t('NavMenu.Animation'), link: "/app/anim", icon:"gi-rolling-dice-cup", color: "teal", status: "public"},
