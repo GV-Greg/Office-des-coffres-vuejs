@@ -1,6 +1,7 @@
 <script setup>
   import NavMenu from '@/components/NavMenu.vue'
   import { computed } from 'vue'
+  import { RouterLink } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { useCookieStore } from '@/stores/cookieStore'
   import { useAuthStore } from '@/stores/authStore'
@@ -38,6 +39,12 @@
           <span class="font-bold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600">{{ t('Common.SiteName') }}</span>
         </template>
       </i18n-t>
+      <div v-if="!authStore.isLoggedIn" class="flex justify-center mt-4">
+        <RouterLink to="/login" class="btn btn-primary">
+          <v-icon name="fa-unlock-alt" scale="1" />
+          {{ t('Home.LoginButton') }}
+        </RouterLink>
+      </div>
       <div
         v-if="visibleNews.length || visibleFixes.length"
         class="mt-12 max-w-6xl mx-auto w-full px-4 grid grid-cols-1 tablet:grid-cols-2 gap-x-16 gap-y-12"

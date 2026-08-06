@@ -181,6 +181,17 @@ describe('Auth Store', () => {
       store.setUser(mockUser)
       expect(store.hasCharacters).toBe(true)
     })
+
+    it('isAdmin reflète user.is_admin', () => {
+      expect(store.isAdmin).toBe(false)
+      store.setUser({ ...mockUser, is_admin: true })
+      expect(store.isAdmin).toBe(true)
+    })
+
+    it('isAdmin vaut false si is_admin est absent de la réponse', () => {
+      store.setUser(mockUser)
+      expect(store.isAdmin).toBe(false)
+    })
   })
 
   describe('Personnage actif', () => {

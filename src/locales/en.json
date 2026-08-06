@@ -85,7 +85,8 @@
     "UnderConstruction": "The Office is currently under construction...",
     "News": "Office chronicles",
     "NewsMembers": "Members",
-    "Fixes": "The Repairs Register"
+    "Fixes": "The Repairs Register",
+    "LoginButton": "Log in"
   },
   "NotFound": {
     "Title": "Page not found"
@@ -150,7 +151,8 @@
     "Home": "Home",
     "CharacterSelector": "Switch character",
     "Logout": "Log out",
-    "LoggedOut": "You have been logged out."
+    "LoggedOut": "You have been logged out.",
+    "Admin": "Admin"
   },
   "NavMenu": {
     "Home": "Home",

@@ -22,6 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
   const getToken    = computed(() => token.value)
   const getCharacters = computed(() => user.value?.characters ?? [])
   const hasCharacters = computed(() => getCharacters.value.length > 0)
+  const isAdmin = computed(() => user.value?.is_admin ?? false)
   // Se rabat sur le premier personnage si aucune sélection n'est mémorisée ou si elle ne
   // correspond plus à un personnage existant (ex. sélection faite sur un autre compte).
   const findCharacterOrFirst = (characterId) => {
@@ -147,6 +148,7 @@ export const useAuthStore = defineStore('auth', () => {
     getToken,
     getCharacters,
     hasCharacters,
+    isAdmin,
     activeCharacter,
     setActiveCharacter,
     defaultCharacter,

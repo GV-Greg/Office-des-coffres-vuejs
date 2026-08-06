@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
+import { createRouter, createMemoryHistory } from 'vue-router'
 import HomeView from '../../src/views/HomeView.vue'
 
 vi.mock('../../src/data/whatsNew.json', () => ({
@@ -23,16 +24,26 @@ const i18n = createI18n({
         WelcomeMessage: "L'{brand} vous souhaite la bienvenue !",
         News: "Chroniques de l'Office",
         NewsMembers: 'Membres',
-        Fixes: 'Le Registre des Réparations'
+        Fixes: 'Le Registre des Réparations',
+        LoginButton: 'Se connecter'
       }
     }
   }
 })
 
 function mountHome(initialState = {}) {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/app/', name: 'home', component: { template: '<div/>' } },
+      { path: '/login', name: 'login', component: { template: '<div/>' } }
+    ]
+  })
+  router.push('/app/')
+
   return mount(HomeView, {
     global: {
-      plugins: [createTestingPinia({ createSpy: vi.fn, initialState }), i18n],
+      plugins: [createTestingPinia({ createSpy: vi.fn, initialState }), i18n, router],
       stubs: { NavMenu: true }
     }
   })
@@ -70,6 +81,16 @@ describe('HomeView', () => {
     const wrapper = mountHome()
     const chronicle = wrapper.find('.news')
     expect(chronicle.text()).not.toContain('Correction du bug X')
+  })
+
+  it('affiche le bouton de connexion quand déconnecté', () => {
+    const wrapper = mountHome()
+    expect(wrapper.text()).toContain('Se connecter')
+  })
+
+  it('masque le bouton de connexion une fois connecté', () => {
+    const wrapper = mountHome({ auth: { token: 'faketoken', user: { characters: [] } } })
+    expect(wrapper.text()).not.toContain('Se connecter')
   })
 
   it('affiche les correctifs dans une section "Registre des Réparations" séparée', () => {

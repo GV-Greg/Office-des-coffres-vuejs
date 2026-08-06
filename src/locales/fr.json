@@ -85,7 +85,8 @@
     "UnderConstruction": "L'Office est actuellement en construction...",
     "News": "Chroniques de l'Office",
     "NewsMembers": "Membres",
-    "Fixes": "Le Registre des Réparations"
+    "Fixes": "Le Registre des Réparations",
+    "LoginButton": "Se connecter"
   },
   "NotFound": {
     "Title": "Page introuvable"
@@ -150,7 +151,8 @@
     "Home": "Accueil",
     "CharacterSelector": "Changer de personnage",
     "Logout": "Se déconnecter",
-    "LoggedOut": "Vous avez été déconnecté."
+    "LoggedOut": "Vous avez été déconnecté.",
+    "Admin": "Admin"
   },
   "NavMenu": {
     "Home": "Accueil",

@@ -17,12 +17,12 @@ const i18n = createI18n({
   messages: {
     fr: {
       Common: { SiteName: 'Office des coffres' },
-      NavBar: { Home: 'Accueil', Logout: 'Se déconnecter', LoggedOut: 'Vous avez été déconnecté.' }
+      NavBar: { Home: 'Accueil', Logout: 'Se déconnecter', LoggedOut: 'Vous avez été déconnecté.', Admin: 'Admin' }
     }
   }
 })
 
-async function mountNavBar({ isLoggedIn = false } = {}) {
+async function mountNavBar({ isLoggedIn = false, isAdmin = false } = {}) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -38,7 +38,12 @@ async function mountNavBar({ isLoggedIn = false } = {}) {
       plugins: [
         createTestingPinia({
           createSpy: vi.fn,
-          initialState: { auth: { token: isLoggedIn ? 'fake-token' : null } }
+          initialState: {
+            auth: {
+              token: isLoggedIn ? 'fake-token' : null,
+              user: isLoggedIn ? { is_admin: isAdmin } : null,
+            }
+          }
         }),
         router,
         i18n
@@ -69,6 +74,21 @@ describe('NavBar', () => {
   it("montre le bouton de déconnexion si l'utilisateur est connecté", async () => {
     const { wrapper } = await mountNavBar({ isLoggedIn: true })
     expect(wrapper.find('[aria-label="Se déconnecter"]').exists()).toBe(true)
+  })
+
+  it("ne montre pas le lien admin si l'utilisateur n'est pas connecté", async () => {
+    const { wrapper } = await mountNavBar({ isLoggedIn: false })
+    expect(wrapper.text()).not.toContain('Admin')
+  })
+
+  it("ne montre pas le lien admin pour un compte connecté non-admin", async () => {
+    const { wrapper } = await mountNavBar({ isLoggedIn: true, isAdmin: false })
+    expect(wrapper.text()).not.toContain('Admin')
+  })
+
+  it('montre le lien admin pour un compte connecté avec le rôle admin', async () => {
+    const { wrapper } = await mountNavBar({ isLoggedIn: true, isAdmin: true })
+    expect(wrapper.text()).toContain('Admin')
   })
 
   it('déconnecte et redirige vers l\'accueil au clic sur le bouton de déconnexion', async () => {

@@ -7,6 +7,7 @@
   import { push } from 'notivue'
   import SelectorMenu from '@/components/SelectorMenu.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import { ADMIN_ORIGIN } from '@/api.js'
 
   const router = useRouter()
   const { t } = useI18n()
@@ -28,6 +29,15 @@
             <RouterLink :to="{ name: 'home' }" class="btn-grad-blue flex items-center rounded-lg pl-1.5 pr-3 py-0.5 no-underline font-semibold">
               <v-icon name="gi-medieval-pavilion" scale="2" class="mr-1"/><span class="font-bold text-xl">{{ t('NavBar.Home') }}</span>
             </RouterLink>
+            <a
+              v-if="authStore.isLoggedIn && authStore.isAdmin"
+              :href="`${ADMIN_ORIGIN}/dashboard`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-grad-dark flex items-center rounded-lg pl-1.5 pr-3 py-0.5 no-underline font-semibold"
+            >
+              <v-icon name="ri-home-gear-line" scale="1.3" class="mr-1"/><span class="font-bold text-lg">{{ t('NavBar.Admin') }}</span>
+            </a>
           </div>
           <div class="space-x-3 justify-self-center flex items-center">
             <div class="text-3xl font-bold text-transparent"
