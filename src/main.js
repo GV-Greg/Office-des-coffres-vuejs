@@ -43,7 +43,8 @@ import {
   FaClock,
   FaMapMarkerAlt,
   FaEdit,
-  GiScrollUnfurled
+  GiScrollUnfurled,
+  GiHammerNails
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -74,7 +75,8 @@ addIcons(
   FaClock,
   FaMapMarkerAlt,
   FaEdit,
-  GiScrollUnfurled
+  GiScrollUnfurled,
+  GiHammerNails
 )
 
 const i18n = createI18n({

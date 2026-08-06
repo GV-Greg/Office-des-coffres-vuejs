@@ -84,7 +84,8 @@
     "WelcomeMessage": "The {brand} welcomes you!",
     "UnderConstruction": "The Office is currently under construction...",
     "News": "Office chronicle",
-    "NewsMembers": "Members"
+    "NewsMembers": "Members",
+    "Fixes": "The Repairs Register"
   },
   "NotFound": {
     "Title": "Page not found"
