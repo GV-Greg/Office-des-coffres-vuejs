@@ -6,6 +6,7 @@
   import { useI18n } from 'vue-i18n'
   import { push } from 'notivue'
   import SelectorMenu from '@/components/SelectorMenu.vue'
+  import SelectorCharacter from '@/components/SelectorCharacter.vue'
   import { useAuthStore } from '@/stores/authStore'
   import { ADMIN_ORIGIN } from '@/api.js'
 
@@ -46,6 +47,7 @@
             </div>
           </div>
           <div class="space-x-3 justify-self-end flex items-center">
+            <SelectorCharacter />
             <SelectorMenu />
             <button
               v-if="authStore.isLoggedIn"

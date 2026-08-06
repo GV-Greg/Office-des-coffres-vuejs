@@ -5,6 +5,7 @@ import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import NavBar from '../../src/components/NavBar.vue'
 import SelectorMenu from '../../src/components/SelectorMenu.vue'
+import SelectorCharacter from '../../src/components/SelectorCharacter.vue'
 import { useAuthStore } from '../../src/stores/authStore'
 
 vi.mock('notivue', () => ({
@@ -17,12 +18,12 @@ const i18n = createI18n({
   messages: {
     fr: {
       Common: { SiteName: 'Office des coffres' },
-      NavBar: { Home: 'Accueil', Logout: 'Se déconnecter', LoggedOut: 'Vous avez été déconnecté.', Admin: 'Admin' }
+      NavBar: { Home: 'Accueil', Logout: 'Se déconnecter', LoggedOut: 'Vous avez été déconnecté.', Admin: 'Admin', CharacterSelector: 'Changer de personnage' }
     }
   }
 })
 
-async function mountNavBar({ isLoggedIn = false, isAdmin = false } = {}) {
+async function mountNavBar({ isLoggedIn = false, isAdmin = false, characters = [] } = {}) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -41,7 +42,7 @@ async function mountNavBar({ isLoggedIn = false, isAdmin = false } = {}) {
           initialState: {
             auth: {
               token: isLoggedIn ? 'fake-token' : null,
-              user: isLoggedIn ? { is_admin: isAdmin } : null,
+              user: isLoggedIn ? { is_admin: isAdmin, characters } : null,
             }
           }
         }),
@@ -74,6 +75,12 @@ describe('NavBar', () => {
   it("montre le bouton de déconnexion si l'utilisateur est connecté", async () => {
     const { wrapper } = await mountNavBar({ isLoggedIn: true })
     expect(wrapper.find('[aria-label="Se déconnecter"]').exists()).toBe(true)
+  })
+
+  it('monte le sélecteur de personnage directement dans la NavBar (pas via SelectorMenu partagé)', async () => {
+    const characters = [{ id: 1, pseudo: 'Artifice' }, { id: 2, pseudo: 'Buldo' }]
+    const { wrapper } = await mountNavBar({ isLoggedIn: true, characters })
+    expect(wrapper.findComponent(SelectorCharacter).exists()).toBe(true)
   })
 
   it("ne montre pas le lien admin si l'utilisateur n'est pas connecté", async () => {
