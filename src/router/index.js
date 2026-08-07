@@ -27,6 +27,24 @@ export const redirectToHomeIfNotLoggedIn = async (to, from, next) => {
   }
 };
 
+// Inverse : un compte déjà connecté qui atterrit sur /login ou /register n'a rien à y faire,
+// redirigé directement vers l'app. Pas de push.error ici (ce n'est pas un refus d'accès).
+export const redirectToHomeIfLoggedIn = async (to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (!authStore.isLoggedIn) {
+    next()
+    return
+  }
+
+  const stillValid = await authStore.checkAuth()
+  if (stillValid) {
+    next({ name: "home" })
+  } else {
+    next()
+  }
+};
+
 // lazy-loaded
 const Nav = () => import('@/components/NavBar.vue')
 
@@ -43,11 +61,13 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+      beforeEnter: redirectToHomeIfLoggedIn,
     },
     {
       path: '/register',
       name: 'register',
       component: RegisterView,
+      beforeEnter: redirectToHomeIfLoggedIn,
     },
     {
       path: '/verify-email',
