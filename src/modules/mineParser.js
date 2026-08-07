@@ -188,36 +188,50 @@ function sumDays(days) {
 }
 
 /**
- * Calcule le bilan : valeur de production, valeur d'entretien, net (déduction
- * faite du salaire saisi à la main). `prices` : { PIERRE, FER, ARGILE, SEL }
- * (pas de prix "Or", la mine d'or produit directement des écus).
+ * Calcule le bilan de la semaine, en deux temps (comme le classeur Excel de
+ * référence de la province) :
+ * - `lines` : détail par mine, en quantités BRUTES (pas d'écus) — heures,
+ *   production, pierre/fer consommés.
+ * - `synthese` : une ligne par ressource réellement présente (OR/FER/PIERRE/
+ *   ARGILE/SEL), qui monétise le résultat NET (production − entretien/
+ *   salaires) au prix unitaire de cette ressource. L'entretien pierre/fer
+ *   est imputé à la ressource concernée tous mines confondues (le stock de
+ *   pierre de la province sert à l'entretien de n'importe quelle mine, pas
+ *   seulement la carrière qui l'a extraite) ; pour l'or, "entretien" est en
+ *   réalité le salaire des mineurs (déjà en écus, pas de prix à appliquer).
+ * `prices` : { PIERRE, FER, ARGILE, SEL } (pas de prix "Or").
  */
 export function computeBilan(mines, prices, salary = 0) {
-  const lines = (mines || []).map(mine => {
-    const totals = sumDays(mine.days)
-    const valeurProduction = mine.resource === 'OR'
-      ? totals.production
-      : totals.production * (prices?.[mine.resource] ?? 0)
-    const valeurEntretien =
-      totals.pierre * (prices?.PIERRE ?? 0) + totals.fer * (prices?.FER ?? 0)
+  const lines = (mines || []).map(mine => ({ ...mine, ...sumDays(mine.days) }))
 
-    return { ...mine, ...totals, valeurProduction, valeurEntretien }
-  })
+  const pierreConsumedTotal = lines.reduce((sum, l) => sum + l.pierre, 0)
+  const ferConsumedTotal = lines.reduce((sum, l) => sum + l.fer, 0)
 
-  const totals = lines.reduce(
-    (acc, l) => ({
-      heures: acc.heures + l.heures,
-      pierre: acc.pierre + l.pierre,
-      fer: acc.fer + l.fer,
-      valeurProduction: acc.valeurProduction + l.valeurProduction,
-      valeurEntretien: acc.valeurEntretien + l.valeurEntretien,
-    }),
-    { heures: 0, pierre: 0, fer: 0, valeurProduction: 0, valeurEntretien: 0 }
-  )
+  const synthese = RESOURCES
+    .map(resource => {
+      const production = lines
+        .filter(l => l.resource === resource)
+        .reduce((sum, l) => sum + l.production, 0)
 
-  const net = totals.valeurProduction - totals.valeurEntretien - (salary || 0)
+      const entretienSalaires = resource === 'OR'
+        ? -(salary || 0)
+        : resource === 'PIERRE'
+          ? -pierreConsumedTotal
+          : resource === 'FER'
+            ? -ferConsumedTotal
+            : 0
 
-  return { lines, totals, salary: salary || 0, net }
+      const resultatQuantite = production + entretienSalaires
+      const prixUnitaire = resource === 'OR' ? null : (prices?.[resource] ?? 0)
+      const resultatValeur = resource === 'OR' ? resultatQuantite : resultatQuantite * prixUnitaire
+
+      return { resource, prixUnitaire, production, entretienSalaires, resultatQuantite, resultatValeur }
+    })
+    .filter(s => s.production !== 0 || s.entretienSalaires !== 0)
+
+  const net = synthese.reduce((sum, s) => sum + s.resultatValeur, 0)
+
+  return { lines, synthese, salary: salary || 0, net }
 }
 
 /** Date (AAAA-MM-JJ) la plus récente présente dans les relevés, ou null. */
@@ -236,6 +250,32 @@ export function filterToDate(mines, dateIso) {
   return (mines || [])
     .map(m => ({ ...m, days: m.days[dateIso] ? { [dateIso]: m.days[dateIso] } : {} }))
     .filter(m => Object.keys(m.days).length > 0)
+}
+
+/**
+ * Ne garde que les relevés dans [monday, sunday] inclus — pour scoper un
+ * collage à la semaine choisie avant fusion (un collage peut déborder sur
+ * des jours hors de cette semaine, ex. fenêtre glissante du jeu).
+ */
+export function filterToWeek(mines, monday, sunday) {
+  return (mines || [])
+    .map(m => ({
+      ...m,
+      days: Object.fromEntries(
+        Object.entries(m.days).filter(([d]) => d >= monday && d <= sunday)
+      ),
+    }))
+    .filter(m => Object.keys(m.days).length > 0)
+}
+
+/** Lundi de la semaine n semaines avant/après celle de `mondayIso`. */
+export function shiftWeek(mondayIso, n) {
+  return addDays(mondayIso, n * 7)
+}
+
+/** Date du jour (AAAA-MM-JJ) — isolée pour être simulable dans les tests. */
+export function todayIso() {
+  return new Date().toISOString().slice(0, 10)
 }
 
 function addDays(dateIso, n) {

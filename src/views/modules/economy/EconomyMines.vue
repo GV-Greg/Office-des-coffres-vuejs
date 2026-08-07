@@ -2,12 +2,13 @@
 /*
   imports
 */
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, computed, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useCookieStore } from '@/stores/cookieStore'
   import {
     parseMinesText, mergeMinesData, computeBilan, checkWeekCompleteness,
     mostRecentDate, parseMineStates, formatDateFr,
+    getWeekBounds, filterToWeek, shiftWeek, todayIso,
   } from '@/modules/mineParser'
   import { push } from 'notivue'
 
@@ -15,6 +16,9 @@
   const cookieStore = useCookieStore()
 
   const MINES_DATA_KEY = 'economy_mines_data'
+  function weekStorageKey(monday) {
+    return `${MINES_DATA_KEY}_${monday}`
+  }
 
 /*
   données
@@ -26,7 +30,34 @@
   const bilan = ref(null)
   const weekCheck = ref(null)
 
+  // Semaine ciblée par le bilan — permet de reconstruire une semaine passée
+  // (plusieurs collages successifs, chacun filtré à cette semaine avant fusion)
+  // sans mélanger les jours avec la semaine en cours ou une autre semaine passée.
+  const selectedMonday = ref(getWeekBounds(todayIso()).monday)
+  const selectedSunday = computed(() => getWeekBounds(selectedMonday.value).sunday)
+
   const RESOURCE_COLOR = { OR: 'darkgoldenrod', PIERRE: 'seagreen', FER: 'darkgray', ARGILE: 'firebrick', SEL: 'steelblue' }
+
+/*
+  navigation semaine
+*/
+  function previousWeek() {
+    selectedMonday.value = shiftWeek(selectedMonday.value, -1)
+  }
+  function nextWeek() {
+    selectedMonday.value = shiftWeek(selectedMonday.value, 1)
+  }
+
+  // Recharge l'état affiché pour la semaine sélectionnée — appelé au montage
+  // et à chaque changement de semaine (le texte collé/bilan d'une semaine ne
+  // doit pas rester affiché en changeant de semaine).
+  function loadWeekState() {
+    pastedText.value = ''
+    bilan.value = null
+    weekCheck.value = null
+    prefilledFromComfort.value = !!cookieStore.getComfortData(weekStorageKey(selectedMonday.value))
+  }
+  watch(selectedMonday, loadWeekState, { immediate: true })
 
 /*
   calcul
@@ -38,37 +69,30 @@
       return
     }
 
-    const stored = cookieStore.getComfortData(MINES_DATA_KEY)
-    const existing = stored ? JSON.parse(stored) : []
-    const merged = mergeMinesData(existing, parsed)
+    const filtered = filterToWeek(parsed, selectedMonday.value, selectedSunday.value)
+    if (filtered.length === 0) {
+      push.error(t('EconomyMines.NoDataForWeekError'))
+      return
+    }
 
-    // Confort : mémorise le relevé fusionné pour ne rien perdre au prochain collage.
-    // No-op silencieux si le cookie de confort n'a pas été accepté.
-    cookieStore.setComfortData(MINES_DATA_KEY, JSON.stringify(merged))
+    const key = weekStorageKey(selectedMonday.value)
+    const stored = cookieStore.getComfortData(key)
+    const existing = stored ? JSON.parse(stored) : []
+    const merged = mergeMinesData(existing, filtered)
+
+    // Confort : mémorise le relevé fusionné (pour cette semaine) pour ne rien
+    // perdre au prochain collage. No-op silencieux sans consentement "comfort".
+    cookieStore.setComfortData(key, JSON.stringify(merged))
 
     weekCheck.value = checkWeekCompleteness(merged)
     bilan.value = computeBilan(merged, prices, Number(salary.value) || 0)
   }
-
-  onMounted(() => {
-    const savedData = cookieStore.getComfortData(MINES_DATA_KEY)
-    if (savedData) {
-      prefilledFromComfort.value = true
-    }
-  })
 
 /*
   export BBcode
 */
   function formatNum(n) {
     return Number(n.toFixed(2)).toLocaleString('fr-FR')
-  }
-
-  // Convention du forum de Greg : le rendu formaté est suivi d'un [spoiler][code]
-  // contenant le même BBcode brut, pour qu'un autre officier puisse le récupérer
-  // et réutiliser le gabarit tel quel.
-  function withSpoilerSource(bbcode) {
-    return bbcode + '\n\n[spoiler][code]' + bbcode + '[/code][/spoiler]'
   }
 
   function bilanToBBcode(b, title) {
@@ -78,20 +102,23 @@
       bb += `[color=${color}][b][u]${line.label} (#${line.number})[/u][/b][/color]\n`
       bb += `[list][b]${t('EconomyMines.ColumnHours')}[/b] : ${formatNum(line.heures)}\n`
       bb += `[b]${t('EconomyMines.ColumnProduction')}[/b] : ${formatNum(line.production)}\n`
-      bb += `[b]${t('EconomyMines.ColumnProductionValue')}[/b] : ${formatNum(line.valeurProduction)} écus\n`
-      bb += `[b]${t('EconomyMines.ColumnMaintenanceValue')}[/b] : ${formatNum(line.pierre)} ${t('EconomyMines.PriceStone')} / ${formatNum(line.fer)} ${t('EconomyMines.PriceIron')} (soit ${formatNum(line.valeurEntretien)} écus)[/list]\n\n`
+      bb += `[b]${t('EconomyMines.MaintenanceLabel')}[/b] : ${formatNum(line.pierre)} ${t('EconomyMines.PriceStone')} / ${formatNum(line.fer)} ${t('EconomyMines.PriceIron')}[/list]\n\n`
     }
-    bb += '[/list]\n[center][b][size=16]' + t('EconomyMines.TotalLabel') + '[/size][/b]\n'
-    bb += `${t('EconomyMines.ColumnProductionValue')} : ${formatNum(b.totals.valeurProduction)} écus\n`
-    bb += `${t('EconomyMines.ColumnMaintenanceValue')} : ${formatNum(b.totals.valeurEntretien)} écus\n`
-    bb += `${t('EconomyMines.SalaryLabel')} : ${formatNum(b.salary)} écus\n`
-    bb += `[i]${t('EconomyMines.NetLabel')} : [b]${formatNum(b.net)}[/b] écus[/i][/center][/quote]`
+    bb += '[/list]\n[center][b][size=16]' + t('EconomyMines.SyntheseTitle') + '[/size][/b][/center]\n[list]\n'
+    for (const s of b.synthese) {
+      const label = t(`EconomyMines.Resources.${s.resource}`)
+      const priceSuffix = s.prixUnitaire != null ? ` (${formatNum(s.prixUnitaire)} écus)` : ''
+      bb += `[b]${label}[/b]${priceSuffix}\n`
+      bb += `${t('EconomyMines.ColumnProduction')} : ${formatNum(s.production)} — ${t('EconomyMines.ColumnMaintenanceSalary')} : ${formatNum(s.entretienSalaires)}\n`
+      bb += `${t('EconomyMines.ColumnResultQuantity')} : ${formatNum(s.resultatQuantite)} — ${t('EconomyMines.ColumnResultValue')} : ${formatNum(s.resultatValeur)} écus\n\n`
+    }
+    bb += `[/list]\n[center][i]${t('EconomyMines.NetLabel')} : [b]${formatNum(b.net)}[/b] écus[/i][/center][/quote]`
     return bb
   }
 
   function toExport() {
     if (!bilan.value) return
-    copyToClipboard(withSpoilerSource(bilanToBBcode(bilan.value, t('EconomyMines.Title'))))
+    copyToClipboard(bilanToBBcode(bilan.value, t('EconomyMines.Title')))
   }
 
   // navigator.clipboard.writeText() ne donne aucun signal visuel par défaut :
@@ -179,6 +206,28 @@
 
 <template>
   <div class="w-full">
+    <div class="w-full flex items-center justify-center gap-3 mb-4">
+      <button
+        type="button"
+        @click="previousWeek"
+        class="btn-grad-slate p-2 rounded-md"
+        :aria-label="t('EconomyMines.PreviousWeek')"
+      >
+        <v-icon name="fa-chevron-left" scale="0.9" />
+      </button>
+      <span class="font-bold text-center">
+        {{ t('EconomyMines.WeekLabel', { monday: formatDateFr(selectedMonday), sunday: formatDateFr(selectedSunday) }) }}
+      </span>
+      <button
+        type="button"
+        @click="nextWeek"
+        class="btn-grad-slate p-2 rounded-md"
+        :aria-label="t('EconomyMines.NextWeek')"
+      >
+        <v-icon name="fa-chevron-right" scale="0.9" />
+      </button>
+    </div>
+
     <label class="w-full font-bold">{{ t('EconomyMines.PasteLabel') }}</label>
     <span v-if="prefilledFromComfort" class="block text-xs text-slate-500 dark:text-slate-400 italic mb-1">
       {{ t('EconomyMines.PastePrefilled') }}
@@ -193,23 +242,23 @@
 
     <div class="mt-4 grid grid-cols-2 laptop:grid-cols-5 gap-3">
       <div class="form-group">
-        <label class="form-label">{{ t('EconomyMines.PriceStone') }}</label>
+        <label class="form-label laptop:min-h-[2.5rem]">{{ t('EconomyMines.PriceStone') }}</label>
         <input v-model.number="prices.PIERRE" type="number" step="0.1" class="form-field" />
       </div>
       <div class="form-group">
-        <label class="form-label">{{ t('EconomyMines.PriceIron') }}</label>
+        <label class="form-label laptop:min-h-[2.5rem]">{{ t('EconomyMines.PriceIron') }}</label>
         <input v-model.number="prices.FER" type="number" step="0.1" class="form-field" />
       </div>
       <div class="form-group">
-        <label class="form-label">{{ t('EconomyMines.PriceClay') }}</label>
+        <label class="form-label laptop:min-h-[2.5rem]">{{ t('EconomyMines.PriceClay') }}</label>
         <input v-model.number="prices.ARGILE" type="number" step="0.1" class="form-field" />
       </div>
       <div class="form-group">
-        <label class="form-label">{{ t('EconomyMines.PriceSalt') }}</label>
+        <label class="form-label laptop:min-h-[2.5rem]">{{ t('EconomyMines.PriceSalt') }}</label>
         <input v-model.number="prices.SEL" type="number" step="0.1" class="form-field" />
       </div>
       <div class="form-group">
-        <label class="form-label">{{ t('EconomyMines.SalaryLabel') }}</label>
+        <label class="form-label laptop:min-h-[2.5rem]">{{ t('EconomyMines.SalaryLabel') }}</label>
         <input v-model.number="salary" type="number" step="0.1" class="form-field" />
       </div>
     </div>
@@ -223,6 +272,7 @@
     </div>
 
     <div v-if="bilan" class="mt-6">
+      <h4 class="font-bold mb-2">{{ t('EconomyMines.ColumnMine') }}</h4>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
@@ -230,10 +280,8 @@
               <th class="py-2">{{ t('EconomyMines.ColumnMine') }}</th>
               <th class="py-2 text-right">{{ t('EconomyMines.ColumnHours') }}</th>
               <th class="py-2 text-right">{{ t('EconomyMines.ColumnProduction') }}</th>
-              <th class="py-2 text-right">{{ t('EconomyMines.ColumnProductionValue') }}</th>
               <th class="py-2 text-right">{{ t('EconomyMines.ColumnStone') }}</th>
               <th class="py-2 text-right">{{ t('EconomyMines.ColumnIron') }}</th>
-              <th class="py-2 text-right">{{ t('EconomyMines.ColumnMaintenanceValue') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -241,19 +289,38 @@
               <td class="py-2 font-bold">#{{ line.number }} {{ line.label }}</td>
               <td class="py-2 text-right">{{ formatNum(line.heures) }}</td>
               <td class="py-2 text-right">{{ formatNum(line.production) }}</td>
-              <td class="py-2 text-right">{{ formatNum(line.valeurProduction) }}</td>
               <td class="py-2 text-right">{{ formatNum(line.pierre) }}</td>
               <td class="py-2 text-right">{{ formatNum(line.fer) }}</td>
-              <td class="py-2 text-right">{{ formatNum(line.valeurEntretien) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 class="font-bold mt-6 mb-2">{{ t('EconomyMines.SyntheseTitle') }}</h4>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-300 dark:border-gray-600 text-left">
+              <th class="py-2">{{ t('EconomyMines.ColumnResource') }}</th>
+              <th class="py-2 text-right">{{ t('EconomyMines.ColumnUnitPrice') }}</th>
+              <th class="py-2 text-right">{{ t('EconomyMines.ColumnProduction') }}</th>
+              <th class="py-2 text-right">{{ t('EconomyMines.ColumnMaintenanceSalary') }}</th>
+              <th class="py-2 text-right">{{ t('EconomyMines.ColumnResultQuantity') }}</th>
+              <th class="py-2 text-right">{{ t('EconomyMines.ColumnResultValue') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="s in bilan.synthese" :key="s.resource" class="border-b border-gray-100 dark:border-gray-700">
+              <td class="py-2 font-bold">{{ t(`EconomyMines.Resources.${s.resource}`) }}</td>
+              <td class="py-2 text-right">{{ s.prixUnitaire != null ? formatNum(s.prixUnitaire) : '—' }}</td>
+              <td class="py-2 text-right">{{ formatNum(s.production) }}</td>
+              <td class="py-2 text-right">{{ formatNum(s.entretienSalaires) }}</td>
+              <td class="py-2 text-right">{{ formatNum(s.resultatQuantite) }}</td>
+              <td class="py-2 text-right">{{ formatNum(s.resultatValeur) }}</td>
             </tr>
             <tr class="font-bold">
-              <td class="py-2">{{ t('EconomyMines.TotalLabel') }}</td>
-              <td class="py-2 text-right">{{ formatNum(bilan.totals.heures) }}</td>
-              <td class="py-2 text-right">-</td>
-              <td class="py-2 text-right">{{ formatNum(bilan.totals.valeurProduction) }}</td>
-              <td class="py-2 text-right">{{ formatNum(bilan.totals.pierre) }}</td>
-              <td class="py-2 text-right">{{ formatNum(bilan.totals.fer) }}</td>
-              <td class="py-2 text-right">{{ formatNum(bilan.totals.valeurEntretien) }}</td>
+              <td class="py-2" colspan="5">{{ t('EconomyMines.TotalLabel') }}</td>
+              <td class="py-2 text-right">{{ formatNum(bilan.net) }}</td>
             </tr>
           </tbody>
         </table>
