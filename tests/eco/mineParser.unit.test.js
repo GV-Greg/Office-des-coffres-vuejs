@@ -1,11 +1,12 @@
 // @vitest-environment node
 // Logique pure, aucun DOM à monter — voir README, section Tests.
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   detectResource, parseMinesText, mergeMinesData, computeBilan,
   mostRecentDate, filterToDate, getWeekBounds, checkWeekCompleteness,
-  parseMineStates, formatDateFr,
+  parseMineStates, formatDateFr, filterToWeek, shiftWeek, todayIso,
 } from '../../src/modules/mineParser'
+import realWeek from '../fixtures/mines-2025-11-10.json'
 
 describe('detectResource', () => {
   it('détecte chaque type de ressource depuis le libellé de la mine', () => {
@@ -140,6 +141,120 @@ describe('getWeekBounds', () => {
   })
 })
 
+describe('filterToWeek', () => {
+  const mines = [
+    {
+      number: 1, label: "Mine d'or", resource: 'OR',
+      days: { '2026-08-02': { production: 1 }, '2026-08-04': { production: 2 }, '2026-08-10': { production: 3 } },
+    },
+    { number: 2, label: 'Mine de fer', resource: 'FER', days: { '2026-08-01': { production: 9 } } },
+  ]
+
+  it('ne garde que les jours dans [lundi, dimanche] inclus', () => {
+    const filtered = filterToWeek(mines, '2026-08-03', '2026-08-09')
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0].number).toBe(1)
+    expect(filtered[0].days).toEqual({ '2026-08-04': { production: 2 } })
+  })
+
+  it('retire une mine qui ne tombe entièrement hors de la semaine', () => {
+    const filtered = filterToWeek(mines, '2026-08-03', '2026-08-09')
+    expect(filtered.find(m => m.number === 2)).toBeUndefined()
+  })
+
+  it('ne filtre rien de perdu si toute la semaine est demandée', () => {
+    const filtered = filterToWeek(mines, '2026-07-27', '2026-08-16')
+    expect(filtered).toHaveLength(2)
+  })
+})
+
+describe("parseMinesText — dates en année de jeu (format réel d'un collage)", () => {
+  // Le texte collé depuis le jeu porte l'année du jeu (1474 = 2026), confirmé par Greg
+  // le 08/08/2026. Non-régression du bug qui rendait le module inutilisable en réel :
+  // `isValidDate` exigeait une année >= 2000, donc chaque ligne datée 1474 était écartée
+  // dès le parsing et un collage authentique ressortait comme un texte non reconnu.
+  const text = `
+Mine 1 : Mine d'or - Noeud 236
+Nombre d'heures travaillées ces 7 derniers jours
+Date	Heures
+1474-08-03	100
+1474-08-04	120
+Production des 7 derniers jours
+Date	Rendement
+1474-08-03	500
+1474-08-04	600
+Ressources consommées par la mine ces 7 derniers jours
+Date	Qx de pierre	Kg de fer
+1474-08-03	10	5
+`
+
+  it('convertit les dates du jeu en dates réelles dès le parsing', () => {
+    const mines = parseMinesText(text)
+    expect(mines).toHaveLength(1)
+    expect(Object.keys(mines[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+    expect(mines[0].days['2026-08-03']).toMatchObject({
+      heures: 100, production: 500, pierre: 10, fer: 5,
+    })
+  })
+
+  it('accepte aussi le format FR en année de jeu', () => {
+    const mines = parseMinesText(text.replace(/1474-08-(\d+)/g, (_, d) => `${d}/08/1474`))
+    expect(Object.keys(mines[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+  })
+
+  it('reste compatible avec un collage daté en année réelle', () => {
+    const mines = parseMinesText(text.replace(/1474-/g, '2026-'))
+    expect(Object.keys(mines[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+  })
+
+  it('entre dans la semaine sélectionnée une fois parsé', () => {
+    // Le bug de bout en bout : bornes calculées sur l'horloge du navigateur (2026)
+    // comparées à des journées restées en 1474 — « 1474… < 2026… » en comparaison
+    // lexicale, donc toutes les journées rejetées et « aucune donnée pour cette
+    // semaine » affiché sur un collage pourtant valide.
+    const { monday, sunday } = getWeekBounds('2026-08-05')
+    const filtered = filterToWeek(parseMinesText(text), monday, sunday)
+    expect(filtered).toHaveLength(1)
+    expect(Object.keys(filtered[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+  })
+
+  it('retrouve le bon lundi/dimanche pour la complétude de semaine', () => {
+    // checkWeekCompleteness() dérive ses bornes de la date la plus récente des relevés :
+    // sur une date restée en 1474, `new Date()` en tirait un jour de la semaine faux (le
+    // 3 août 1474 grégorien n'est pas un lundi), donc un avertissement « X/7 jours »
+    // décalé. Les relevés étant désormais en dates réelles, les bornes sont justes.
+    const check = checkWeekCompleteness(parseMinesText(text))
+    expect(check).toMatchObject({ monday: '2026-08-03', sunday: '2026-08-09', complete: false })
+    expect(check.missingDates).toHaveLength(5)
+  })
+})
+
+describe('shiftWeek', () => {
+  it('recule au lundi de la semaine précédente', () => {
+    expect(shiftWeek('2026-08-03', -1)).toBe('2026-07-27')
+  })
+
+  it('avance au lundi de la semaine suivante', () => {
+    expect(shiftWeek('2026-08-03', 1)).toBe('2026-08-10')
+  })
+
+  it('reste inchangé pour un décalage de 0', () => {
+    expect(shiftWeek('2026-08-03', 0)).toBe('2026-08-03')
+  })
+})
+
+describe('todayIso', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("renvoie la date du jour au format AAAA-MM-JJ", () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-06T15:30:00Z'))
+    expect(todayIso()).toBe('2026-08-06')
+  })
+})
+
 describe('parseMineStates — état de chaque mine (config), pas les tableaux', () => {
   const text = `
 Mine 1 : Mine d'or - Noeud 236
@@ -234,36 +349,104 @@ describe('checkWeekCompleteness', () => {
 describe('computeBilan', () => {
   const prices = { PIERRE: 14.5, FER: 19.5, ARGILE: 4.5, SEL: 3 }
 
-  it('calcule la valeur de production directement pour la mine d\'or (pas de prix appliqué)', () => {
+  it('lines contient les quantités brutes par mine, sans valeur en écus', () => {
     const mines = [{ number: 1, label: "Mine d'or", resource: 'OR', days: { '2026-08-01': { production: 597.47 } } }]
     const bilan = computeBilan(mines, prices, 0)
-    expect(bilan.lines[0].valeurProduction).toBeCloseTo(597.47)
+    expect(bilan.lines[0]).toMatchObject({ number: 1, resource: 'OR', production: 597.47 })
+    expect(bilan.lines[0].valeurProduction).toBeUndefined()
   })
 
-  it('applique le prix unitaire pour les autres ressources', () => {
+  it("synthese : résultat déjà en écus pour l'or, pas de prix unitaire appliqué", () => {
+    const mines = [{ number: 1, label: "Mine d'or", resource: 'OR', days: { '2026-08-01': { production: 597.47 } } }]
+    const bilan = computeBilan(mines, prices, 0)
+    const or = bilan.synthese.find(s => s.resource === 'OR')
+    expect(or.prixUnitaire).toBe(null)
+    expect(or.production).toBeCloseTo(597.47)
+    expect(or.resultatValeur).toBeCloseTo(597.47)
+  })
+
+  it('synthese : applique le prix unitaire pour les autres ressources', () => {
     const mines = [{ number: 2, label: 'Mine de fer', resource: 'FER', days: { '2026-08-01': { production: 10 } } }]
     const bilan = computeBilan(mines, prices, 0)
-    expect(bilan.lines[0].valeurProduction).toBeCloseTo(195) // 10 * 19.5
+    const fer = bilan.synthese.find(s => s.resource === 'FER')
+    expect(fer.resultatValeur).toBeCloseTo(195) // 10 * 19.5
   })
 
-  it("calcule la valeur d'entretien à partir des ressources réellement consommées", () => {
+  it("synthese : impute l'entretien pierre/fer consommé à la ressource concernée, tous mines confondues", () => {
+    // Une mine de fer qui consomme de la pierre en entretien : ça réduit la ressource PIERRE
+    // de la province, pas seulement les mines qui produisent du fer.
     const mines = [{ number: 2, label: 'Mine de fer', resource: 'FER', days: { '2026-08-01': { pierre: 5, fer: 4 } } }]
     const bilan = computeBilan(mines, prices, 0)
-    expect(bilan.lines[0].valeurEntretien).toBeCloseTo(5 * 14.5 + 4 * 19.5)
+    const pierre = bilan.synthese.find(s => s.resource === 'PIERRE')
+    const fer = bilan.synthese.find(s => s.resource === 'FER')
+    expect(pierre).toMatchObject({ production: 0, entretienSalaires: -5, resultatQuantite: -5 })
+    expect(pierre.resultatValeur).toBeCloseTo(-5 * 14.5)
+    expect(fer.entretienSalaires).toBe(-4)
   })
 
-  it('déduit le salaire saisi manuellement du total net', () => {
+  it("synthese : le salaire réduit uniquement le résultat de l'or (déjà en écus)", () => {
     const mines = [{ number: 1, label: "Mine d'or", resource: 'OR', days: { '2026-08-01': { production: 1000 } } }]
     const bilan = computeBilan(mines, prices, 200)
+    const or = bilan.synthese.find(s => s.resource === 'OR')
+    expect(or.resultatValeur).toBeCloseTo(800)
     expect(bilan.net).toBeCloseTo(800)
   })
 
-  it('additionne plusieurs mines dans les totaux', () => {
+  it('net additionne le résultat en valeur de toutes les ressources présentes', () => {
     const mines = [
       { number: 1, label: "Mine d'or", resource: 'OR', days: { '2026-08-01': { production: 500 } } },
       { number: 2, label: 'Mine de fer', resource: 'FER', days: { '2026-08-01': { production: 10 } } },
     ]
     const bilan = computeBilan(mines, prices, 0)
-    expect(bilan.totals.valeurProduction).toBeCloseTo(500 + 195)
+    expect(bilan.net).toBeCloseTo(500 + 195)
+  })
+
+  it("une ressource absente (ni production ni entretien) n'apparaît pas dans synthese", () => {
+    const mines = [{ number: 1, label: "Mine d'or", resource: 'OR', days: { '2026-08-01': { production: 500 } } }]
+    const bilan = computeBilan(mines, prices, 0)
+    expect(bilan.synthese.find(s => s.resource === 'SEL')).toBeUndefined()
+  })
+
+  // Non-régression sur données réelles : semaine du 10 au 16 novembre 2025 (relevé de Greg,
+  // 6 mines du comté). Les résultats attendus sont ceux calculés par son classeur Excel, qui
+  // fait foi — c'est lui qui fixe la règle d'imputation de l'entretien et des salaires.
+  describe('semaine réelle du 10 novembre 2025', () => {
+    const { mines, _expected } = realWeek
+    const bilan = computeBilan(mines, prices, _expected.salary)
+    const resource = name => bilan.synthese.find(s => s.resource === name)
+
+    it("impute la totalité des salaires à l'or, seule ressource déjà en écus", () => {
+      // Excel : BALANCE OR = production or − SALAIRES IG (tous mineurs, toutes mines).
+      expect(resource('OR').production).toBeCloseTo(952.56)
+      expect(resource('OR').entretienSalaires).toBeCloseTo(-4659.93)
+      expect(resource('OR').resultatQuantite).toBeCloseTo(_expected.balances.OR)
+      expect(resource('OR').prixUnitaire).toBe(null)
+    })
+
+    it("impute l'entretien fer toutes mines confondues à la ressource FER", () => {
+      // Excel : BALANCE FER = production mine de fer − total fer dépensé par les 6 mines.
+      expect(resource('FER').production).toBe(76)
+      expect(resource('FER').entretienSalaires).toBe(-59)
+      expect(resource('FER').resultatQuantite).toBe(_expected.balances.FER)
+    })
+
+    it("cumule les 3 carrières et impute l'entretien pierre toutes mines confondues", () => {
+      // Excel : BALANCE PIERRE = somme des 3 carrières (102 + 21 + 218) − total pierre dépensée.
+      expect(resource('PIERRE').production).toBe(341)
+      expect(resource('PIERRE').entretienSalaires).toBe(-79)
+      expect(resource('PIERRE').resultatQuantite).toBe(_expected.balances.PIERRE)
+    })
+
+    it("écarte de la synthèse une mine restée inactive toute la semaine", () => {
+      // La mine d'argile existe dans la province mais n'a rien produit ni consommé : elle
+      // apparaît dans le détail par mine, jamais dans la synthèse par ressource.
+      expect(bilan.lines.find(l => l.resource === 'ARGILE')).toBeDefined()
+      expect(resource('ARGILE')).toBeUndefined()
+    })
+
+    it('monétise le net de la semaine au prix unitaire de chaque ressource', () => {
+      // -3707,37 écus (or) + 17 × 19,5 (fer) + 262 × 14,5 (pierre)
+      expect(bilan.net).toBeCloseTo(423.13)
+    })
   })
 })

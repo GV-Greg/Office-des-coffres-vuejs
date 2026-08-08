@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { createPinia, setActivePinia } from 'pinia'
@@ -16,6 +16,10 @@ const i18n = createI18n({
         PasteLabel: 'Colle ici le texte complet de la page "mines" du jeu',
         PastePlaceholder: 'Copie-colle ici...',
         PastePrefilled: 'Fusionné avec ton dernier collage mémorisé sur cet appareil',
+        WeekLabel: 'Semaine du {monday} au {sunday}',
+        PreviousWeek: 'Semaine précédente',
+        NextWeek: 'Semaine suivante',
+        NoDataForWeekError: 'Aucune donnée pour cette semaine.',
         PriceStone: 'Pierre (quintal)',
         PriceIron: 'Fer (kg)',
         PriceClay: 'Argile (pain)',
@@ -28,13 +32,18 @@ const i18n = createI18n({
         ColumnMine: 'Mine',
         ColumnHours: 'Heures',
         ColumnProduction: 'Production',
-        ColumnProductionValue: 'Valeur production',
         ColumnStone: 'Pierre',
         ColumnIron: 'Fer',
-        ColumnMaintenanceValue: 'Valeur entretien',
         MaintenanceLabel: 'Entretien',
         TotalLabel: 'Total',
         NetLabel: 'Net',
+        SyntheseTitle: 'Synthèse par ressource',
+        ColumnResource: 'Ressource',
+        ColumnUnitPrice: 'Prix unitaire',
+        ColumnMaintenanceSalary: 'Entretien/Salaires',
+        ColumnResultQuantity: 'Résultat (quantité)',
+        ColumnResultValue: 'Résultat (valeur)',
+        Resources: { OR: 'Or', FER: 'Fer', PIERRE: 'Pierre', ARGILE: 'Argile', SEL: 'Sel' },
         NoDataError: 'Aucune donnée reconnue.',
         CopiedSuccess: 'Copié dans le presse-papier.',
         CopyError: 'Impossible de copier.'
@@ -47,21 +56,21 @@ const sampleText = `
 Mine 1 : Mine d'or - Noeud 236
 Nombre d'heures travaillées ces 7 derniers jours
 Date	Heures
-2026-08-01	100
+1474-08-01	100
 Production des 7 derniers jours
 Date	Rendement
-2026-08-01	500
+1474-08-01	500
 Ressources consommées par la mine ces 7 derniers jours
 Date	Qx de pierre	Kg de fer
-2026-08-01	10	5
+1474-08-01	10	5
 
 Mine 2 : Mine de fer - Noeud 228
 Nombre d'heures travaillées ces 7 derniers jours
 Date	Heures
-2026-08-01	50
+1474-08-01	50
 Production des 7 derniers jours
 Date	Rendement
-2026-08-01	20
+1474-08-01	20
 Ressources consommées par la mine ces 7 derniers jours
 Date	Qx de pierre	Kg de fer
 `
@@ -72,6 +81,18 @@ beforeEach(() => {
   localStorage.clear()
   pinia = createPinia()
   setActivePinia(pinia)
+  // Les textes d'exemple sont datés en année de jeu (1474-08-01/02), comme un vrai
+  // collage depuis l'interface du jeu — c'est le décalage entre des jeux de test en
+  // année réelle et la réalité qui avait masqué le bug du sélecteur de semaine.
+  // Le parsing les ramène en 2026-08-01/02, soit la semaine réelle du 2026-07-27 au
+  // 2026-08-02 : on fige "aujourd'hui" dedans pour que la semaine sélectionnée par
+  // défaut corresponde, sans dépendre du jour où les tests s'exécutent.
+  vi.useFakeTimers()
+  vi.setSystemTime(new Date('2026-08-01T12:00:00Z'))
+})
+
+afterEach(() => {
+  vi.useRealTimers()
 })
 
 function mountView() {
@@ -86,19 +107,24 @@ async function generate(wrapper, text = sampleText) {
 }
 
 describe('EconomyMines — calcul du bilan', () => {
-  it('calcule la valeur de production, l\'entretien et le net à partir du texte collé', async () => {
+  it('calcule le détail par mine et la synthèse par ressource à partir du texte collé', async () => {
     const wrapper = mountView()
     await generate(wrapper)
 
-    const rows = wrapper.findAll('tbody tr')
-    expect(rows).toHaveLength(3) // 2 mines + total
+    const tables = wrapper.findAll('table')
+    expect(tables).toHaveLength(2) // détail par mine + synthèse par ressource
+
+    const mineRows = tables[0].findAll('tbody tr')
+    expect(mineRows).toHaveLength(2) // 2 mines, pas de ligne total dans ce tableau-ci
 
     const text = wrapper.text()
     expect(text).toContain("Mine d'or")
     expect(text).toContain('Mine de fer')
-    // Mine 1 (or) : valeur production = production brute = 500
-    // entretien = 10 * 14.5 + 5 * 19.5 = 242.5
-    expect(text).toContain('242,5')
+    // OR : 500 (déjà en écus, pas de prix appliqué)
+    // FER : (20 production − 5 entretien fer) × 19,5 = 292,5
+    // PIERRE : (0 production − 10 entretien pierre) × 14,5 = -145
+    // net = 500 + 292,5 - 145 = 647,5
+    expect(text).toContain('647,5')
   })
 
   it("affiche une erreur si le texte collé n'est pas reconnu", async () => {
@@ -109,31 +135,30 @@ describe('EconomyMines — calcul du bilan', () => {
     expect(push.error).toHaveBeenCalled()
     expect(wrapper.findAll('tbody tr')).toHaveLength(0)
   })
-})
 
-describe('EconomyMines — mise en forme du jour (aucun calcul)', () => {
-  it("les boutons n'apparaissent que si du texte est collé", () => {
-    const wrapper = mountView()
-    expect(wrapper.findAll('button')).toHaveLength(0)
-  })
-
-  it("affiche une erreur si aucun bloc d'état de mine n'est reconnu", async () => {
-    const { push } = await import('notivue')
-    const wrapper = mountView()
-    // sampleText n'a que les tableaux de données, pas le bloc "Niveau : ..." de config.
-    await wrapper.find('textarea').setValue(sampleText)
-
-    const dayButton = wrapper.findAll('button').find(b => b.text() === 'Mise en forme du jour')
-    await dayButton.trigger('click')
-
-    expect(push.error).toHaveBeenCalled()
-  })
-
-  it("met en forme l'état de chaque mine (config), sans prix ni calcul, sans passer par \"Générer\"", async () => {
+  it('date le BBcode exporté avec la semaine couverte', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.assign(navigator, { clipboard: { writeText } })
 
-    const textWithState = `
+    const wrapper = mountView()
+    await generate(wrapper)
+    await wrapper.findAll('button').find(b => b.text() === 'Copier en BBcode').trigger('click')
+
+    const copied = writeText.mock.calls[0][0]
+    // Semaine figée par les fake timers : lundi 27/07 → dimanche 02/08/2026, soit 1474
+    // dans le calendrier du jeu — c'est cette année-là que lit un joueur sur le forum.
+    // Un bilan repartagé doit rester datable sans le message qui l'accompagnait.
+    expect(copied).toContain('Semaine du 27 juillet 1474 au 2 août 1474')
+    expect(copied).not.toContain('2026')
+    // Placé juste sous le titre, avant le détail par mine.
+    expect(copied.indexOf('Semaine du')).toBeLessThan(copied.indexOf("Mine d'or"))
+  })
+})
+
+describe('EconomyMines — mise en forme du jour (aucun calcul)', () => {
+  // Collage complet : le bloc de configuration des 2 mines (que sampleText n'a pas) suivi
+  // des tableaux de relevés. Partagé par les cas qui vérifient le rendu BBcode.
+  const textWithState = `
 Mine 1 : Mine d'or - Noeud 236
 Niveau : 10
 Rendement : 50.4 écus/22 heures
@@ -163,6 +188,41 @@ Diminuer le niveau de la mine
 Fermer la mine
 ` + sampleText
 
+  // Monte la vue, colle le relevé complet, déclenche "Mise en forme du jour" et renvoie la
+  // partie visible du BBcode copié — le [spoiler] du texte brut est écarté, les assertions
+  // de rendu ne doivent jamais matcher dedans par accident.
+  async function copyVisibleReport() {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, { clipboard: { writeText } })
+    const wrapper = mountView()
+    await wrapper.find('textarea').setValue(textWithState)
+    await wrapper.findAll('button').find(b => b.text() === 'Mise en forme du jour').trigger('click')
+    return writeText.mock.calls[0][0].split('[spoiler]')[0]
+  }
+
+  it("le bouton 'Mise en forme du jour' n'apparaît que si du texte est collé", () => {
+    const wrapper = mountView()
+    // Les flèches de navigation de semaine restent visibles même sans texte collé.
+    expect(wrapper.findAll('button')).toHaveLength(2)
+    expect(wrapper.text()).not.toContain('Mise en forme du jour')
+  })
+
+  it("affiche une erreur si aucun bloc d'état de mine n'est reconnu", async () => {
+    const { push } = await import('notivue')
+    const wrapper = mountView()
+    // sampleText n'a que les tableaux de données, pas le bloc "Niveau : ..." de config.
+    await wrapper.find('textarea').setValue(sampleText)
+
+    const dayButton = wrapper.findAll('button').find(b => b.text() === 'Mise en forme du jour')
+    await dayButton.trigger('click')
+
+    expect(push.error).toHaveBeenCalled()
+  })
+
+  it("met en forme l'état de chaque mine (config), sans prix ni calcul, sans passer par \"Générer\"", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, { clipboard: { writeText } })
+
     const wrapper = mountView()
     await wrapper.find('textarea').setValue(textWithState)
 
@@ -177,15 +237,16 @@ Fermer la mine
     expect(copied).toContain("#1 Mine d'or - Noeud 236")
     expect(copied).toContain('Niveau : 10')
     expect(copied).toContain('Entretien normal : 22 qtx de pierre et 17 kg de fer')
-    // Les 3 tableaux journaliers doivent apparaître dans la partie visible...
+    // Les 3 tableaux journaliers doivent apparaître dans la partie visible, datés dans le
+    // calendrier du jeu (le collage, lui, porte l'année réelle 2026).
     expect(copied).toContain("Nombre d'heures travaillées ces 7 derniers jours")
-    expect(copied).toContain('2026-08-01 : 100')
+    expect(copied).toContain('1474-08-01 : 100')
     expect(copied).toContain('Production des 7 derniers jours')
-    expect(copied).toContain('2026-08-01 : 500')
+    expect(copied).toContain('1474-08-01 : 500')
     expect(copied).toContain('Ressources consommées par la mine ces 7 derniers jours')
-    expect(copied).toContain('2026-08-01 : 10 qtx de pierre, 5 kg de fer')
+    expect(copied).toContain('1474-08-01 : 10 qtx de pierre, 5 kg de fer')
     // Mine 2 n'a aucune conso relevée sur la période : la section reste affichée avec "/".
-    expect(copied).toContain('Ressources consommées par la mine ces 7 derniers jours : /')
+    expect(copied).toContain('[b]Ressources consommées par la mine ces 7 derniers jours[/b] : /')
     // ... mais sans la phrase explicative répétitive du jeu.
     expect(copied).not.toContain('Les valeurs relatives à un jour donné')
     // Les libellés de boutons du jeu ne sont pas de la donnée : exclus de la partie visible.
@@ -199,15 +260,46 @@ Fermer la mine
     // Pas de tableau de résultats : ce bouton ne calcule rien.
     expect(wrapper.findAll('tbody tr')).toHaveLength(0)
   })
+
+  it('encadre chaque mine dans son propre [quote]', async () => {
+    const visible = await copyVisibleReport()
+    // Le jeu de test décrit 2 mines : une paire [quote]...[/quote] par mine, pas un bloc global.
+    expect(visible.match(/\[quote\]/g)).toHaveLength(2)
+    expect(visible.match(/\[\/quote\]/g)).toHaveLength(2)
+    // Le titre de mine ouvre le quote, il n'est jamais laissé en dehors du cadre.
+    expect(visible).toContain("[quote][color=#574000][b][u]#1 Mine d'or")
+  })
+
+  it('colore le titre selon la matière première, en teintes lisibles sur le fond du forum', async () => {
+    const visible = await copyVisibleReport()
+    expect(visible).toContain('[color=#574000]') // or brun foncé, mine 1
+    expect(visible).toContain('[color=#26414c]') // acier bleuté, mine 2 (fer)
+    // Les anciennes teintes tombaient sous 2,5:1 sur le beige des [quote] : plus aucun usage.
+    expect(visible).not.toContain('darkgoldenrod')
+    expect(visible).not.toContain('darkgray')
+  })
+
+  it("n'insère pas de ligne vide entre les sections d'une même mine", async () => {
+    const visible = await copyVisibleReport()
+    // Chaque intertitre suit directement le [/list] de la section précédente : c'est ce
+    // doublon d'espacement ([/list] pose déjà sa marge) qui étirait le rendu sur le forum.
+    expect(visible).toContain("[/list]\n[b]Nombre d'heures travaillées")
+    expect(visible).toContain('[/list]\n[b]Production des 7 derniers jours')
+    expect(visible).not.toMatch(/\n\n\[b\]Nombre d'heures/)
+    expect(visible).not.toMatch(/\n\n\[b\]Production des/)
+  })
 })
 
 describe('EconomyMines — mémorisation "confort" entre deux collages', () => {
-  it("ne mémorise rien sans consentement 'comfort'", async () => {
+  it("ne persiste rien en localStorage sans consentement 'comfort'", async () => {
     const wrapper = mountView()
     await generate(wrapper)
 
-    const secondVisit = mountView()
-    expect(secondVisit.find('.italic').exists()).toBe(false)
+    // cookieStore documente : sans consentement, une valeur change en mémoire (dégradation
+    // gracieuse pour la session en cours) mais n'est jamais écrite en localStorage — c'est
+    // cette persistance réelle qu'on vérifie ici, pas l'état en mémoire (un second wrapper
+    // partageant le même pinia verrait la valeur en mémoire, ce n'est pas ce qui est testé).
+    expect(localStorage.getItem('comfort-cookies')).toBeNull()
   })
 
   it('fusionne un second collage avec le premier une fois "comfort" accepté', async () => {
@@ -220,10 +312,10 @@ describe('EconomyMines — mémorisation "confort" entre deux collages', () => {
 Mine 1 : Mine d'or - Noeud 236
 Nombre d'heures travaillées ces 7 derniers jours
 Date	Heures
-2026-08-02	80
+1474-08-02	80
 Production des 7 derniers jours
 Date	Rendement
-2026-08-02	400
+1474-08-02	400
 Ressources consommées par la mine ces 7 derniers jours
 Date	Qx de pierre	Kg de fer
 `

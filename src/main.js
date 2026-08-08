@@ -44,7 +44,12 @@ import {
   FaMapMarkerAlt,
   FaEdit,
   GiScrollUnfurled,
-  GiHammerNails
+  GiHammerNails,
+  FaChevronLeft,
+  FaChevronRight,
+  FaInfoCircle,
+  FaTimes,
+  FaHardHat
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -76,7 +81,12 @@ addIcons(
   FaMapMarkerAlt,
   FaEdit,
   GiScrollUnfurled,
-  GiHammerNails
+  GiHammerNails,
+  FaChevronLeft,
+  FaChevronRight,
+  FaInfoCircle,
+  FaTimes,
+  FaHardHat
 )
 
 const i18n = createI18n({

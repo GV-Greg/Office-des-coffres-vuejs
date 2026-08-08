@@ -1,8 +1,7 @@
 # Tests — Office des Coffres (frontend)
 
 Référence structurelle chargée à la demande (voir `_IA/ODC/ODC-strategie-tests.md` pour le
-raisonnement complet). 160 tests verts au 08/08/2026 (`npx vitest run`) — décompte à jour dans
-`README.md`, ne pas dupliquer ici.
+raisonnement complet). Décompte à jour dans `README.md`, ne pas dupliquer ici.
 
 ## Principe : adapter la portée du test au périmètre du changement
 
@@ -19,7 +18,7 @@ réservée à la fin d'une tâche cohérente ou juste avant un push.
 | Cookies | `tests/cookies/` | `npm run test:cookies` | `cookieStore`, `CookiesBanner`, `CookiesModal` |
 | Économie | `tests/eco/` | `npm run test:eco` | `mineParser` (logique pure), `EconomyMines` |
 | Sécurité | `tests/security/` | `npm run test:security` | `SecurityGuet` |
-| Commun | `tests/common/` | `npm run test:common` | `NavBar`, `NavMenu`, `HomeView`, `Validators`, `kingdomTranslations`, `whatsNewAnnounce` |
+| Commun | `tests/common/` | `npm run test:common` | `NavBar`, `NavMenu`, `HomeView`, `HelpModal`, `Validators`, `kingdomTranslations`, `whatsNewAnnounce`, `gameCalendar` (transverse — utilisé par Économie et à terme le Guet/la Douane, pas propre à un domaine) |
 | — | `tests/fixtures/` | — | Données réelles anonymisées, partagées entre domaines |
 
 **Suffixe `.unit.test.js` = logique pure sans DOM** (parseurs, calculs, helpers) — rapide, pas de
@@ -51,12 +50,22 @@ dont le chemin contient `unit.test` — fonctionne car c'est exactement notre co
 
 | Suite | Fichiers | Tests | Durée |
 |---|---|---|---|
-| `test:logic` (4 fichiers `.unit.test.js`) | 4 | 50 | ~7 s |
+| `test:logic` (fichiers `.unit.test.js`) | 5 | 79 | ~6 s |
 | `test:auth` (le plus gros domaine) | 8 | 46 | ~29 s |
-| Suite complète (`npx vitest run`) | 20 | 160 | ~50 s |
+| Suite complète (`npx vitest run`) | 22 | 199 | ~45 s |
 
 Si un chiffre dérape de plus de 50 % lors d'une prochaine mesure, investiguer (jsdom qui traîne,
 mock manquant qui fait un vrai appel réseau, etc.).
+
+### D'où vient le coût d'un run
+
+Ce n'est **pas** le nombre de tests qui coûte — l'exécution proprement dite prend moins de 2 s
+pour toute la suite. Le coût vient du nombre de **fichiers** qui montent un jsdom (~11 s pièce
+sur `/mnt/d` en WSL2) et du démarrage de Vite (~20 s, incompressible une fois par run). D'où
+l'intérêt réel de `.unit.test.js` : pas de découpage arbitraire, juste éviter de payer un jsdom
+quand le test n'en a pas besoin. En développement, le mode watch (`npm run test:watch`) ne paie
+le démarrage qu'une fois — chaque sauvegarde ne relance que les fichiers concernés, en moins
+d'une seconde.
 
 ## CI
 

@@ -48,6 +48,12 @@
       "Title": "Language",
       "French": "French",
       "English": "English"
+    },
+    "HelpModal": {
+      "Purpose": "Purpose",
+      "Overview": "How it works",
+      "Steps": "Steps to follow",
+      "Close": "Close"
     }
   },
   "Profil": {
@@ -174,13 +180,27 @@
   },
   "Economy": {
     "Title": "Economy Chest",
-    "MinesLink": "Mines report"
+    "MinesLink": "Mines report",
+    "MineRegistryLink": "Mine Registry",
+    "ComingSoon": "Coming soon"
   },
   "EconomyMines": {
     "Title": "Mines report",
-    "PasteLabel": "Paste the full text of the game's \"mines\" page here (all mines at once)",
-    "PastePlaceholder": "Paste the game's mines page text here...",
+    "PasteLabel": "Mines Commissioner's Log",
+    "PastePlaceholder": "Paste the game interface text from the \"Mine management\" tab...",
     "PastePrefilled": "Merged with your last saved paste on this device",
+    "WeekLabel": "Week of {monday} to {sunday}",
+    "PreviousWeek": "Previous week",
+    "NextWeek": "Next week",
+    "NoDataForWeekError": "The pasted text doesn't contain any data for this week.",
+    "HelpButton": "How does this work?",
+    "HelpTitle": "How does the Mine Report work?",
+    "HelpPurpose": "Compute your province's weekly mine report: production, upkeep and miners' salary, ready to share on the forum.",
+    "HelpOverview": "Two ways to use this chest: a quick daily report to post on the forum (paste today's text, then click straight on \"Format today's report\", no calculation, no week to pick), or a priced weekly report (steps below).",
+    "HelpStep1": "Pick the week you want to process with the arrows at the top of the page — only days within that specific week will be taken into account, even if your pastes contain others.",
+    "HelpStep2": "In the game, open the \"Mine management\" tab and copy the whole page text, starting from \"Maintenance costs increase...\" through to the end of the page.",
+    "HelpStep3": "Paste that text into the Mines Commissioner's Log. You can paste the interface several times to complete the data for the selected week: each new paste fills in the data already known, without ever erasing anything.",
+    "HelpStep4": "Click \"Generate weekly report\": it computes the production value, upkeep and net (after salary) for the selected week.",
     "PricesTitle": "Unit prices (écus)",
     "PriceStone": "Stone (quintal)",
     "PriceIron": "Iron (kg)",
@@ -194,12 +214,23 @@
     "ColumnMine": "Mine",
     "ColumnHours": "Hours",
     "ColumnProduction": "Production",
-    "ColumnProductionValue": "Production value",
     "ColumnStone": "Stone",
     "ColumnIron": "Iron",
-    "ColumnMaintenanceValue": "Maintenance value",
     "MaintenanceLabel": "Maintenance",
     "TotalLabel": "Total",
+    "SyntheseTitle": "Summary by resource",
+    "ColumnResource": "Resource",
+    "ColumnUnitPrice": "Unit price",
+    "ColumnMaintenanceSalary": "Maintenance/Salary",
+    "ColumnResultQuantity": "Result (quantity)",
+    "ColumnResultValue": "Result (value)",
+    "Resources": {
+      "OR": "Gold",
+      "FER": "Iron",
+      "PIERRE": "Stone",
+      "ARGILE": "Clay",
+      "SEL": "Salt"
+    },
     "NetLabel": "Net",
     "NoDataError": "No data recognized. Check that you pasted the game's text correctly.",
     "CopiedSuccess": "Copied to clipboard.",

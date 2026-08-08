@@ -2,6 +2,8 @@
 // Voir roadmap.md, Phase 5, pour le contexte métier (mécanique des mines, prix,
 // pourquoi le salaire n'est pas calculé automatiquement).
 
+import { realYear } from './gameCalendar'
+
 const DATE_ISO = String.raw`\d{4}-\d{1,2}-\d{1,2}`
 const DATE_FR = String.raw`\d{1,2}[./]\d{1,2}[./]\d{2,4}`
 const DATE_ANY = `(?:${DATE_ISO}|${DATE_FR})`
@@ -18,14 +20,23 @@ const MINE_HEADER_RE = /Mine\s*(\d+)\s*:\s*([^-\d]+)/gi
 export const RESOURCES = ['OR', 'FER', 'PIERRE', 'ARGILE', 'SEL']
 
 function normalizeDate(raw) {
+  let y, m, d
   if (raw.includes('-') && raw.split('-')[0].length === 4) {
-    const [y, m, d] = raw.split('-').map(Number)
-    return isValidDate(y, m, d) ? toIso(y, m, d) : null
+    ;[y, m, d] = raw.split('-').map(Number)
+  } else {
+    const parts = raw.replace(/\./g, '/').split('/')
+    if (parts.length !== 3) return null
+    ;[d, m, y] = parts.map(Number)
+    if (y < 100) y += 2000
   }
-  const parts = raw.replace(/\./g, '/').split('/')
-  if (parts.length !== 3) return null
-  let [d, m, y] = parts.map(Number)
-  if (y < 100) y += 2000
+
+  // Le jeu date ses tableaux dans son propre calendrier (1474 = 2026) : on repasse en
+  // année réelle dès le parsing, à la frontière du module. Tout le reste raisonne
+  // ensuite en dates réelles — bornes de semaine et jours de la semaine (un 8 août
+  // 1474 grégorien ne tombe pas le même jour qu'un 8 août 2026), filtrage, clés de
+  // cache — et seul l'affichage rebascule en année de jeu (voir gameCalendar.js).
+  y = realYear(y)
+
   return isValidDate(y, m, d) ? toIso(y, m, d) : null
 }
 
@@ -188,36 +199,50 @@ function sumDays(days) {
 }
 
 /**
- * Calcule le bilan : valeur de production, valeur d'entretien, net (déduction
- * faite du salaire saisi à la main). `prices` : { PIERRE, FER, ARGILE, SEL }
- * (pas de prix "Or", la mine d'or produit directement des écus).
+ * Calcule le bilan de la semaine, en deux temps (comme le classeur Excel de
+ * référence de la province) :
+ * - `lines` : détail par mine, en quantités BRUTES (pas d'écus) — heures,
+ *   production, pierre/fer consommés.
+ * - `synthese` : une ligne par ressource réellement présente (OR/FER/PIERRE/
+ *   ARGILE/SEL), qui monétise le résultat NET (production − entretien/
+ *   salaires) au prix unitaire de cette ressource. L'entretien pierre/fer
+ *   est imputé à la ressource concernée tous mines confondues (le stock de
+ *   pierre de la province sert à l'entretien de n'importe quelle mine, pas
+ *   seulement la carrière qui l'a extraite) ; pour l'or, "entretien" est en
+ *   réalité le salaire des mineurs (déjà en écus, pas de prix à appliquer).
+ * `prices` : { PIERRE, FER, ARGILE, SEL } (pas de prix "Or").
  */
 export function computeBilan(mines, prices, salary = 0) {
-  const lines = (mines || []).map(mine => {
-    const totals = sumDays(mine.days)
-    const valeurProduction = mine.resource === 'OR'
-      ? totals.production
-      : totals.production * (prices?.[mine.resource] ?? 0)
-    const valeurEntretien =
-      totals.pierre * (prices?.PIERRE ?? 0) + totals.fer * (prices?.FER ?? 0)
+  const lines = (mines || []).map(mine => ({ ...mine, ...sumDays(mine.days) }))
 
-    return { ...mine, ...totals, valeurProduction, valeurEntretien }
-  })
+  const pierreConsumedTotal = lines.reduce((sum, l) => sum + l.pierre, 0)
+  const ferConsumedTotal = lines.reduce((sum, l) => sum + l.fer, 0)
 
-  const totals = lines.reduce(
-    (acc, l) => ({
-      heures: acc.heures + l.heures,
-      pierre: acc.pierre + l.pierre,
-      fer: acc.fer + l.fer,
-      valeurProduction: acc.valeurProduction + l.valeurProduction,
-      valeurEntretien: acc.valeurEntretien + l.valeurEntretien,
-    }),
-    { heures: 0, pierre: 0, fer: 0, valeurProduction: 0, valeurEntretien: 0 }
-  )
+  const synthese = RESOURCES
+    .map(resource => {
+      const production = lines
+        .filter(l => l.resource === resource)
+        .reduce((sum, l) => sum + l.production, 0)
 
-  const net = totals.valeurProduction - totals.valeurEntretien - (salary || 0)
+      const entretienSalaires = resource === 'OR'
+        ? -(salary || 0)
+        : resource === 'PIERRE'
+          ? -pierreConsumedTotal
+          : resource === 'FER'
+            ? -ferConsumedTotal
+            : 0
 
-  return { lines, totals, salary: salary || 0, net }
+      const resultatQuantite = production + entretienSalaires
+      const prixUnitaire = resource === 'OR' ? null : (prices?.[resource] ?? 0)
+      const resultatValeur = resource === 'OR' ? resultatQuantite : resultatQuantite * prixUnitaire
+
+      return { resource, prixUnitaire, production, entretienSalaires, resultatQuantite, resultatValeur }
+    })
+    .filter(s => s.production !== 0 || s.entretienSalaires !== 0)
+
+  const net = synthese.reduce((sum, s) => sum + s.resultatValeur, 0)
+
+  return { lines, synthese, salary: salary || 0, net }
 }
 
 /** Date (AAAA-MM-JJ) la plus récente présente dans les relevés, ou null. */
@@ -236,6 +261,32 @@ export function filterToDate(mines, dateIso) {
   return (mines || [])
     .map(m => ({ ...m, days: m.days[dateIso] ? { [dateIso]: m.days[dateIso] } : {} }))
     .filter(m => Object.keys(m.days).length > 0)
+}
+
+/**
+ * Ne garde que les relevés dans [monday, sunday] inclus — pour scoper un
+ * collage à la semaine choisie avant fusion (un collage peut déborder sur
+ * des jours hors de cette semaine, ex. fenêtre glissante du jeu).
+ */
+export function filterToWeek(mines, monday, sunday) {
+  return (mines || [])
+    .map(m => ({
+      ...m,
+      days: Object.fromEntries(
+        Object.entries(m.days).filter(([d]) => d >= monday && d <= sunday)
+      ),
+    }))
+    .filter(m => Object.keys(m.days).length > 0)
+}
+
+/** Lundi de la semaine n semaines avant/après celle de `mondayIso`. */
+export function shiftWeek(mondayIso, n) {
+  return addDays(mondayIso, n * 7)
+}
+
+/** Date du jour (AAAA-MM-JJ) — isolée pour être simulable dans les tests. */
+export function todayIso() {
+  return new Date().toISOString().slice(0, 10)
 }
 
 function addDays(dateIso, n) {

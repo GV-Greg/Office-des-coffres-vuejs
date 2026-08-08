@@ -1,0 +1,73 @@
+{
+  "_source": "Relevé hebdomadaire réel de Greg — 'Buldo - CAM - 2025/2025-11-10_Mines.xlsx', feuille 'Bilan global base' (semaine du 10 au 16 novembre 1473 en jeu). Production et entretiens repris jour par jour, mine par mine.",
+  "_expected": {
+    "salary": 4659.93,
+    "balances": { "OR": -3707.37, "FER": 17, "PIERRE": 262, "ARGILE": 0 },
+    "_note": "Balances telles que calculées par le classeur : OR = prod or − totalité des salaires ; FER/PIERRE = production − entretien total toutes mines confondues ; ARGILE = production brute."
+  },
+  "mines": [
+    {
+      "number": 1, "label": "Mine d'or", "resource": "OR",
+      "days": {
+        "2025-11-10": { "production": 952.56 },
+        "2025-11-11": {}, "2025-11-12": {}, "2025-11-13": {},
+        "2025-11-14": {}, "2025-11-15": {}, "2025-11-16": {}
+      }
+    },
+    {
+      "number": 2, "label": "Carrière de pierre (Tulle)", "resource": "PIERRE",
+      "days": {
+        "2025-11-10": { "production": 12, "pierre": 6, "fer": 4 },
+        "2025-11-11": { "production": 13 },
+        "2025-11-12": { "production": 20, "pierre": 6, "fer": 4 },
+        "2025-11-13": { "production": 23 },
+        "2025-11-14": { "production": 14 },
+        "2025-11-15": { "production": 9, "pierre": 8, "fer": 5 },
+        "2025-11-16": { "production": 11 }
+      }
+    },
+    {
+      "number": 3, "label": "Carrière de pierre (Ventadour)", "resource": "PIERRE",
+      "days": {
+        "2025-11-10": { "production": 5 },
+        "2025-11-11": { "production": 3 },
+        "2025-11-12": { "pierre": 6, "fer": 4 },
+        "2025-11-13": { "production": 3 },
+        "2025-11-14": { "production": 2 },
+        "2025-11-15": { "production": 3 },
+        "2025-11-16": { "production": 5 }
+      }
+    },
+    {
+      "number": 4, "label": "Mine de fer", "resource": "FER",
+      "days": {
+        "2025-11-10": { "production": 19, "pierre": 10, "fer": 8 },
+        "2025-11-11": { "production": 5 },
+        "2025-11-12": { "production": 15 },
+        "2025-11-13": { "production": 11, "pierre": 10, "fer": 7 },
+        "2025-11-14": { "production": 13 },
+        "2025-11-15": { "production": 8 },
+        "2025-11-16": { "production": 5 }
+      }
+    },
+    {
+      "number": 5, "label": "Carrière de pierre (Limoges)", "resource": "PIERRE",
+      "days": {
+        "2025-11-10": {},
+        "2025-11-11": { "production": 26 },
+        "2025-11-12": { "production": 47, "pierre": 11, "fer": 8 },
+        "2025-11-13": { "production": 31, "pierre": 8, "fer": 9 },
+        "2025-11-14": { "production": 38 },
+        "2025-11-15": { "production": 38 },
+        "2025-11-16": { "production": 38, "pierre": 14, "fer": 10 }
+      }
+    },
+    {
+      "number": 6, "label": "Mine d'argile", "resource": "ARGILE",
+      "days": {
+        "2025-11-10": {}, "2025-11-11": {}, "2025-11-12": {}, "2025-11-13": {},
+        "2025-11-14": {}, "2025-11-15": {}, "2025-11-16": {}
+      }
+    }
+  ]
+}

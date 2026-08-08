@@ -48,6 +48,12 @@
       "Title": "Langue",
       "French": "Français",
       "English": "Anglais"
+    },
+    "HelpModal": {
+      "Purpose": "But du coffre",
+      "Overview": "Fonctionnement",
+      "Steps": "Étapes à suivre",
+      "Close": "Fermer"
     }
   },
   "Profil": {
@@ -174,13 +180,27 @@
   },
   "Economy": {
     "Title": "Coffres Économie",
-    "MinesLink": "Bilan des mines"
+    "MinesLink": "Bilan des mines",
+    "MineRegistryLink": "Registre des mines",
+    "ComingSoon": "Bientôt disponible"
   },
   "EconomyMines": {
     "Title": "Bilan des mines",
-    "PasteLabel": "Colle ici le texte complet de la page \"mines\" du jeu (toutes les mines d'un coup)",
-    "PastePlaceholder": "Copie-colle ici le texte de la page mines du jeu...",
+    "PasteLabel": "Relevé du Commissaire aux Mines",
+    "PastePlaceholder": "Copie-colle le texte de l'interface du jeu de l'onglet \"Gestion des mines\"...",
     "PastePrefilled": "Fusionné avec ton dernier collage mémorisé sur cet appareil",
+    "WeekLabel": "Semaine du {monday} au {sunday}",
+    "PreviousWeek": "Semaine précédente",
+    "NextWeek": "Semaine suivante",
+    "NoDataForWeekError": "Le texte collé ne contient aucune donnée pour cette semaine.",
+    "HelpButton": "Comment ça marche ?",
+    "HelpTitle": "Comment fonctionne le Bilan des mines ?",
+    "HelpPurpose": "Calculer le bilan économique hebdomadaire des mines de ta province : production, entretien et salaire des mineurs, prêt à partager sur le forum.",
+    "HelpOverview": "Deux façons d'utiliser ce coffre : un rapport quotidien rapide à poster sur le forum (colle le texte du jour puis clique directement sur \"Mise en forme du jour\", sans calcul, sans choisir de semaine), ou un bilan hebdomadaire chiffré (étapes ci-dessous).",
+    "HelpStep1": "Choisis la semaine à traiter avec les flèches en haut de la page — seuls les jours de cette semaine précise seront pris en compte, même si tes collages en contiennent d'autres.",
+    "HelpStep2": "Depuis le jeu, ouvre l'onglet \"Gestion des mines\" et copie tout le texte de la page, en commençant par \"Le coût d'entretien augmente...\" jusqu'à la fin de la page.",
+    "HelpStep3": "Colle ce texte dans le Relevé du Commissaire aux Mines. Tu peux coller plusieurs fois l'interface pour compléter les données de la semaine sélectionnée : chaque nouveau collage complète les données déjà connues, sans jamais rien effacer.",
+    "HelpStep4": "Clique sur \"Générer le bilan hebdomadaire\" : il calcule la valeur de production, l'entretien et le net (après salaire) pour la semaine sélectionnée.",
     "PricesTitle": "Prix unitaires (écus)",
     "PriceStone": "Pierre (quintal)",
     "PriceIron": "Fer (kg)",
@@ -194,12 +214,23 @@
     "ColumnMine": "Mine",
     "ColumnHours": "Heures",
     "ColumnProduction": "Production",
-    "ColumnProductionValue": "Valeur production",
     "ColumnStone": "Pierre",
     "ColumnIron": "Fer",
-    "ColumnMaintenanceValue": "Valeur entretien",
     "MaintenanceLabel": "Entretien",
     "TotalLabel": "Total",
+    "SyntheseTitle": "Synthèse par ressource",
+    "ColumnResource": "Ressource",
+    "ColumnUnitPrice": "Prix unitaire",
+    "ColumnMaintenanceSalary": "Entretien/Salaires",
+    "ColumnResultQuantity": "Résultat (quantité)",
+    "ColumnResultValue": "Résultat (valeur)",
+    "Resources": {
+      "OR": "Or",
+      "FER": "Fer",
+      "PIERRE": "Pierre",
+      "ARGILE": "Argile",
+      "SEL": "Sel"
+    },
     "NetLabel": "Net",
     "NoDataError": "Aucune donnée reconnue. Vérifie que tu as bien collé le texte du jeu.",
     "CopiedSuccess": "Copié dans le presse-papier.",
