@@ -1,3 +1,5 @@
+// @vitest-environment node
+// Logique pure, aucun DOM à monter — voir README, section Tests.
 import { describe, it, expect } from 'vitest'
 import { parseEntries, diffNewEntries, splitByType, buildPayload, buildForumPayloads } from '../../scripts/whatsNewAnnounce.mjs'
 
