@@ -116,12 +116,14 @@ personnages.
 ## Tests
 
 ```bash
-npm test              # Tous les tests, one-shot (alias de `vitest run`)
-npm run test:auth     # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
+npm test               # Tous les tests, one-shot (alias de `vitest run`)
+npm run test:watch     # Mode watch — boucle de dev, ne repaie le démarrage qu'une fois
+npm run test:auth      # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
 199 tests verts au 08/08/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
-common,fixtures}` (structure et scripts détaillés dans `docs/TESTS.md`).
+common,fixtures}` — structure, scripts et méthode ("quoi lancer, et quand") détaillés dans
+`docs/TESTS.md`.
 
 Fixtures réelles dans `tests/fixtures/` :
 - `Bug_ExportSorties.txt` — données anonymisées, non-régression du parsing des sorties (Guet)
