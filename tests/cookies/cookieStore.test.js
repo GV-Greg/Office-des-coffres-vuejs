@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useCookieStore } from '../../src/stores/cookieStore'
 
@@ -15,7 +15,15 @@ const localStorageMock = (() => {
     }),
     clear: vi.fn(() => {
       store = {}
-    })
+    }),
+    // API standard, utilisée par clearConsentedStorage() pour balayer les clés.
+    key: vi.fn(index => Object.keys(store)[index] ?? null),
+    get length() {
+      return Object.keys(store).length
+    },
+    get _raw() {
+      return store
+    }
   }
 })()
 
@@ -33,101 +41,197 @@ describe('Cookie Store', () => {
     vi.clearAllMocks()
   })
 
-  describe('Initial State', () => {
-    it('should start with empty accepted cookies', () => {
-      expect(store.acceptedCookies).toEqual([])
+  describe('État initial', () => {
+    it("part d'un consentement vierge", () => {
+      expect(store.consent).toEqual({ preferences: false, choiceMadeAt: null })
     })
 
-    it('should start with null cookie preferences', () => {
-      expect(store.cookiePreferences).toBeNull()
-    })
-
-    it('should start with default comfort data', () => {
-      expect(store.comfortData).toEqual({
-        theme: 'dark',
-        locale: 'fr',
-        'session-declined': 'false'
-      })
+    it('part des données de confort par défaut', () => {
+      expect(store.comfortData).toEqual({ theme: 'dark', locale: 'fr' })
     })
   })
 
   describe('Getters', () => {
-    it('should correctly identify if user has accepted cookies', () => {
-      expect(store.hasAcceptedCookies).toBe(false)
-      store.acceptedCookies = ['comfort']
-      expect(store.hasAcceptedCookies).toBe(true)
-    })
-
-    it('should correctly identify if user has accepted comfort cookies', () => {
-      expect(store.hasAcceptedComfort).toBe(false)
-      store.acceptedCookies = ['comfort']
-      expect(store.hasAcceptedComfort).toBe(true)
-    })
-
-    it('should correctly identify if user has accepted session cookies', () => {
-      expect(store.hasAcceptedSession).toBe(false)
-      store.acceptedCookies = ['session']
-      expect(store.hasAcceptedSession).toBe(true)
-    })
-
-    it('should correctly identify if user can login', () => {
-      expect(store.canUserLogin).toBe(false)
-      store.acceptedCookies = ['session']
-      expect(store.canUserLogin).toBe(true)
-    })
-
-    it('should correctly identify if user has made a choice', () => {
+    it("distingue « pas encore répondu » d'un refus explicite", () => {
       expect(store.hasUserChoice).toBe(false)
-      store.cookiePreferences = 'saved'
+      expect(store.hasAcceptedPreferences).toBe(false)
+
+      store.declinePreferences()
+      // Refus : l'utilisateur a bien répondu, la bannière ne doit plus revenir.
       expect(store.hasUserChoice).toBe(true)
+      expect(store.hasAcceptedPreferences).toBe(false)
+    })
+
+    it('reconnaît un consentement accepté', () => {
+      store.acceptPreferences()
+      expect(store.hasUserChoice).toBe(true)
+      expect(store.hasAcceptedPreferences).toBe(true)
+    })
+
+    describe('needsRenewal (rappel à 6 mois, recommandation CNIL)', () => {
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+
+      it('est faux tant que personne n\'a répondu', () => {
+        expect(store.needsRenewal()).toBe(false)
+      })
+
+      it('est faux pour un choix récent, vrai passé six mois', () => {
+        vi.useFakeTimers()
+        vi.setSystemTime(new Date('2026-01-01T00:00:00Z'))
+        store.acceptPreferences()
+        expect(store.needsRenewal()).toBe(false)
+
+        vi.setSystemTime(new Date('2026-04-01T00:00:00Z')) // 3 mois
+        expect(store.needsRenewal()).toBe(false)
+
+        vi.setSystemTime(new Date('2026-09-01T00:00:00Z')) // 8 mois
+        expect(store.needsRenewal()).toBe(true)
+      })
     })
   })
 
-  describe('Actions', () => {
-    it('should initialize cookies from localStorage', () => {
-      const savedPreferences = ['comfort', 'session']
-      localStorageMock.setItem('cookie-comply', JSON.stringify(savedPreferences))
+  describe('Consentement', () => {
+    it('enregistre une acceptation avec sa date', () => {
+      store.acceptPreferences()
 
-      store.initializeCookies()
-      expect(store.acceptedCookies).toEqual(savedPreferences)
-      expect(store.cookiePreferences).toBe('saved')
+      expect(store.consent.preferences).toBe(true)
+      expect(store.consent.choiceMadeAt).toEqual(expect.any(Number))
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'cookie-consent',
+        JSON.stringify(store.consent)
+      )
     })
 
-    it('should reset cookie state', () => {
-      store.acceptedCookies = ['comfort']
-      store.cookiePreferences = 'saved'
+    it('enregistre un refus avec sa date', () => {
+      store.declinePreferences()
 
-      store.resetCookieState()
-      expect(store.acceptedCookies).toEqual([])
-      expect(store.cookiePreferences).toBeNull()
+      expect(store.consent.preferences).toBe(false)
+      expect(store.consent.choiceMadeAt).toEqual(expect.any(Number))
+    })
+
+    it('recharge un consentement déjà enregistré', () => {
+      localStorageMock.setItem(
+        'cookie-consent',
+        JSON.stringify({ preferences: true, choiceMadeAt: 1_770_000_000_000 })
+      )
+
+      store.initializeCookies()
+      expect(store.consent).toEqual({ preferences: true, choiceMadeAt: 1_770_000_000_000 })
+    })
+
+    it('remet le consentement à zéro', () => {
+      store.acceptPreferences()
+      store.resetConsent()
+
+      expect(store.consent).toEqual({ preferences: false, choiceMadeAt: null })
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('cookie-consent')
+    })
+  })
+
+  describe('Validation de ce qui est relu depuis localStorage', () => {
+    it('ignore un JSON corrompu et repart d\'un consentement vierge', () => {
+      localStorageMock.setItem('cookie-consent', '{ pas du json')
+
+      store.initializeCookies()
+      expect(store.consent).toEqual({ preferences: false, choiceMadeAt: null })
+    })
+
+    it('rejette une structure qui ne correspond pas au modèle', () => {
+      // preferences doit être un booléen : une chaîne "true" bricolée à la main
+      // ne doit pas passer pour un consentement donné.
+      localStorageMock.setItem(
+        'cookie-consent',
+        JSON.stringify({ preferences: 'true', choiceMadeAt: 1_770_000_000_000 })
+      )
+
+      store.initializeCookies()
+      expect(store.hasAcceptedPreferences).toBe(false)
+      expect(store.hasUserChoice).toBe(false)
+    })
+
+    it('ne conserve pas les clés inconnues glissées dans le consentement', () => {
+      localStorageMock.setItem(
+        'cookie-consent',
+        JSON.stringify({ preferences: true, choiceMadeAt: 1_770_000_000_000, tracking: true })
+      )
+
+      store.initializeCookies()
+      expect(store.consent).toEqual({ preferences: true, choiceMadeAt: 1_770_000_000_000 })
+      expect(store.consent.tracking).toBeUndefined()
+    })
+
+    it('ignore des données de confort qui ne sont pas un objet', () => {
+      localStorageMock.setItem('comfort-cookies', JSON.stringify(['pas', 'un', 'objet']))
+
+      store.initializeCookies()
+      expect(store.comfortData).toEqual({ theme: 'dark', locale: 'fr' })
+    })
+  })
+
+  describe("Migration depuis l'ancien format (liste plate)", () => {
+    it("reprend un ancien consentement 'comfort' sans resolliciter l'utilisateur", () => {
+      localStorageMock.setItem('cookie-comply', JSON.stringify(['comfort', 'session']))
+
+      store.initializeCookies()
+      expect(store.consent.preferences).toBe(true)
+      expect(store.hasUserChoice).toBe(true) // pas de bannière au prochain chargement
+    })
+
+    it("traduit un ancien refus (ou un 'session' seul) en préférences refusées", () => {
+      // 'session' ne conditionnait rien : son seul lecteur était un computed mort.
+      localStorageMock.setItem('cookie-comply', JSON.stringify(['session']))
+
+      store.initializeCookies()
+      expect(store.consent.preferences).toBe(false)
+      expect(store.hasUserChoice).toBe(true)
+    })
+
+    it('réécrit le consentement au nouveau format et supprime l\'ancienne clé', () => {
+      localStorageMock.setItem('cookie-comply', JSON.stringify(['comfort']))
+
+      store.initializeCookies()
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'cookie-consent',
+        JSON.stringify(store.consent)
+      )
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('cookie-comply')
     })
 
-    it('should accept all cookies', () => {
-      const cookies = ['comfort', 'session']
-      store.acceptAllCookies(cookies)
+    it('le nouveau format prime si les deux clés coexistent', () => {
+      localStorageMock.setItem('cookie-comply', JSON.stringify(['comfort']))
+      localStorageMock.setItem(
+        'cookie-consent',
+        JSON.stringify({ preferences: false, choiceMadeAt: 1_770_000_000_000 })
+      )
 
-      expect(store.acceptedCookies).toEqual(cookies)
-      expect(store.cookiePreferences).toBe('all')
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-comply', JSON.stringify(cookies))
+      store.initializeCookies()
+      expect(store.consent.preferences).toBe(false)
+    })
+  })
+
+  describe('clearConsentedStorage', () => {
+    it('purge les données stockées sur consentement', () => {
+      localStorageMock.setItem('comfort-cookies', JSON.stringify({ theme: 'light' }))
+      localStorageMock.setItem('cookie-consent', JSON.stringify({ preferences: true, choiceMadeAt: 1 }))
+
+      store.clearConsentedStorage()
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('comfort-cookies')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('cookie-consent')
     })
 
-    it('should decline all non-required cookies', () => {
-      const requiredCookies = []
-      store.declineAllCookies(requiredCookies)
+    it("n'emporte jamais le jeton d'authentification", () => {
+      // Régression sur l'ancien clearCookies(), qui faisait un localStorage.clear() :
+      // purger le consentement déconnectait l'utilisateur au passage.
+      localStorageMock.setItem('auth_token', 'un-jeton')
+      localStorageMock.setItem('auth_user', '{"id":1}')
+      localStorageMock.setItem('comfort-cookies', JSON.stringify({ theme: 'light' }))
 
-      expect(store.acceptedCookies).toEqual(requiredCookies)
-      expect(store.cookiePreferences).toBe('minimal')
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-comply', JSON.stringify(requiredCookies))
-    })
-
-    it('should save custom preferences', () => {
-      const selectedCookies = ['comfort', 'session']
-      store.savePreferences(selectedCookies)
-
-      expect(store.acceptedCookies).toEqual(selectedCookies)
-      expect(store.cookiePreferences).toBe('custom')
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-comply', JSON.stringify(selectedCookies))
+      store.clearConsentedStorage()
+      expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('auth_user')
+      expect(localStorageMock._raw.auth_token).toBe('un-jeton')
     })
   })
 
@@ -142,42 +246,42 @@ describe('Cookie Store', () => {
       expect(store.getComfortData('theme')).toBe('light')
     })
 
-    it('setComfortData ne persiste PAS en localStorage sans consentement "comfort"', () => {
+    it('setComfortData ne persiste PAS en localStorage sans consentement', () => {
       store.setComfortData('theme', 'light')
       expect(localStorageMock.setItem).not.toHaveBeenCalledWith('comfort-cookies', expect.anything())
     })
 
-    it('setComfortData persiste en localStorage une fois "comfort" accepté', () => {
-      store.acceptedCookies = ['comfort']
+    it('setComfortData persiste une fois les préférences acceptées', () => {
+      store.acceptPreferences()
       store.setComfortData('theme', 'light')
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'comfort-cookies',
-        JSON.stringify({ theme: 'light', locale: 'fr', 'session-declined': 'false' })
+        JSON.stringify({ theme: 'light', locale: 'fr' })
       )
     })
 
-    it('accepter "comfort" persiste les changements faits en mémoire avant le consentement', () => {
+    it('accepter persiste les changements faits en mémoire avant le consentement', () => {
       store.setComfortData('theme', 'light') // avant consentement : mémoire seulement
-      store.acceptAllCookies(['comfort'])
+      store.acceptPreferences()
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'comfort-cookies',
-        JSON.stringify({ theme: 'light', locale: 'fr', 'session-declined': 'false' })
+        JSON.stringify({ theme: 'light', locale: 'fr' })
       )
     })
 
-    it('refuser/retirer "comfort" purge les données de confort déjà stockées', () => {
-      store.acceptedCookies = ['comfort']
+    it('refuser (ou retirer) purge les données de confort déjà stockées', () => {
+      store.acceptPreferences()
       store.setComfortData('theme', 'light')
       localStorageMock.setItem.mockClear()
 
-      store.declineAllCookies([])
+      store.declinePreferences()
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('comfort-cookies')
     })
 
     it('initializeCookies charge les données de confort déjà persistées', () => {
-      localStorageMock.setItem('comfort-cookies', JSON.stringify({ theme: 'light', locale: 'en', 'session-declined': 'false' }))
+      localStorageMock.setItem('comfort-cookies', JSON.stringify({ theme: 'light', locale: 'en' }))
 
       store.initializeCookies()
       expect(store.comfortData.theme).toBe('light')
@@ -185,7 +289,7 @@ describe('Cookie Store', () => {
     })
 
     it('setTheme et setLocale passent par le même mécanisme de confort', () => {
-      store.acceptedCookies = ['comfort']
+      store.acceptPreferences()
       store.setTheme('light')
       store.setLocale('en')
 

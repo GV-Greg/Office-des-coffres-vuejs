@@ -12,7 +12,10 @@ const cookieStore = useCookieStore();
 const showBanner = ref(false);
 const showModal = ref(false);
 
-// Préférence des cookies définies une seule fois
+// Une seule catégorie visible : les préférences (thème, langue, saisies mémorisées).
+// L'ancienne catégorie "Session" a disparu — le jeton d'auth est strictement nécessaire
+// au service demandé, donc exempté de consentement et documenté comme tel dans la
+// politique. Voir ODC-strategie-cookies.md.
 const preferences = computed(() => [
   {
     title: t('Cookies.Preferences.Comfort.Title'),
@@ -20,38 +23,20 @@ const preferences = computed(() => [
     items: [
       {
         label: t('Cookies.Preferences.Comfort.Label'),
-        value: 'comfort',
+        value: 'preferences',
         isRequired: false,
       },
     ],
   },
-  {
-    title: t('Cookies.Preferences.Session.Title'),
-    description: t('Cookies.Preferences.Session.Description'),
-    items: [
-      {
-        label: t('Cookies.Preferences.Session.Label'),
-        value: 'session',
-        isRequired: false,
-      },
-    ],
-  }
 ]);
 
-// Accepter tous les cookies
 const handleAcceptAll = () => {
-  const allCookies = preferences.value.flatMap(cat => cat.items.map(item => item.value));
-  cookieStore.acceptAllCookies(allCookies);
+  cookieStore.acceptPreferences();
   showBanner.value = false;
 };
 
-// Refuser automatiquement (garder uniquement les essentiels)
 const handleDeclineAll = () => {
-  const requiredCookies = preferences.value
-    .flatMap(cat => cat.items)
-    .filter(item => item.isRequired)
-    .map(item => item.value);
-  cookieStore.declineAllCookies(requiredCookies);
+  cookieStore.declinePreferences();
   showBanner.value = false;
 };
 
@@ -64,7 +49,7 @@ const handleModalClose = () => {
 
 // Sauvegarder les préférences depuis la modale
 const handleSavePreferences = (selectedCookies) => {
-  cookieStore.savePreferences(selectedCookies);
+  cookieStore.setConsent(selectedCookies.includes('preferences'));
   showModal.value = false;
   showBanner.value = false;
 };
