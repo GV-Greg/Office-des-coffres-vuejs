@@ -1,5 +1,5 @@
 <script setup>
-  import { onMounted, ref, watch } from 'vue'
+  import { onMounted } from 'vue'
   import { RouterView } from 'vue-router'
   import { Notivue, Notification, materialTheme } from 'notivue'
   import { useCookieStore } from './stores/cookieStore'
