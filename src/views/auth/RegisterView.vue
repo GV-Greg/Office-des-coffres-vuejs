@@ -32,10 +32,15 @@
 
   const register = async () => {
     if(validation(!user.email || !user.password || !user.confirmation, t('Auth.Errors.RequiredFields'))) {
+      // erreur déjà affichée par validation()
     } else if(validation(user.email.length > 190, t('Auth.Errors.EmailTooLong'))) {
+      // erreur déjà affichée par validation()
     } else if(validation(user.password.length < 8, t('Auth.Errors.PasswordTooShort'))) {
+      // erreur déjà affichée par validation()
     } else if(validation(user.password.length > 190, t('Auth.Errors.PasswordTooLong'))) {
+      // erreur déjà affichée par validation()
     } else if(validation(user.password !== user.confirmation, t('Auth.Errors.ConfirmationMismatch'))) {
+      // erreur déjà affichée par validation()
     } else {
       authStore.register(user)
           .then(() => {

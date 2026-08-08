@@ -3,14 +3,11 @@
   import { computed } from 'vue'
   import { RouterLink } from 'vue-router'
   import { useI18n } from 'vue-i18n'
-  import { useCookieStore } from '@/stores/cookieStore'
   import { useAuthStore } from '@/stores/authStore'
   import whatsNew from '@/data/whatsNew.json'
 
   const { t, locale } = useI18n()
-  const cookieStore = useCookieStore()
   const authStore = useAuthStore()
-  const canUserLogin = computed(() => cookieStore.canUserLogin)
 
   function newsOfType(type) {
     return whatsNew

@@ -34,9 +34,13 @@
 
   const connect = () => {
     if(validation(!user.email || !user.password, t('Auth.Errors.RequiredFields'))) {
+      // erreur déjà affichée par validation()
     } else if(validation(user.email.length > 190, t('Auth.Errors.EmailTooLong'))) {
+      // erreur déjà affichée par validation()
     } else if(validation(user.password.length < 8, t('Auth.Errors.PasswordTooShort'))) {
+      // erreur déjà affichée par validation()
     } else if(validation(user.password.length > 190, t('Auth.Errors.PasswordTooLong'))) {
+      // erreur déjà affichée par validation()
     } else {
       resendSent.value = false
       authStore.login(user)

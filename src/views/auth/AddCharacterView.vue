@@ -27,7 +27,9 @@
 */
   const submit = () => {
     if (validation(!pseudo.value, t('AddCharacter.Errors.PseudoRequired'))) {
+      // erreur déjà affichée par validation()
     } else if (validation(!selectedCityId.value, t('AddCharacter.Errors.CityRequired'))) {
+      // erreur déjà affichée par validation()
     } else {
       authStore.createCharacter({ pseudo: pseudo.value, city_id: Number(selectedCityId.value) })
           .then(() => {
