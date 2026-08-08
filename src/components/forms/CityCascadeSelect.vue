@@ -71,7 +71,7 @@
       if (props.modelValue) {
         preselectFromCityId(props.modelValue)
       }
-    } catch (error) {
+    } catch {
       push.error(t('AddCharacter.MapError'))
     } finally {
       loadingMap.value = false
