@@ -10,9 +10,14 @@
     mostRecentDate, parseMineStates, formatDateFr,
     getWeekBounds, filterToWeek, shiftWeek, todayIso,
   } from '@/modules/mineParser'
+  import { toGameDateIso } from '@/modules/gameCalendar'
   import { push } from 'notivue'
 
   const { t } = useI18n()
+
+  // Toute date montrée à un joueur (interface ou export forum) porte l'année du jeu ;
+  // les dates réelles ne servent qu'en interne (bornes de semaine, clés de cache).
+  const formatGameDateFr = dateIso => formatDateFr(toGameDateIso(dateIso))
   const cookieStore = useCookieStore()
 
   const MINES_DATA_KEY = 'economy_mines_data'
@@ -36,7 +41,18 @@
   const selectedMonday = ref(getWeekBounds(todayIso()).monday)
   const selectedSunday = computed(() => getWeekBounds(selectedMonday.value).sunday)
 
-  const RESOURCE_COLOR = { OR: 'darkgoldenrod', PIERRE: 'seagreen', FER: 'darkgray', ARGILE: 'firebrick', SEL: 'steelblue' }
+  // Couleurs des titres de mine dans les exports BBcode, choisies sur deux critères :
+  // évoquer la matière première, et rester lisibles sur le fond beige des [quote] du
+  // forum du jeu (#d5bc84, relevé sur une capture réelle). Les teintes précédentes
+  // (darkgoldenrod, seagreen, darkgray...) plafonnaient entre 1,27:1 et 2,3:1 de
+  // contraste, soit illisibles ; celles-ci sont toutes au-dessus de 4,5:1 (WCAG AA).
+  const RESOURCE_COLOR = {
+    OR: '#574000',      // or brun foncé      — 5,31:1
+    PIERRE: '#4a4a4a',  // gris ardoise       — 4,79:1
+    FER: '#26414c',     // acier bleuté       — 5,84:1
+    ARGILE: '#7d3309',  // terre cuite        — 4,83:1
+    SEL: '#14507d',     // bleu marin         — 4,59:1
+  }
 
 /*
   navigation semaine
@@ -96,7 +112,15 @@
   }
 
   function bilanToBBcode(b, title) {
-    let bb = '[quote][center][b][size=20]' + title + '[/size][/b][/center]\n[list]\n'
+    // Les dates de la semaine couverte suivent le titre : un bilan repartagé sur le forum
+    // doit pouvoir être daté sans dépendre du message qui l'accompagne. Même libellé que
+    // le sélecteur de semaine de l'UI, pour qu'un lecteur retrouve la période à l'identique.
+    const week = t('EconomyMines.WeekLabel', {
+      monday: formatGameDateFr(selectedMonday.value),
+      sunday: formatGameDateFr(selectedSunday.value),
+    })
+    let bb = '[quote][center][b][size=20]' + title + '[/size][/b][/center]\n'
+    bb += `[center][i]${week}[/i][/center]\n[list]\n`
     for (const line of b.lines) {
       const color = RESOURCE_COLOR[line.resource] || 'black'
       bb += `[color=${color}][b][u]${line.label} (#${line.number})[/u][/b][/color]\n`
@@ -137,7 +161,7 @@
     return Object.entries(mine.days)
       .filter(([, v]) => v[field] != null)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, v]) => `[*]${date} : ${v[field]}`)
+      .map(([date, v]) => `[*]${toGameDateIso(date)} : ${v[field]}`)
       .join('\n')
   }
 
@@ -145,7 +169,7 @@
     return Object.entries(mine.days)
       .filter(([, v]) => v.pierre != null || v.fer != null)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, v]) => `[*]${date} : ${v.pierre ?? 0} qtx de pierre, ${v.fer ?? 0} kg de fer`)
+      .map(([date, v]) => `[*]${toGameDateIso(date)} : ${v.pierre ?? 0} qtx de pierre, ${v.fer ?? 0} kg de fer`)
       .join('\n')
   }
 
@@ -172,12 +196,14 @@
     const mines = parseMinesText(raw)
     const minesByNumber = new Map(mines.map(m => [m.number, m]))
     const day = mostRecentDate(mines)
-    const dateLabel = day ? formatDateFr(day) : ''
+    const dateLabel = day ? formatGameDateFr(day) : ''
 
     let bb = `[center][size=16][color=darkred][b]- Rapport sur les Mines - Journée du ${dateLabel} -[/b][/color][/size][/center]\n\n`
     for (const s of states) {
       const color = RESOURCE_COLOR[s.resource] || 'black'
-      bb += `[color=${color}][b][u]#${s.number} ${s.label}${s.noeud ? ' - Noeud ' + s.noeud : ''}[/u][/b][/color]\n[list]\n`
+      // Une mine = un [quote] : sur le forum, chaque bloc est visuellement encadré et
+      // détaché du suivant, ce qui remplace les lignes vides qu'on insérait avant.
+      bb += `[quote][color=${color}][b][u]#${s.number} ${s.label}${s.noeud ? ' - Noeud ' + s.noeud : ''}[/u][/b][/color]\n[list]\n`
       if (s.niveau) bb += `[*]Niveau : ${s.niveau}\n`
       if (s.rendement) bb += `[*]Rendement : ${s.rendement}\n`
       if (s.creneaux) bb += `[*]Créneaux horaires : ${s.creneaux}\n`
@@ -191,13 +217,16 @@
         const heures = formatSeries(mine, 'heures')
         const production = formatSeries(mine, 'production')
         const conso = formatConsoSeries(mine)
-        if (heures) bb += `\nNombre d'heures travaillées ces 7 derniers jours\n[list]\n${heures}\n[/list]\n`
-        if (production) bb += `\nProduction des 7 derniers jours\n[list]\n${production}\n[/list]\n`
+        // Pas de saut de ligne avant les intertitres : [list] pose déjà sa propre marge,
+        // et le \n qu'on ajoutait en plus doublait l'espace entre les sections d'une même
+        // mine. Le gras compense la hiérarchie visuelle perdue.
+        if (heures) bb += `[b]Nombre d'heures travaillées ces 7 derniers jours[/b]\n[list]\n${heures}\n[/list]\n`
+        if (production) bb += `[b]Production des 7 derniers jours[/b]\n[list]\n${production}\n[/list]\n`
         bb += conso
-          ? `\nRessources consommées par la mine ces 7 derniers jours\n[list]\n${conso}\n[/list]\n`
-          : '\nRessources consommées par la mine ces 7 derniers jours : /\n'
+          ? `[b]Ressources consommées par la mine ces 7 derniers jours[/b]\n[list]\n${conso}\n[/list]`
+          : `[b]Ressources consommées par la mine ces 7 derniers jours[/b] : /`
       }
-      bb += '\n'
+      bb += '[/quote]\n'
     }
     bb += `[spoiler][code]${raw}[/code][/spoiler]`
     copyToClipboard(bb)
@@ -216,7 +245,7 @@
         <v-icon name="fa-chevron-left" scale="0.9" />
       </button>
       <span class="font-bold text-center">
-        {{ t('EconomyMines.WeekLabel', { monday: formatDateFr(selectedMonday), sunday: formatDateFr(selectedSunday) }) }}
+        {{ t('EconomyMines.WeekLabel', { monday: formatGameDateFr(selectedMonday), sunday: formatGameDateFr(selectedSunday) }) }}
       </span>
       <button
         type="button"
@@ -268,7 +297,7 @@
     </div>
 
     <div v-if="weekCheck && !weekCheck.complete" class="mt-2 text-sm text-amber-600 dark:text-amber-400">
-      {{ t('EconomyMines.WeekIncompleteWarning', { count: 7 - weekCheck.missingDates.length, monday: weekCheck.monday, sunday: weekCheck.sunday }) }}
+      {{ t('EconomyMines.WeekIncompleteWarning', { count: 7 - weekCheck.missingDates.length, monday: toGameDateIso(weekCheck.monday), sunday: toGameDateIso(weekCheck.sunday) }) }}
     </div>
 
     <div v-if="bilan" class="mt-6">

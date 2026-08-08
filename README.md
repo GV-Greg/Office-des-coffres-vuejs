@@ -50,6 +50,7 @@ src/
 ├── modules/
 │   ├── Validators.js            # Validation de formulaires
 │   ├── kingdomTranslations.js   # Traduction FR des noms de royaumes (alignée sur lang/fr.json backend)
+│   ├── gameCalendar.js          # Année du jeu (2026 → 1474) — table d'ancrages, transverse à tous les modules
 │   └── mineParser.js            # Parsing + calcul du bilan des mines (logique pure, testée isolément)
 ├── services/
 │   └── anim.service.js         # Appels API animation (utilise api.js)
@@ -60,6 +61,7 @@ src/
 │   ├── SelectorCharacter.vue   # Switch du personnage actif (visible si connecté et >1 personnage)
 │   ├── CookiesBanner.vue       # Bannière RGPD
 │   ├── CookiesModal.vue        # Gestion détaillée des cookies
+│   ├── HelpModal.vue           # Modale d'aide générique (but / fonctionnement / étapes) — réutilisable par tout module
 │   └── forms/CityCascadeSelect.vue  # Sélecteur royaume→province→ville, réutilisé par AddCharacterView et l'édition de résidence
 ├── router/index.js             # Routes : /, /login, /register, /verify-email, /app/*
 ├── i18n/                       # Traductions FR/EN
@@ -98,7 +100,7 @@ VITE_API_ENDPOINT_PROD=
 |---|---|---|
 | Accueil | `/app/` | Fonctionnel — intègre la "Chronique de l'Office" (`whatsNew.json`), entrées publiques et privées (connecté) |
 | Sécurité — Guet | `/app/secu/guet` | Fonctionnel (liste "d'hier" pré-remplie via cookie comfort) |
-| Économie — Bilan des mines | `/app/eco/mines` (`/app/eco` redirige) | Fonctionnel — colle le texte "mines" du jeu, bilan hebdo ou mise en forme du jour, export BBcode, mémorisation "confort" |
+| Économie — Bilan des mines | `/app/eco/mines` (`/app/eco` redirige) | Fonctionnel — colle le texte "mines" du jeu, bilan hebdo ou mise en forme du jour, export BBcode, mémorisation "confort", aide contextuelle. ⚠️ Sélecteur de semaine à corriger : voir le bug bloquant « dates du jeu » dans `roadmap.md` |
 | Animation | `/app/anim` | En développement |
 | Compagnie | `/app/company` | En développement |
 | Vérification email | `/verify-email` | Fonctionnel — connexion auto après clic sur le lien reçu |
@@ -118,16 +120,30 @@ npm test              # Tous les tests, one-shot (alias de `vitest run`)
 npm run test:auth     # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
-160 tests verts au 08/08/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
-common,fixtures}` (structure et scripts détaillés dans `docs/TESTS.md`). Toute vue utilisant
-`useI18n()` doit recevoir un plugin `createI18n({ legacy: false, ... })` dans `global.plugins`
-du test.
+199 tests verts au 08/08/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
+common,fixtures}` (structure et scripts détaillés dans `docs/TESTS.md`).
+
+Fixtures réelles dans `tests/fixtures/` :
+- `Bug_ExportSorties.txt` — données anonymisées, non-régression du parsing des sorties (Guet)
+- `mines-2025-11-10.json` — relevé hebdomadaire réel (6 mines, jour par jour) : vérifie que
+  l'imputation entretien/salaires par ressource reproduit exactement les balances du classeur
+  Excel de référence
+
+Toute vue utilisant `useI18n()` doit recevoir un plugin `createI18n({ legacy: false, ... })`
+dans `global.plugins` du test.
 
 ---
 
 ## Conventions
 
 - Toujours prévoir les traductions FR **et** EN pour toute nouvelle vue ou composant, y compris l'existant dès qu'on le touche
+- **Exports BBcode : les trois régimes sont volontairement différents, ne pas les uniformiser.**
+  `EconomyMines::bilanToBBcode()` (bilan hebdo) suit la langue de l'UI — le forum du jeu a aussi
+  des parties anglaises ; `EconomyMines::formatDayForForum()` et `SecurityGuet::to_export()`
+  restent en français fixe. Décision explicite de Greg (08/08/2026)
+- **Dates lues par un joueur : toujours l'année du jeu** (`gameCalendar.js`, 2026 → 1474) —
+  interface comme export. Les dates réelles ne servent qu'en interne (bornes de semaine,
+  filtrage, clés de cache)
 - Toujours afficher la mention "outil non officiel"
 - Cookies : catégories "session" (connexion) et "comfort" (thème/langue/préférences par module, optionnelle, dégradation gracieuse) uniquement — aucun cookie publicitaire ni traçage
 - Tests Vitest obligatoires pour chaque nouvelle fonctionnalité, avant commit

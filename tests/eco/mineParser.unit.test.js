@@ -6,6 +6,7 @@ import {
   mostRecentDate, filterToDate, getWeekBounds, checkWeekCompleteness,
   parseMineStates, formatDateFr, filterToWeek, shiftWeek, todayIso,
 } from '../../src/modules/mineParser'
+import realWeek from '../fixtures/mines-2025-11-10.json'
 
 describe('detectResource', () => {
   it('détecte chaque type de ressource depuis le libellé de la mine', () => {
@@ -343,5 +344,48 @@ describe('computeBilan', () => {
     const mines = [{ number: 1, label: "Mine d'or", resource: 'OR', days: { '2026-08-01': { production: 500 } } }]
     const bilan = computeBilan(mines, prices, 0)
     expect(bilan.synthese.find(s => s.resource === 'SEL')).toBeUndefined()
+  })
+
+  // Non-régression sur données réelles : semaine du 10 au 16 novembre 2025 (relevé de Greg,
+  // 6 mines du comté). Les résultats attendus sont ceux calculés par son classeur Excel, qui
+  // fait foi — c'est lui qui fixe la règle d'imputation de l'entretien et des salaires.
+  describe('semaine réelle du 10 novembre 2025', () => {
+    const { mines, _expected } = realWeek
+    const bilan = computeBilan(mines, prices, _expected.salary)
+    const resource = name => bilan.synthese.find(s => s.resource === name)
+
+    it("impute la totalité des salaires à l'or, seule ressource déjà en écus", () => {
+      // Excel : BALANCE OR = production or − SALAIRES IG (tous mineurs, toutes mines).
+      expect(resource('OR').production).toBeCloseTo(952.56)
+      expect(resource('OR').entretienSalaires).toBeCloseTo(-4659.93)
+      expect(resource('OR').resultatQuantite).toBeCloseTo(_expected.balances.OR)
+      expect(resource('OR').prixUnitaire).toBe(null)
+    })
+
+    it("impute l'entretien fer toutes mines confondues à la ressource FER", () => {
+      // Excel : BALANCE FER = production mine de fer − total fer dépensé par les 6 mines.
+      expect(resource('FER').production).toBe(76)
+      expect(resource('FER').entretienSalaires).toBe(-59)
+      expect(resource('FER').resultatQuantite).toBe(_expected.balances.FER)
+    })
+
+    it("cumule les 3 carrières et impute l'entretien pierre toutes mines confondues", () => {
+      // Excel : BALANCE PIERRE = somme des 3 carrières (102 + 21 + 218) − total pierre dépensée.
+      expect(resource('PIERRE').production).toBe(341)
+      expect(resource('PIERRE').entretienSalaires).toBe(-79)
+      expect(resource('PIERRE').resultatQuantite).toBe(_expected.balances.PIERRE)
+    })
+
+    it("écarte de la synthèse une mine restée inactive toute la semaine", () => {
+      // La mine d'argile existe dans la province mais n'a rien produit ni consommé : elle
+      // apparaît dans le détail par mine, jamais dans la synthèse par ressource.
+      expect(bilan.lines.find(l => l.resource === 'ARGILE')).toBeDefined()
+      expect(resource('ARGILE')).toBeUndefined()
+    })
+
+    it('monétise le net de la semaine au prix unitaire de chaque ressource', () => {
+      // -3707,37 écus (or) + 17 × 19,5 (fer) + 262 × 14,5 (pierre)
+      expect(bilan.net).toBeCloseTo(423.13)
+    })
   })
 })
