@@ -114,20 +114,14 @@ personnages.
 ## Tests
 
 ```bash
-npx vitest run                                        # Tous les tests (Vitest)
-npx vitest run tests/stores/authStore.test.js         # Store auth uniquement
+npm test              # Tous les tests, one-shot (alias de `vitest run`)
+npm run test:auth     # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
-⚠️ `npm run test` lance Vitest en mode **watch** — ne pas l'utiliser tel quel en CI ou pour une
-vérification ponctuelle, préférer `npx vitest run`.
-
-129 tests verts au 05/08/2026, répartis dans `tests/{components,modules,router,stores,views}`
-(dont `VerifyEmailView`, `AddCharacterView`, `RegisterView`, `ProfilView`, `EconomyMines`,
-`mineParser`, personnage actif dans `authStore.test.js`, filtrage/tri de la Chronique de l'Office
-dans `HomeView.test.js`) + fixtures réelles dans `tests/fixtures/` (données anonymisées pour le
-bug export sorties). Toute vue utilisant
-`useI18n()` doit recevoir un plugin `createI18n({ legacy: false, ... })` dans
-`global.plugins` du test.
+160 tests verts au 08/08/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
+common,fixtures}` (structure et scripts détaillés dans `docs/TESTS.md`). Toute vue utilisant
+`useI18n()` doit recevoir un plugin `createI18n({ legacy: false, ... })` dans `global.plugins`
+du test.
 
 ---
 

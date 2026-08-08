@@ -23,6 +23,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Placé après `npm ci` : ce dernier recrée node_modules/ à chaque run, un cache
+      # restauré avant serait écrasé. Le cache Vite (transformations) persiste entre
+      # les runs via le hash du lockfile.
+      - name: Cache Vite/Vitest transform cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.vite
+          key: vite-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            vite-${{ runner.os }}-
+
+      # Structure imposée par _IA/ODC/ODC-strategie-tests.md §3 : dossier = domaine,
+      # aucun test à la racine de tests/ — voir frontend/docs/TESTS.md.
+      - name: Vérifier qu'aucun test ne traîne à la racine de tests/
+        run: |
+          stray=$(find tests -maxdepth 1 -name '*.test.js')
+          if [ -n "$stray" ]; then
+            echo "Fichier(s) de test hors d'un dossier de domaine :"
+            echo "$stray"
+            exit 1
+          fi
+
       - name: Run tests
         run: npx vitest run
 
