@@ -1,4 +1,3 @@
-/* eslint-env node */
 import { readFileSync } from 'node:fs'
 
 // Parse le contenu JSON d'un whatsNew.json — tolérant : fichier absent,
