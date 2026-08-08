@@ -56,21 +56,21 @@ const sampleText = `
 Mine 1 : Mine d'or - Noeud 236
 Nombre d'heures travaillées ces 7 derniers jours
 Date	Heures
-2026-08-01	100
+1474-08-01	100
 Production des 7 derniers jours
 Date	Rendement
-2026-08-01	500
+1474-08-01	500
 Ressources consommées par la mine ces 7 derniers jours
 Date	Qx de pierre	Kg de fer
-2026-08-01	10	5
+1474-08-01	10	5
 
 Mine 2 : Mine de fer - Noeud 228
 Nombre d'heures travaillées ces 7 derniers jours
 Date	Heures
-2026-08-01	50
+1474-08-01	50
 Production des 7 derniers jours
 Date	Rendement
-2026-08-01	20
+1474-08-01	20
 Ressources consommées par la mine ces 7 derniers jours
 Date	Qx de pierre	Kg de fer
 `
@@ -81,10 +81,12 @@ beforeEach(() => {
   localStorage.clear()
   pinia = createPinia()
   setActivePinia(pinia)
-  // Les dates du texte d'exemple (2026-08-01/02) tombent dans la semaine du
-  // 2026-07-27 au 2026-08-02 — figer "aujourd'hui" dedans pour que la semaine
-  // sélectionnée par défaut corresponde, sans dépendre de la date réelle du
-  // jour où les tests s'exécutent.
+  // Les textes d'exemple sont datés en année de jeu (1474-08-01/02), comme un vrai
+  // collage depuis l'interface du jeu — c'est le décalage entre des jeux de test en
+  // année réelle et la réalité qui avait masqué le bug du sélecteur de semaine.
+  // Le parsing les ramène en 2026-08-01/02, soit la semaine réelle du 2026-07-27 au
+  // 2026-08-02 : on fige "aujourd'hui" dedans pour que la semaine sélectionnée par
+  // défaut corresponde, sans dépendre du jour où les tests s'exécutent.
   vi.useFakeTimers()
   vi.setSystemTime(new Date('2026-08-01T12:00:00Z'))
 })
@@ -310,10 +312,10 @@ describe('EconomyMines — mémorisation "confort" entre deux collages', () => {
 Mine 1 : Mine d'or - Noeud 236
 Nombre d'heures travaillées ces 7 derniers jours
 Date	Heures
-2026-08-02	80
+1474-08-02	80
 Production des 7 derniers jours
 Date	Rendement
-2026-08-02	400
+1474-08-02	400
 Ressources consommées par la mine ces 7 derniers jours
 Date	Qx de pierre	Kg de fer
 `

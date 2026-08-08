@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Logique pure, aucun DOM à monter — voir docs/TESTS.md.
 import { describe, it, expect } from 'vitest'
-import { gameYear, toGameDateIso, YEAR_ANCHORS } from '../../src/modules/gameCalendar'
+import { gameYear, realYear, toGameDateIso, YEAR_ANCHORS } from '../../src/modules/gameCalendar'
 
 describe('gameYear', () => {
   it('renvoie les années du jeu constatées', () => {
@@ -21,6 +21,32 @@ describe('gameYear', () => {
   it('reste cohérent avec la table déclarée', () => {
     for (const { real, game } of YEAR_ANCHORS) {
       expect(gameYear(real)).toBe(game)
+    }
+  })
+})
+
+describe('realYear', () => {
+  it('retrouve l\'année réelle depuis une année du jeu', () => {
+    expect(realYear(1474)).toBe(2026)
+    expect(realYear(1473)).toBe(2025)
+  })
+
+  it("prolonge l'écart constaté pour une année du jeu non ancrée", () => {
+    expect(realYear(1475)).toBe(2027)
+    expect(realYear(1472)).toBe(2024)
+  })
+
+  it('est idempotente : une année déjà réelle est renvoyée telle quelle', () => {
+    // C'est ce qui permet au parsing d'appliquer la conversion sans savoir si le
+    // texte collé vient du jeu (1474) ou d'un relevé/jeu de test en année réelle.
+    expect(realYear(2026)).toBe(2026)
+    expect(realYear(2025)).toBe(2025)
+  })
+
+  it('est la réciproque exacte de gameYear sur la table déclarée', () => {
+    for (const { real, game } of YEAR_ANCHORS) {
+      expect(realYear(game)).toBe(real)
+      expect(realYear(gameYear(real))).toBe(real)
     }
   })
 })

@@ -168,6 +168,67 @@ describe('filterToWeek', () => {
   })
 })
 
+describe("parseMinesText — dates en année de jeu (format réel d'un collage)", () => {
+  // Le texte collé depuis le jeu porte l'année du jeu (1474 = 2026), confirmé par Greg
+  // le 08/08/2026. Non-régression du bug qui rendait le module inutilisable en réel :
+  // `isValidDate` exigeait une année >= 2000, donc chaque ligne datée 1474 était écartée
+  // dès le parsing et un collage authentique ressortait comme un texte non reconnu.
+  const text = `
+Mine 1 : Mine d'or - Noeud 236
+Nombre d'heures travaillées ces 7 derniers jours
+Date	Heures
+1474-08-03	100
+1474-08-04	120
+Production des 7 derniers jours
+Date	Rendement
+1474-08-03	500
+1474-08-04	600
+Ressources consommées par la mine ces 7 derniers jours
+Date	Qx de pierre	Kg de fer
+1474-08-03	10	5
+`
+
+  it('convertit les dates du jeu en dates réelles dès le parsing', () => {
+    const mines = parseMinesText(text)
+    expect(mines).toHaveLength(1)
+    expect(Object.keys(mines[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+    expect(mines[0].days['2026-08-03']).toMatchObject({
+      heures: 100, production: 500, pierre: 10, fer: 5,
+    })
+  })
+
+  it('accepte aussi le format FR en année de jeu', () => {
+    const mines = parseMinesText(text.replace(/1474-08-(\d+)/g, (_, d) => `${d}/08/1474`))
+    expect(Object.keys(mines[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+  })
+
+  it('reste compatible avec un collage daté en année réelle', () => {
+    const mines = parseMinesText(text.replace(/1474-/g, '2026-'))
+    expect(Object.keys(mines[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+  })
+
+  it('entre dans la semaine sélectionnée une fois parsé', () => {
+    // Le bug de bout en bout : bornes calculées sur l'horloge du navigateur (2026)
+    // comparées à des journées restées en 1474 — « 1474… < 2026… » en comparaison
+    // lexicale, donc toutes les journées rejetées et « aucune donnée pour cette
+    // semaine » affiché sur un collage pourtant valide.
+    const { monday, sunday } = getWeekBounds('2026-08-05')
+    const filtered = filterToWeek(parseMinesText(text), monday, sunday)
+    expect(filtered).toHaveLength(1)
+    expect(Object.keys(filtered[0].days)).toEqual(['2026-08-03', '2026-08-04'])
+  })
+
+  it('retrouve le bon lundi/dimanche pour la complétude de semaine', () => {
+    // checkWeekCompleteness() dérive ses bornes de la date la plus récente des relevés :
+    // sur une date restée en 1474, `new Date()` en tirait un jour de la semaine faux (le
+    // 3 août 1474 grégorien n'est pas un lundi), donc un avertissement « X/7 jours »
+    // décalé. Les relevés étant désormais en dates réelles, les bornes sont justes.
+    const check = checkWeekCompleteness(parseMinesText(text))
+    expect(check).toMatchObject({ monday: '2026-08-03', sunday: '2026-08-09', complete: false })
+    expect(check.missingDates).toHaveLength(5)
+  })
+})
+
 describe('shiftWeek', () => {
   it('recule au lundi de la semaine précédente', () => {
     expect(shiftWeek('2026-08-03', -1)).toBe('2026-07-27')

@@ -45,6 +45,26 @@ export function gameYear(realYear) {
 }
 
 /**
+ * Année réelle correspondant à une année lue quelque part — inverse de `gameYear()`.
+ *
+ * Idempotente : une année déjà réelle est renvoyée telle quelle. Le parsing reçoit
+ * les deux formes (un collage du jeu porte `1474`, les relevés Excel de Greg et les
+ * jeux de test portent `2026`), et doit pouvoir appliquer cette fonction sans avoir
+ * à deviner laquelle il tient.
+ */
+export function realYear(year) {
+  if (!Number.isFinite(year) || year >= REAL_YEAR_FLOOR) return year
+
+  const exact = YEAR_ANCHORS.find(a => a.game === year)
+  if (exact) return exact.real
+
+  const nearest = YEAR_ANCHORS.reduce((best, a) =>
+    Math.abs(a.game - year) < Math.abs(best.game - year) ? a : best
+  )
+  return year + (nearest.real - nearest.game)
+}
+
+/**
  * Transpose une date ISO réelle (AAAA-MM-JJ) dans le calendrier du jeu, en ne
  * touchant qu'à l'année : '2026-08-08' → '1474-08-08'.
  *

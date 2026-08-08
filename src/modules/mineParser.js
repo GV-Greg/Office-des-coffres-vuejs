@@ -2,6 +2,8 @@
 // Voir roadmap.md, Phase 5, pour le contexte métier (mécanique des mines, prix,
 // pourquoi le salaire n'est pas calculé automatiquement).
 
+import { realYear } from './gameCalendar'
+
 const DATE_ISO = String.raw`\d{4}-\d{1,2}-\d{1,2}`
 const DATE_FR = String.raw`\d{1,2}[./]\d{1,2}[./]\d{2,4}`
 const DATE_ANY = `(?:${DATE_ISO}|${DATE_FR})`
@@ -18,14 +20,23 @@ const MINE_HEADER_RE = /Mine\s*(\d+)\s*:\s*([^-\d]+)/gi
 export const RESOURCES = ['OR', 'FER', 'PIERRE', 'ARGILE', 'SEL']
 
 function normalizeDate(raw) {
+  let y, m, d
   if (raw.includes('-') && raw.split('-')[0].length === 4) {
-    const [y, m, d] = raw.split('-').map(Number)
-    return isValidDate(y, m, d) ? toIso(y, m, d) : null
+    ;[y, m, d] = raw.split('-').map(Number)
+  } else {
+    const parts = raw.replace(/\./g, '/').split('/')
+    if (parts.length !== 3) return null
+    ;[d, m, y] = parts.map(Number)
+    if (y < 100) y += 2000
   }
-  const parts = raw.replace(/\./g, '/').split('/')
-  if (parts.length !== 3) return null
-  let [d, m, y] = parts.map(Number)
-  if (y < 100) y += 2000
+
+  // Le jeu date ses tableaux dans son propre calendrier (1474 = 2026) : on repasse en
+  // année réelle dès le parsing, à la frontière du module. Tout le reste raisonne
+  // ensuite en dates réelles — bornes de semaine et jours de la semaine (un 8 août
+  // 1474 grégorien ne tombe pas le même jour qu'un 8 août 2026), filtrage, clés de
+  // cache — et seul l'affichage rebascule en année de jeu (voir gameCalendar.js).
+  y = realYear(y)
+
   return isValidDate(y, m, d) ? toIso(y, m, d) : null
 }
 
