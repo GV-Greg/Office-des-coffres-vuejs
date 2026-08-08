@@ -50,9 +50,9 @@ dont le chemin contient `unit.test` — fonctionne car c'est exactement notre co
 
 | Suite | Fichiers | Tests | Durée |
 |---|---|---|---|
-| `test:logic` (fichiers `.unit.test.js`) | 5 | ~64 | ~8 s |
+| `test:logic` (fichiers `.unit.test.js`) | 5 | 79 | ~6 s |
 | `test:auth` (le plus gros domaine) | 8 | 46 | ~29 s |
-| Suite complète (`npx vitest run`) | 21 | ~199 | ~54 s |
+| Suite complète (`npx vitest run`) | 22 | 199 | ~45 s |
 
 Si un chiffre dérape de plus de 50 % lors d'une prochaine mesure, investiguer (jsdom qui traîne,
 mock manquant qui fait un vrai appel réseau, etc.).
