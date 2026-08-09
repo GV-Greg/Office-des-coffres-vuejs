@@ -59,8 +59,8 @@ const handleCookieChange = (item, checked) => {
 // Initialiser les choix locaux quand la modale s'ouvre
 watch(() => props.show, (newValue) => {
   if (newValue) {
-    // Copier les choix actuels du store
-    localCookieChoices.value = [...cookieStore.acceptedCookies];
+    // Refléter le consentement en cours à l'ouverture de la modale.
+    localCookieChoices.value = cookieStore.hasAcceptedPreferences ? ['preferences'] : [];
   }
 });
 
