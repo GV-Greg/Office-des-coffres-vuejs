@@ -93,8 +93,26 @@ describe('CookiesBanner', () => {
 
   it('ouvre la modale au clic sur Gérer mes préférences', async () => {
     const wrapper = await mountBanner()
+    const store = useCookieStore()
     const preferencesButton = wrapper.findAll('button').find((b) => b.text().includes('Gérer mes préférences'))
     await preferencesButton.trigger('click')
+
+    expect(store.openPreferencesModal).toHaveBeenCalled()
+  })
+
+  it('reflète isPreferencesModalOpen du store sur la prop show de la modale', async () => {
+    const wrapper = mount(CookiesBanner, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: { cookie: { consent: NO_CHOICE, isPreferencesModalOpen: true } }
+          }),
+          i18n
+        ]
+      }
+    })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.findComponent(CookiesModal).props('show')).toBe(true)
   })

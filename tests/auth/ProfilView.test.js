@@ -4,6 +4,7 @@ import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import ProfilView from '../../src/views/auth/ProfilView.vue'
+import { useCookieStore } from '../../src/stores/cookieStore'
 
 const i18n = createI18n({
   legacy: false,
@@ -20,7 +21,8 @@ const i18n = createI18n({
           PendingMessage: 'En attente de validation.',
           PendingResidenceChangeMessage: 'En attente de validation du changement de résidence.'
         }
-      }
+      },
+      Cookies: { Button: { Preferences: 'Gérer mes préférences' } }
     }
   }
 })
@@ -96,5 +98,14 @@ describe('ProfilView', () => {
     })
 
     expect(wrapper.text()).toContain('Ajouter un personnage')
+  })
+
+  it('ouvre la modale de préférences cookies au clic sur Gérer mes préférences', async () => {
+    const wrapper = mountProfil({ id: 1, email: 'artifice@test.com', characters: [] })
+    const cookieStore = useCookieStore()
+    const button = wrapper.findAll('button').find((b) => b.text().includes('Gérer mes préférences'))
+    await button.trigger('click')
+
+    expect(cookieStore.openPreferencesModal).toHaveBeenCalled()
   })
 })

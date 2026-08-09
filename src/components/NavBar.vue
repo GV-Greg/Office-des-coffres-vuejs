@@ -8,11 +8,13 @@
   import SelectorMenu from '@/components/SelectorMenu.vue'
   import SelectorCharacter from '@/components/SelectorCharacter.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import { useCookieStore } from '@/stores/cookieStore'
   import { ADMIN_ORIGIN } from '@/api.js'
 
   const router = useRouter()
   const { t } = useI18n()
   const authStore = useAuthStore()
+  const cookieStore = useCookieStore()
 
   const logout = async () => {
     await authStore.logout()
@@ -39,6 +41,13 @@
             >
               <v-icon name="ri-home-gear-line" scale="1.3" class="mr-1"/><span class="font-bold text-lg">{{ t('NavBar.Admin') }}</span>
             </a>
+            <button
+              type="button"
+              class="btn btn-grad-slate btn-sm"
+              @click="cookieStore.openPreferencesModal()"
+            >
+              {{ t('Cookies.Button.Preferences') }}
+            </button>
           </div>
           <div class="space-x-3 justify-self-center flex items-center">
             <div class="text-3xl font-bold text-transparent"

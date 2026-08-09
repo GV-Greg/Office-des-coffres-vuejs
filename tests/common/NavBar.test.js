@@ -7,6 +7,7 @@ import NavBar from '../../src/components/NavBar.vue'
 import SelectorMenu from '../../src/components/SelectorMenu.vue'
 import SelectorCharacter from '../../src/components/SelectorCharacter.vue'
 import { useAuthStore } from '../../src/stores/authStore'
+import { useCookieStore } from '../../src/stores/cookieStore'
 
 vi.mock('notivue', () => ({
   push: { success: vi.fn(), error: vi.fn() }
@@ -18,7 +19,8 @@ const i18n = createI18n({
   messages: {
     fr: {
       Common: { SiteName: 'Office des coffres' },
-      NavBar: { Home: 'Accueil', Logout: 'Se déconnecter', LoggedOut: 'Vous avez été déconnecté.', Admin: 'Admin', CharacterSelector: 'Changer de personnage' }
+      NavBar: { Home: 'Accueil', Logout: 'Se déconnecter', LoggedOut: 'Vous avez été déconnecté.', Admin: 'Admin', CharacterSelector: 'Changer de personnage' },
+      Cookies: { Button: { Preferences: 'Gérer mes préférences' } }
     }
   }
 })
@@ -109,5 +111,14 @@ describe('NavBar', () => {
 
     expect(authStore.logout).toHaveBeenCalled()
     expect(pushSpy).toHaveBeenCalledWith({ name: 'welcome' })
+  })
+
+  it('ouvre la modale de préférences cookies au clic sur Gérer mes préférences, à côté d\'Accueil', async () => {
+    const { wrapper } = await mountNavBar()
+    const cookieStore = useCookieStore()
+    const button = wrapper.findAll('button').find((b) => b.text().includes('Gérer mes préférences'))
+    await button.trigger('click')
+
+    expect(cookieStore.openPreferencesModal).toHaveBeenCalled()
   })
 })

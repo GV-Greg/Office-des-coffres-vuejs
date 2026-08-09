@@ -7,6 +7,9 @@ export const useAuthStore = defineStore('auth', () => {
   const cookieStore = useCookieStore()
 
   // State
+  // auth_user/auth_token en localStorage : strictement nécessaire au service demandé
+  // (rester connecté), exempté du consentement cookies — voir admin/strategies/cookies.md §2/§4.
+  // Whitelisté explicitement dans tests/enforcement/storage-usage.unit.test.js.
   const user  = ref(JSON.parse(localStorage.getItem('auth_user') || 'null'))
   const token = ref(localStorage.getItem('auth_token') || null)
   // Personnage par défaut : choix persistant (Profil), utilisé pour initialiser le

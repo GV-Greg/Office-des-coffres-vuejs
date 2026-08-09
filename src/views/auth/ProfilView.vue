@@ -8,6 +8,7 @@
   import NavMenu from '@/components/NavMenu.vue'
   import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import { useCookieStore } from '@/stores/cookieStore'
   import { translateKingdomName } from '@/modules/kingdomTranslations'
   import { push } from 'notivue'
 
@@ -16,6 +17,7 @@
 */
   const { t, locale } = useI18n()
   const authStore = useAuthStore()
+  const cookieStore = useCookieStore()
 
 /*
   édition de la résidence
@@ -49,6 +51,14 @@
     <div class="w-full max-w-2xl overflow-y-auto flex flex-col flex-grow items-center">
       <h2>{{ t('Profil.Title') }}</h2>
       <p class="text-gray-500 dark:text-gray-500 mb-4">{{ authStore.getUser?.email }}</p>
+
+      <button
+        type="button"
+        class="btn btn-grad-slate btn-sm mb-4"
+        @click="cookieStore.openPreferencesModal()"
+      >
+        {{ t('Cookies.Button.Preferences') }}
+      </button>
 
       <div v-if="!authStore.hasCharacters" class="w-full bg-white rounded-xl shadow-md border border-gray-200 p-6 text-center">
         <p class="text-slate-700 dark:text-slate-700">{{ t('Profil.NoCharacter') }}</p>

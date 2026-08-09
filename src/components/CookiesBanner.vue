@@ -10,7 +10,6 @@ import CookiesModal from './CookiesModal.vue';
 const { t } = useI18n();
 const cookieStore = useCookieStore();
 const showBanner = ref(false);
-const showModal = ref(false);
 
 // Une seule catégorie visible : les préférences (thème, langue, saisies mémorisées).
 // L'ancienne catégorie "Session" a disparu — le jeton d'auth est strictement nécessaire
@@ -42,7 +41,7 @@ const handleDeclineAll = () => {
 
 // Gérer la fermeture de la modale
 const handleModalClose = () => {
-  showModal.value = false;
+  cookieStore.closePreferencesModal();
   // La bannière reste visible si on ferme la modale sans sauvegarder
   showBanner.value = true;
 };
@@ -50,7 +49,7 @@ const handleModalClose = () => {
 // Sauvegarder les préférences depuis la modale
 const handleSavePreferences = (selectedCookies) => {
   cookieStore.setConsent(selectedCookies.includes('preferences'));
-  showModal.value = false;
+  cookieStore.closePreferencesModal();
   showBanner.value = false;
 };
 
@@ -73,7 +72,7 @@ onMounted(() => {
 
           <!-- Boutons (alignés à droite) -->
           <div class="flex flex-row gap-x-8">
-            <PrimaryButton @click="showModal = true">
+            <PrimaryButton @click="cookieStore.openPreferencesModal()">
               {{ t('Cookies.Button.Preferences') }}
             </PrimaryButton>
             <DangerButton @click="handleDeclineAll">
@@ -90,7 +89,7 @@ onMounted(() => {
 
   <!-- Modal des préférences -->
   <CookiesModal
-    :show="showModal"
+    :show="cookieStore.isPreferencesModalOpen"
     :preferences="preferences"
     @close="handleModalClose"
     @save="handleSavePreferences"
