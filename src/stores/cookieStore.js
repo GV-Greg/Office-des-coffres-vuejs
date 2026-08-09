@@ -93,6 +93,9 @@ export const useCookieStore = defineStore('cookie', {
     // l'utilisateur de tout ressaisir. Seule leur PERSISTANCE dépend du consentement :
     // en mémoire, elles fonctionnent toujours (dégradation gracieuse).
     comfortData: { ...DEFAULT_COMFORT_DATA },
+    // Pilote l'ouverture de la modale depuis n'importe où (footer, profil, bannière)
+    // sans dépendre d'un state local à CookiesBanner.vue, seul composant qui la monte.
+    isPreferencesModalOpen: false,
   }),
 
   getters: {
@@ -174,6 +177,14 @@ export const useCookieStore = defineStore('cookie', {
     resetConsent() {
       this.consent = { ...NO_CONSENT }
       localStorage.removeItem(CONSENT_KEY)
+    },
+
+    openPreferencesModal() {
+      this.isPreferencesModalOpen = true
+    },
+
+    closePreferencesModal() {
+      this.isPreferencesModalOpen = false
     },
 
     /**

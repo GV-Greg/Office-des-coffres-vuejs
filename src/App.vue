@@ -4,6 +4,7 @@
   import { Notivue, Notification, materialTheme } from 'notivue'
   import { useCookieStore } from './stores/cookieStore'
   import CookiesBanner from './components/CookiesBanner.vue'
+  import AppFooter from './components/AppFooter.vue'
 
   const cookieStore = useCookieStore()
 
@@ -26,6 +27,7 @@
   <div class="min-h-screen w-full flex flex-col bg-slate-200 dark:bg-slate-800 transition-colors duration-200">
     <RouterView name="Nav" />
     <RouterView />
+    <AppFooter />
 
     <CookiesBanner />
     <Notivue  v-slot="item">
