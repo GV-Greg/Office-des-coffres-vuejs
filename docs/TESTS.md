@@ -74,4 +74,8 @@ d'une seconde.
 déploiement si la suite échoue — voir `_IA/ODC/ODC-strategie-git.md` §6bis pour le contexte).
 Une étape d'enforcement précède `npx vitest run` : échoue si un `*.test.js` traîne à la racine
 de `tests/` plutôt que dans un dossier de domaine (garantit que la structure ci-dessus reste
-respectée sans dépendre de la vigilance humaine).
+respectée sans dépendre de la vigilance humaine). Une seconde étape,
+`scripts/docs-sync-check.sh` (Docs #10 de `admin/strategies/docs.md`), tourne juste après le
+checkout (`fetch-depth: 0`, nécessaire au calcul de fraîcheur) : échoue si plusieurs chiffres de
+tests différents apparaissent dans les `.md` du repo, ou si `docs/ARCHITECTURE.md` annonce une
+date de mise à jour de plus de 30 jours antérieure au dernier commit dans `src/`.
