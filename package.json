@@ -17,6 +17,7 @@
     "test:eco": "vitest run tests/eco",
     "test:security": "vitest run tests/security",
     "test:common": "vitest run tests/common",
+    "test:enforcement": "vitest run tests/enforcement",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
