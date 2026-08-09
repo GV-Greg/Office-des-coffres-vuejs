@@ -66,10 +66,10 @@ donc redirigeait toujours vers `/login` même connecté), corrigé le 03/08/2026
 
 - **`src/api.js`** — seul client HTTP réellement utilisé (importé par `authStore.js`). Instance
   Axios simple, pas d'intercepteur — le bearer token est attaché manuellement par appel.
-- **`src/services/*`** (`http-common.js`, `auth-header.js`, `auth.service.js`, `user.service.js`,
-  `anim.service.js`) — **code mort**, non importé nulle part. Contrat localStorage incompatible
-  avec `authStore.js` (ex. `auth_token` JSON-stringifié vs string brute). Ne pas réutiliser ; si
-  besoin d'étendre les appels API, passer par `api.js`.
+- **`src/services/`** a existé (`http-common.js`, `auth-header.js`, `auth.service.js`,
+  `user.service.js`, `anim.service.js`) mais était du code mort, non importé nulle part —
+  supprimé le 09/08/2026 (item #15 de `admin/strategies/cookies.md`). Si besoin d'étendre les
+  appels API, passer par `api.js`.
 
 ## Vues (`src/views/`)
 
