@@ -39,6 +39,7 @@ const i18n = createI18n({
       Auth: {
         EmailPlaceholder: 'Entrez votre email',
         PasswordPlaceholder: 'Entrez votre mot de passe',
+        RememberMe: 'Rester connecté',
         Errors: {
           RequiredFields: "Vous n'avez pas rempli les champs requis !",
           EmailTooLong: "L'email doit contenir moins de 190 caractères !",
@@ -97,5 +98,28 @@ describe('LoginView', () => {
     await fillAndSubmit(wrapper)
 
     expect(wrapper.find('[data-testid="unverified-warning"]').isVisible()).toBe(false)
+  })
+
+  it('transmet remember_me=false par défaut (case "Rester connecté" non cochée)', async () => {
+    const wrapper = mountLogin()
+    const authStore = useAuthStore()
+    authStore.login.mockRejectedValueOnce({ response: { data: { message: 'Identifiants incorrects.' } } })
+
+    await fillAndSubmit(wrapper)
+
+    expect(authStore.login).toHaveBeenCalledWith(expect.objectContaining({ remember_me: false }))
+  })
+
+  it('transmet remember_me=true quand la case "Rester connecté" est cochée', async () => {
+    const wrapper = mountLogin()
+    const authStore = useAuthStore()
+    authStore.login.mockRejectedValueOnce({ response: { data: { message: 'Identifiants incorrects.' } } })
+
+    await wrapper.find('input[name="remember_me"]').setValue(true)
+    await fillAndSubmit(wrapper)
+
+    expect(authStore.login).toHaveBeenCalledWith(expect.objectContaining({
+      email: 'buldo@test.com', password: 'password123', remember_me: true,
+    }))
   })
 })
