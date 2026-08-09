@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 03/08/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 09/08/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -36,31 +36,31 @@ donc redirigeait toujours vers `/login` même connecté), corrigé le 03/08/2026
 ## Stores Pinia (`src/stores/`)
 
 - **`authStore.js`** (style setup, `defineStore('auth', () => {...})`) — state `user`/`token`
-  (localStorage `auth_user`/`auth_token`, `auth_token` en **string brute**, pas JSON). **Refonte
-  du 03/08/2026** : `user.characters` est désormais une **liste** (un compte peut avoir 0, 1 ou
-  N personnages) au lieu d'un pseudo/statut unique. Getters : `isLoggedIn`, `getUser`,
+  (localStorage `auth_user`/`auth_token`, `auth_token` en **string brute**, pas JSON).
+  `user.characters` est une **liste** (un compte peut avoir 0, 1 ou N personnages). Getters :
+  `isLoggedIn`, `getUser`,
   `getToken`, `getCharacters`, `hasCharacters` (remplacent `getPseudo`/`getIsValidated`,
   supprimés). Actions : `register` (email+password uniquement, ne connecte plus — voir flux
   vérification email ci-dessous), `resendVerification`, `login` (par **email**, plus par pseudo),
   `logout`, `checkAuth` (auto-appelée si token présent au démarrage du store), `createCharacter`
   (POST `characters`, puis re-synchronise via `checkAuth()`), `setToken`/`setUser`. Pas de notion
   de rôles côté frontend (n'existe que côté admin Blade).
-- **`cookieStore.js`** (style options) — flux consentement en 2 écrans : `CookiesBanner.vue`
-  (accepter/refuser/gérer) + `CookiesModal.vue` (granulaire). Deux catégories, **toutes deux
-  optionnelles** : `session` (nécessaire pour se connecter — `canUserLogin`) et `comfort`
-  (persisté `localStorage['cookie-comply']`). **Modèle refondu le 03/08/2026** : `comfort`
-  remplace l'ancien `functional` (connexion persistante) et fusionne dedans ce qui était avant
-  hors-consentement (`essentialCookies` → renommé `comfortData`, `theme`/`locale`/
-  `session-declined`), plus toute donnée de confort par module (ex. `guet_last_list`, voir
-  `SecurityGuet.vue`). Stockage générique et réutilisable par n'importe quel module :
-  `getComfortData(key, fallback)` / `setComfortData(key, value)` — la lecture/écriture en
-  mémoire fonctionne toujours (dégradation gracieuse), seule la **persistance** en
-  `localStorage['comfort-cookies']` dépend du consentement `comfort`
-  (`hasAcceptedComfort`). Accepter `comfort` flush les changements faits en mémoire avant le
-  consentement ; le refuser/retirer purge les données déjà stockées
-  (`_syncComfortPersistence`). Palier 3 "compte" (données communautaires partagées, ex. future
-  liste rouge du module Douane) reste hors scope — nécessiterait une vraie table backend, pas du
-  cookie. Voir mémoire `project_cookie_tiers` côté session Claude.
+- **`cookieStore.js`** (style options) — modèle de consentement nommé et extensible :
+  `consent: { preferences: bool, choiceMadeAt: number }` (clé `cookie-consent`, migration
+  silencieuse depuis l'ancien format `cookie-comply` au chargement, sans nouvelle sollicitation
+  utilisateur). Une seule catégorie visible côté UI, **« Préférences »** — pas de catégorie
+  « Session » : le jeton d'auth est strictement nécessaire au service demandé (login), exempté
+  de consentement (voir `admin/strategies/cookies.md`). Getters `hasUserChoice`/
+  `hasAcceptedPreferences`. `comfortData` : bag générique par module (thème, langue, saisies —
+  ex. `guet_last_list`, voir `SecurityGuet.vue`) — `getComfortData(key, fallback)` /
+  `setComfortData(key, value)`, lecture/écriture en mémoire toujours possible (dégradation
+  gracieuse), persistance `localStorage['comfort-cookies']` conditionnée à
+  `hasAcceptedPreferences`. `clearConsentedStorage()` purge uniquement les préfixes
+  `cookie-*`/`comfort-*` (jamais `auth_*`). `isPreferencesModalOpen` +
+  `openPreferencesModal()`/`closePreferencesModal()` pilotent la modale (`CookiesBanner.vue`
+  la monte, `NavBar.vue` et `ProfilView.vue` l'ouvrent) sans état local par composant. Palier 3
+  "compte" (données communautaires partagées, ex. future liste rouge du module Douane) reste
+  hors scope — nécessiterait une vraie table backend, pas du cookie.
 
 ## Services
 
@@ -83,8 +83,8 @@ donc redirigeait toujours vers `/login` même connecté), corrigé le 03/08/2026
   **volontairement pas traduite** : c'est le message brut renvoyé par l'API (backend français
   uniquement), pas du texte UI. Après connexion réussie, redirige vers `/app/character/new` si le
   compte n'a aucun personnage, sinon `/app/`.
-- **`auth/RegisterView.vue`** — **refonte du 03/08/2026** : ne demande plus que email + mot de
-  passe + confirmation (pseudo/ville déplacés vers `AddCharacterView`). Après soumission, affiche
+- **`auth/RegisterView.vue`** — ne demande que email + mot de passe + confirmation (pseudo/ville
+  déplacés vers `AddCharacterView`). Après soumission, affiche
   un écran "vérifiez votre boîte mail" (`data-testid="check-email-message"`) au lieu de connecter
   ou rediriger — le compte n'est utilisable qu'après confirmation du lien reçu par email.
 - **`auth/VerifyEmailView.vue`** (nouveau, 03/08/2026, route `/verify-email`) — lit `token`/`error`
@@ -96,9 +96,10 @@ donc redirigeait toujours vers `/login` même connecté), corrigé le 03/08/2026
   `GET map` au montage, ~300 villes chargées en un seul payload, pas de pagination), pseudo,
   soumission via `authStore.createCharacter`. Accessible aussi depuis `ProfilView` pour ajouter un
   personnage supplémentaire à un compte qui en a déjà.
-- **`auth/ProfilView.vue`** — **refonte du 03/08/2026** : affiche la **liste** des personnages du
-  compte (`authStore.getCharacters`), chacun avec son badge validé/en attente, plus un lien vers
-  `AddCharacterView`. Avant : un seul pseudo/statut (`getPseudo`/`getIsValidated`, supprimés).
+- **`auth/ProfilView.vue`** — affiche la **liste** des personnages du compte
+  (`authStore.getCharacters`), chacun avec son badge validé/en attente, un bouton « Gérer mes
+  préférences » (cookies, second point d'accès avec `NavBar.vue`), plus un lien vers
+  `AddCharacterView`.
 - **`modules/security/MainSecurity.vue`** — shell + lien vers `security-guet`.
 - **`modules/security/SecurityGuet.vue`** — module public (pas de compte requis), pas juste un
   outil isolé : c'est le futur pendant public du module **Douane** (privé, compte requis,
@@ -114,15 +115,23 @@ donc redirigeait toujours vers `/login` même connecté), corrigé le 03/08/2026
   listes). ⚠️ Domaine incohérent entre le lien affiché (`renaissancekingdoms.com`) et le lien
   inséré dans le BBcode exporté (`lesroyaumes.com`) — jamais confirmé avec Greg, à vérifier si ça
   pose problème en usage réel.
-- **`modules/economy/MainEconomy.vue`**, **`modules/animation/MainAnimation.vue`**,
-  **`modules/company/MainCompany.vue`** — squelettes vides (Phase 4/5), placeholder "Test" i18n
-  minimal (`Common.Placeholder`).
+- **`modules/economy/MainEconomy.vue`** — shell + lien vers `EconomyMines.vue`.
+- **`modules/economy/EconomyMines.vue`** — « Bilan des mines » (public, pas de compte requis) :
+  colle un relevé de mines exporté du jeu, calcule le bilan par ressource sur une semaine
+  sélectionnable, génère du BBcode. Sélecteur de semaine calé sur `modules/gameCalendar.js`
+  (dates réelles en interne, année de jeu 2026→1474 seulement à l'affichage). `HelpModal.vue`
+  pour l'aide contextuelle. Futur pendant privé (backend, compte requis) : « Registre des
+  mines », pas encore développé.
+- **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
+  vides (Phase 4/5), placeholder "Test" i18n minimal (`Common.Placeholder`).
 
 ## Composants (`src/components/`)
 
-- **`NavBar.vue`** — header `/app/*`. `SelectorMenu` ajouté le 03/08/2026 dans un emplacement
-  qui était vide (`justify-self-end`) — couvre d'un coup toutes les pages `/app/*` (home, éco,
-  sécu, company, anim, profil) puisqu'elles partagent toutes ce composant via la named view `Nav`.
+- **`NavBar.vue`** — header `/app/*`. `SelectorMenu` dans un emplacement qui était vide
+  (`justify-self-end`) — couvre d'un coup toutes les pages `/app/*` (home, éco, sécu, company,
+  anim, profil) puisqu'elles partagent toutes ce composant via la named view `Nav`. Bouton
+  « Gérer mes préférences » (cookies) à côté d'Accueil — premier essai avec un footer global
+  retiré sur retour direct de Greg, ce placement est le choix retenu.
 - **`NavMenu.vue`** — menu circulaire (Accueil/Éco/Sécu/Anim/Profil). Labels **réactifs au
   changement de langue** depuis le 03/08/2026 (`computed()` + `t()` — avant, tableau JS figé en
   dur, ne suivait pas un changement de locale à chaud).
@@ -156,19 +165,35 @@ et confirmation de mot de passe sur toute saisie valide. Ce bug n'affectait que 
 inline (`errors[fieldName]`) — la soumission réelle du formulaire ne consulte pas cet état et
 validait correctement côté serveur.
 
+## Modules transverses (`src/modules/`) et autres
+
+- **`mineParser.js`** — logique pure (testée isolément, sans DOM) : parsing du relevé de mines
+  collé depuis le jeu, calcul du bilan par ressource, filtrage/complétude par semaine. Consommé
+  par `EconomyMines.vue`.
+- **`gameCalendar.js`** — table d'ancrages année réelle ↔ année de jeu (2026 → 1474), transverse
+  à tout module manipulant des dates de jeu (Économie aujourd'hui, futur Guet/Douane).
+- **`kingdomTranslations.js`** — traduction FR des noms de royaumes (l'API renvoie les noms dans
+  leur langue d'origine), alignée sur `lang/fr.json` côté backend.
+- **`data/whatsNew.json`** — entrées de la « Chronique de l'Office » (`HomeView.vue`), scope
+  public/privé par entrée.
+- **`assets/style.css`** — styles globaux Tailwind (`@layer components`). Charte de boutons
+  dégradée `.btn-grad-{couleur}` pour toute action ; les classes plates `.btn-slate`/
+  `.btn-yellow`/`.btn-rose`/`.btn-teal` restent nécessaires telles quelles — consommées
+  dynamiquement par `NavMenu.vue` (menu circulaire), ne jamais les modifier sans vérifier cet
+  usage.
+
 ## Tests (`frontend/tests/`)
 
-**86/86 verts** (`npx vitest run` — `npm run test` est en mode watch, ne pas l'utiliser tel
-quel). Structure : `components/` (CookiesBanner, CookiesModal, NavBar, NavMenu),
-`stores/` (authStore, cookieStore), `views/` (HomeView, SecurityGuet, LoginView, RegisterView,
-ProfilView), `router/` (redirectToHomeIfNotLoggedIn), `fixtures/` (données réelles anonymisées
-pour le test de non-régression SecurityGuet). Toute vue utilisant `useI18n()` doit recevoir un
+Décompte à jour dans `README.md` (source unique, pas dupliqué ici — `npx vitest run` ; `npm run
+test` est en mode watch, ne pas l'utiliser tel quel). Structure détaillée dans `docs/TESTS.md` :
+dossier = domaine (`auth/`, `cookies/`, `eco/`, `security/`, `common/`, `enforcement/`,
+`fixtures/`). Toute vue utilisant `useI18n()` doit recevoir un
 plugin `createI18n({ legacy: false, ... })` dans `global.plugins` du test (miroir de la config
 `main.js`) — sinon `useI18n()` lève une erreur au montage.
 
 ## Contraintes projet
 
-- Frontend **FR + EN obligatoire** sur toute vue/composant, y compris existant — voir mémoire
-  `feedback_translations` côté session Claude pour l'historique de cette règle.
+- Frontend **FR + EN obligatoire** sur toute vue/composant, y compris existant.
 - Ne jamais casser le design existant (NavMenu circulaire, palette, animations).
-- Cookies : essentiels + session uniquement, aucun tracking.
+- Cookies : catégorie « Préférences » uniquement (dégradable), aucun tracking — voir
+  `admin/strategies/cookies.md`.
