@@ -10,18 +10,24 @@
   import DefaultSubmitButton from '@/components/buttons/DefaultSubmitButton.vue'
   import SelectorMenu from '@/components/SelectorMenu.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import { useCookieStore } from '@/stores/cookieStore'
   import validation from '@/directives/validation'
   import { push } from 'notivue'
 
   const { t } = useI18n()
+  const cookieStore = useCookieStore()
 /*
   form data
 */
+  // Pré-remplissage "Refinement Option B" : reflète la dernière préférence mémorisée
+  // (cookieStore.comfortData, écrite par authStore.login() après un login réussi). Vide/
+  // décoché par défaut si rien n'a été mémorisé (pas de consentement Préférences, ou
+  // consentement retiré depuis — voir cookieStore._syncComfortPersistence).
   let user = reactive({
-    email: '',
+    email: cookieStore.getComfortData('last_login_email', '') ?? '',
     password: '',
   })
-  const rememberMe = ref(false)
+  const rememberMe = ref(!!cookieStore.getComfortData('remember_me_preference', false))
 
   const error_message = reactive({
     value: ''

@@ -138,6 +138,13 @@ export const useAuthStore = defineStore('auth', () => {
     })
     setSession({ ...response.data, remember_me: rememberMeChoice })
     setUser(response.data.user)
+    // Mémorise la préférence "Rester connecté" + l'email pour pré-remplir LoginView à la
+    // prochaine visite (comfort data générique : persistance conditionnée au consentement
+    // Préférences, dégradation gracieuse sinon — voir cookieStore.setComfortData). Ne
+    // s'efface jamais à la déconnexion (logout() ne touche pas comfortData), uniquement au
+    // retrait du consentement (_syncComfortPersistence).
+    cookieStore.setComfortData('remember_me_preference', rememberMeChoice)
+    cookieStore.setComfortData('last_login_email', credentials.email)
     // À chaque connexion, le personnage actif repart du choix par défaut défini en Profil.
     activeCharacterId.value = defaultCharacterId.value
     return response.data

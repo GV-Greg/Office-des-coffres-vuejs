@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useAuthStore } from '../../src/stores/authStore'
+import { useCookieStore } from '../../src/stores/cookieStore'
 
 // Mock api.js — interceptors/request inclus pour pouvoir tester l'intercepteur 401 enregistré
 // par authStore.js (voir describe("intercepteur 401") plus bas).
@@ -133,6 +134,79 @@ describe('Auth Store', () => {
       expect(sessionStorageMock.setItem).toHaveBeenCalledWith('auth_refresh_token', 'refresh456')
       expect(localStorageMock.setItem).not.toHaveBeenCalledWith('auth_refresh_token', expect.anything())
       expect(store.rememberMe).toBe(false)
+    })
+  })
+
+  describe('login() — mémorisation "Rester connecté" (Refinement Option B)', () => {
+    // Simule un vrai rechargement de page : nouvelle instance de store lisant le
+    // localStorage réel, plutôt que de relire l'état en mémoire du store courant (qui,
+    // lui, resterait peuplé même sans consentement — dégradation gracieuse pour la
+    // session en cours, mais ce n'est pas ce que "pré-rempli au reload" doit prouver).
+    const readAfterReload = () => {
+      setActivePinia(createPinia())
+      const reloaded = useCookieStore()
+      reloaded.initializeCookies()
+      return reloaded
+    }
+
+    it('persiste remember_me_preference et last_login_email si le consentement Préférences est accepté', async () => {
+      const cookieStore = useCookieStore()
+      cookieStore.acceptPreferences()
+
+      http.post.mockResolvedValueOnce({
+        data: { success: true, access_token: 'tok456', refresh_token: 'refresh456', expires_in: 900, user: mockUser },
+      })
+      await store.login({ email: 'buldo@test.com', password: 'pass1234', remember_me: true })
+
+      const afterReload = readAfterReload()
+      expect(afterReload.getComfortData('remember_me_preference', false)).toBe(true)
+      expect(afterReload.getComfortData('last_login_email', '')).toBe('buldo@test.com')
+    })
+
+    it('ne persiste rien sans consentement Préférences accepté (dégradation gracieuse — vide après reload)', async () => {
+      useCookieStore() // consentement non répondu par défaut (NO_CONSENT)
+
+      http.post.mockResolvedValueOnce({
+        data: { success: true, access_token: 'tok456', refresh_token: 'refresh456', expires_in: 900, user: mockUser },
+      })
+      await store.login({ email: 'buldo@test.com', password: 'pass1234', remember_me: true })
+
+      const afterReload = readAfterReload()
+      expect(afterReload.getComfortData('remember_me_preference', false)).toBe(false)
+      expect(afterReload.getComfortData('last_login_email', '')).toBe('')
+    })
+
+    it('logout() ne réinitialise pas la préférence mémorisée — elle survit à la déconnexion', async () => {
+      const cookieStore = useCookieStore()
+      cookieStore.acceptPreferences()
+
+      http.post.mockResolvedValueOnce({
+        data: { success: true, access_token: 'tok456', refresh_token: 'refresh456', expires_in: 900, user: mockUser },
+      })
+      await store.login({ email: 'buldo@test.com', password: 'pass1234', remember_me: true })
+
+      http.post.mockResolvedValueOnce({ data: { success: true } })
+      await store.logout()
+
+      const afterReload = readAfterReload()
+      expect(afterReload.getComfortData('remember_me_preference', false)).toBe(true)
+      expect(afterReload.getComfortData('last_login_email', '')).toBe('buldo@test.com')
+    })
+
+    it('le retrait du consentement Préférences efface la préférence mémorisée (via la modale cookies)', async () => {
+      const cookieStore = useCookieStore()
+      cookieStore.acceptPreferences()
+
+      http.post.mockResolvedValueOnce({
+        data: { success: true, access_token: 'tok456', refresh_token: 'refresh456', expires_in: 900, user: mockUser },
+      })
+      await store.login({ email: 'buldo@test.com', password: 'pass1234', remember_me: true })
+
+      cookieStore.declinePreferences() // _syncComfortPersistence purge le localStorage
+
+      const afterReload = readAfterReload()
+      expect(afterReload.getComfortData('remember_me_preference', false)).toBe(false)
+      expect(afterReload.getComfortData('last_login_email', '')).toBe('')
     })
   })
 
