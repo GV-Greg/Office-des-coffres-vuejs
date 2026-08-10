@@ -234,6 +234,87 @@
   "Company": {
     "Title": "Company"
   },
+  "Legal": {
+    "Cookies": {
+      "PageTitle": "Cookies and local storage policy",
+      "Preamble": "This page describes how the officedescoffres.creacube.be site uses cookies and local storage technologies in your browser. It complements the {privacyLink}, which covers personal data associated with your account.",
+      "PrivacyPolicyLink": "Privacy Policy (coming soon)",
+      "Section1": {
+        "Title": "1. Reminder: non-official tool",
+        "Content": "Office des Coffres is a non-official community tool for the game Renaissance Kingdoms, developed voluntarily. It is neither affiliated with nor endorsed by Celsius Online, the game's publisher."
+      },
+      "Section2": {
+        "Title": "2. Data controller",
+        "NameLabel": "Name / business name",
+        "Name": "[TO BE FILLED BY GREG: your name or business name — e.g. \"Grégory Vanden Bergh, site publisher\"]",
+        "AddressLabel": "Address",
+        "Address": "[TO BE FILLED BY GREG: postal correspondence address — required by GDPR, can be a professional address or a point of contact, not necessarily your personal address]",
+        "EmailLabel": "Contact email",
+        "Email": "[TO BE FILLED BY GREG: e.g. contact[at]creacube.be or the address you want to expose for GDPR requests]"
+      },
+      "Section3": {
+        "Title": "3. What we store in your browser",
+        "Intro": "No third-party HTTP cookies are set on this site. We use two browser storage mechanisms, both limited to what is strictly necessary:",
+        "Preferences": {
+          "Title": "Local storage — Preferences",
+          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report).",
+          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools.",
+          "Retention": "until you clear site data from your browser, or withdraw your consent via the cookies banner.",
+          "LegalBasis": "your consent (GDPR art. 6.1.a, French Data Protection Act art. 82).",
+          "IfDecline": "the site works normally, but your preferences and drafts are not remembered between visits."
+        },
+        "Tokens": {
+          "Title": "Local storage — Authentication tokens",
+          "Purpose": "maintain your connection to your user account during your session.",
+          "Data": "an access token (short-lived) and a refresh token (longer-lived if you check \"Stay logged in\").",
+          "Retention": "access token valid for 15 minutes; refresh token valid for 12 hours by default or 30 days if you checked \"Stay logged in\".",
+          "LegalBasis": "these tokens are strictly necessary for the service requested (your login). As such, they are exempt from consent under article 82 of the French Data Protection Act, but documented here for transparency.",
+          "IfDecline": "you cannot stay logged in — you would need to re-authenticate on each action, making usage impractical."
+        }
+      },
+      "Fields": {
+        "Purpose": "Purpose",
+        "Data": "Data concerned",
+        "Retention": "Retention period",
+        "LegalBasis": "Legal basis",
+        "IfDecline": "If you decline"
+      },
+      "Section4": {
+        "Title": "4. What we don't do",
+        "Items": [
+          "No advertising cookies or trackers.",
+          "No audience measurement or behavioral analytics cookies (Google Analytics, Matomo, Plausible, etc.).",
+          "No data sharing with third-party services for commercial purposes.",
+          "No user profiling.",
+          "No sale of information to anyone."
+        ]
+      },
+      "Section5": {
+        "Title": "5. Technical note: HTTP cookies vs local storage",
+        "Content": "Technically, this site does not use \"cookies\" in the classic HTTP sense. It uses the browser's localStorage mechanism to store preferences and authentication tokens. This distinction is purely technical — from the perspective of the CNIL and GDPR, both mechanisms fall under the same information and consent obligations, and are treated identically in this policy. The term \"cookies\" is used in the consent banner for general understanding."
+      },
+      "Section6": {
+        "Title": "6. Distinction between anonymous visitor and registered user",
+        "Anonymous": "Anonymous visitor (no account): only the Preferences storage can be enabled, based on your choice in the cookies banner. Nothing else is stored.",
+        "Registered": "Registered user with an account: authentication tokens are added to local storage when you log in. Your account data itself (characters, account preferences) is stored on our server, not in your browser — see {privacyLink}."
+      },
+      "Section7": {
+        "Title": "7. Your rights",
+        "Withdraw": "Withdraw consent at any time via the \"Manage preferences\" button in the navigation. Withdrawal does not affect the lawfulness of processing based on consent before withdrawal.",
+        "Erase": "Erase stored data: clearing your site data from your browser (Settings → Privacy → Clear data) instantly removes everything stored on the browser side.",
+        "Complaint": "Right to lodge a complaint with the {cnilLink} if you consider that the processing of your data does not comply with GDPR."
+      },
+      "Section8": {
+        "Title": "8. Changes to this policy",
+        "Content": "This policy may be modified to reflect technical or regulatory changes. Any substantial modification will be signaled by a re-opening of the consent banner on your next visit. The date of last modification is indicated at the bottom of this page."
+      },
+      "Section9": {
+        "Title": "9. Contact",
+        "Content": "For any question related to this policy or the exercise of your rights, contact: [TO BE FILLED BY GREG: contact email — same as the data controller in §2, or different depending on your choice]"
+      },
+      "LastUpdated": "Last updated: {date}"
+    }
+  },
   "username": "username",
   "password": "password",
   "email": "email",

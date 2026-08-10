@@ -234,6 +234,87 @@
   "Company": {
     "Title": "Compagnie"
   },
+  "Legal": {
+    "Cookies": {
+      "PageTitle": "Politique cookies et stockage local",
+      "Preamble": "Cette page décrit comment le site officedescoffres.creacube.be utilise les cookies et les technologies de stockage local (localStorage) sur votre navigateur. Elle complète la {privacyLink}, qui traite des données personnelles associées à votre compte.",
+      "PrivacyPolicyLink": "Politique de confidentialité (à venir)",
+      "Section1": {
+        "Title": "1. Rappel : outil non officiel",
+        "Content": "Office des Coffres est un outil communautaire non officiel pour le jeu Renaissance Kingdoms, développé bénévolement. Il n'est ni affilié ni endossé par Celsius Online, éditeur du jeu."
+      },
+      "Section2": {
+        "Title": "2. Responsable de traitement",
+        "NameLabel": "Nom / raison sociale",
+        "Name": "[À REMPLIR PAR GREG : ton nom ou raison sociale — ex. « Grégory Vanden Bergh, éditeur du site »]",
+        "AddressLabel": "Adresse",
+        "Address": "[À REMPLIR PAR GREG : adresse postale de correspondance — obligatoire RGPD, peut être une adresse professionnelle ou un point de contact, pas forcément ton adresse personnelle]",
+        "EmailLabel": "Email de contact",
+        "Email": "[À REMPLIR PAR GREG : ex. contact[at]creacube.be ou l'adresse que tu veux exposer pour les demandes RGPD]"
+      },
+      "Section3": {
+        "Title": "3. Ce que nous stockons dans votre navigateur",
+        "Intro": "Aucun cookie HTTP tiers n'est déposé sur ce site. Nous utilisons deux mécanismes de stockage côté navigateur, tous deux limités au strict nécessaire :",
+        "Preferences": {
+          "Title": "Stockage local (localStorage) — Préférences",
+          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines).",
+          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics.",
+          "Retention": "jusqu'à ce que vous effaciez vos données de site depuis votre navigateur, ou que vous retiriez votre consentement via le bandeau cookies.",
+          "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 82 de la loi Informatique et Libertés).",
+          "IfDecline": "le site fonctionne normalement, mais vos préférences et brouillons ne sont pas mémorisés d'une visite à l'autre."
+        },
+        "Tokens": {
+          "Title": "Stockage local (localStorage) — Jetons d'authentification",
+          "Purpose": "maintenir votre connexion à votre compte utilisateur pendant votre session.",
+          "Data": "un jeton d'accès (access token, durée courte) et un jeton de rafraîchissement (refresh token, durée plus longue si vous cochez « Rester connecté »).",
+          "Retention": "jeton d'accès valable 15 minutes ; jeton de rafraîchissement valable 12 heures par défaut ou 30 jours si vous avez coché « Rester connecté ».",
+          "LegalBasis": "ces jetons sont strictement nécessaires à la fourniture du service demandé (votre connexion). À ce titre, ils sont exemptés du consentement au sens de l'article 82 de la loi Informatique et Libertés, tout en restant documentés ici par souci de transparence.",
+          "IfDecline": "vous ne pouvez pas rester connecté — vous devriez alors saisir vos identifiants à chaque action nécessitant l'authentification, ce qui rend l'usage impraticable."
+        }
+      },
+      "Fields": {
+        "Purpose": "Finalité",
+        "Data": "Données concernées",
+        "Retention": "Durée de conservation",
+        "LegalBasis": "Base légale",
+        "IfDecline": "Si vous refusez"
+      },
+      "Section4": {
+        "Title": "4. Ce que nous ne faisons pas",
+        "Items": [
+          "Aucun cookie ni traceur publicitaire.",
+          "Aucun cookie de mesure d'audience ou d'analyse comportementale (Google Analytics, Matomo, Plausible, etc.).",
+          "Aucun partage de données avec des services tiers à des fins commerciales.",
+          "Aucun profilage utilisateur.",
+          "Aucune revente d'information à qui que ce soit."
+        ]
+      },
+      "Section5": {
+        "Title": "5. Précision technique : cookies HTTP vs stockage local",
+        "Content": "Techniquement, ce site n'utilise pas de « cookies » au sens HTTP classique. Il utilise le mécanisme localStorage du navigateur pour stocker les préférences et les jetons d'authentification. Cette distinction est purement technique — au sens de la CNIL et du RGPD, les deux mécanismes relèvent des mêmes obligations d'information et de consentement, et sont traités de la même façon dans cette politique. Le terme « cookies » est utilisé dans le bandeau de consentement pour la compréhension générale."
+      },
+      "Section6": {
+        "Title": "6. Distinction visiteur anonyme et utilisateur connecté",
+        "Anonymous": "Visiteur anonyme (sans compte) : seul le stockage Préférences peut être activé, selon votre choix dans le bandeau cookies. Rien d'autre n'est stocké.",
+        "Registered": "Utilisateur inscrit avec un compte : les jetons d'authentification sont ajoutés au stockage local lorsque vous vous connectez. Vos données de compte elles-mêmes (personnages, préférences liées à votre compte) sont stockées sur notre serveur, pas dans votre navigateur — voir {privacyLink}."
+      },
+      "Section7": {
+        "Title": "7. Vos droits",
+        "Withdraw": "Retrait du consentement à tout moment via le bouton « Gérer mes préférences » présent dans la navigation. Le retrait n'affecte pas la licéité des traitements passés fondés sur votre consentement avant retrait.",
+        "Erase": "Effacement des données stockées : vider vos données de site depuis votre navigateur (menu Paramètres → Confidentialité → Effacer les données) supprime instantanément tout ce qui a été mémorisé côté navigateur.",
+        "Complaint": "Droit d'introduire une réclamation auprès de la {cnilLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD."
+      },
+      "Section8": {
+        "Title": "8. Modifications de cette politique",
+        "Content": "Cette politique peut être modifiée pour refléter des évolutions techniques ou réglementaires. Toute modification substantielle sera signalée par une réouverture du bandeau de consentement à votre prochaine visite. La date de dernière modification est indiquée en bas de cette page."
+      },
+      "Section9": {
+        "Title": "9. Contact",
+        "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits, contactez : [À REMPLIR PAR GREG : email de contact — même que celui du §2 responsable de traitement, ou différent selon ton choix]"
+      },
+      "LastUpdated": "Dernière modification : {date}"
+    }
+  },
   "username": "pseudo",
   "password": "mot de passe",
   "email": "email",
