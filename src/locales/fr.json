@@ -2,11 +2,7 @@
   "Cookies": {
     "Banner": {
       "Title": "Gestion de vos cookies",
-      "Description": "Notre site utilise deux types de cookies, tous deux optionnels, et aucun cookie publicitaire ou de traçage :",
-      "CookieTypes": {
-        "Essential": "• Un cookie de confort, pour accélérer votre navigation (rester connecté, retenir vos préférences et vos saisies dans les outils)",
-        "Session": "• Un cookie de session, nécessaire pour vous connecter à votre compte"
-      },
+      "Description": "Notre site utilise un seul cookie, optionnel, et aucun cookie publicitaire ou de traçage :",
       "NoTracking": "Nous respectons votre vie privée : aucun cookie publicitaire ou de traçage n'est utilisé."
     },
     "Preferences": {
@@ -14,16 +10,11 @@
         "Title": "Cookie de confort",
         "Description": "Ce cookie retient vos préférences (thème, langue) et certaines données que vous saisissez dans les outils (par exemple la liste d'hier du Guet), pour vous éviter de tout ressaisir à chaque visite. Il permet aussi de rester connecté plus longtemps si vous avez activé l'option 'Rester connecté'. Rien n'est envoyé à un tiers, rien ne sert au suivi publicitaire — sans ce cookie, le site reste utilisable, juste sans mémorisation d'une visite à l'autre.",
         "Label": "Cookie de confort"
-      },
-      "Session": {
-        "Title": "Cookie de session",
-        "Description": "Ce cookie contient un jeton. Avec l'aide de ce jeton, votre session actuelle peut être poursuivie lors de l'utilisation du site. Ce cookie est valable 2 heures après sa création et est renouvelé à chaque changement de page sur ce site.",
-        "Label": "Cookie de session"
       }
     },
     "Modal": {
       "Title": "Gérer mes préférences de cookies",
-      "Description": "Nous utilisons deux types de cookies pour vous offrir la meilleure expérience possible :"
+      "Description": "Nous utilisons un cookie optionnel pour vous offrir la meilleure expérience possible :"
     },
     "Button": {
       "Preferences": "Gérer mes préférences",
@@ -32,8 +23,7 @@
       "Cancel": "Annuler",
       "Save": "Enregistrer mes choix"
     },
-    "Required": "Requis",
-    "SessionWarning": "Attention : Sans les cookies de session, vous ne pourrez pas vous connecter à votre compte."
+    "Required": "Requis"
   },
   "Common": {
     "SiteName": "Office des coffres",
@@ -108,8 +98,10 @@
       "PasswordTooShort": "Le mot de passe doit contenir plus de 8 caractères !",
       "PasswordTooLong": "Le mot de passe doit contenir moins de 190 caractères !",
       "ConfirmationMismatch": "La confirmation du mot de passe n'est pas identique à celui-ci !",
-      "NetworkError": "Impossible de contacter le serveur. Réessayez plus tard."
-    }
+      "NetworkError": "Impossible de contacter le serveur. Réessayez plus tard.",
+      "SessionExpired": "Ta session a expiré, reconnecte-toi."
+    },
+    "RememberMe": "Rester connecté"
   },
   "Login": {
     "EnterWithoutAccount": "Entrez sans compte",

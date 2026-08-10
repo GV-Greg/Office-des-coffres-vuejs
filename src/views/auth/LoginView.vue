@@ -10,17 +10,24 @@
   import DefaultSubmitButton from '@/components/buttons/DefaultSubmitButton.vue'
   import SelectorMenu from '@/components/SelectorMenu.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import { useCookieStore } from '@/stores/cookieStore'
   import validation from '@/directives/validation'
   import { push } from 'notivue'
 
   const { t } = useI18n()
+  const cookieStore = useCookieStore()
 /*
   form data
 */
+  // Pré-remplissage "Refinement Option B" : reflète la dernière préférence mémorisée
+  // (cookieStore.comfortData, écrite par authStore.login() après un login réussi). Vide/
+  // décoché par défaut si rien n'a été mémorisé (pas de consentement Préférences, ou
+  // consentement retiré depuis — voir cookieStore._syncComfortPersistence).
   let user = reactive({
-    email: '',
+    email: cookieStore.getComfortData('last_login_email', '') ?? '',
     password: '',
   })
+  const rememberMe = ref(!!cookieStore.getComfortData('remember_me_preference', false))
 
   const error_message = reactive({
     value: ''
@@ -43,7 +50,7 @@
       // erreur déjà affichée par validation()
     } else {
       resendSent.value = false
-      authStore.login(user)
+      authStore.login({ ...user, remember_me: rememberMe.value })
           .then(() => {
             router.push(authStore.hasCharacters ? '/app/' : '/app/character/new')
           })
@@ -90,6 +97,12 @@
               </div>
               <div class="form-group">
                 <InputPassword v-model="user.password" name="password" :label="t('password')" :placeholder="t('Auth.PasswordPlaceholder')" />
+              </div>
+              <div class="form-group flex items-center gap-2">
+                <input id="remember-me" v-model="rememberMe" type="checkbox" name="remember_me" class="cursor-pointer" />
+                <label for="remember-me" class="text-sm text-gray-300 dark:text-gray-500 cursor-pointer">
+                  {{ t('Auth.RememberMe') }}
+                </label>
               </div>
               <DefaultSubmitButton :text="t('Login.SubmitButton')" />
             </form>

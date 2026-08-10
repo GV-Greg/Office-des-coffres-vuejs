@@ -2,11 +2,7 @@
   "Cookies": {
     "Banner": {
       "Title": "Cookie Management",
-      "Description": "Our site uses two types of cookies, both optional, and no advertising or tracking cookies:",
-      "CookieTypes": {
-        "Essential": "• A comfort cookie, to speed up your browsing (stay logged in, remember your preferences and what you type into tools)",
-        "Session": "• A session cookie, necessary to log into your account"
-      },
+      "Description": "Our site uses a single cookie, optional, and no advertising or tracking cookies:",
       "NoTracking": "We respect your privacy: no advertising or tracking cookies are used."
     },
     "Preferences": {
@@ -14,16 +10,11 @@
         "Title": "Comfort Cookie",
         "Description": "This cookie remembers your preferences (theme, language) and some of the data you type into tools (for example yesterday's Watch list), so you don't have to re-enter everything on each visit. It also lets you stay logged in longer if you activated the 'Stay logged in' option. Nothing is sent to a third party, nothing is used for advertising tracking — without this cookie, the site remains usable, just without memory from one visit to the next.",
         "Label": "Comfort cookie"
-      },
-      "Session": {
-        "Title": "Session Cookie",
-        "Description": "This cookie contains a token. With this token, your current session can be continued while using the site. This cookie is valid for 2 hours after creation and is renewed each time you change pages on this site.",
-        "Label": "Session cookie"
       }
     },
     "Modal": {
       "Title": "Manage Cookie Preferences",
-      "Description": "We use two types of cookies to offer you the best possible experience:"
+      "Description": "We use one optional cookie to offer you the best possible experience:"
     },
     "Button": {
       "Preferences": "Manage preferences",
@@ -32,8 +23,7 @@
       "Cancel": "Cancel",
       "Save": "Save my choices"
     },
-    "Required": "Required",
-    "SessionWarning": "Warning: Without session cookies, you will not be able to log into your account."
+    "Required": "Required"
   },
   "Common": {
     "SiteName": "Office des coffres",
@@ -108,8 +98,10 @@
       "PasswordTooShort": "The password must be more than 8 characters!",
       "PasswordTooLong": "The password must be fewer than 190 characters!",
       "ConfirmationMismatch": "The password confirmation does not match!",
-      "NetworkError": "Could not reach the server. Please try again later."
-    }
+      "NetworkError": "Could not reach the server. Please try again later.",
+      "SessionExpired": "Your session has expired, please log in again."
+    },
+    "RememberMe": "Stay logged in"
   },
   "Login": {
     "EnterWithoutAccount": "Enter without an account",
