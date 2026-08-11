@@ -44,7 +44,11 @@
           <p>
             <i18n-t keypath="Legal.Cookies.Preamble" scope="global">
               <template #privacyLink>
-                <span class="italic text-slate-500 dark:text-slate-400">{{ t('Legal.Cookies.PrivacyPolicyLink') }}</span>
+                <RouterLink
+                  :to="{ name: 'legal-privacy' }"
+                  data-testid="privacy-policy-link"
+                  class="italic underline text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                >{{ t('Legal.Cookies.PrivacyPolicyLink') }}</RouterLink>
               </template>
             </i18n-t>
           </p>
@@ -57,9 +61,9 @@
           <section>
             <h3>{{ t('Legal.Cookies.Section2.Title') }}</h3>
             <ul class="list-none space-y-1">
-              <li><strong>{{ t('Legal.Cookies.Section2.NameLabel') }}</strong> : {{ t('Legal.Cookies.Section2.Name') }}</li>
-              <li><strong>{{ t('Legal.Cookies.Section2.AddressLabel') }}</strong> : {{ t('Legal.Cookies.Section2.Address') }}</li>
-              <li><strong>{{ t('Legal.Cookies.Section2.EmailLabel') }}</strong> : {{ t('Legal.Cookies.Section2.Email') }}</li>
+              <li><strong>{{ t('Legal.Common.Contact.NameLabel') }}</strong> : {{ t('Legal.Common.Contact.Name') }}</li>
+              <li><strong>{{ t('Legal.Common.Contact.AddressLabel') }}</strong> : {{ t('Legal.Common.Contact.Address') }}</li>
+              <li><strong>{{ t('Legal.Common.Contact.EmailLabel') }}</strong> : {{ t('Legal.Common.Contact.Email') }}</li>
             </ul>
           </section>
 
@@ -104,7 +108,11 @@
               <li>
                 <i18n-t keypath="Legal.Cookies.Section6.Registered" scope="global">
                   <template #privacyLink>
-                    <span class="italic text-slate-500 dark:text-slate-400">{{ t('Legal.Cookies.PrivacyPolicyLink') }}</span>
+                    <RouterLink
+                      :to="{ name: 'legal-privacy' }"
+                      data-testid="privacy-policy-link"
+                      class="italic underline text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                    >{{ t('Legal.Cookies.PrivacyPolicyLink') }}</RouterLink>
                   </template>
                 </i18n-t>
               </li>

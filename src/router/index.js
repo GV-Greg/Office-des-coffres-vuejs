@@ -82,6 +82,12 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      path: '/legal/privacy',
+      name: 'legal-privacy',
+      component: () => import('@/views/legal/PrivacyPolicyView.vue'),
+      meta: { public: true },
+    },
+    {
       path: '/app/',
       name: 'home',
       components: {
