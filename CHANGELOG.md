@@ -6,6 +6,108 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) reste dans `roadmap.md` à la
 racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-08-10] — PR #26
+
+### Added
+- Intercepteur axios avec refresh automatique du token sur 401 (mutex : une seule requête de
+  refresh en vol même si plusieurs appels échouent en parallèle, les autres attendent puis
+  rejouent) — voir PR backend #15.
+- Checkbox « Rester connecté » sur le login (`Auth.RememberMe` FR+EN) ; refresh token stocké en
+  localStorage si cochée, sessionStorage sinon.
+
+### Changed
+- `authStore.js` migré du token Sanctum unique au couple access+refresh token Passport.
+- Catégorie cookie « Session » (orpheline depuis la PR #20) et mention TTL "2 heures" (fausse)
+  retirées des locales.
+
+## [2026-08-09] — PR #25
+
+### Added
+- `scripts/docs-sync-check.sh` en CI : échoue si le décompte de tests diverge entre fichiers, ou
+  si `docs/ARCHITECTURE.md` accuse plus de 30 jours de retard sur le dernier commit `src/`.
+
+## [2026-08-09] — PR #24
+
+### Fixed
+- `docs/ARCHITECTURE.md` décrivait encore l'ancien modèle cookies (`acceptedCookies`) et un
+  `services/anim.service.js` déjà supprimé ; module Économie décrit comme un squelette vide alors
+  que livré depuis le 08/08.
+
+### Changed
+- Sources uniques : plus de chiffre de tests ni d'historique de changements dans
+  `ARCHITECTURE.md` (README/CHANGELOG font foi), structure détaillée retirée du README.
+
+## [2026-08-09] — PR #23
+
+### Added
+- Accès permanent à la modale de préférences cookies : `AppFooter.vue` (nouveau, bouton « Gérer
+  mes préférences ») + bouton identique dans `ProfilView.vue`. `cookieStore.js` expose
+  `isPreferencesModalOpen`/`openPreferencesModal()`/`closePreferencesModal()`.
+
+## [2026-08-09] — PR #22
+
+### Removed
+- `src/services/` entier (5 fichiers : `auth.service.js`, `auth-header.js`, `http-common.js`,
+  `user.service.js`, `anim.service.js`) — code mort, aucune référence restante.
+
+## [2026-08-09] — PR #20
+
+### Changed
+- Modèle de consentement cookies : `acceptedCookies: [...]` remplacé par `consent: { preferences:
+  bool, choiceMadeAt: number }`, migration douce de l'ancien format. `clearCookies()` renommé
+  `clearConsentedStorage()`, limité aux préfixes `cookie-*`/`comfort-*` (l'ancienne version
+  effaçait aussi `auth_token`/`auth_user`).
+
+### Added
+- Validation stricte du JSON de consentement au chargement (`initializeCookies()`) — un JSON
+  corrompu repart d'un état vierge plutôt que de planter.
+
+## [2026-08-09] — PR #21
+
+### Added
+- `tests/enforcement/storage-usage.unit.test.js` : échoue si `localStorage`/`sessionStorage`/
+  `document.cookie` apparaît hors de `cookieStore.js` (whitelist `authStore.js` pour le jeton
+  d'auth).
+
+## [2026-08-08] — PR #19
+
+### Added
+- Module Économie : sélecteur de semaine (`EconomyMines.vue`), `HelpModal.vue` (composant d'aide
+  générique), `gameCalendar.js` (ancrage année réelle ↔ année de jeu, 2026 → 1474).
+
+### Fixed
+- Bug bloquant du sélecteur de semaine : `isValidDate()` exigeait une année ≥ 2000, écartant
+  toute date en 1474 collée depuis le jeu.
+
+## [2026-08-08] — PR #18
+
+### Changed
+- Migration ESLint 8 → 10 (flat config).
+
+## [2026-08-08] — PR #17
+
+### Added
+- `docs/TESTS.md` : table domaine → script, convention `.unit.test.js`, temps de référence.
+
+### Changed
+- Cache `node_modules/.vite` en CI ; étape qui échoue si un test traîne à la racine de `tests/`
+  plutôt que dans un dossier de domaine.
+
+## [2026-08-08] — PR #16
+
+### Changed
+- Tests restructurés par domaine (`tests/{auth,cookies,eco,security,common}/`) plutôt que par
+  type technique, suffixe `.unit.test.js` pour la logique pure sans DOM.
+
+### Fixed
+- `test:logic` utilisait un glob invalide en argument positionnel Vitest (traité comme filtre
+  substring, jamais comme glob) — remplacé par un filtre substring équivalent.
+
+## [2026-08-08] — PR #15
+
+### Added
+- `CHANGELOG.md` (ce fichier) et `docs/DECISIONS.md` (ADR pour les choix structurants).
+
 ## [2026-08-08] — PR #14
 
 ### Fixed
