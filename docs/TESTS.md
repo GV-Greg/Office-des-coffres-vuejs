@@ -19,7 +19,7 @@ réservée à la fin d'une tâche cohérente ou juste avant un push.
 | Économie | `tests/eco/` | `npm run test:eco` | `mineParser` (logique pure), `EconomyMines` |
 | Sécurité | `tests/security/` | `npm run test:security` | `SecurityGuet` |
 | Commun | `tests/common/` | `npm run test:common` | `NavBar`, `NavMenu`, `HomeView`, `HelpModal`, `Validators`, `kingdomTranslations`, `whatsNewAnnounce`, `gameCalendar` (transverse — utilisé par Économie et à terme le Guet/la Douane, pas propre à un domaine) |
-| Légal | `tests/legal/` | `npm run test:legal` | `CookiesPolicyView`, route `/legal/cookies` |
+| Légal | `tests/legal/` | `npm run test:legal` | `CookiesPolicyView`/`PrivacyPolicyView`, routes `/legal/cookies` et `/legal/privacy` |
 | Enforcement | `tests/enforcement/` | `npm run test:enforcement` | `storage-usage` (logique pure) — garde-fou admin/strategies/cookies.md §9 : `localStorage`/`sessionStorage`/`document.cookie` interdits hors `cookieStore.js` (whitelist `authStore.js`) |
 | — | `tests/fixtures/` | — | Données réelles anonymisées, partagées entre domaines |
 

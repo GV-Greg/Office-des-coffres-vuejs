@@ -27,19 +27,23 @@ const messages = {
   fr: {
     Common: { SiteName: 'Office des coffres' },
     Legal: {
-      Cookies: {
-        PageTitle: 'Politique cookies et stockage local',
-        Preamble: 'Préambule avec un lien vers {privacyLink}.',
-        PrivacyPolicyLink: 'Politique de confidentialité (à venir)',
-        Section1: { Title: '1. Rappel', Content: 'Contenu section 1.' },
-        Section2: {
-          Title: '2. Responsable de traitement',
+      Common: {
+        Contact: {
           NameLabel: 'Nom / raison sociale',
           Name: '[À REMPLIR PAR GREG : nom]',
           AddressLabel: 'Adresse',
           Address: '[À REMPLIR PAR GREG : adresse]',
           EmailLabel: 'Email de contact',
           Email: '[À REMPLIR PAR GREG : email]',
+        },
+      },
+      Cookies: {
+        PageTitle: 'Politique cookies et stockage local',
+        Preamble: 'Préambule avec un lien vers {privacyLink}.',
+        PrivacyPolicyLink: 'Politique de confidentialité',
+        Section1: { Title: '1. Rappel', Content: 'Contenu section 1.' },
+        Section2: {
+          Title: '2. Responsable de traitement',
         },
         Section3: {
           Title: '3. Stockage',
@@ -80,11 +84,18 @@ const messages = {
 
 const i18n = createI18n({ legacy: false, locale: 'fr', messages })
 
+// Stub maison (plutôt que `RouterLink: true`) : sérialise `to` dans le href pour pouvoir
+// vérifier la cible réelle du lien, pas seulement sa présence.
+const RouterLinkStub = {
+  props: ['to'],
+  template: '<a :href="typeof to === \'string\' ? to : JSON.stringify(to)"><slot /></a>',
+}
+
 function mountView() {
   return mount(CookiesPolicyView, {
     global: {
       plugins: [createPinia(), i18n],
-      stubs: { RouterLink: true },
+      stubs: { RouterLink: RouterLinkStub },
     },
   })
 }
@@ -110,7 +121,7 @@ describe('CookiesPolicyView', () => {
     }
   })
 
-  it('garde les placeholders [À REMPLIR PAR GREG] tels quels (responsable de traitement)', () => {
+  it('garde les placeholders [À REMPLIR PAR GREG] tels quels (responsable de traitement, clés partagées Legal.Common.Contact)', () => {
     const wrapper = mountView()
     expect(wrapper.text()).toContain('[À REMPLIR PAR GREG : nom]')
     expect(wrapper.text()).toContain('[À REMPLIR PAR GREG : adresse]')
@@ -123,10 +134,15 @@ describe('CookiesPolicyView', () => {
     expect(wrapper.text()).toContain('Item cinq')
   })
 
-  it("le lien vers la politique de confidentialité n'est pas un lien navigable (route pas encore créée)", () => {
+  it('le lien vers la politique de confidentialité est un vrai RouterLink (route /legal/privacy livrée)', () => {
     const wrapper = mountView()
-    expect(wrapper.text()).toContain('Politique de confidentialité (à venir)')
-    expect(wrapper.find('a[href="/legal/privacy"]').exists()).toBe(false)
+    const privacyLinks = wrapper.findAll('[data-testid="privacy-policy-link"]')
+    expect(privacyLinks.length).toBeGreaterThan(0)
+    for (const link of privacyLinks) {
+      expect(link.attributes('href')).toBe(JSON.stringify({ name: 'legal-privacy' }))
+    }
+    expect(wrapper.text()).toContain('Politique de confidentialité')
+    expect(wrapper.text()).not.toContain('(à venir)')
   })
 
   it('le lien CNIL est un vrai lien externe sécurisé', () => {

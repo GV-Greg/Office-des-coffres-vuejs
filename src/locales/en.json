@@ -235,22 +235,26 @@
     "Title": "Company"
   },
   "Legal": {
-    "Cookies": {
-      "PageTitle": "Cookies and local storage policy",
-      "Preamble": "This page describes how the officedescoffres.creacube.be site uses cookies and local storage technologies in your browser. It complements the {privacyLink}, which covers personal data associated with your account.",
-      "PrivacyPolicyLink": "Privacy Policy (coming soon)",
-      "Section1": {
-        "Title": "1. Reminder: non-official tool",
-        "Content": "Office des Coffres is a non-official community tool for the game Renaissance Kingdoms, developed voluntarily. It is neither affiliated with nor endorsed by Celsius Online, the game's publisher."
-      },
-      "Section2": {
-        "Title": "2. Data controller",
+    "Common": {
+      "Contact": {
         "NameLabel": "Name / business name",
         "Name": "[TO BE FILLED BY GREG: your name or business name — e.g. \"Grégory Vanden Bergh, site publisher\"]",
         "AddressLabel": "Address",
         "Address": "[TO BE FILLED BY GREG: postal correspondence address — required by GDPR, can be a professional address or a point of contact, not necessarily your personal address]",
         "EmailLabel": "Contact email",
         "Email": "[TO BE FILLED BY GREG: e.g. contact[at]creacube.be or the address you want to expose for GDPR requests]"
+      }
+    },
+    "Cookies": {
+      "PageTitle": "Cookies and local storage policy",
+      "Preamble": "This page describes how the officedescoffres.creacube.be site uses cookies and local storage technologies in your browser. It complements the {privacyLink}, which covers personal data associated with your account.",
+      "PrivacyPolicyLink": "Privacy Policy",
+      "Section1": {
+        "Title": "1. Reminder: non-official tool",
+        "Content": "Office des Coffres is a non-official community tool for the game Renaissance Kingdoms, developed voluntarily. It is neither affiliated with nor endorsed by Celsius Online, the game's publisher."
+      },
+      "Section2": {
+        "Title": "2. Data controller"
       },
       "Section3": {
         "Title": "3. What we store in your browser",
@@ -311,6 +315,101 @@
       "Section9": {
         "Title": "9. Contact",
         "Content": "For any question related to this policy or the exercise of your rights, contact: [TO BE FILLED BY GREG: contact email — same as the data controller in §2, or different depending on your choice]"
+      },
+      "LastUpdated": "Last updated: {date}"
+    },
+    "Privacy": {
+      "PageTitle": "Privacy Policy",
+      "Preamble": "This page describes how the officedescoffres.creacube.be site processes the personal data associated with your user account. It complements the {cookiesLink}, which covers local storage in your browser.",
+      "CookiesPolicyLink": "Cookies Policy",
+      "Section1": {
+        "Title": "1. Reminder: non-official tool",
+        "Content": "Office des Coffres is a non-official community tool for the game Renaissance Kingdoms, developed voluntarily. It is neither affiliated with nor endorsed by Celsius Online, the game's publisher."
+      },
+      "Section2": {
+        "Title": "2. Data controller"
+      },
+      "Section3": {
+        "Title": "3. When you create an account",
+        "Intro": "Creating a user account is optional. The site can be browsed freely without an account, with access to public tools (Watch, Mines Report, calendar). A free account unlocks additional features tied to your game history (Customs, Mines Registry — upcoming modules).",
+        "AccountFieldsIntro": "To create an account, only two pieces of information are requested:",
+        "AccountFields": [
+          { "Label": "Email address", "Text": "used for login, identity verification on first access, and service-related communication (password reset, important notifications)." },
+          { "Label": "Password", "Text": "stored securely (hashed with bcrypt), never in plain text." }
+        ],
+        "CharacterFieldsIntro": "You can then add one or more Renaissance Kingdoms characters to your account:",
+        "CharacterFields": [
+          { "Label": "Character pseudonym", "Text": "as it appears in the game." },
+          { "Label": "City of residence", "Text": "selected from the official reference of kingdoms/provinces/cities." },
+          { "Label": "Validation status", "Text": "indicates whether the character has been verified as legitimate by an administrator." }
+        ]
+      },
+      "Section4": {
+        "Title": "4. What we do with your data",
+        "Headers": { "Data": "Data", "Purpose": "Purpose", "LegalBasis": "Legal basis" },
+        "Rows": [
+          { "Data": "Email address", "Purpose": "Authenticate you, contact you for service needs", "LegalBasis": "Contract performance (GDPR art. 6.1.b)" },
+          { "Data": "Password (hashed)", "Purpose": "Verify your identity on each login", "LegalBasis": "Contract performance" },
+          { "Data": "Character(s): pseudonym, city, status", "Purpose": "Operate private tools tied to your account (upcoming: Customs, Mines Registry)", "LegalBasis": "Contract performance" },
+          { "Data": "Registration date", "Purpose": "Administrative traceability, audit", "LegalBasis": "Legitimate interest" },
+          { "Data": "Email verification date", "Purpose": "Verify that you have access to the declared address", "LegalBasis": "Legitimate interest (account security)" },
+          { "Data": "Role (user / administrator)", "Purpose": "Access control to administration functions reserved for the site editor", "LegalBasis": "Legitimate interest" }
+        ],
+        "NoCommercialUse": "No personal data is used for commercial, advertising, aggregate statistics, or profiling purposes."
+      },
+      "Section5": {
+        "Title": "5. How long we keep your data",
+        "ActiveAccount": "Active account: your data is kept as long as your account exists.",
+        "InactiveAccount": "Inactive account: after [TO BE FILLED BY GREG: duration to choose, e.g. \"2 years\"] without login, your account may be automatically deleted, following a notice email to the declared address.",
+        "DeletedAccount": "Deleted account: immediate and definitive deletion of the associated personal data (email, hashed password, linked characters). No partial anonymization, no archive.",
+        "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased."
+      },
+      "Section6": {
+        "Title": "6. Who can access your data",
+        "Yourself": "Yourself, via your account (Profile page).",
+        "Editor": "The site editor (see §2), for technical administration and user support — access limited to the strict minimum.",
+        "NoOneElse": "No one else. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
+        "Hosting": "Data is hosted on servers located in the European Union (host: [TO BE FILLED BY GREG: host name — e.g. \"O2Switch, France\"])."
+      },
+      "Section7": {
+        "Title": "7. Your GDPR rights",
+        "Intro": "In accordance with articles 15 to 22 of the GDPR, you have the following rights over your personal data at any time:",
+        "Rights": [
+          { "Label": "Right of access", "Text": "obtain confirmation that your data is being processed and receive a copy." },
+          { "Label": "Right to rectification", "Text": "correct inaccurate data about you (email and pseudonym editable from your Profile; other fields on request)." },
+          { "Label": "Right to erasure (\"right to be forgotten\")", "Text": "request the deletion of your account and all associated data." },
+          { "Label": "Right to restriction of processing", "Text": "request the suspension of processing of your data in certain situations." },
+          { "Label": "Right to object", "Text": "object to the processing of your data based on legitimate interest." },
+          { "Label": "Right to data portability", "Text": "receive your data in a structured, machine-readable format (JSON), to transmit it to another service." }
+        ],
+        "Complaint": "Right to lodge a complaint with the {cnilLink} if you consider that the processing of your data does not comply with GDPR.",
+        "HowToExercise": "To exercise these rights: contact {email}. A response will be provided within a maximum of one month. Account deletion can also be requested directly from your Profile (upcoming feature — for now, please email)."
+      },
+      "Section8": {
+        "Title": "8. Security of your data",
+        "Intro": "We implement the following technical and organizational measures to protect your data:",
+        "Measures": [
+          "Passwords hashed via bcrypt (never stored in plain text, impossible to reconstruct).",
+          "OAuth 2.0 token authentication (Laravel Passport): short-lived access token (15 minutes) and separate refresh token (12 hours or 30 days with \"Stay logged in\").",
+          "Refresh token rotation on each use, with reuse detection (possible compromise signal).",
+          "Encrypted communications via HTTPS (TLS 1.2 minimum).",
+          "Mandatory email verification before first login.",
+          "Administrator access restricted to a single role, manually assigned by the editor.",
+          "Regular server-side backups."
+        ],
+        "BreachNotice": "No system being infallible, in the event of a security breach affecting your personal data, you will be notified in accordance with article 34 of the GDPR."
+      },
+      "Section9": {
+        "Title": "9. Cookies and local storage",
+        "Content": "Browser-side storage (technical cookies, localStorage) is covered by a dedicated policy: {cookiesLink}. It notably describes the authentication tokens stored in your browser to maintain your login session."
+      },
+      "Section10": {
+        "Title": "10. Changes to this policy",
+        "Content": "This policy may be modified to reflect technical or regulatory changes. Any substantial modification will be notified to you by email at the declared address. The date of last modification is indicated at the bottom of this page."
+      },
+      "Section11": {
+        "Title": "11. Contact",
+        "Content": "For any question related to this policy or the exercise of your rights: {email}"
       },
       "LastUpdated": "Last updated: {date}"
     }

@@ -235,22 +235,26 @@
     "Title": "Compagnie"
   },
   "Legal": {
-    "Cookies": {
-      "PageTitle": "Politique cookies et stockage local",
-      "Preamble": "Cette page décrit comment le site officedescoffres.creacube.be utilise les cookies et les technologies de stockage local (localStorage) sur votre navigateur. Elle complète la {privacyLink}, qui traite des données personnelles associées à votre compte.",
-      "PrivacyPolicyLink": "Politique de confidentialité (à venir)",
-      "Section1": {
-        "Title": "1. Rappel : outil non officiel",
-        "Content": "Office des Coffres est un outil communautaire non officiel pour le jeu Renaissance Kingdoms, développé bénévolement. Il n'est ni affilié ni endossé par Celsius Online, éditeur du jeu."
-      },
-      "Section2": {
-        "Title": "2. Responsable de traitement",
+    "Common": {
+      "Contact": {
         "NameLabel": "Nom / raison sociale",
         "Name": "[À REMPLIR PAR GREG : ton nom ou raison sociale — ex. « Grégory Vanden Bergh, éditeur du site »]",
         "AddressLabel": "Adresse",
         "Address": "[À REMPLIR PAR GREG : adresse postale de correspondance — obligatoire RGPD, peut être une adresse professionnelle ou un point de contact, pas forcément ton adresse personnelle]",
         "EmailLabel": "Email de contact",
         "Email": "[À REMPLIR PAR GREG : ex. contact[at]creacube.be ou l'adresse que tu veux exposer pour les demandes RGPD]"
+      }
+    },
+    "Cookies": {
+      "PageTitle": "Politique cookies et stockage local",
+      "Preamble": "Cette page décrit comment le site officedescoffres.creacube.be utilise les cookies et les technologies de stockage local (localStorage) sur votre navigateur. Elle complète la {privacyLink}, qui traite des données personnelles associées à votre compte.",
+      "PrivacyPolicyLink": "Politique de confidentialité",
+      "Section1": {
+        "Title": "1. Rappel : outil non officiel",
+        "Content": "Office des Coffres est un outil communautaire non officiel pour le jeu Renaissance Kingdoms, développé bénévolement. Il n'est ni affilié ni endossé par Celsius Online, éditeur du jeu."
+      },
+      "Section2": {
+        "Title": "2. Responsable de traitement"
       },
       "Section3": {
         "Title": "3. Ce que nous stockons dans votre navigateur",
@@ -311,6 +315,101 @@
       "Section9": {
         "Title": "9. Contact",
         "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits, contactez : [À REMPLIR PAR GREG : email de contact — même que celui du §2 responsable de traitement, ou différent selon ton choix]"
+      },
+      "LastUpdated": "Dernière modification : {date}"
+    },
+    "Privacy": {
+      "PageTitle": "Politique de confidentialité",
+      "Preamble": "Cette page décrit comment le site officedescoffres.creacube.be traite les données personnelles associées à votre compte utilisateur. Elle complète la {cookiesLink}, qui traite du stockage local dans votre navigateur.",
+      "CookiesPolicyLink": "Politique cookies",
+      "Section1": {
+        "Title": "1. Rappel : outil non officiel",
+        "Content": "Office des Coffres est un outil communautaire non officiel pour le jeu Renaissance Kingdoms, développé bénévolement. Il n'est ni affilié ni endossé par Celsius Online, éditeur du jeu."
+      },
+      "Section2": {
+        "Title": "2. Responsable de traitement"
+      },
+      "Section3": {
+        "Title": "3. Quand vous créez un compte",
+        "Intro": "La création d'un compte utilisateur est optionnelle. Le site est consultable librement sans compte, avec accès aux outils publics (Guet, Bilan des mines, calendrier). Un compte gratuit débloque des fonctionnalités supplémentaires liées à votre historique de jeu (Douane, Registre des mines — modules à venir).",
+        "AccountFieldsIntro": "Pour créer un compte, seules deux informations sont demandées :",
+        "AccountFields": [
+          { "Label": "Adresse email", "Text": "utilisée pour la connexion, la vérification d'identité au premier accès, et la communication liée au service (réinitialisation de mot de passe, notifications importantes)." },
+          { "Label": "Mot de passe", "Text": "stocké de façon sécurisée (haché avec bcrypt), jamais en clair." }
+        ],
+        "CharacterFieldsIntro": "Vous pouvez ensuite ajouter un ou plusieurs personnages Renaissance Kingdoms à votre compte :",
+        "CharacterFields": [
+          { "Label": "Pseudo du personnage", "Text": "tel qu'il apparaît dans le jeu." },
+          { "Label": "Ville de résidence", "Text": "sélectionnée dans le référentiel officiel des royaumes/provinces/villes." },
+          { "Label": "Statut de validation", "Text": "indique si le personnage a été vérifié comme légitime par un administrateur." }
+        ]
+      },
+      "Section4": {
+        "Title": "4. Ce que nous faisons de vos données",
+        "Headers": { "Data": "Donnée", "Purpose": "Finalité", "LegalBasis": "Base légale" },
+        "Rows": [
+          { "Data": "Adresse email", "Purpose": "Vous authentifier, vous contacter pour les besoins du service", "LegalBasis": "Exécution du contrat (art. 6.1.b RGPD)" },
+          { "Data": "Mot de passe (haché)", "Purpose": "Vérifier votre identité à chaque connexion", "LegalBasis": "Exécution du contrat" },
+          { "Data": "Personnage(s) : pseudo, ville, statut", "Purpose": "Faire fonctionner les outils privés liés à votre compte (à venir : Douane, Registre des mines)", "LegalBasis": "Exécution du contrat" },
+          { "Data": "Date d'inscription", "Purpose": "Traçabilité administrative, audit", "LegalBasis": "Intérêt légitime" },
+          { "Data": "Date de vérification de l'email", "Purpose": "Vérifier que vous avez accès à l'adresse déclarée", "LegalBasis": "Intérêt légitime (sécurité du compte)" },
+          { "Data": "Rôle (utilisateur / administrateur)", "Purpose": "Contrôle d'accès aux fonctions d'administration réservées à l'éditeur du site", "LegalBasis": "Intérêt légitime" }
+        ],
+        "NoCommercialUse": "Aucune donnée personnelle n'est utilisée à des fins commerciales, publicitaires, statistiques agrégées ou de profilage."
+      },
+      "Section5": {
+        "Title": "5. Combien de temps nous conservons vos données",
+        "ActiveAccount": "Compte actif : vos données sont conservées tant que votre compte existe.",
+        "InactiveAccount": "Compte inactif : après [À REMPLIR PAR GREG : durée à choisir, ex. « 2 ans »] sans connexion, votre compte peut être supprimé automatiquement, après un email de préavis à l'adresse déclarée.",
+        "DeletedAccount": "Compte supprimé : suppression immédiate et définitive des données personnelles associées (adresse email, mot de passe haché, personnages liés). Aucune anonymisation partielle, aucune archive.",
+        "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés."
+      },
+      "Section6": {
+        "Title": "6. À qui vos données sont accessibles",
+        "Yourself": "Vous-même, via votre compte (page Profil).",
+        "Editor": "L'éditeur du site (voir §2), pour l'administration technique et le support utilisateur — accès limité au strict nécessaire.",
+        "NoOneElse": "Personne d'autre. Aucun partage, aucune revente, aucune transmission à des tiers, y compris à Celsius Online (éditeur du jeu Renaissance Kingdoms), sauf réquisition judiciaire dûment notifiée.",
+        "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : [À REMPLIR PAR GREG : nom de l'hébergeur — ex. « O2Switch, France »])."
+      },
+      "Section7": {
+        "Title": "7. Vos droits RGPD",
+        "Intro": "Conformément aux articles 15 à 22 du RGPD, vous disposez à tout moment des droits suivants sur vos données personnelles :",
+        "Rights": [
+          { "Label": "Droit d'accès", "Text": "obtenir la confirmation que vos données sont traitées et en recevoir une copie." },
+          { "Label": "Droit de rectification", "Text": "corriger les données inexactes vous concernant (email et pseudo modifiables depuis votre Profil ; les autres champs sur demande)." },
+          { "Label": "Droit à l'effacement (« droit à l'oubli »)", "Text": "demander la suppression de votre compte et de toutes les données associées." },
+          { "Label": "Droit à la limitation du traitement", "Text": "demander la suspension du traitement de vos données dans certaines situations." },
+          { "Label": "Droit d'opposition", "Text": "vous opposer au traitement de vos données fondé sur l'intérêt légitime." },
+          { "Label": "Droit à la portabilité", "Text": "recevoir vos données dans un format structuré et lisible par machine (JSON), pour les transmettre à un autre service." }
+        ],
+        "Complaint": "Droit d'introduire une réclamation auprès de la {cnilLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD.",
+        "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. La suppression de compte peut également être demandée directement depuis votre Profil (fonctionnalité à venir — pour l'instant, passer par email)."
+      },
+      "Section8": {
+        "Title": "8. Sécurité de vos données",
+        "Intro": "Nous mettons en œuvre les mesures techniques et organisationnelles suivantes pour protéger vos données :",
+        "Measures": [
+          "Mots de passe hachés via bcrypt (jamais stockés en clair, impossible à reconstituer).",
+          "Authentification par jetons OAuth 2.0 (Laravel Passport) : jeton d'accès à courte durée (15 minutes) et jeton de rafraîchissement séparé (12 heures ou 30 jours si « Rester connecté »).",
+          "Rotation des jetons de rafraîchissement à chaque utilisation, avec détection de réutilisation (signal de compromission possible).",
+          "Communications chiffrées en HTTPS (TLS 1.2 minimum).",
+          "Vérification d'email obligatoire avant première connexion.",
+          "Accès administrateur restreint à un rôle unique, attribué manuellement par l'éditeur.",
+          "Sauvegardes régulières des données côté serveur."
+        ],
+        "BreachNotice": "Aucun système n'étant infaillible, en cas de faille de sécurité affectant vos données personnelles, vous serez notifié conformément à l'article 34 du RGPD."
+      },
+      "Section9": {
+        "Title": "9. Cookies et stockage local",
+        "Content": "Le stockage côté navigateur (cookies techniques, localStorage) fait l'objet d'une politique dédiée : {cookiesLink}. Elle décrit notamment les jetons d'authentification stockés dans votre navigateur pour maintenir votre connexion."
+      },
+      "Section10": {
+        "Title": "10. Modifications de cette politique",
+        "Content": "Cette politique peut être modifiée pour refléter des évolutions techniques ou réglementaires. Toute modification substantielle vous sera notifiée par email à l'adresse déclarée. La date de dernière modification est indiquée en bas de cette page."
+      },
+      "Section11": {
+        "Title": "11. Contact",
+        "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits : {email}"
       },
       "LastUpdated": "Dernière modification : {date}"
     }
