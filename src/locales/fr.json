@@ -238,11 +238,11 @@
     "Common": {
       "Contact": {
         "NameLabel": "Nom / raison sociale",
-        "Name": "[À REMPLIR PAR GREG : ton nom ou raison sociale — ex. « Grégory Vanden Bergh, éditeur du site »]",
+        "Name": "Gregory Van den Bergh",
         "AddressLabel": "Adresse",
-        "Address": "[À REMPLIR PAR GREG : adresse postale de correspondance — obligatoire RGPD, peut être une adresse professionnelle ou un point de contact, pas forcément ton adresse personnelle]",
+        "Address": "Avenue Cardinal Mercier 67 Bte 1 - 5000 Namur (Belgique)",
         "EmailLabel": "Email de contact",
-        "Email": "[À REMPLIR PAR GREG : ex. contact[at]creacube.be ou l'adresse que tu veux exposer pour les demandes RGPD]"
+        "Email": "contact-odc[at]creacube.be"
       }
     },
     "Cookies": {
@@ -314,7 +314,7 @@
       },
       "Section9": {
         "Title": "9. Contact",
-        "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits, contactez : [À REMPLIR PAR GREG : email de contact — même que celui du §2 responsable de traitement, ou différent selon ton choix]"
+        "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits, contactez : contact-odc[at]creacube.be"
       },
       "LastUpdated": "Dernière modification : {date}"
     },
@@ -360,7 +360,7 @@
       "Section5": {
         "Title": "5. Combien de temps nous conservons vos données",
         "ActiveAccount": "Compte actif : vos données sont conservées tant que votre compte existe.",
-        "InactiveAccount": "Compte inactif : après [À REMPLIR PAR GREG : durée à choisir, ex. « 2 ans »] sans connexion, votre compte peut être supprimé automatiquement, après un email de préavis à l'adresse déclarée.",
+        "InactiveAccount": "Compte inactif : après 2 ans sans connexion, votre compte peut être supprimé automatiquement, après un email de préavis à l'adresse déclarée.",
         "DeletedAccount": "Compte supprimé : suppression immédiate et définitive des données personnelles associées (adresse email, mot de passe haché, personnages liés). Aucune anonymisation partielle, aucune archive.",
         "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés."
       },
@@ -369,7 +369,7 @@
         "Yourself": "Vous-même, via votre compte (page Profil).",
         "Editor": "L'éditeur du site (voir §2), pour l'administration technique et le support utilisateur — accès limité au strict nécessaire.",
         "NoOneElse": "Personne d'autre. Aucun partage, aucune revente, aucune transmission à des tiers, y compris à Celsius Online (éditeur du jeu Renaissance Kingdoms), sauf réquisition judiciaire dûment notifiée.",
-        "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : [À REMPLIR PAR GREG : nom de l'hébergeur — ex. « O2Switch, France »])."
+        "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : o2switch, France)."
       },
       "Section7": {
         "Title": "7. Vos droits RGPD",

@@ -238,11 +238,11 @@
     "Common": {
       "Contact": {
         "NameLabel": "Name / business name",
-        "Name": "[TO BE FILLED BY GREG: your name or business name — e.g. \"Grégory Vanden Bergh, site publisher\"]",
+        "Name": "Gregory Van den Bergh",
         "AddressLabel": "Address",
-        "Address": "[TO BE FILLED BY GREG: postal correspondence address — required by GDPR, can be a professional address or a point of contact, not necessarily your personal address]",
+        "Address": "Avenue Cardinal Mercier 67 Bte 1 - 5000 Namur (Belgique)",
         "EmailLabel": "Contact email",
-        "Email": "[TO BE FILLED BY GREG: e.g. contact[at]creacube.be or the address you want to expose for GDPR requests]"
+        "Email": "contact-odc[at]creacube.be"
       }
     },
     "Cookies": {
@@ -314,7 +314,7 @@
       },
       "Section9": {
         "Title": "9. Contact",
-        "Content": "For any question related to this policy or the exercise of your rights, contact: [TO BE FILLED BY GREG: contact email — same as the data controller in §2, or different depending on your choice]"
+        "Content": "For any question related to this policy or the exercise of your rights, contact: contact-odc[at]creacube.be"
       },
       "LastUpdated": "Last updated: {date}"
     },
@@ -360,7 +360,7 @@
       "Section5": {
         "Title": "5. How long we keep your data",
         "ActiveAccount": "Active account: your data is kept as long as your account exists.",
-        "InactiveAccount": "Inactive account: after [TO BE FILLED BY GREG: duration to choose, e.g. \"2 years\"] without login, your account may be automatically deleted, following a notice email to the declared address.",
+        "InactiveAccount": "Inactive account: after 2 years without login, your account may be automatically deleted, following a notice email to the declared address.",
         "DeletedAccount": "Deleted account: immediate and definitive deletion of the associated personal data (email, hashed password, linked characters). No partial anonymization, no archive.",
         "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased."
       },
@@ -369,7 +369,7 @@
         "Yourself": "Yourself, via your account (Profile page).",
         "Editor": "The site editor (see §2), for technical administration and user support — access limited to the strict minimum.",
         "NoOneElse": "No one else. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
-        "Hosting": "Data is hosted on servers located in the European Union (host: [TO BE FILLED BY GREG: host name — e.g. \"O2Switch, France\"])."
+        "Hosting": "Data is hosted on servers located in the European Union (host: o2switch, France)."
       },
       "Section7": {
         "Title": "7. Your GDPR rights",
