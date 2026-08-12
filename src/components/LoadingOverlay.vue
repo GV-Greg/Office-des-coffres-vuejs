@@ -46,7 +46,7 @@ const loadingText = computed(() => t(navigationContext.value === 'chest' ? 'Comm
 }
 
 .chest-icon {
-  animation: chest-pulse 2.4s ease-in-out infinite;
+  animation: chest-bounce 1.1s infinite;
 }
 
 .chest-glow {
@@ -54,9 +54,15 @@ const loadingText = computed(() => t(navigationContext.value === 'chest' ? 'Comm
   animation-delay: -0.6s;
 }
 
-@keyframes chest-pulse {
-  0%, 100% { transform: scale(1) translateY(0); }
-  50% { transform: scale(1.06) translateY(-4px); }
+@keyframes chest-bounce {
+  0%, 100% {
+    transform: translateY(-12%) scale(1.05);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0) scale(1);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
 }
 
 @keyframes chest-glow-pulse {
