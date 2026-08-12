@@ -1,0 +1,33 @@
+# Fallback SPA (Vue Router en mode history) : toute URL sans fichier ni dossier
+# correspondant renvoie index.html, pour que les liens directs/rechargements sur
+# /app/* etc. fonctionnent au lieu de 404.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Cache navigateur : les fichiers sous /assets/ sont nommés avec un hash de contenu
+# par Vite (nom différent à chaque rebuild si le contenu change) — un cache très long
+# est donc sûr, aucun risque de servir une version périmée. index.html reste non caché
+# puisque c'est lui qui référence les noms de fichiers hashés à jour.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 month"
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|svg|woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
