@@ -28,6 +28,8 @@
   "Common": {
     "SiteName": "Office des coffres",
     "Placeholder": "Test",
+    "LoadingOffice": "Opening the office…",
+    "LoadingChest": "Opening the chest…",
     "Theme": {
       "Title": "Theme",
       "Light": "Light mode",

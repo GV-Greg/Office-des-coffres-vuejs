@@ -4,6 +4,7 @@
   import { Notivue, Notification, materialTheme } from 'notivue'
   import { useCookieStore } from './stores/cookieStore'
   import CookiesBanner from './components/CookiesBanner.vue'
+  import LoadingOverlay from './components/LoadingOverlay.vue'
 
   const cookieStore = useCookieStore()
 
@@ -28,6 +29,7 @@
     <RouterView />
 
     <CookiesBanner />
+    <LoadingOverlay />
     <Notivue  v-slot="item">
       <Notification :item="item" :theme="materialTheme" />
     </Notivue>

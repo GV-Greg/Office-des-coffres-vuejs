@@ -6,6 +6,7 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import SecurityGuetView from '@/views/modules/security/SecurityGuet.vue'
 import { push } from 'notivue'
+import useNavigationLoading from '@/use/useNavigationLoading'
 
 export const redirectToHomeIfNotLoggedIn = async (to, from, next) => {
   const authStore = useAuthStore()
@@ -149,6 +150,29 @@ const router = createRouter({
       component: () => import("@/views/404.vue"),
   },
   ]
+})
+
+// Modules "Coffres X" (voir la charte de titres Economy/Security/Animation) — le reste de la
+// navigation (Accueil, compte, pages publiques) reste dans le contexte "office".
+const CHEST_MODULE_ROUTE_NAMES = new Set([
+  'economy', 'economy-mines',
+  'security', 'security-guet',
+  'animation',
+])
+
+const { startNavigationLoading, stopNavigationLoading } = useNavigationLoading()
+
+router.beforeEach((to, from, next) => {
+  startNavigationLoading(CHEST_MODULE_ROUTE_NAMES.has(to.name) ? 'chest' : 'office')
+  next()
+})
+
+router.afterEach(() => {
+  stopNavigationLoading()
+})
+
+router.onError(() => {
+  stopNavigationLoading()
 })
 
 export default router
