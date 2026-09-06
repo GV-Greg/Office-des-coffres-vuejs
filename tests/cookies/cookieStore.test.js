@@ -128,6 +128,20 @@ describe('Cookie Store', () => {
       expect(store.consent).toEqual({ preferences: false, choiceMadeAt: null })
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('cookie-consent')
     })
+
+    it('setConsent renvoie true quand la persistance réussit', () => {
+      expect(store.setConsent(true)).toBe(true)
+    })
+
+    it("setConsent renvoie false si l'écriture en localStorage échoue (quota dépassé, navigation privée...)", () => {
+      localStorageMock.setItem.mockImplementationOnce(() => {
+        throw new Error('QuotaExceededError')
+      })
+
+      expect(store.setConsent(true)).toBe(false)
+      // L'état en mémoire change quand même : la session en cours reste utilisable.
+      expect(store.consent.preferences).toBe(true)
+    })
   })
 
   describe('Validation de ce qui est relu depuis localStorage', () => {

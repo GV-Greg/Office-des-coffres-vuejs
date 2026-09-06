@@ -168,10 +168,14 @@ export const useCookieStore = defineStore('cookie', {
       this.setConsent(false)
     },
 
+    // Renvoie le succès réel de l'écriture en localStorage (ex. quota dépassé, navigation
+    // privée stricte) pour permettre à l'appelant de n'afficher une confirmation que si la
+    // persistance a effectivement eu lieu.
     setConsent(preferences) {
       this.consent = { preferences, choiceMadeAt: Date.now() }
-      this._saveConsent()
+      const saved = this._saveConsent()
       this._syncComfortPersistence()
+      return saved
     },
 
     resetConsent() {
@@ -210,8 +214,10 @@ export const useCookieStore = defineStore('cookie', {
     _saveConsent() {
       try {
         localStorage.setItem(CONSENT_KEY, JSON.stringify(this.consent))
+        return true
       } catch (e) {
         console.error('Error saving consent:', e)
+        return false
       }
     },
 

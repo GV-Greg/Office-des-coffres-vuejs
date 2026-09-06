@@ -2,6 +2,7 @@
 import { useI18n } from "vue-i18n";
 import { useCookieStore } from '@/stores/cookieStore';
 import { onMounted, ref, computed } from 'vue';
+import { push } from 'notivue';
 import PrimaryButton from './buttons/PrimaryButton.vue';
 import SuccessButton from './buttons/SuccessButton.vue';
 import DangerButton from './buttons/DangerButton.vue';
@@ -39,18 +40,25 @@ const handleDeclineAll = () => {
   showBanner.value = false;
 };
 
-// Gérer la fermeture de la modale
+// Gérer la fermeture de la modale sans sauvegarder. La bannière ne doit réapparaître
+// que si l'utilisateur n'a encore jamais répondu (choiceMadeAt null) — sinon "Annuler"
+// depuis la modale ouverte via NavBar/ProfilView (post-choix) la ferait réapparaître à tort.
 const handleModalClose = () => {
   cookieStore.closePreferencesModal();
-  // La bannière reste visible si on ferme la modale sans sauvegarder
-  showBanner.value = true;
+  showBanner.value = !cookieStore.hasUserChoice;
 };
 
 // Sauvegarder les préférences depuis la modale
 const handleSavePreferences = (selectedCookies) => {
-  cookieStore.setConsent(selectedCookies.includes('preferences'));
+  const saved = cookieStore.setConsent(selectedCookies.includes('preferences'));
   cookieStore.closePreferencesModal();
   showBanner.value = false;
+
+  if (saved) {
+    push.success(t('Cookies.Saved'));
+  } else {
+    push.error(t('Cookies.SaveError'));
+  }
 };
 
 onMounted(() => {
