@@ -144,13 +144,13 @@
               </li>
               <li>
                 <i18n-t keypath="Legal.Privacy.Section7.Complaint" scope="global">
-                  <template #cnilLink>
+                  <template #apdLink>
                     <a
-                      href="https://www.cnil.fr"
+                      href="https://www.autoriteprotectiondonnees.be"
                       target="_blank"
                       rel="noopener noreferrer"
                       class="underline text-blue-600 dark:text-blue-400"
-                    >CNIL</a>
+                    >APD</a>
                   </template>
                 </i18n-t>
               </li>
