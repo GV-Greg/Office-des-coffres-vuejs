@@ -277,7 +277,7 @@
           "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines).",
           "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics.",
           "Retention": "jusqu'à ce que vous effaciez vos données de site depuis votre navigateur, ou que vous retiriez votre consentement via le bandeau cookies.",
-          "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 82 de la loi Informatique et Libertés).",
+          "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques).",
           "IfDecline": "le site fonctionne normalement, mais vos préférences et brouillons ne sont pas mémorisés d'une visite à l'autre."
         },
         "Tokens": {
@@ -285,7 +285,7 @@
           "Purpose": "maintenir votre connexion à votre compte utilisateur pendant votre session.",
           "Data": "un jeton d'accès (access token, durée courte) et un jeton de rafraîchissement (refresh token, durée plus longue si vous cochez « Rester connecté »).",
           "Retention": "jeton d'accès valable 15 minutes ; jeton de rafraîchissement valable 12 heures par défaut ou 30 jours si vous avez coché « Rester connecté ».",
-          "LegalBasis": "ces jetons sont strictement nécessaires à la fourniture du service demandé (votre connexion). À ce titre, ils sont exemptés du consentement au sens de l'article 82 de la loi Informatique et Libertés, tout en restant documentés ici par souci de transparence.",
+          "LegalBasis": "ces jetons sont strictement nécessaires à la fourniture du service demandé (votre connexion). À ce titre, ils sont exemptés du consentement au sens de l'article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques, tout en restant documentés ici par souci de transparence.",
           "IfDecline": "vous ne pouvez pas rester connecté — vous devriez alors saisir vos identifiants à chaque action nécessitant l'authentification, ce qui rend l'usage impraticable."
         }
       },
@@ -308,7 +308,7 @@
       },
       "Section5": {
         "Title": "5. Précision technique : cookies HTTP vs stockage local",
-        "Content": "Techniquement, ce site n'utilise pas de « cookies » au sens HTTP classique. Il utilise le mécanisme localStorage du navigateur pour stocker les préférences et les jetons d'authentification. Cette distinction est purement technique — au sens de la CNIL et du RGPD, les deux mécanismes relèvent des mêmes obligations d'information et de consentement, et sont traités de la même façon dans cette politique. Le terme « cookies » est utilisé dans le bandeau de consentement pour la compréhension générale."
+        "Content": "Techniquement, ce site n'utilise pas de « cookies » au sens HTTP classique. Il utilise le mécanisme localStorage du navigateur pour stocker les préférences et les jetons d'authentification. Cette distinction est purement technique — au sens du RGPD et de l'APD (Autorité de Protection des Données belge), les deux mécanismes relèvent des mêmes obligations d'information et de consentement, et sont traités de la même façon dans cette politique. Le terme « cookies » est utilisé dans le bandeau de consentement pour la compréhension générale."
       },
       "Section6": {
         "Title": "6. Distinction visiteur anonyme et utilisateur connecté",
@@ -319,7 +319,7 @@
         "Title": "7. Vos droits",
         "Withdraw": "Retrait du consentement à tout moment via le bouton « Gérer mes préférences » présent dans la navigation. Le retrait n'affecte pas la licéité des traitements passés fondés sur votre consentement avant retrait.",
         "Erase": "Effacement des données stockées : vider vos données de site depuis votre navigateur (menu Paramètres → Confidentialité → Effacer les données) supprime instantanément tout ce qui a été mémorisé côté navigateur.",
-        "Complaint": "Droit d'introduire une réclamation auprès de la {cnilLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD."
+        "Complaint": "Droit d'introduire une réclamation auprès de l'{apdLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD."
       },
       "Section8": {
         "Title": "8. Modifications de cette politique",
@@ -395,7 +395,7 @@
           { "Label": "Droit d'opposition", "Text": "vous opposer au traitement de vos données fondé sur l'intérêt légitime." },
           { "Label": "Droit à la portabilité", "Text": "recevoir vos données dans un format structuré et lisible par machine (JSON), pour les transmettre à un autre service." }
         ],
-        "Complaint": "Droit d'introduire une réclamation auprès de la {cnilLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD.",
+        "Complaint": "Droit d'introduire une réclamation auprès de l'{apdLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD.",
         "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. La suppression de compte peut également être demandée directement depuis votre Profil (fonctionnalité à venir — pour l'instant, passer par email)."
       },
       "Section8": {

@@ -88,7 +88,7 @@ const messages = {
             { Label: "Droit d'accès", Text: 'obtenir une copie.' },
             { Label: 'Droit de rectification', Text: 'corriger.' },
           ],
-          Complaint: 'Réclamation auprès de la {cnilLink}.',
+          Complaint: 'Réclamation auprès de l\'{apdLink}.',
           HowToExercise: 'Contactez {email} pour exercer ces droits.',
         },
         Section8: {
@@ -205,9 +205,9 @@ describe('PrivacyPolicyView', () => {
     }
   })
 
-  it('le lien CNIL est un vrai lien externe sécurisé', () => {
+  it('le lien APD est un vrai lien externe sécurisé', () => {
     const wrapper = mountView()
-    const link = wrapper.find('a[href="https://www.cnil.fr"]')
+    const link = wrapper.find('a[href="https://www.autoriteprotectiondonnees.be"]')
     expect(link.exists()).toBe(true)
     expect(link.attributes('target')).toBe('_blank')
     expect(link.attributes('rel')).toBe('noopener noreferrer')

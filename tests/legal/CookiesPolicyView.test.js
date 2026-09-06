@@ -72,7 +72,7 @@ const messages = {
           Title: '7. Vos droits',
           Withdraw: 'Retrait du consentement.',
           Erase: 'Effacement.',
-          Complaint: 'Réclamation auprès de la {cnilLink}.',
+          Complaint: 'Réclamation auprès de l\'{apdLink}.',
         },
         Section8: { Title: '8. Modifications', Content: 'Contenu section 8.' },
         Section9: { Title: '9. Contact', Content: 'Contactez-nous.' },
@@ -151,9 +151,9 @@ describe('CookiesPolicyView', () => {
     expect(wrapper.text()).not.toContain('(à venir)')
   })
 
-  it('le lien CNIL est un vrai lien externe sécurisé', () => {
+  it('le lien APD est un vrai lien externe sécurisé', () => {
     const wrapper = mountView()
-    const link = wrapper.find('a[href="https://www.cnil.fr"]')
+    const link = wrapper.find('a[href="https://www.autoriteprotectiondonnees.be"]')
     expect(link.exists()).toBe(true)
     expect(link.attributes('target')).toBe('_blank')
     expect(link.attributes('rel')).toBe('noopener noreferrer')
