@@ -23,7 +23,9 @@
       "Cancel": "Annuler",
       "Save": "Enregistrer mes choix"
     },
-    "Required": "Requis"
+    "Required": "Requis",
+    "Saved": "Vos préférences ont été enregistrées.",
+    "SaveError": "Vos préférences n'ont pas pu être enregistrées. Réessayez."
   },
   "Common": {
     "SiteName": "Office des coffres",

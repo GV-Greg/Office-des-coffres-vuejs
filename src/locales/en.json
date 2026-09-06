@@ -23,7 +23,9 @@
       "Cancel": "Cancel",
       "Save": "Save my choices"
     },
-    "Required": "Required"
+    "Required": "Required",
+    "Saved": "Your preferences have been saved.",
+    "SaveError": "Your preferences could not be saved. Please try again."
   },
   "Common": {
     "SiteName": "Office des coffres",

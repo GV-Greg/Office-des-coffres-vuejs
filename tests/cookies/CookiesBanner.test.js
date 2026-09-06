@@ -1,10 +1,18 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import CookiesBanner from '../../src/components/CookiesBanner.vue'
 import CookiesModal from '../../src/components/CookiesModal.vue'
 import { useCookieStore } from '../../src/stores/cookieStore'
+
+vi.mock('notivue', () => ({ push: { error: vi.fn(), success: vi.fn() } }))
+
+// Le mock notivue est un singleton de module : sans reset, l'historique des
+// appels d'un test contamine les assertions "not.toHaveBeenCalled" du suivant.
+afterEach(() => {
+  vi.clearAllMocks()
+})
 
 // Mock translations
 const i18n = createI18n({
@@ -19,8 +27,12 @@ const i18n = createI18n({
         Button: {
           Preferences: 'Gérer mes préférences',
           Accept: 'Accepter',
-          Decline: 'Refuser'
-        }
+          Decline: 'Refuser',
+          Cancel: 'Annuler',
+          Save: 'Enregistrer mes choix'
+        },
+        Saved: 'Vos préférences ont été enregistrées.',
+        SaveError: "Vos préférences n'ont pas pu être enregistrées. Réessayez."
       }
     }
   }
@@ -115,5 +127,100 @@ describe('CookiesBanner', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.findComponent(CookiesModal).props('show')).toBe(true)
+  })
+
+  // Régression : "Annuler" dans la modale (ouverte depuis NavBar/ProfilView, hors bannière)
+  // ne doit pas faire réapparaître la bannière si l'utilisateur a déjà répondu.
+  it("n'affiche pas la bannière si la modale est annulée alors qu'un choix a déjà été fait", async () => {
+    const wrapper = mount(CookiesBanner, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: { cookie: { consent: CHOICE_MADE, isPreferencesModalOpen: true } }
+          }),
+          i18n
+        ]
+      }
+    })
+    await wrapper.vm.$nextTick()
+
+    const cancelButton = wrapper.findComponent(CookiesModal).findAll('button')
+      .find((b) => b.text().includes('Annuler'))
+    await cancelButton.trigger('click')
+
+    expect(wrapper.find('.fixed.bottom-0').exists()).toBe(false)
+  })
+
+  it("réaffiche la bannière si la modale est annulée sans qu'aucun choix n'ait été fait", async () => {
+    const wrapper = mount(CookiesBanner, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: { cookie: { consent: NO_CHOICE, isPreferencesModalOpen: true } }
+          }),
+          i18n
+        ]
+      }
+    })
+    await wrapper.vm.$nextTick()
+
+    const cancelButton = wrapper.findComponent(CookiesModal).findAll('button')
+      .find((b) => b.text().includes('Annuler'))
+    await cancelButton.trigger('click')
+
+    expect(wrapper.find('.fixed.bottom-0').exists()).toBe(true)
+  })
+
+  it('affiche une confirmation au clic sur Enregistrer mes choix si la sauvegarde réussit', async () => {
+    const wrapper = mount(CookiesBanner, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: { cookie: { consent: NO_CHOICE, isPreferencesModalOpen: true } }
+          }),
+          i18n
+        ]
+      }
+    })
+    await wrapper.vm.$nextTick()
+    const store = useCookieStore()
+    store.setConsent.mockReturnValue(true)
+    const { push } = await import('notivue')
+
+    const saveButton = wrapper.findComponent(CookiesModal).findAll('button')
+      .find((b) => b.text().includes('Enregistrer mes choix'))
+    await saveButton.trigger('click')
+
+    expect(store.setConsent).toHaveBeenCalled()
+    expect(push.success).toHaveBeenCalledWith('Vos préférences ont été enregistrées.')
+    expect(push.error).not.toHaveBeenCalled()
+  })
+
+  it("affiche une erreur au clic sur Enregistrer mes choix si la sauvegarde échoue", async () => {
+    const wrapper = mount(CookiesBanner, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: { cookie: { consent: NO_CHOICE, isPreferencesModalOpen: true } }
+          }),
+          i18n
+        ]
+      }
+    })
+    await wrapper.vm.$nextTick()
+    const store = useCookieStore()
+    store.setConsent.mockReturnValue(false)
+    const { push } = await import('notivue')
+
+    const saveButton = wrapper.findComponent(CookiesModal).findAll('button')
+      .find((b) => b.text().includes('Enregistrer mes choix'))
+    await saveButton.trigger('click')
+
+    expect(push.error).toHaveBeenCalledWith("Vos préférences n'ont pas pu être enregistrées. Réessayez.")
+    expect(push.success).not.toHaveBeenCalled()
   })
 })
