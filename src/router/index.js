@@ -75,6 +75,18 @@ const router = createRouter({
       component: VerifyEmailView,
     },
     {
+      path: '/legal/cookies',
+      name: 'legal-cookies',
+      component: () => import('@/views/legal/CookiesPolicyView.vue'),
+      meta: { public: true },
+    },
+    {
+      path: '/legal/privacy',
+      name: 'legal-privacy',
+      component: () => import('@/views/legal/PrivacyPolicyView.vue'),
+      meta: { public: true },
+    },
+    {
       path: '/app/',
       name: 'home',
       components: {
