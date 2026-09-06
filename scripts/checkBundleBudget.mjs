@@ -16,19 +16,31 @@ export function formatKo(bytes) {
   return `${(bytes / 1024).toFixed(1)} Ko`
 }
 
+// Même logique que evaluateCssBudget : le brotli est ce que LiteSpeed sert réellement
+// (Performance #1/#3), donc seul lui bloque le build. Le brut reste un avertissement — un
+// dépassement brut sans dépassement brotli (contenu très compressible, ex. gros blocs de texte
+// i18n) ne justifie pas de bloquer un merge.
 export function evaluateJsBudgets(files) {
   const failures = []
+  const warnings = []
   for (const file of files) {
     const budget = BUNDLE_BUDGETS.find((b) => b.pattern.test(file.fileName))
     if (!budget) continue
-    if (file.rawSize > budget.rawMaxBytes || file.brotliSize > budget.brotliMaxBytes) {
+
+    if (file.brotliSize > budget.brotliMaxBytes) {
       failures.push(
-        `${budget.label} (${file.fileName}) : ${formatKo(file.rawSize)} brut / ${formatKo(file.brotliSize)} brotli`
-        + ` — budget ${formatKo(budget.rawMaxBytes)} / ${formatKo(budget.brotliMaxBytes)}`
+        `${budget.label} (${file.fileName}) : ${formatKo(file.brotliSize)} brotli — budget ${formatKo(budget.brotliMaxBytes)}`
+        + ` (transfert réel, ce que sert LiteSpeed)`
+      )
+    }
+    if (file.rawSize > budget.rawMaxBytes) {
+      warnings.push(
+        `${budget.label} (${file.fileName}) : ${formatKo(file.rawSize)} brut — budget ${formatKo(budget.rawMaxBytes)}`
+        + ` (pas bloquant tant que le brotli reste sous budget)`
       )
     }
   }
-  return failures
+  return { failures, warnings }
 }
 
 export function evaluateCssBudget({ rawSize, brotliSize }) {
