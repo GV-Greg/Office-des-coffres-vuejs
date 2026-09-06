@@ -43,6 +43,9 @@
       "French": "Français",
       "English": "Anglais"
     },
+    "Footer": {
+      "UnofficialTool": "Outil non officiel"
+    },
     "HelpModal": {
       "Purpose": "But du coffre",
       "Overview": "Fonctionnement",
@@ -77,6 +80,9 @@
   "Welcome": {
     "ClickHint": "cliquez",
     "Intro": "Bienvenue sur l'Office des coffres, qui propose des coffres afin de vous épauler dans vos tâches liées à la sécurité, à l'économie ou à l'animation de votre ville et de votre province.",
+    "Access": {
+      "Text": "Vous pouvez franchir le seuil de l'Office sans y déposer votre nom — la plupart des outils vous sont ouverts. Vous enregistrer à la réception vous ouvrira l'accès aux coffres les mieux gardés et à vos propres registres."
+    },
     "Disclaimer": "Site d'aide, non officiel, à la communauté du jeu {link}.",
     "Copyright": "© {years} Office des coffres. Tous droits réservés."
   },
@@ -121,7 +127,10 @@
     "Heading": "Créez votre compte",
     "SubmitButton": "S'enregistrer",
     "CheckEmailTitle": "Vérifiez votre boîte mail",
-    "CheckEmailMessage": "Un email de confirmation vient de vous être envoyé.\nCliquez sur le lien qu'il contient pour activer votre compte."
+    "CheckEmailMessage": "Un email de confirmation vient de vous être envoyé.\nCliquez sur le lien qu'il contient pour activer votre compte.",
+    "Modules": {
+      "Intro": "En créant un compte gratuit, vous pouvez gérer vos personnages, tenir vos propres registres et accéder à des outils privés supplémentaires. Aucun cookie publicitaire, aucun traçage, aucun partage avec des tiers — voir {privacyLink}."
+    }
   },
   "VerifyEmail": {
     "Verifying": "Vérification en cours...",
@@ -318,7 +327,7 @@
       },
       "Section9": {
         "Title": "9. Contact",
-        "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits, contactez : contact-odc[at]creacube.be"
+        "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits, contactez : {emailLink}"
       },
       "LastUpdated": "Dernière modification : {date}"
     },
@@ -414,6 +423,46 @@
       "Section11": {
         "Title": "11. Contact",
         "Content": "Pour toute question relative à cette politique ou à l'exercice de vos droits : {email}"
+      },
+      "LastUpdated": "Dernière modification : {date}"
+    },
+    "Mentions": {
+      "PageTitle": "Mentions légales",
+      "Preamble": "Conformément aux obligations légales belges et européennes applicables aux sites internet édités depuis la Belgique, la présente page rassemble l'identification de l'éditeur du site, de son hébergeur, et les coordonnées de contact.",
+      "Section1": {
+        "Title": "1. Éditeur du site",
+        "StatusLabel": "Statut",
+        "Status": "Édition non commerciale, site communautaire à titre bénévole."
+      },
+      "Section2": {
+        "Title": "2. Hébergeur du site",
+        "HostNameLabel": "Nom",
+        "HostName": "o2switch",
+        "HostAddressLabel": "Adresse",
+        "HostAddress": "222-224 Boulevard Gustave Flaubert, 63000 Clermont-Ferrand, France",
+        "HostWebsiteLabel": "Site web",
+        "HostTypeLabel": "Type d'hébergement",
+        "HostType": "Mutualisé, serveur en France (Union européenne)."
+      },
+      "Section3": {
+        "Title": "3. Directeur de la publication",
+        "Content": "Gregory Van den Bergh, éditeur du site (voir §1)."
+      },
+      "Section4": {
+        "Title": "4. Nature du site",
+        "Content": "L'Office des Coffres est un outil communautaire non officiel destiné aux joueurs et joueuses du jeu Renaissance Kingdoms (MMORPG médiéval édité par Celsius Online). Le site n'est ni affilié ni endossé par Celsius Online. Il est développé bénévolement et proposé gratuitement, sans finalité commerciale, publicitaire ou lucrative."
+      },
+      "Section5": {
+        "Title": "5. Propriété intellectuelle",
+        "Content": "Le code source du site est open source (voir dépôts GitHub {frontendRepoLink} et {backendRepoLink}). Les marques, dénominations, illustrations et références au jeu Renaissance Kingdoms sont la propriété de Celsius Online — leur usage sur ce site relève d'un but purement communautaire et informationnel, sans revendication de droits."
+      },
+      "Section6": {
+        "Title": "6. Données personnelles et cookies",
+        "Intro": "Le traitement des données personnelles et l'usage du stockage local (cookies techniques, localStorage) sont détaillés dans des documents dédiés :"
+      },
+      "Section7": {
+        "Title": "7. Contact",
+        "Content": "Pour toute question relative à ces mentions légales ou au site en général : {email}"
       },
       "LastUpdated": "Dernière modification : {date}"
     }

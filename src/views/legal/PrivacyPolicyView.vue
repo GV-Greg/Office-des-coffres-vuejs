@@ -1,10 +1,15 @@
 <script setup>
   import { computed } from 'vue'
-  import { RouterLink } from 'vue-router'
+  import { RouterLink, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import SelectorMenu from '@/components/SelectorMenu.vue'
+  import { goBackOrWelcome } from '@/modules/goBackOrWelcome'
 
-  const { t, tm, locale } = useI18n()
+  const { t, tm, rt, locale } = useI18n()
+  const router = useRouter()
+
+  // Obfuscation `[at]` uniquement nécessaire dans le JSON source (voir project_vue_i18n_at_symbol_bug).
+  const contactEmail = computed(() => t('Legal.Common.Contact.Email').replace('[at]', '@'))
 
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
   // à chaque modification substantielle (voir Legal.Privacy.Section10 / draft
@@ -30,12 +35,13 @@
 
     <div class="flex flex-col items-center px-4 pt-16 tablet:pt-24 pb-16">
       <div class="max-w-3xl w-full space-y-6">
-        <RouterLink
-          :to="{ name: 'welcome' }"
+        <button
+          type="button"
           class="inline-block text-slate-300 hover:text-white dark:text-slate-400 dark:hover:text-slate-100 text-sm"
+          @click="goBackOrWelcome(router)"
         >
           &larr; {{ t('Common.SiteName') }}
-        </RouterLink>
+        </button>
 
         <h1>{{ t('Legal.Privacy.PageTitle') }}</h1>
 
@@ -65,7 +71,10 @@
             <ul class="list-none space-y-1">
               <li><strong>{{ t('Legal.Common.Contact.NameLabel') }}</strong> : {{ t('Legal.Common.Contact.Name') }}</li>
               <li><strong>{{ t('Legal.Common.Contact.AddressLabel') }}</strong> : {{ t('Legal.Common.Contact.Address') }}</li>
-              <li><strong>{{ t('Legal.Common.Contact.EmailLabel') }}</strong> : {{ t('Legal.Common.Contact.Email') }}</li>
+              <li>
+                <strong>{{ t('Legal.Common.Contact.EmailLabel') }}</strong> :
+                <a :href="`mailto:${contactEmail}`" class="underline text-blue-600 dark:text-blue-400">{{ contactEmail }}</a>
+              </li>
             </ul>
           </section>
 
@@ -76,14 +85,14 @@
             <p class="mt-4">{{ t('Legal.Privacy.Section3.AccountFieldsIntro') }}</p>
             <ul class="list-disc list-inside space-y-1">
               <li v-for="(field, index) in accountFields" :key="`account-${index}`">
-                <strong>{{ field.Label }}</strong> — {{ field.Text }}
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
               </li>
             </ul>
 
             <p class="mt-4">{{ t('Legal.Privacy.Section3.CharacterFieldsIntro') }}</p>
             <ul class="list-disc list-inside space-y-1">
               <li v-for="(field, index) in characterFields" :key="`character-${index}`">
-                <strong>{{ field.Label }}</strong> — {{ field.Text }}
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
               </li>
             </ul>
           </section>
@@ -105,9 +114,9 @@
                     :key="index"
                     class="border-b border-slate-100 dark:border-slate-700"
                   >
-                    <td class="py-2 pr-4">{{ row.Data }}</td>
-                    <td class="py-2 pr-4">{{ row.Purpose }}</td>
-                    <td class="py-2">{{ row.LegalBasis }}</td>
+                    <td class="py-2 pr-4">{{ rt(row.Data) }}</td>
+                    <td class="py-2 pr-4">{{ rt(row.Purpose) }}</td>
+                    <td class="py-2">{{ rt(row.LegalBasis) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -140,7 +149,7 @@
             <p>{{ t('Legal.Privacy.Section7.Intro') }}</p>
             <ul class="list-disc list-inside space-y-1 mt-2">
               <li v-for="(right, index) in rights" :key="index">
-                <strong>{{ right.Label }}</strong> — {{ right.Text }}
+                <strong>{{ rt(right.Label) }}</strong> — {{ rt(right.Text) }}
               </li>
               <li>
                 <i18n-t keypath="Legal.Privacy.Section7.Complaint" scope="global">
@@ -157,7 +166,9 @@
             </ul>
             <p class="mt-4">
               <i18n-t keypath="Legal.Privacy.Section7.HowToExercise" scope="global">
-                <template #email>{{ t('Legal.Common.Contact.Email') }}</template>
+                <template #email>
+                  <a :href="`mailto:${contactEmail}`" class="underline text-blue-600 dark:text-blue-400">{{ contactEmail }}</a>
+                </template>
               </i18n-t>
             </p>
           </section>
@@ -166,7 +177,7 @@
             <h3>{{ t('Legal.Privacy.Section8.Title') }}</h3>
             <p>{{ t('Legal.Privacy.Section8.Intro') }}</p>
             <ul class="list-disc list-inside space-y-1 mt-2">
-              <li v-for="(measure, index) in measures" :key="index">{{ measure }}</li>
+              <li v-for="(measure, index) in measures" :key="index">{{ rt(measure) }}</li>
             </ul>
             <p class="mt-4">{{ t('Legal.Privacy.Section8.BreachNotice') }}</p>
           </section>
@@ -195,7 +206,9 @@
             <h3>{{ t('Legal.Privacy.Section11.Title') }}</h3>
             <p>
               <i18n-t keypath="Legal.Privacy.Section11.Content" scope="global">
-                <template #email>{{ t('Legal.Common.Contact.Email') }}</template>
+                <template #email>
+                  <a :href="`mailto:${contactEmail}`" class="underline text-blue-600 dark:text-blue-400">{{ contactEmail }}</a>
+                </template>
               </i18n-t>
             </p>
           </section>

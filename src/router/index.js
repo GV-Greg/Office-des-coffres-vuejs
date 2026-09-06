@@ -56,23 +56,27 @@ const router = createRouter({
       path: '/',
       name: 'welcome',
       component: WelcomeView,
+      meta: { public: true },
     },
     {
       path: '/login',
       name: 'login',
       component: LoginView,
       beforeEnter: redirectToHomeIfLoggedIn,
+      meta: { public: true },
     },
     {
       path: '/register',
       name: 'register',
       component: RegisterView,
       beforeEnter: redirectToHomeIfLoggedIn,
+      meta: { public: true },
     },
     {
       path: '/verify-email',
       name: 'verify-email',
       component: VerifyEmailView,
+      meta: { public: true },
     },
     {
       path: '/legal/cookies',
@@ -84,6 +88,12 @@ const router = createRouter({
       path: '/legal/privacy',
       name: 'legal-privacy',
       component: () => import('@/views/legal/PrivacyPolicyView.vue'),
+      meta: { public: true },
+    },
+    {
+      path: '/legal/mentions',
+      name: 'legal-mentions',
+      component: () => import('@/views/legal/MentionsLegalesView.vue'),
       meta: { public: true },
     },
     {

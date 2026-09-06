@@ -87,6 +87,17 @@
             </div>
           </div>
         </div>
+
+        <p v-if="!registered" class="text-sm text-slate-700 dark:text-slate-300 text-center mt-4">
+          <i18n-t keypath="Register.Modules.Intro" scope="global">
+            <template #privacyLink>
+              <RouterLink
+                :to="{ name: 'legal-privacy' }"
+                class="italic underline hover:text-slate-900 dark:hover:text-slate-100"
+              >{{ t('Legal.Cookies.PrivacyPolicyLink') }}</RouterLink>
+            </template>
+          </i18n-t>
+        </p>
       </div>
     </div>
   </div>
