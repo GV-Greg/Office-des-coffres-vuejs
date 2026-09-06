@@ -30,13 +30,13 @@ export function bundleBudgetPlugin() {
         }
       }
 
-      const jsFailures = evaluateJsBudgets(jsFiles)
+      const { failures: jsFailures, warnings: jsWarnings } = evaluateJsBudgets(jsFiles)
       const { failures: cssFailures, warnings: cssWarnings } = evaluateCssBudget({
         rawSize: cssRawSize,
         brotliSize: cssBrotliSize,
       })
 
-      for (const warning of cssWarnings) {
+      for (const warning of [...jsWarnings, ...cssWarnings]) {
         console.warn(`⚠️  Budget bundle (avertissement) : ${warning}`)
       }
 

@@ -5,23 +5,25 @@ import { evaluateJsBudgets, evaluateCssBudget, BUNDLE_BUDGETS, CSS_BUDGET } from
 
 describe('evaluateJsBudgets', () => {
   it('ne remonte rien pour des fichiers sous les deux budgets', () => {
-    const failures = evaluateJsBudgets([
+    const { failures, warnings } = evaluateJsBudgets([
       { fileName: 'assets/index-abc123.js', rawSize: 250 * 1024, brotliSize: 90 * 1024 },
       { fileName: 'assets/vue-vendor-abc123.js', rawSize: 140 * 1024, brotliSize: 45 * 1024 },
     ])
     expect(failures).toEqual([])
+    expect(warnings).toEqual([])
   })
 
-  it('remonte un échec si le poids brut dépasse le budget', () => {
-    const failures = evaluateJsBudgets([
+  it('avertit (sans échouer) si le poids brut dépasse le budget mais le brotli reste sous budget', () => {
+    const { failures, warnings } = evaluateJsBudgets([
       { fileName: 'assets/index-abc123.js', rawSize: 350 * 1024, brotliSize: 90 * 1024 },
     ])
-    expect(failures).toHaveLength(1)
-    expect(failures[0]).toContain('bundle principal')
+    expect(failures).toEqual([])
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0]).toContain('bundle principal')
   })
 
   it('remonte un échec si le poids brotli dépasse le budget, même si le brut passe', () => {
-    const failures = evaluateJsBudgets([
+    const { failures } = evaluateJsBudgets([
       { fileName: 'assets/vue-vendor-abc123.js', rawSize: 100 * 1024, brotliSize: 60 * 1024 },
     ])
     expect(failures).toHaveLength(1)
@@ -29,10 +31,11 @@ describe('evaluateJsBudgets', () => {
   })
 
   it('ignore les fichiers qui ne matchent aucun budget suivi', () => {
-    const failures = evaluateJsBudgets([
+    const { failures, warnings } = evaluateJsBudgets([
       { fileName: 'assets/EconomyMines-abc123.js', rawSize: 999 * 1024, brotliSize: 999 * 1024 },
     ])
     expect(failures).toEqual([])
+    expect(warnings).toEqual([])
   })
 
   it('les budgets couvrent bien main et vue-vendor', () => {
