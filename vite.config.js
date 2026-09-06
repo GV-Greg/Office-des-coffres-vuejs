@@ -4,6 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite"
 import Unimport from 'unimport/unplugin'
+import { bundleBudgetPlugin } from './scripts/vite-bundle-budget.mjs'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -29,7 +30,8 @@ export default defineConfig(({ mode }) => {
         transformIndexHtml(html) {
           return html.replace('__API_ORIGIN__', apiOrigin)
         }
-      }
+      },
+      bundleBudgetPlugin()
     ],
     resolve: {
       alias: {
