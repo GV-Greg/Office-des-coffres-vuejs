@@ -64,6 +64,7 @@ VITE_API_ENDPOINT_PROD=
 | Vérification email | `/verify-email` | Fonctionnel — connexion auto après clic sur le lien reçu |
 | Créer un personnage | `/app/character/new` | Fonctionnel — sélecteur royaume→province→ville en cascade |
 | Profil | `/app/profil` | Fonctionnel — liste des personnages du compte, statut individuel, choix du personnage actif, FR/EN |
+| Pages légales | `/legal/cookies`, `/legal/privacy`, `/legal/mentions` | Fonctionnel — politique cookies, politique de confidentialité, mentions légales (RGPD + APD belge). Liens accessibles via `AppFooter` (bas de page, toutes routes sauf Welcome qui a son propre footer fusionné) |
 
 Un compte s'inscrit désormais avec seulement email + mot de passe ; la création de personnage
 (pseudo + ville) se fait ensuite via `/app/character/new`, un compte pouvant avoir plusieurs
