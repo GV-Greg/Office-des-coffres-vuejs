@@ -128,6 +128,12 @@ describe('CookiesPolicyView', () => {
     expect(wrapper.text()).toContain('[À REMPLIR PAR GREG : email]')
   })
 
+  it('enveloppe l\'email de contact dans un vrai lien mailto', () => {
+    const wrapper = mountView()
+    const link = wrapper.find('a[href="mailto:[À REMPLIR PAR GREG : email]"]')
+    expect(link.exists()).toBe(true)
+  })
+
   it('rend les 5 items de la section "Ce que nous ne faisons pas"', () => {
     const wrapper = mountView()
     expect(wrapper.text()).toContain('Item un')

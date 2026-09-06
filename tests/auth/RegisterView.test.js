@@ -26,8 +26,10 @@ const i18n = createI18n({
       Register: {
         BackLink: 'Retour',
         Heading: 'Créez votre compte',
-        SubmitButton: "S'enregistrer"
+        SubmitButton: "S'enregistrer",
+        Modules: { Intro: 'En créant un compte gratuit, vous débloquez des outils privés — voir {privacyLink}.' }
       },
+      Legal: { Cookies: { PrivacyPolicyLink: 'Politique de confidentialité' } },
       Auth: {
         EmailPlaceholder: 'Entrez votre email',
         PasswordPlaceholder: 'Entrez votre mot de passe',
@@ -47,11 +49,18 @@ const i18n = createI18n({
   }
 })
 
+// Stub maison plutôt que `RouterLink: true` : ce dernier n'expose pas le contenu du slot
+// par défaut, ce qui masquerait le texte des liens (BackLink, pitch #11) dans les assertions.
+const RouterLinkStub = {
+  props: ['to'],
+  template: '<a :href="typeof to === \'string\' ? to : JSON.stringify(to)"><slot /></a>',
+}
+
 function mountRegister() {
   return mount(RegisterView, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn }), i18n],
-      stubs: { RouterLink: true, SelectorMenu: true }
+      stubs: { RouterLink: RouterLinkStub, SelectorMenu: true }
     }
   })
 }
@@ -66,6 +75,26 @@ describe('RegisterView', () => {
     const wrapper = mountRegister()
     expect(wrapper.find('input[name="email"]').exists()).toBe(true)
     expect(wrapper.find('input[name="username"]').exists()).toBe(false)
+  })
+
+  it('affiche le pitch généraliste des modules débloqués par un compte (Cookies #11)', () => {
+    const wrapper = mountRegister()
+    expect(wrapper.text()).toContain('En créant un compte gratuit, vous débloquez des outils privés')
+    expect(wrapper.text()).toContain('Politique de confidentialité')
+  })
+
+  it('masque le pitch une fois l\'inscription réussie (écran "vérifiez votre email")', async () => {
+    const wrapper = mountRegister()
+    const authStore = useAuthStore()
+    authStore.register.mockResolvedValueOnce({ success: true })
+
+    await wrapper.find('input[name="email"]').setValue('artifice@test.com')
+    await wrapper.find('input[name="password"]').setValue('password123')
+    await wrapper.find('input[name="confirmation"]').setValue('password123')
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.text()).not.toContain('En créant un compte gratuit')
   })
 
   it('affiche un écran "vérifiez votre email" après inscription réussie', async () => {

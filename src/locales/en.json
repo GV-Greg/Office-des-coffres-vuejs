@@ -43,6 +43,9 @@
       "French": "French",
       "English": "English"
     },
+    "Footer": {
+      "UnofficialTool": "Unofficial tool"
+    },
     "HelpModal": {
       "Purpose": "Purpose",
       "Overview": "How it works",
@@ -77,6 +80,9 @@
   "Welcome": {
     "ClickHint": "click",
     "Intro": "Welcome to the Office des coffres, offering chests to support you with your city's and province's security, economy or animation.",
+    "Access": {
+      "Text": "You may cross the threshold of the Office without giving your name — most tools stand open to you. Registering at the reception will unlock the best-guarded coffers and your own registries."
+    },
     "Disclaimer": "Unofficial help site for the {link} community.",
     "Copyright": "© {years} Office des coffres. All rights reserved."
   },
@@ -121,7 +127,10 @@
     "Heading": "Create your account",
     "SubmitButton": "Sign up",
     "CheckEmailTitle": "Check your inbox",
-    "CheckEmailMessage": "A confirmation email was just sent to you.\nClick the link inside it to activate your account."
+    "CheckEmailMessage": "A confirmation email was just sent to you.\nClick the link inside it to activate your account.",
+    "Modules": {
+      "Intro": "By creating a free account, you can manage your characters, keep your own registries, and access additional private tools. No advertising cookies, no tracking, no third-party sharing — see {privacyLink}."
+    }
   },
   "VerifyEmail": {
     "Verifying": "Verifying...",
@@ -318,7 +327,7 @@
       },
       "Section9": {
         "Title": "9. Contact",
-        "Content": "For any question related to this policy or the exercise of your rights, contact: contact-odc[at]creacube.be"
+        "Content": "For any question related to this policy or the exercise of your rights, contact: {emailLink}"
       },
       "LastUpdated": "Last updated: {date}"
     },
@@ -414,6 +423,46 @@
       "Section11": {
         "Title": "11. Contact",
         "Content": "For any question related to this policy or the exercise of your rights: {email}"
+      },
+      "LastUpdated": "Last updated: {date}"
+    },
+    "Mentions": {
+      "PageTitle": "Legal Notice",
+      "Preamble": "In accordance with Belgian and European legal obligations applicable to websites edited from Belgium, this page gathers the identification of the site editor, its host, and contact details.",
+      "Section1": {
+        "Title": "1. Site editor",
+        "StatusLabel": "Status",
+        "Status": "Non-commercial publication, volunteer-run community site."
+      },
+      "Section2": {
+        "Title": "2. Site host",
+        "HostNameLabel": "Name",
+        "HostName": "o2switch",
+        "HostAddressLabel": "Address",
+        "HostAddress": "222-224 Boulevard Gustave Flaubert, 63000 Clermont-Ferrand, France",
+        "HostWebsiteLabel": "Website",
+        "HostTypeLabel": "Hosting type",
+        "HostType": "Shared, server in France (European Union)."
+      },
+      "Section3": {
+        "Title": "3. Publication director",
+        "Content": "Gregory Van den Bergh, site editor (see §1)."
+      },
+      "Section4": {
+        "Title": "4. Nature of the site",
+        "Content": "Office des Coffres is a non-official community tool for players of the game Renaissance Kingdoms (medieval MMORPG published by Celsius Online). The site is neither affiliated with nor endorsed by Celsius Online. It is developed voluntarily and offered free of charge, with no commercial, advertising, or profit-making purpose."
+      },
+      "Section5": {
+        "Title": "5. Intellectual property",
+        "Content": "The site's source code is open source (see GitHub repositories {frontendRepoLink} and {backendRepoLink}). Trademarks, names, illustrations and references to Renaissance Kingdoms are the property of Celsius Online — their use on this site is for purely community and informational purposes, with no claim of rights."
+      },
+      "Section6": {
+        "Title": "6. Personal data and cookies",
+        "Intro": "The processing of personal data and the use of local storage (technical cookies, localStorage) are detailed in dedicated documents:"
+      },
+      "Section7": {
+        "Title": "7. Contact",
+        "Content": "For any question related to this legal notice or the site in general: {email}"
       },
       "LastUpdated": "Last updated: {date}"
     }

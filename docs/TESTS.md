@@ -18,8 +18,8 @@ réservée à la fin d'une tâche cohérente ou juste avant un push.
 | Cookies | `tests/cookies/` | `npm run test:cookies` | `cookieStore`, `CookiesBanner`, `CookiesModal` |
 | Économie | `tests/eco/` | `npm run test:eco` | `mineParser` (logique pure), `EconomyMines` |
 | Sécurité | `tests/security/` | `npm run test:security` | `SecurityGuet` |
-| Commun | `tests/common/` | `npm run test:common` | `NavBar`, `NavMenu`, `HomeView`, `HelpModal`, `Validators`, `kingdomTranslations`, `whatsNewAnnounce`, `gameCalendar` (transverse — utilisé par Économie et à terme le Guet/la Douane, pas propre à un domaine) |
-| Légal | `tests/legal/` | `npm run test:legal` | `CookiesPolicyView`/`PrivacyPolicyView`, routes `/legal/cookies` et `/legal/privacy` |
+| Commun | `tests/common/` | `npm run test:common` | `NavBar`, `NavMenu`, `HomeView`, `WelcomeView` (footer fusionné), `App` (footer légal conditionnel), `goBackOrWelcome`, `HelpModal`, `Validators`, `kingdomTranslations`, `whatsNewAnnounce`, `gameCalendar`, `checkBundleBudget` (transverse — utilisé par Économie et à terme le Guet/la Douane, pas propre à un domaine) |
+| Légal | `tests/legal/` | `npm run test:legal` | `CookiesPolicyView`/`PrivacyPolicyView`/`MentionsLegalesView`, routes `/legal/cookies`, `/legal/privacy` et `/legal/mentions` |
 | Enforcement | `tests/enforcement/` | `npm run test:enforcement` | `storage-usage` (logique pure) — garde-fou admin/strategies/cookies.md §9 : `localStorage`/`sessionStorage`/`document.cookie` interdits hors `cookieStore.js` (whitelist `authStore.js`) |
 | — | `tests/fixtures/` | — | Données réelles anonymisées, partagées entre domaines |
 

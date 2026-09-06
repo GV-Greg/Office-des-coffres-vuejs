@@ -156,6 +156,12 @@ describe('PrivacyPolicyView', () => {
     expect(wrapper.text()).toContain('[À REMPLIR PAR GREG : email]')
   })
 
+  it('enveloppe l\'email de contact dans un vrai lien mailto (au moins une occurrence)', () => {
+    const wrapper = mountView()
+    const links = wrapper.findAll('a[href="mailto:[À REMPLIR PAR GREG : email]"]')
+    expect(links.length).toBeGreaterThan(0)
+  })
+
   it('garde les placeholders spécifiques à la politique de confidentialité (durée, hébergeur)', () => {
     const wrapper = mountView()
     expect(wrapper.text()).toContain('[À REMPLIR PAR GREG : durée]')
