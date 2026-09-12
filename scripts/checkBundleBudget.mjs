@@ -6,11 +6,16 @@ export const BUNDLE_BUDGETS = [
   { id: 'vue-vendor', pattern: /^assets\/vue-vendor-.*\.js$/, label: 'vue-vendor', rawMaxBytes: 150 * 1024, brotliMaxBytes: 50 * 1024 },
 ]
 
-// CSS : le budget "brut" (500 Ko) est déjà dépassé par une dette connue et distincte (Performance
-// #4, audit Tailwind non fait) — seul le brotli (ce qui est réellement transféré, LiteSpeed
-// compresse nativement en brotli, voir Performance #1/#3) bloque le build ici. Le brut reste un
-// avertissement, à resserrer en erreur une fois #4 livré.
-export const CSS_BUDGET = { label: 'CSS total', rawMaxBytes: 500 * 1024, brotliMaxBytes: 80 * 1024 }
+// CSS : seuils resserrés après Performance #4 (nettoyage du safelist Tailwind) — le CSS est passé
+// de 771,9 Ko brut / 48,8 Ko brotli à 57,8 / 8,5. Les anciens seuils (500 Ko brut / 80 Ko brotli)
+// ne protégeaient plus rien : le safelist massif pouvait revenir sans déclencher la moindre
+// alerte. Les nouveaux laissent environ 2,5× la taille actuelle pour la croissance normale
+// (nouvelles vues, nouveaux composants), tout en attrapant immédiatement un retour du safelist
+// générique, qui ferait bondir le fichier d'un ordre de grandeur.
+// Régime inchangé et aligné sur celui du JS (PR #37) : le brotli — ce qui est réellement
+// transféré, LiteSpeed compressant nativement, voir Performance #1/#3 — bloque le build ; le brut
+// avertit seulement.
+export const CSS_BUDGET = { label: 'CSS total', rawMaxBytes: 150 * 1024, brotliMaxBytes: 25 * 1024 }
 
 export function formatKo(bytes) {
   return `${(bytes / 1024).toFixed(1)} Ko`

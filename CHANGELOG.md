@@ -6,6 +6,28 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-13] — PR #43
+
+### Changed
+- **CSS réduit de 92 %** (Performance #4) : **771,9 Ko brut / 48,8 Ko brotli → 57,8 Ko / 8,5 Ko**.
+  Le safelist de `tailwind.config.js` générait 782 classes de base (`text|bg|border|ring|
+  ring-offset` × 18 couleurs × 9 nuances), démultipliées par les variantes `hover`/`focus`/`dark`/
+  `tablet`/`laptop`/`desktop` — soit des milliers de règles dont une poignée servait. Il ne couvre
+  plus que les classes réellement **construites dynamiquement**, c'est-à-dire la seule source du
+  projet : `NavMenu.vue` et ses 5 couleurs de menu (`text-{blue|yellow|rose|teal|slate}-100`).
+- Budget bundle CSS resserré en conséquence : 500 Ko brut / 80 Ko brotli → **150 Ko / 25 Ko**.
+  Les anciens seuils ne protégeaient plus de rien ; les nouveaux laissent ~2,5× la taille actuelle
+  pour la croissance normale et attrapent immédiatement un retour du safelist générique.
+
+### Removed
+- Dépendance `@ipaat/vue3-tailwind3-cookie-comply` : enregistrée globalement dans `main.js` mais
+  **utilisée dans aucun template** depuis la réécriture maison du consentement (PR #20). Elle
+  était embarquée dans le bundle principal (**-9,5 Ko brut**) et son `dist` était scanné par
+  Tailwind (**-9 Ko de CSS**). La clé de migration `'cookie-comply'` du `cookieStore` n'a rien à
+  voir et reste en place.
+- Pattern `btn-*` du safelist : Tailwind signalait lui-même qu'il ne correspondait à aucune de ses
+  classes — les `.btn-*` sont définies dans `assets/style.css`, donc déjà vues comme du contenu.
+
 ## [2026-09-06] — PR #40
 
 ### Changed

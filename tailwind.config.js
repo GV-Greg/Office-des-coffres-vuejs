@@ -5,20 +5,20 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
-    './node_modules/@ipaat/vue3-tailwind3-cookie-comply/dist/vue3-tailwind3-cookie-comply.umd.js',
   ],
   darkMode: 'class',
+  // Safelist réduit au strict nécessaire : Tailwind détecte seul toute classe écrite
+  // littéralement dans les fichiers de `content`. Seules les classes **construites
+  // dynamiquement** lui échappent, et il n'y en a qu'une source dans tout le projet :
+  // `NavMenu.vue` (`:class="`text-${page.color}-100`"`, menu circulaire) avec les 5 couleurs
+  // déclarées dans son tableau `pages`. Les classes `btn-*` du même composant n'ont pas besoin
+  // d'y figurer : elles sont définies en dur dans `assets/style.css` (@apply), donc vues comme
+  // du contenu source.
+  // ⚠️ Ajouter une entrée de menu avec une nouvelle couleur impose d'ajouter cette couleur ici,
+  // sinon l'icône sort sans sa teinte.
   safelist: [
     {
-      pattern:
-        /(text|bg|border)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
-    },
-    {
-      pattern:
-        /(ring|ring-offset)-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)-(100|200|300|400|500|600|700|800|900)/,
-    },
-    {
-      pattern: /btn-(black|white|slate|gray|red|orange|yellow|lime|green|teal|cyan|sky|blue|indigo|violet|fuchsia|rose)/,
+      pattern: /text-(blue|yellow|rose|teal|slate)-100/,
     },
   ],
   theme: {

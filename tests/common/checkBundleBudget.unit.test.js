@@ -45,26 +45,34 @@ describe('evaluateJsBudgets', () => {
 
 describe('evaluateCssBudget', () => {
   it('aucun échec ni avertissement sous les deux budgets', () => {
-    const { failures, warnings } = evaluateCssBudget({ rawSize: 400 * 1024, brotliSize: 70 * 1024 })
+    const { failures, warnings } = evaluateCssBudget({ rawSize: 60 * 1024, brotliSize: 9 * 1024 })
     expect(failures).toEqual([])
     expect(warnings).toEqual([])
   })
 
   it('avertit (sans échouer) si le brut dépasse mais le brotli reste sous budget', () => {
-    const { failures, warnings } = evaluateCssBudget({ rawSize: 770 * 1024, brotliSize: 49 * 1024 })
+    const { failures, warnings } = evaluateCssBudget({ rawSize: 200 * 1024, brotliSize: 20 * 1024 })
     expect(failures).toEqual([])
     expect(warnings).toHaveLength(1)
     expect(warnings[0]).toContain('performance.md #4')
   })
 
   it('échoue si le brotli dépasse le budget, quel que soit le brut', () => {
-    const { failures } = evaluateCssBudget({ rawSize: 100 * 1024, brotliSize: 90 * 1024 })
+    const { failures } = evaluateCssBudget({ rawSize: 100 * 1024, brotliSize: 30 * 1024 })
+    expect(failures).toHaveLength(1)
+    expect(failures[0]).toContain('CSS total')
+  })
+
+  // Garde-fou de non-régression du nettoyage Tailwind (Performance #4) : un safelist générique
+  // qui reviendrait ferait repasser le CSS bien au-dessus de ces seuils.
+  it('attrape un retour du safelist générique (ordre de grandeur pré-#4)', () => {
+    const { failures } = evaluateCssBudget({ rawSize: 770 * 1024, brotliSize: 49 * 1024 })
     expect(failures).toHaveLength(1)
     expect(failures[0]).toContain('CSS total')
   })
 
   it('reflète les seuils documentés dans admin/suivi/performance.md #8', () => {
-    expect(CSS_BUDGET.rawMaxBytes).toBe(500 * 1024)
-    expect(CSS_BUDGET.brotliMaxBytes).toBe(80 * 1024)
+    expect(CSS_BUDGET.rawMaxBytes).toBe(150 * 1024)
+    expect(CSS_BUDGET.brotliMaxBytes).toBe(25 * 1024)
   })
 })
