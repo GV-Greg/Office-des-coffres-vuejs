@@ -3,8 +3,102 @@
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Une entrée par PR
 mergée sur `main` (ou merge direct pour les deux entrées antérieures aux PR GitHub). Pas de
 versionnage sémantique — chaque merge sur `main` déclenche un déploiement, la date de merge fait
-foi. L'historique détaillé (raisonnement, incidents, décisions) reste dans `roadmap.md` à la
-racine du workspace ; ce fichier n'en retient que le résumé daté.
+foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
+`admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
+
+## [2026-09-06] — PR #40
+
+### Changed
+- Tableau des modules du README complété avec les pages légales (`/legal/cookies`,
+  `/legal/privacy`, `/legal/mentions`).
+
+## [2026-09-06] — PR #39
+
+### Fixed
+- Références juridiques françaises remplacées par les belges (CNIL → APD, Autorité de Protection
+  des Données) dans les politiques cookies et confidentialité — le site est édité depuis la
+  Belgique.
+
+## [2026-09-06] — PR #38
+
+### Added
+- Page `/legal/mentions` (mentions légales) et footer légal unique réutilisé sur toutes les pages,
+  hors du cadre de contenu `/app/*`.
+- Phrase de double périmètre (outil public / fonctions membres) sur `WelcomeView`, pitch des
+  modules débloqués par un compte sur `RegisterView`.
+
+### Fixed
+- Listes i18n de `CookiesPolicyView`/`PrivacyPolicyView` qui affichaient du code compilé au lieu
+  du texte (`tm()` sans `rt()`, présent depuis la PR #27).
+- Email de contact non cliquable dans les pages légales (mailto + `@` réel).
+
+## [2026-09-06] — PR #37
+
+### Fixed
+- Budget bundle JS : seul le brotli bloque le build, le brut se contente d'avertir — par cohérence
+  avec le budget CSS, et parce que c'est le brotli que sert réellement LiteSpeed.
+
+## [2026-09-06] — PR #36
+
+### Changed
+- Décompte de tests du README resynchronisé avec la suite réelle.
+
+## [2026-09-06] — PR #35
+
+### Fixed
+- Bannière de cookies qui réapparaissait à tort après « Annuler » dans la modale de préférences
+  alors qu'un choix avait déjà été fait.
+
+### Added
+- Toast de confirmation à l'enregistrement des préférences de cookies.
+
+## [2026-09-06] — PR #34
+
+### Added
+- Budget bundle en plugin Vite (`scripts/vite-bundle-budget.mjs`, hook `writeBundle`, brotli
+  calculé en mémoire) : le build échoue au-delà des seuils. Logique d'évaluation isolée et testée
+  dans `scripts/checkBundleBudget.mjs`.
+
+## [2026-09-06] — PR #31
+
+### Removed
+- `meta: { layout: "loggedIn" }` sur la route `welcome` — métadonnée jamais lue nulle part.
+
+## [2026-09-06] — PR #30
+
+### Changed
+- Icône de l'écran de chargement : effet de bounce (trajectoire asymétrique gravité-like + squash/
+  stretch) au lieu de la pulsation douce, jugée trop discrète.
+
+## [2026-09-06] — PR #27
+
+### Added
+- Routes `/legal/cookies` et `/legal/privacy` — politique cookies et politique de confidentialité,
+  FR + EN, clés partagées `Legal.Common.Contact.*`.
+
+## [2026-08-12] — PR #33
+
+### Fixed
+- Smoke test des headers de cache : retry 6×5 s et `curl -sS` au lieu d'un `sleep 5` fixe avec
+  erreurs avalées — un faux négatif au premier run réel avait déclenché une fausse alerte Discord
+  d'échec de déploiement.
+
+## [2026-08-12] — PR #32
+
+### Added
+- Vérification automatisée des headers de cache après déploiement (`deploy.yml`) : redécouvre
+  l'asset JS hashé depuis l'`index.html` déployé, vérifie `immutable` sur l'asset et `no-cache`
+  sur `index.html`.
+
+## [2026-08-12] — PR #29
+
+### Added
+- Écran de chargement plein écran pendant la navigation (`LoadingOverlay.vue`,
+  `use/useNavigationLoading.js`, hooks router, délai anti-flash 150 ms, `prefers-reduced-motion`) —
+  icône et texte selon le contexte : pavillon pour la navigation générale, coffre pour les modules
+  « Coffres X ».
+- `public/.htaccess` : fallback SPA (`mod_rewrite`), `Cache-Control: public, max-age=31536000,
+  immutable` sur `/assets/*.js|css`, `no-cache` sur `index.html`.
 
 ## [2026-08-10] — PR #26
 
