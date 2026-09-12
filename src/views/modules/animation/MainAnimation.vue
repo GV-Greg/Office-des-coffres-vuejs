@@ -7,7 +7,7 @@
 
 <template>
   <main>
-    <div class="w-full flex flex-cols-2 flex-grow mb-2">
+    <div class="w-full flex flex-grow mb-2">
       <div class="w-1/6 flex flex-col justify-start text-teal-600">
         <h3 class="text-center">{{ t('Animation.Title') }}</h3>
         <v-icon name="gi-chest" scale="2" class="mr-1"/>

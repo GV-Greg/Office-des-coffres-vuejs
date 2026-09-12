@@ -6,6 +6,29 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-13] — PR #44
+
+### Fixed
+- 12 classes qui ne produisaient **aucun CSS**, donc invisibles à l'écran depuis leur écriture :
+  - `purple` (absent de `theme.colors`) → `violet` dans `HomeView.vue` : le badge « Membres » et
+    le dégradé des entrées privées du **Registre des Réparations** n'avaient jamais leur couleur.
+  - `amber` → `orange` dans `EconomyMines.vue` (avertissement de semaine incomplète), `salmon`
+    (inexistant en Tailwind) → `rose` dans `MainSecurity.vue`, la couleur du module.
+  - `flex-cols-2` (n'existe pas) retiré des trois shells de module : les deux colonnes viennent
+    déjà des largeurs `w-1/6` / `w-5/6` des enfants.
+  - `w-12/12` (Tailwind s'arrête à `w-11/12`) → `w-full` dans `LoginView.vue` et
+    `AddCharacterView.vue`.
+  - `max-w-screen-lg` → `max-w-screen-laptop` dans `AppFooter.vue` et `CookiesBanner.vue` : les
+    breakpoints par défaut n'existent pas ici, `theme.screens` étant redéfini en
+    `tablet`/`laptop`/`desktop`. **Seul changement visuel réel de la série** — le contenu de ces
+    deux barres est désormais borné à 1024px et centré, comme le code le demandait.
+
+### Added
+- Garde-fou `tests/enforcement/tailwind-theme-usage.unit.test.js` : échoue si une classe utilise
+  une couleur absente de `theme.colors`, ou un breakpoint par défaut de Tailwind (`sm:`, `md:`,
+  `lg:`…) supprimé par `theme.screens`. Les deux familles de bugs ci-dessus deviennent visibles en
+  CI au lieu d'attendre un œil sur le rendu.
+
 ## [2026-09-13] — PR #43
 
 ### Changed

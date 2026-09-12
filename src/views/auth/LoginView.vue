@@ -81,14 +81,14 @@
     <div class="page-content grid grid-cols-3 gap-0 justify-items-center">
       <div class="col-start-2 col-span-1">
         <!-- Bouton d'entrée sans compte -->
-        <div class="w-12/12 mb-1 grid grid-cols-1 text-center text-white text-3xl font-black hover:text-gray-800 transform hover:translate-y-px hover:translate-x-px shadow-inner">
+        <div class="w-full mb-1 grid grid-cols-1 text-center text-white text-3xl font-black hover:text-gray-800 transform hover:translate-y-px hover:translate-x-px shadow-inner">
           <RouterLink to="/app/" class="px-4 pb-2.5 pt-1.5 font-bold bg-gradient-to-br from-red-600 to-orange-400 rounded-xl">
             {{ t('Login.EnterWithoutAccount') }}
           </RouterLink>
         </div>
 
         <!-- Formulaire de connexion -->
-        <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
+        <div class="w-full my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
           <div class="w-full mt-2 laptop:mt-5 px-7 overflow-y-auto">
             <h2 class="text-white dark:text-blue-800">{{ t('Login.Heading') }}</h2>
             <form class="mt-6" @submit.prevent="connect">

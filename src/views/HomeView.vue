@@ -83,7 +83,7 @@
             <li v-for="item in visibleFixes" :key="item.id" class="relative pl-6">
               <span
                 class="absolute -left-[0.95rem] top-0 flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-gray-200 dark:ring-gray-200"
-                :class="item.scope === 'private' ? 'bg-gradient-to-br from-purple-400 to-purple-600' : 'bg-gradient-to-br from-blue-400 to-blue-600'"
+                :class="item.scope === 'private' ? 'bg-gradient-to-br from-violet-400 to-violet-600' : 'bg-gradient-to-br from-blue-400 to-blue-600'"
               >
                 <v-icon name="gi-bugle-call" scale="0.65" class="text-white" />
               </span>
@@ -91,7 +91,7 @@
                 <time class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">{{ formatNewsDate(item.date) }}</time>
                 <span
                   v-if="item.scope === 'private'"
-                  class="text-[0.65rem] uppercase tracking-wide px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-100 dark:text-purple-700"
+                  class="text-[0.65rem] uppercase tracking-wide px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 dark:bg-violet-100 dark:text-violet-700"
                 >
                   {{ t('Home.NewsMembers') }}
                 </span>

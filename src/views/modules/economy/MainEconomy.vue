@@ -20,7 +20,7 @@
 
 <template>
   <main>
-    <div class="w-full flex flex-cols-2 flex-grow mb-2">
+    <div class="w-full flex flex-grow mb-2">
       <div class="w-1/6 flex flex-col justify-start text-yellow-600">
         <h3 class="text-center">{{ t('Economy.Title') }}</h3>
         <div class="inline-flex items-center gap-1.5">

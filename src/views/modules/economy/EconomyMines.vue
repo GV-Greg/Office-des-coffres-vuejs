@@ -296,7 +296,7 @@
       <button @click="generate" class="h-12 btn btn-grad-green">{{ t('EconomyMines.GenerateButton') }}</button>
     </div>
 
-    <div v-if="weekCheck && !weekCheck.complete" class="mt-2 text-sm text-amber-600 dark:text-amber-400">
+    <div v-if="weekCheck && !weekCheck.complete" class="mt-2 text-sm text-orange-600 dark:text-orange-400">
       {{ t('EconomyMines.WeekIncompleteWarning', { count: 7 - weekCheck.missingDates.length, monday: toGameDateIso(weekCheck.monday), sunday: toGameDateIso(weekCheck.sunday) }) }}
     </div>
 
