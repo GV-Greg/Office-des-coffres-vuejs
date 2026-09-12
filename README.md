@@ -58,7 +58,7 @@ VITE_API_ENDPOINT_PROD=
 |---|---|---|
 | Accueil | `/app/` | Fonctionnel — intègre la "Chronique de l'Office" (`whatsNew.json`), entrées publiques et privées (connecté) |
 | Sécurité — Guet | `/app/secu/guet` | Fonctionnel (liste "d'hier" pré-remplie via cookie comfort) |
-| Économie — Bilan des mines | `/app/eco/mines` (`/app/eco` redirige) | Fonctionnel — colle le texte "mines" du jeu, bilan hebdo ou mise en forme du jour, export BBcode, mémorisation "confort", aide contextuelle. ⚠️ Sélecteur de semaine à corriger : voir le bug bloquant « dates du jeu » dans `roadmap.md` |
+| Économie — Bilan des mines | `/app/eco/mines` (`/app/eco` redirige) | Fonctionnel — colle le texte "mines" du jeu, bilan hebdo ou mise en forme du jour, export BBcode, mémorisation "confort", aide contextuelle. |
 | Animation | `/app/anim` | En développement |
 | Compagnie | `/app/company` | En développement |
 | Vérification email | `/verify-email` | Fonctionnel — connexion auto après clic sur le lien reçu |
