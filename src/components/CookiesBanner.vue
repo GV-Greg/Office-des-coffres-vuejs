@@ -70,7 +70,7 @@ onMounted(() => {
 <template>
   <Transition name="slide-up">
     <div v-if="showBanner" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-300 dark:bg-slate-900 shadow-lg z-50">
-      <div class="max-w-screen-lg mx-auto">
+      <div class="max-w-screen-laptop mx-auto">
         <div class="flex flex-row items-center justify-between gap-4">
           <!-- Message (aligné à gauche) -->
           <div class="flex-grow text-slate-700 dark:text-slate-200 text-center">
