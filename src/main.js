@@ -8,7 +8,6 @@ import router from './router'
 import { createI18n } from 'vue-i18n'
 import messages from '@intlify/unplugin-vue-i18n/messages'
 import { createNotivue } from 'notivue'
-import VueCookieComply from '@ipaat/vue3-tailwind3-cookie-comply'
 
 // Importez le style de Notivue
 import 'notivue/notifications.css' // Style de base
@@ -113,7 +112,6 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(i18n)
-app.component('VueCookieComply', VueCookieComply)
 app.component('v-icon', OhVueIcon)
 
 app.use(notivue)
