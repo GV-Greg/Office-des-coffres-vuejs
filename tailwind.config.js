@@ -10,15 +10,24 @@ export default {
   // Safelist réduit au strict nécessaire : Tailwind détecte seul toute classe écrite
   // littéralement dans les fichiers de `content`. Seules les classes **construites
   // dynamiquement** lui échappent, et il n'y en a qu'une source dans tout le projet :
-  // `NavMenu.vue` (`:class="`text-${page.color}-100`"`, menu circulaire) avec les 5 couleurs
-  // déclarées dans son tableau `pages`. Les classes `btn-*` du même composant n'ont pas besoin
-  // d'y figurer : elles sont définies en dur dans `assets/style.css` (@apply), donc vues comme
-  // du contenu source.
-  // ⚠️ Ajouter une entrée de menu avec une nouvelle couleur impose d'ajouter cette couleur ici,
-  // sinon l'icône sort sans sa teinte.
+  // `NavMenu.vue` (menu circulaire), qui compose `btn-${page.color}` et
+  // `text-${page.color}-100` à partir des 5 couleurs de son tableau `pages`.
+  // ⚠️ Les deux patterns sont nécessaires, pour deux raisons différentes :
+  //   - `text-<couleur>-100` : utilitaire Tailwind, jamais écrit en toutes lettres.
+  //   - `btn-<couleur>` : classe composant définie dans `assets/style.css` (@apply). Être
+  //     définie dans le CSS source ne suffit PAS à la préserver — une règle d'un `@layer
+  //     components` est purgée si la classe n'est détectée nulle part dans `content`. Les
+  //     retirer d'ici fait disparaître les couleurs du menu circulaire (constaté en prod-build,
+  //     les 5 pastilles ressortent uniformément bleues). Le warning « doesn't match any Tailwind
+  //     CSS classes » que Tailwind émet sur ce pattern est trompeur : il parle de la génération
+  //     d'utilitaires, pas de la préservation des classes composant.
+  // ⚠️ Ajouter une entrée de menu d'une nouvelle couleur impose d'ajouter cette couleur ici.
   safelist: [
     {
       pattern: /text-(blue|yellow|rose|teal|slate)-100/,
+    },
+    {
+      pattern: /btn-(blue|yellow|rose|teal|slate)/,
     },
   ],
   theme: {
