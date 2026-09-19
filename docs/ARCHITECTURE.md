@@ -54,7 +54,10 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   `activeCharacter`/`defaultCharacter`.
   Actions : `register` (email+password uniquement, ne connecte pas — voir flux vérification email
   ci-dessous), `resendVerification`, `login` (par **email**, avec `remember_me`), `refreshAccessToken`,
-  `logout`, `checkAuth` (auto-appelée si token présent au démarrage du store), `createCharacter`,
+  `logout`, `deleteAccount` (DELETE `auth/account`, art. 17 RGPD : purge la session locale **et**
+  les comfort data liées au compte — `default_character_id` devenu une référence morte,
+  `last_login_email` une donnée personnelle ; ne touche ni au consentement cookies ni au thème),
+  `checkAuth` (auto-appelée si token présent au démarrage du store), `createCharacter`,
   `updateCharacterCity` (PATCH `characters/{id}`, resynchronise via `checkAuth()`),
   `setActiveCharacter`/`setDefaultCharacter`, `setToken`/`setUser`.
   **Deux niveaux de personnage** : `defaultCharacter` est le choix persistant (comfort data
@@ -138,7 +141,10 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   `kingdomTranslations.js`), un bouton « Modifier la résidence » (`updateCharacterCity` — repasse
   le personnage en attente de validation admin), le choix du personnage **à la connexion** (badge
   couronne sur l'avatar), un bouton « Gérer mes préférences » (cookies, second point d'accès avec
-  `NavBar.vue`) et un lien vers `AddCharacterView`.
+  `NavBar.vue`) et un lien vers `AddCharacterView`. En bas de page, une **zone dangereuse**
+  (`data-testid="danger-zone"`) porte la suppression de compte self-service via
+  `DeleteAccountModal.vue` : l'appel API et la redirection vivent ici, la modale ne rend que le
+  verdict.
 - **`modules/security/MainSecurity.vue`** — shell + lien vers `security-guet`.
 - **`modules/security/SecurityGuet.vue`** — module public (pas de compte requis), pas juste un
   outil isolé : c'est le futur pendant public du module **Douane** (privé, compte requis,
@@ -183,6 +189,13 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 - **`SelectorCharacter.vue`** — bascule de personnage **pour la session en cours**, monté
   directement dans `NavBar.vue` (jamais dans `SelectorMenu`, partagé avec les pages publiques) et
   visible seulement si connecté avec plus d'un personnage.
+- **`DeleteAccountModal.vue`** — confirmation de suppression de compte en **deux étapes** (art. 17
+  RGPD) : la première nomme ce qui va disparaître (email, personnages cités par leur pseudo,
+  préférences), la seconde redemande le mot de passe, le bouton restant désactivé tant qu'il est
+  vide. Rouvrir la modale repart toujours de l'étape 1, sans conserver la saisie. Elle ne connaît
+  ni le store ni le routeur : elle émet `confirm(password, { onError })`, `ProfilView` fait
+  l'appel et lui renvoie l'erreur — un mot de passe refusé laisse l'étape 2 ouverte pour
+  réessayer.
 - **`HelpModal.vue`** — modale d'aide contextuelle générique (props `show`/`title`/`purpose`/
   `overview`/`steps`, emit `close`), réutilisable par n'importe quel module. Consommée par
   `EconomyMines.vue`.

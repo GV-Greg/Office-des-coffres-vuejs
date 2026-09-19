@@ -68,6 +68,23 @@
       "PendingResidenceChangeMessage": "Pending validation — contact me in-game via my profile \"Artifice\" and ask me to validate this residence change.",
       "ValidatedBadge": "Validated",
       "PendingBadge": "Pending"
+    },
+    "DeleteAccount": {
+      "SectionTitle": "Danger zone",
+      "Warning": "Deleting your account is final and immediate. All your personal data (email, characters, preferences) will be erased with no possibility of recovery. This action cannot be undone.",
+      "Button": "Delete my account",
+      "Step1Title": "Delete your account",
+      "Step1Text": "Here is what will be permanently erased:",
+      "Step1ItemEmail": "your email address and your password;",
+      "Step1ItemCharacters": "your characters: {names};",
+      "Step1ItemPreferences": "your saved preferences (theme, language, remembered entries).",
+      "Step1Continue": "Continue",
+      "Step1Cancel": "Cancel",
+      "Step2Title": "Confirm with your password",
+      "Step2Text": "Enter your current password to confirm the deletion. It will take effect immediately.",
+      "Step2PasswordLabel": "Current password",
+      "Step2Confirm": "Delete permanently",
+      "SuccessToast": "Your account has been deleted. Thank you for using the Office des coffres."
     }
   },
   "Validation": {
@@ -401,7 +418,7 @@
           { "Label": "Right to data portability", "Text": "receive your data in a structured, machine-readable format (JSON), to transmit it to another service." }
         ],
         "Complaint": "Right to lodge a complaint with the {apdLink} if you consider that the processing of your data does not comply with GDPR.",
-        "HowToExercise": "To exercise these rights: contact {email}. A response will be provided within a maximum of one month. Account deletion can also be requested directly from your Profile (upcoming feature — for now, please email)."
+        "HowToExercise": "To exercise these rights: contact {email}. A response will be provided within a maximum of one month. Your account can be deleted immediately from your Profile; the email channel remains available as a fallback."
       },
       "Section8": {
         "Title": "8. Security of your data",

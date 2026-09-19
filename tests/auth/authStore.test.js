@@ -9,6 +9,7 @@ vi.mock('../../src/api.js', () => ({
   http: {
     post: vi.fn(),
     get:  vi.fn(),
+    delete: vi.fn(),
     request: vi.fn(),
     interceptors: {
       response: { use: vi.fn() },
@@ -253,6 +254,67 @@ describe('Auth Store', () => {
       // Le finally garantit que le state local est nettoyé même en cas d'erreur API
       expect(store.token).toBeNull()
       expect(store.user).toBeNull()
+    })
+  })
+
+  describe('deleteAccount()', () => {
+    it('envoie le mot de passe à DELETE auth/account avec le jeton courant', async () => {
+      store.setToken('tok789')
+      http.delete.mockResolvedValueOnce({})
+
+      await store.deleteAccount('password123')
+
+      expect(http.delete).toHaveBeenCalledWith('auth/account', {
+        headers: { Authorization: 'Bearer tok789' },
+        data: { password: 'password123' },
+      })
+    })
+
+    it('purge la session locale — le compte n\'existe plus côté serveur', async () => {
+      store.setToken('tok789')
+      store.setUser(mockUser)
+      http.delete.mockResolvedValueOnce({})
+
+      await store.deleteAccount('password123')
+
+      expect(store.token).toBeNull()
+      expect(store.user).toBeNull()
+      expect(store.isLoggedIn).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_refresh_token')
+      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('auth_refresh_token')
+    })
+
+    it('purge les préférences liées au compte, sans toucher au consentement cookies', async () => {
+      const cookieStore = useCookieStore()
+      cookieStore.setComfortData('default_character_id', 1)
+      cookieStore.setComfortData('last_login_email', 'test@test.com')
+      cookieStore.setComfortData('theme', 'dark')
+      store.setToken('tok789')
+      http.delete.mockResolvedValueOnce({})
+
+      await store.deleteAccount('password123')
+
+      // Référence morte (le personnage n'existe plus) et donnée personnelle (email) : les deux
+      // n'ont pas à survivre à un effacement art. 17.
+      expect(cookieStore.getComfortData('default_character_id')).toBeNull()
+      expect(cookieStore.getComfortData('last_login_email')).toBeNull()
+      // Le visiteur reste sur le site : son choix de thème et son consentement n'ont aucune
+      // raison d'être remis à zéro (admin/strategies/cookies.md).
+      expect(cookieStore.getComfortData('theme')).toBe('dark')
+    })
+
+    it('ne purge rien si l\'API refuse (mot de passe incorrect)', async () => {
+      store.setToken('tok789')
+      store.setUser(mockUser)
+      http.delete.mockRejectedValueOnce({ response: { status: 403, data: { message: 'Mot de passe incorrect.' } } })
+
+      await expect(store.deleteAccount('mauvais')).rejects.toBeTruthy()
+
+      // Contrairement à logout(), pas de `finally` : un refus n'est pas une déconnexion, la
+      // session doit rester utilisable pour réessayer.
+      expect(store.token).toBe('tok789')
+      expect(store.user).toEqual(mockUser)
     })
   })
 

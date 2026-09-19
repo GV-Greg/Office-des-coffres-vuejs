@@ -68,6 +68,23 @@
       "PendingResidenceChangeMessage": "En attente de validation — contactez-moi dans le jeu via mon profil \"Artifice\" en me demandant de valider ce changement de résidence.",
       "ValidatedBadge": "Validé",
       "PendingBadge": "En attente"
+    },
+    "DeleteAccount": {
+      "SectionTitle": "Zone dangereuse",
+      "Warning": "Supprimer votre compte est définitif et immédiat. Toutes vos données personnelles (email, personnages, préférences) seront effacées sans possibilité de récupération. Cette action ne peut pas être annulée.",
+      "Button": "Supprimer mon compte",
+      "Step1Title": "Supprimer votre compte",
+      "Step1Text": "Voici ce qui sera effacé définitivement :",
+      "Step1ItemEmail": "votre adresse email et votre mot de passe ;",
+      "Step1ItemCharacters": "vos personnages : {names} ;",
+      "Step1ItemPreferences": "vos préférences enregistrées (thème, langue, saisies mémorisées).",
+      "Step1Continue": "Continuer",
+      "Step1Cancel": "Annuler",
+      "Step2Title": "Confirmez avec votre mot de passe",
+      "Step2Text": "Saisissez votre mot de passe actuel pour confirmer la suppression. Elle sera immédiate.",
+      "Step2PasswordLabel": "Mot de passe actuel",
+      "Step2Confirm": "Supprimer définitivement",
+      "SuccessToast": "Votre compte a été supprimé. Merci d'avoir utilisé l'Office des coffres."
     }
   },
   "Validation": {
@@ -401,7 +418,7 @@
           { "Label": "Droit à la portabilité", "Text": "recevoir vos données dans un format structuré et lisible par machine (JSON), pour les transmettre à un autre service." }
         ],
         "Complaint": "Droit d'introduire une réclamation auprès de l'{apdLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD.",
-        "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. La suppression de compte peut également être demandée directement depuis votre Profil (fonctionnalité à venir — pour l'instant, passer par email)."
+        "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. La suppression de votre compte peut être effectuée immédiatement depuis votre Profil ; le canal email reste disponible en secours."
       },
       "Section8": {
         "Title": "8. Sécurité de vos données",
