@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-19] — PR #45
+
+### Added
+- **Page 404 complète** (route catch-all, désormais nommée `not-found`) : coffre, code, texte
+  roleplay et deux sorties — « Retour à l'Office » (vers l'app si le visiteur est connecté, vers
+  l'accueil public sinon) et « Page précédente » (`goBackOrWelcome`, qui retombe sur Welcome en
+  arrivée directe). Traductions FR + EN sous `NotFound.*`.
+- La vue porte son propre `SelectorMenu` (thème/langue) : cette route n'a pas de NavBar.
+
+### Changed
+- La route catch-all passe en `meta.public` — le footer légal y affiche à nouveau « Gérer mes
+  préférences » et la mention « outil non officiel », comme sur les autres pages hors `/app/*`.
+
 ## [2026-09-13] — PR #44
 
 ### Fixed

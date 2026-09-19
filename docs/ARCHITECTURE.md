@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 12/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 19/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -29,7 +29,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/app/anim` | `animation` | — |
 | `/app/profil` | `profil` | `redirectToHomeIfNotLoggedIn` |
 | `/app/character/new` | `character-new` | `redirectToHomeIfNotLoggedIn` |
-| `/:pathMatch(.*)*` | — | 404.vue |
+| `/:pathMatch(.*)*` | `not-found` | — (`meta.public`) |
 
 Les deux guards sont **exportés** nommément (en plus du router en export par défaut) pour être
 testables isolément (`tests/auth/`). `redirectToHomeIfNotLoggedIn` vérifie `authStore.isLoggedIn`
@@ -101,8 +101,11 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   « Chroniques de l'Office » (entrées `type: "feature"`) et « Le Registre des Réparations »
   (`type: "fix"`), en deux colonnes, les entrées `scope: "private"` n'apparaissant que connecté.
   Bouton « Se connecter » si déconnecté.
-- **`404.vue`** — stub minimal, pas de navigation (voir « Finitions transversales » dans
-  `roadmap.md`).
+- **`404.vue`** (route `not-found`, catch-all `meta.public`) — page introuvable : coffre, code
+  404, texte roleplay, et deux sorties — « Retour à l'Office » (vers `home` si connecté, `welcome`
+  sinon, la route n'ayant pas de NavBar) et « Page précédente » (`goBackOrWelcome`, qui retombe
+  sur Welcome en arrivée directe). Porte son propre `SelectorMenu` comme Welcome et les pages
+  légales.
 - **`legal/CookiesPolicyView.vue`**, **`legal/PrivacyPolicyView.vue`**,
   **`legal/MentionsLegalesView.vue`** — pages légales publiques, FR + EN, contenu en i18n sous le
   namespace `Legal` (clés de contact partagées dans `Legal.Common.Contact.*`). ⚠️ Les listes y

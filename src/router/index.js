@@ -167,9 +167,14 @@ const router = createRouter({
       beforeEnter: redirectToHomeIfNotLoggedIn,
     },
     {
-      path: "/:pathMatch(.*)*",
-      component: () => import("@/views/404.vue"),
-  },
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/views/404.vue'),
+      // Publique : une URL cassée peut être atteinte déconnecté, le footer doit y porter
+      // "Gérer mes préférences" et la mention "outil non officiel" comme sur les autres
+      // pages hors /app/*.
+      meta: { public: true },
+    },
   ]
 })
 
