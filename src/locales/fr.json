@@ -95,7 +95,12 @@
     "LoginButton": "Se connecter"
   },
   "NotFound": {
-    "Title": "Page introuvable"
+    "Code": "404",
+    "Title": "Page introuvable",
+    "Lead": "Ce coffre ne figure sur aucun registre de l'Office.",
+    "Hint": "L'adresse a peut-être été mal recopiée, ou la page a changé de place depuis votre dernière visite.",
+    "BackHome": "Retour à l'Office",
+    "BackPrevious": "Page précédente"
   },
   "Auth": {
     "UsernamePlaceholder": "Entrez votre pseudo",
