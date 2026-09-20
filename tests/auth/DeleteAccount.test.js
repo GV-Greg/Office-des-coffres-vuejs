@@ -34,8 +34,8 @@ const i18n = createI18n({
         AddCharacter: 'Ajouter un personnage',
         Status: { ValidatedBadge: 'Validé', PendingBadge: 'En attente', PendingMessage: 'En attente.' },
         DeleteAccount: {
-          SectionTitle: 'Zone dangereuse',
-          Warning: 'Supprimer votre compte est définitif et immédiat.',
+          SectionTitle: 'Suppression du compte',
+          Warning: 'Cette action est immédiate et ne peut pas être annulée. Toutes vos données personnelles seront effacées.',
           Button: 'Supprimer mon compte',
           Step1Title: 'Supprimer votre compte',
           Step1Text: 'Voici ce qui sera effacé définitivement :',
@@ -57,7 +57,12 @@ const i18n = createI18n({
   }
 })
 
-function mountProfil() {
+// Asynchrone à dessein : Vue Router démarre sur START_LOCATION et résout sa route initiale de
+// façon asynchrone. Monter ProfilView — qui contient des RouterLink — sans attendre isReady()
+// rendait ces tests instables : verts isolément, rouges environ une fois sur cinq en suite
+// complète, avec des assertions de contenu qui ne trouvaient pas les pseudos. Le symptôme n'était
+// pas dans le composant mais dans le montage.
+async function mountProfil() {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -93,6 +98,8 @@ function mountProfil() {
     }
   })
 
+  await router.isReady()
+
   return { wrapper, router }
 }
 
@@ -127,23 +134,23 @@ describe('Promesse de la politique de confidentialité', () => {
 })
 
 describe('ProfilView — zone dangereuse', () => {
-  it('affiche la zone de suppression en bas du profil', () => {
-    const { wrapper } = mountProfil()
+  it('affiche la zone de suppression en bas du profil', async () => {
+    const { wrapper } = await mountProfil()
 
     expect(wrapper.find('[data-testid="danger-zone"]').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Zone dangereuse')
-    expect(wrapper.text()).toContain('Supprimer votre compte est définitif et immédiat.')
+    expect(wrapper.text()).toContain('Suppression du compte')
+    expect(wrapper.text()).toContain('Cette action est immédiate et ne peut pas être annulée.')
   })
 
-  it("n'ouvre aucune modale tant qu'on n'a pas cliqué — le bouton ne supprime rien directement", () => {
-    const { wrapper } = mountProfil()
+  it("n'ouvre aucune modale tant qu'on n'a pas cliqué — le bouton ne supprime rien directement", async () => {
+    const { wrapper } = await mountProfil()
 
     expect(wrapper.find('[data-testid="delete-account-continue"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="delete-account-password"]').exists()).toBe(false)
   })
 
   it('ouvre la modale sur la première étape au clic sur « Supprimer mon compte »', async () => {
-    const { wrapper } = mountProfil()
+    const { wrapper } = await mountProfil()
     await openModal(wrapper)
 
     expect(wrapper.find('[data-testid="delete-account-continue"]').exists()).toBe(true)
@@ -152,7 +159,7 @@ describe('ProfilView — zone dangereuse', () => {
   })
 
   it('nomme les personnages qui vont être supprimés', async () => {
-    const { wrapper } = mountProfil()
+    const { wrapper } = await mountProfil()
     await openModal(wrapper)
 
     expect(wrapper.text()).toContain('Artifice, Buldo')
@@ -161,7 +168,7 @@ describe('ProfilView — zone dangereuse', () => {
 
 describe('ProfilView — confirmation en deux étapes', () => {
   it('donne accès au mot de passe seulement après « Continuer »', async () => {
-    const { wrapper } = mountProfil()
+    const { wrapper } = await mountProfil()
     await openModal(wrapper)
     await goToStep2(wrapper)
 
@@ -169,7 +176,7 @@ describe('ProfilView — confirmation en deux étapes', () => {
   })
 
   it('garde « Supprimer définitivement » désactivé tant que le mot de passe est vide', async () => {
-    const { wrapper } = mountProfil()
+    const { wrapper } = await mountProfil()
     await openModal(wrapper)
     await goToStep2(wrapper)
 
@@ -181,7 +188,7 @@ describe('ProfilView — confirmation en deux étapes', () => {
   })
 
   it('repart de la première étape à la réouverture, sans conserver le mot de passe saisi', async () => {
-    const { wrapper } = mountProfil()
+    const { wrapper } = await mountProfil()
     await openModal(wrapper)
     await goToStep2(wrapper)
     await wrapper.find('[data-testid="delete-account-password"]').setValue('password123')
@@ -200,7 +207,7 @@ describe('ProfilView — confirmation en deux étapes', () => {
 
 describe('ProfilView — suppression effective', () => {
   it('appelle deleteAccount avec le mot de passe, notifie et renvoie sur Welcome', async () => {
-    const { wrapper, router } = mountProfil()
+    const { wrapper, router } = await mountProfil()
     const authStore = useAuthStore()
     authStore.deleteAccount.mockResolvedValue()
     const pushSpy = vi.spyOn(router, 'push')
@@ -217,7 +224,7 @@ describe('ProfilView — suppression effective', () => {
   })
 
   it('garde la modale ouverte et affiche le message du serveur si le mot de passe est refusé', async () => {
-    const { wrapper, router } = mountProfil()
+    const { wrapper, router } = await mountProfil()
     const authStore = useAuthStore()
     authStore.deleteAccount.mockRejectedValue({
       response: { status: 403, data: { message: 'Mot de passe incorrect.' } }
@@ -237,7 +244,7 @@ describe('ProfilView — suppression effective', () => {
   })
 
   it('retombe sur un message générique si le serveur ne répond pas', async () => {
-    const { wrapper } = mountProfil()
+    const { wrapper } = await mountProfil()
     const authStore = useAuthStore()
     authStore.deleteAccount.mockRejectedValue(new Error('Network Error'))
 
