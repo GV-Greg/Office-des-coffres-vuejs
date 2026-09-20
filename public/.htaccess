@@ -1,9 +1,26 @@
 # Fallback SPA (Vue Router en mode history) : toute URL sans fichier ni dossier
 # correspondant renvoie index.html, pour que les liens directs/rechargements sur
 # /app/* etc. fonctionnent au lieu de 404.
+#
+# Deux préfixes en sont exclus (20/09/2026) : le fallback attrapait TOUT ce qui
+# n'existe pas, y compris ce qui n'est pas une page.
+#
+#  - /assets/ : un fichier versionné absent renvoyait « 200 text/html ». Le
+#    navigateur recevait alors du HTML à parser comme du JS ou du CSS et échouait
+#    sans message clair, au lieu du 404 franc qui dit ce qui se passe. Cas concret :
+#    un onglet resté ouvert pendant un déploiement demande l'ancien nom hashé.
+#    Vérifié en prod avant correction — /assets/index-INEXISTANT123.js répondait
+#    200 text/html.
+#  - /.well-known/ : chemins normalisés (RFC 8615). Un client qui y cherche un
+#    fichier absent doit recevoir 404, pas une page d'accueil.
+#
+# Aucune route du SPA ne commence par ces préfixes (vérifié dans router/index.js),
+# l'exclusion ne peut donc pas casser un lien direct.
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+  RewriteCond %{REQUEST_URI} !^/assets/
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
