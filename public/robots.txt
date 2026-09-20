@@ -1,0 +1,14 @@
+# Office des Coffres — outil communautaire non officiel pour Renaissance Kingdoms.
+# Site public, aucune zone à dissimuler : l'exploration est autorisée.
+
+User-agent: *
+Allow: /
+
+# Ces routes exigent un compte : un robot n'y trouve qu'une redirection.
+# Les exclure économise du budget de crawl, sans rien cacher.
+Disallow: /app/profil
+Disallow: /app/character/new
+Disallow: /verify-email
+
+# Pas de directive Sitemap : aucun sitemap.xml n'existe à ce jour.
+# En déclarer un absent enverrait les robots sur une 404.
