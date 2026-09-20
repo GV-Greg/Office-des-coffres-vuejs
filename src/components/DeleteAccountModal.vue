@@ -83,6 +83,7 @@
               {{ t('Profil.DeleteAccount.Step1ItemCharacters', { names: characterNames.join(', ') }) }}
             </li>
             <li>{{ t('Profil.DeleteAccount.Step1ItemPreferences') }}</li>
+            <li>{{ t('Profil.DeleteAccount.Step1ItemModules') }}</li>
           </ul>
 
           <div class="flex flex-wrap items-center justify-end gap-3">

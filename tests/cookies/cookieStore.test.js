@@ -311,4 +311,56 @@ describe('Cookie Store', () => {
       expect(store.comfortData.locale).toBe('en')
     })
   })
+
+  describe('clearUserComfortData (suppression de compte, art. 17)', () => {
+    it('efface les saisies des modules, y compris les clés dynamiques', () => {
+      store.acceptPreferences()
+      store.setComfortData('guet_last_list', 'Jean\tPaul')
+      // L'Économie stocke une clé par semaine : c'est ce qui interdit une liste en dur.
+      store.setComfortData('economy_mines_data_2026-09-14', '{"fer":12}')
+      store.setComfortData('economy_mines_data_2026-09-21', '{"fer":30}')
+
+      store.clearUserComfortData()
+
+      expect(store.getComfortData('guet_last_list')).toBeNull()
+      expect(store.getComfortData('economy_mines_data_2026-09-14')).toBeNull()
+      expect(store.getComfortData('economy_mines_data_2026-09-21')).toBeNull()
+    })
+
+    it('efface les données rattachées au compte', () => {
+      store.acceptPreferences()
+      store.setComfortData('default_character_id', 42)
+      store.setComfortData('last_login_email', 'joueur@example.com')
+      store.setComfortData('remember_me_preference', true)
+
+      store.clearUserComfortData()
+
+      expect(store.getComfortData('default_character_id')).toBeNull()
+      expect(store.getComfortData('last_login_email')).toBeNull()
+      expect(store.getComfortData('remember_me_preference')).toBeNull()
+    })
+
+    it('conserve le thème et la langue choisis : la page affichée ne doit pas changer sous les yeux de l\'utilisateur', () => {
+      store.acceptPreferences()
+      store.setTheme('light')
+      store.setLocale('en')
+      store.setComfortData('guet_last_list', 'Jean')
+
+      store.clearUserComfortData()
+
+      expect(store.comfortData.theme).toBe('light')
+      expect(store.comfortData.locale).toBe('en')
+      expect(store.getComfortData('guet_last_list')).toBeNull()
+    })
+
+    it('ne persiste rien tant que les préférences ne sont pas acceptées', () => {
+      store.setComfortData('guet_last_list', 'Jean')
+      localStorageMock.setItem.mockClear()
+
+      store.clearUserComfortData()
+
+      expect(store.getComfortData('guet_last_list')).toBeNull()
+      expect(localStorageMock.setItem).not.toHaveBeenCalled()
+    })
+  })
 })

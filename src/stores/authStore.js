@@ -189,9 +189,9 @@ export const useAuthStore = defineStore('auth', () => {
     setUser(null)
     setRefreshToken(null, false)
 
-    cookieStore.setComfortData('default_character_id', null)
-    cookieStore.setComfortData('last_login_email', null)
-    cookieStore.setComfortData('remember_me_preference', null)
+    // Purge globale plutôt que clé par clé : la modale annonce que les données des modules
+    // partent aussi, et une énumération ici se serait périmée au premier module ajouté.
+    cookieStore.clearUserComfortData()
     defaultCharacterId.value = null
     activeCharacterId.value = null
   }

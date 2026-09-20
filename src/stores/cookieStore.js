@@ -152,6 +152,21 @@ export const useCookieStore = defineStore('cookie', {
       }
     },
 
+    // Suppression de compte (art. 17) : tout ce que l'utilisateur a produit disparaît —
+    // choix de personnage, email mémorisé, et les saisies des modules (liste du Guet,
+    // relevés de mines). Liste blanche volontaire plutôt qu'une liste de clés à effacer :
+    // les clés de l'Économie sont déjà dynamiques (une par semaine) et un futur module
+    // ajouterait les siennes sans que personne ne pense à les inscrire ici. Thème et langue
+    // survivent seuls : ils pilotent l'affichage de la page où l'utilisateur se trouve
+    // encore juste après la suppression, et ne disent rien de lui.
+    clearUserComfortData() {
+      const { theme, locale } = this.comfortData
+      this.comfortData = { ...DEFAULT_COMFORT_DATA, theme, locale }
+      if (this.hasAcceptedPreferences) {
+        this._saveComfortData()
+      }
+    },
+
     setTheme(theme) {
       this.setComfortData('theme', theme)
     },
