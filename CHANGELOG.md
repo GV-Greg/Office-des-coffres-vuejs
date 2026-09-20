@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-09-19] — PR #46
+## [2026-09-20] — PR #46
 
 ### Added
 - **Suppression de compte self-service** depuis le Profil (art. 17 RGPD) : zone dangereuse en bas
@@ -26,6 +26,29 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - `/legal/privacy` §7 (FR + EN) : la mention « fonctionnalité à venir — pour l'instant, passer par
   email » est remplacée par le renvoi vers le Profil, le canal email restant en secours. Reporté
   aussi dans `admin/content/policy-privacy-draft.md`, source de vérité admin.
+
+### Fixed
+- **L'encart de suppression ne suivait pas la vue.** Son fond était `bg-white dark:bg-slate-800`
+  alors que le reste de `ProfilView` est à fond clair fixe et neutralise le mode sombre en
+  répétant la même couleur en `dark:` : en thème sombre, l'encart formait un bloc noir isolé au
+  milieu d'une page restée claire. Sa bordure rouge pleine introduisait par ailleurs un troisième
+  motif dans une vue qui n'en a qu'un — carte `rounded-xl bg-white shadow-md` + liseré latéral
+  coloré ; l'encart reprend ce motif, en rouge plus saturé que le `red-400` d'un personnage en
+  attente pour que les deux ne se confondent pas.
+- « Zone dangereuse » → « **Suppression du compte** » : le premier était un calque de la *Danger
+  Zone* de GitHub, étranger au vocabulaire du site. Pas de titre roleplay pour autant — sur une
+  action irréversible, la clarté prime sur le ton. L'icône était une croix (« fermer »), devenue
+  un triangle d'alerte, et le texte disait l'irréversibilité trois fois dans la même phrase.
+- L'item « préférences » de la modale annonçait « thème, langue, saisies mémorisées », alors que
+  `deleteAccount()` ne purge que le personnage par défaut, l'email mémorisé et la préférence
+  « rester connecté ». Reformulé pour décrire ce que le code fait réellement, plutôt que de
+  promettre un effacement qui n'a pas lieu.
+- **Un test rendait la suite instable** : `mountProfil()` installait un `createRouter` sans jamais
+  attendre `router.isReady()`. Vue Router démarre sur `START_LOCATION` et résout sa route initiale
+  de façon asynchrone ; la vue contenant des `RouterLink`, le rendu pouvait être incomplet au
+  moment des assertions. Symptôme : suite verte isolément, rouge environ une fois sur cinq en
+  exécution multi-fichiers. Comme `deploy.yml` dépend de `tests.yml`, cela produisait un
+  déploiement qui échoue au hasard. Corrigé, 6 exécutions consécutives vertes.
 
 ## [2026-09-19] — PR #45
 
