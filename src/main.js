@@ -48,6 +48,8 @@ import {
   FaChevronRight,
   FaInfoCircle,
   FaTimes,
+  FaExclamationTriangle,
+  FaTrashAlt,
   FaHardHat
 } from 'oh-vue-icons/icons'
 
@@ -85,6 +87,8 @@ addIcons(
   FaChevronRight,
   FaInfoCircle,
   FaTimes,
+  FaExclamationTriangle,
+  FaTrashAlt,
   FaHardHat
 )
 

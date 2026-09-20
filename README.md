@@ -63,7 +63,7 @@ VITE_API_ENDPOINT_PROD=
 | Compagnie | `/app/company` | En développement |
 | Vérification email | `/verify-email` | Fonctionnel — connexion auto après clic sur le lien reçu |
 | Créer un personnage | `/app/character/new` | Fonctionnel — sélecteur royaume→province→ville en cascade |
-| Profil | `/app/profil` | Fonctionnel — liste des personnages du compte, statut individuel, choix du personnage actif, FR/EN |
+| Profil | `/app/profil` | Fonctionnel — liste des personnages du compte, statut individuel, choix du personnage actif, suppression de compte self-service (zone dangereuse, art. 17 RGPD), FR/EN |
 | Pages légales | `/legal/cookies`, `/legal/privacy`, `/legal/mentions` | Fonctionnel — politique cookies, politique de confidentialité, mentions légales (RGPD + APD belge). Liens accessibles via `AppFooter` (bas de page, toutes routes sauf Welcome qui a son propre footer fusionné) |
 | Page introuvable | toute URL inconnue | Fonctionnel — retour à l'Office (app ou accueil public selon la connexion) et retour à la page précédente, FR/EN |
 
@@ -81,7 +81,7 @@ npm run test:watch     # Mode watch — boucle de dev, ne repaie le démarrage q
 npm run test:auth      # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
-303 tests verts au 19/09/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
+321 tests verts au 19/09/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
 common,enforcement,legal,fixtures}` — structure, scripts et méthode ("quoi lancer, et quand")
 détaillés dans `docs/TESTS.md`.
 

@@ -6,6 +6,27 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-19] — PR #46
+
+### Added
+- **Suppression de compte self-service** depuis le Profil (art. 17 RGPD) : zone dangereuse en bas
+  de page, modale de confirmation en **deux étapes** — la première nomme ce qui va disparaître
+  (email, personnages, préférences), la seconde redemande le mot de passe. Le jeton seul ne suffit
+  pas pour une action irréversible : une session laissée ouverte sur un poste partagé ne doit pas
+  pouvoir effacer le compte.
+- `authStore.deleteAccount()` : appelle `DELETE auth/account`, puis purge la session locale et les
+  comfort data liées au compte (`default_character_id`, devenu une référence morte, et
+  `last_login_email`, une donnée personnelle). Le consentement cookies et le thème ne sont pas
+  touchés — le visiteur reste sur le site, le resolliciter n'aurait pas de sens.
+- Garde-fou de cohérence : un test lit les vraies locales et échoue si `/legal/privacy` §7
+  présente encore la suppression comme « à venir ». La promesse et la fonctionnalité basculent
+  ensemble.
+
+### Changed
+- `/legal/privacy` §7 (FR + EN) : la mention « fonctionnalité à venir — pour l'instant, passer par
+  email » est remplacée par le renvoi vers le Profil, le canal email restant en secours. Reporté
+  aussi dans `admin/content/policy-privacy-draft.md`, source de vérité admin.
+
 ## [2026-09-19] — PR #45
 
 ### Added

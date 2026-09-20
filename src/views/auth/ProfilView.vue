@@ -2,11 +2,12 @@
 /*
  imports
 */
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { useI18n } from 'vue-i18n'
-  import { RouterLink } from 'vue-router'
+  import { RouterLink, useRouter } from 'vue-router'
   import NavMenu from '@/components/NavMenu.vue'
   import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
+  import DeleteAccountModal from '@/components/DeleteAccountModal.vue'
   import { useAuthStore } from '@/stores/authStore'
   import { useCookieStore } from '@/stores/cookieStore'
   import { translateKingdomName } from '@/modules/kingdomTranslations'
@@ -16,6 +17,7 @@
  datas user
 */
   const { t, locale } = useI18n()
+  const router = useRouter()
   const authStore = useAuthStore()
   const cookieStore = useCookieStore()
 
@@ -41,6 +43,27 @@
       })
       .catch(error => {
         push.error(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
+      })
+  }
+
+/*
+  suppression du compte (art. 17 RGPD)
+*/
+  const isDeleteModalOpen = ref(false)
+  const characterNames = computed(() => authStore.getCharacters.map(c => c.pseudo))
+
+  const confirmDeleteAccount = (password, { onError }) => {
+    authStore.deleteAccount(password)
+      .then(() => {
+        isDeleteModalOpen.value = false
+        push.success(t('Profil.DeleteAccount.SuccessToast'))
+        router.push({ name: 'welcome' })
+      })
+      .catch(error => {
+        // Mot de passe incorrect : le backend répond 403 avec son message français. La modale
+        // reste ouverte sur l'étape 2 pour permettre une seconde tentative, plutôt que de tout
+        // refermer et d'obliger à reparcourir l'avertissement.
+        onError(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
       })
   }
 
@@ -169,7 +192,50 @@
         <v-icon name="fa-user-plus" scale="1" />
         {{ t('Profil.AddCharacter') }}
       </RouterLink>
+
+      <!-- Zone dangereuse — en bas du profil, après la gestion des personnages : on ne tombe pas
+           dessus par accident en venant gérer ses personnages. -->
+      <section
+        data-testid="danger-zone"
+        class="w-full mt-10 mb-4 flex rounded-xl bg-white shadow-md overflow-hidden"
+      >
+        <!-- Liseré latéral : même motif que les cartes personnages ci-dessus, en rouge plus
+             saturé que le red-400 d'un personnage en attente, pour que les deux ne se confondent
+             pas. Le fond reste clair en permanence (pas de variante `dark:`), comme le reste de
+             cette vue : les cartes y sont à fond clair fixe et neutralisent le thème sombre en
+             répétant la même couleur de texte en `dark:`. -->
+        <div class="w-1.5 shrink-0 bg-red-600" />
+
+        <div class="flex-1 bg-red-50 p-4">
+          <h3 class="flex items-center gap-2 font-extrabold text-red-700 dark:text-red-700">
+            <v-icon name="fa-exclamation-triangle" scale="1" class="shrink-0" />
+            {{ t('Profil.DeleteAccount.SectionTitle') }}
+          </h3>
+
+          <p class="mt-2 max-w-prose text-sm text-slate-700 dark:text-slate-700">
+            {{ t('Profil.DeleteAccount.Warning') }}
+          </p>
+
+          <button
+            type="button"
+            class="btn btn-grad-red btn-sm mt-4"
+            data-testid="delete-account-open"
+            @click="isDeleteModalOpen = true"
+          >
+            <v-icon name="fa-trash-alt" class="w-3.5 h-3.5" />
+            {{ t('Profil.DeleteAccount.Button') }}
+          </button>
+        </div>
+      </section>
     </div>
+
+    <DeleteAccountModal
+      :show="isDeleteModalOpen"
+      :character-names="characterNames"
+      @close="isDeleteModalOpen = false"
+      @confirm="confirmDeleteAccount"
+    />
+
     <NavMenu />
   </main>
 </template>

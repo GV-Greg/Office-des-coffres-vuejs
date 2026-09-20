@@ -172,6 +172,30 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // Suppression self-service (art. 17 RGPD, DELETE auth/account). Le backend efface le compte
+  // et révoque les jetons dans la même transaction : il n'y a plus rien à rafraîchir côté
+  // serveur, on purge donc la session locale comme un logout. S'y ajoutent les comfort data
+  // liées au compte — `default_character_id` désignerait un personnage qui n'existe plus, et
+  // `last_login_email` est une donnée personnelle qui n'a pas à survivre à un effacement.
+  // Le consentement cookies lui-même n'est pas touché : le visiteur reste sur le site, le
+  // resolliciter sans raison irait contre admin/strategies/cookies.md.
+  const deleteAccount = async (password) => {
+    await http.delete('auth/account', {
+      headers: { Authorization: `Bearer ${token.value}` },
+      data: { password },
+    })
+
+    setToken(null)
+    setUser(null)
+    setRefreshToken(null, false)
+
+    cookieStore.setComfortData('default_character_id', null)
+    cookieStore.setComfortData('last_login_email', null)
+    cookieStore.setComfortData('remember_me_preference', null)
+    defaultCharacterId.value = null
+    activeCharacterId.value = null
+  }
+
   const checkAuth = async () => {
     if (!token.value) return false
 
@@ -266,6 +290,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     resendVerification,
     logout,
+    deleteAccount,
     checkAuth,
     refreshAccessToken,
     createCharacter,
