@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 19/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 20/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -212,10 +212,21 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 
 **Couverture complète** — tout texte UI visible passe par vue-i18n, sans
 exception hors BBcode `SecurityGuet` (voir plus haut) et le nom de marque `Common.SiteName`
-(identique dans les deux langues, routé par i18n quand même pour cohérence). Config live dans
-`main.js` (`legacy: false`, messages auto-générés par `@intlify/unplugin-vue-i18n` depuis
-`src/locales/**`). Une seconde instance i18n standalone (`src/i18n/index.js`) existe pour
-`Validators.js` (hors contexte composant, ne peut pas utiliser `useI18n()`).
+(identique dans les deux langues, routé par i18n quand même pour cohérence). **Une seule instance i18n**, créée dans `src/i18n/index.js` et utilisée à la fois par les
+composants (via `app.use(i18n)` dans `main.js`) et par les consommateurs hors contexte composant
+qui ne peuvent pas appeler `useI18n()` — `Validators.js` et `authStore.js`, via `i18n.global.t`.
+⚠️ Il y en avait **deux** jusqu'au 20/09/2026, et personne ne changeait la locale de la seconde :
+messages d'erreur de formulaire et toasts d'authentification restaient en français après un
+passage en anglais. Ne pas réintroduire d'instance séparée.
+
+**Les messages sont chargés à la demande**, un chunk par langue : `fr.json` et `en.json`
+partaient tous deux dans le bundle d'entrée alors qu'un visiteur n'en lit qu'un. `setLocale()`
+charge le fichier cible puis bascule — jamais l'inverse, pour qu'aucun texte non traduit
+n'apparaisse. La langue mémorisée est appliquée dans `main.js` **avant `app.mount()`** (elle
+l'était dans un `onMounted` de `SelectorLanguage`, donc après un premier rendu en français).
+`fallbackLocale` est **désactivé** : le rétablir forcerait à charger les deux fichiers. Ce qui
+le remplace est `tests/enforcement/i18n-parity.unit.test.js`, qui échoue sur toute clé présente
+d'un côté et absente de l'autre.
 
 Namespaces principaux : `Cookies`, `Common`, `Profil`, `Validation`, `Welcome`, `Home`,
 `NotFound`, `Auth` (partagé Login/Register), `Login`, `Register`, `NavBar`, `NavMenu`,

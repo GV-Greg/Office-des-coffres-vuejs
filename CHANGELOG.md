@@ -6,6 +6,38 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — PR #49
+
+> ⚠️ Date volontairement non figée : l'entrée est écrite à l'ouverture de la PR, qui ne peut pas
+> connaître sa date de merge. Convention inscrite dans `CLAUDE.md` le 20/09/2026 — la date de
+> merge fait foi, et se remplit **au merge**.
+
+### Changed
+- **Les locales sont chargées à la demande**, un chunk par langue. `fr.json` et `en.json`
+  partaient tous deux dans le bundle d'entrée alors qu'un visiteur n'en lit qu'un. Le bundle
+  principal passe de **323,0 à 175,2 Ko brut** (69,5 → 56,4 Ko brotli) et **repasse largement
+  sous son budget de 300 Ko**, franchi depuis le 19/09. Total d'entrée : 498,7 → 392,2 Ko brut,
+  locale comprise.
+- **La langue mémorisée est appliquée avant le montage de l'application.** Elle l'était dans un
+  `onMounted` de `SelectorLanguage`, donc après un premier rendu en français : un visiteur
+  anglophone voyait la page s'afficher en français puis basculer. Ce flash existait déjà et
+  disparaît ; le chargement à la demande en aurait introduit un plus long.
+
+### Fixed
+- **Les messages de validation et les toasts d'authentification ignoraient la langue choisie.**
+  Deux instances i18n coexistaient — celle de `main.js` pour les composants, et une seconde dans
+  `src/i18n/index.js` pour `Validators.js` et `authStore.js`, qui ne peuvent pas appeler
+  `useI18n()`. Personne ne changeant jamais la locale de la seconde, tout ce qu'elle produisait
+  restait en français : « Le champ est requis », les erreurs de longueur et d'email, les toasts
+  de session. Une seule instance désormais, ce qui supprime la classe de bug entière.
+- 4 `console.log` actifs en production retirés de `SelectorLanguage.vue`.
+
+### Added
+- `tests/enforcement/i18n-parity.unit.test.js` — échoue sur toute clé présente dans une locale et
+  absente de l'autre, ou sur une valeur vide. Ce test **remplace `fallbackLocale`**, désactivé
+  parce qu'il forcerait à charger les deux fichiers : la parité vérifiée rend le filet inutile,
+  au lieu de s'en remettre à ce que personne n'oublie une traduction.
+
 ## [2026-09-20] — PR #46
 
 ### Added
