@@ -28,9 +28,11 @@
 <template>
   <div class="min-h-screen w-full flex flex-col bg-slate-200 dark:bg-slate-800 transition-colors duration-200">
     <RouterView name="Nav" />
-    <div class="flex-1 flex flex-col">
+    <!-- <main> et non <div> : c'est le repère qui permet aux lecteurs d'écran d'atteindre
+         directement le contenu, et il manquait sur toutes les pages. -->
+    <main class="flex-1 flex flex-col">
       <RouterView />
-    </div>
+    </main>
     <!-- Un seul design de footer partout (Cookies #12), toujours hors du cadre de contenu.
          WelcomeView a son propre footer fusionné (disclaimer + liens légaux, voir WelcomeView.vue).
          Sur /app/*, contenu réduit : "Gérer mes préférences" est déjà dans la NavBar. -->

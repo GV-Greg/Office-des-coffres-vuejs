@@ -6,6 +6,28 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-24] — PR #50
+
+### Fixed
+- **Le bouton cadenas de l'accueil n'avait aucun nom accessible.** C'est la porte d'entrée
+  principale du site, et un lecteur d'écran n'annonçait qu'« bouton » : l'icône seule ne porte
+  aucun texte. `aria-label` traduit FR + EN.
+- **Aucune page n'avait de repère `<main>`** — le conteneur de `RouterView` était un `<div>`.
+  C'est le repère qui permet d'atteindre le contenu directement, sans parcourir la navigation.
+- **Les liens du footer étaient trop petits pour être visés** : `text-xs` sans remplissage donne
+  environ 16 px de haut, contre les 24 px minimum du critère WCAG 2.2 (2.5.8). Portés à ~28 px
+  sans changer la mise en page.
+- **Aucune `meta description`** : les moteurs composaient l'extrait des résultats à partir du
+  texte de la page. Elle mentionne l'essentiel et le caractère non officiel du site.
+
+### Notes
+- ⚠️ **Le défaut de contraste signalé sur la bannière cookies n'est pas corrigé ici, délibérément.**
+  Enquête faite, il ne vient pas de la bannière mais de la charte `.btn-grad-*` entière : le texte
+  blanc sur `green-400` donne **1,74:1**, sur `red-400` **2,77:1**, contre 4,5:1 requis. Les textes
+  de la bannière, eux, passent largement (6,97:1 en clair, 14,48:1 en sombre). Corriger reviendrait
+  à modifier l'apparence de tous les boutons du site — une décision de design, pas une correction
+  technique. En attente d'arbitrage.
+
 ## [2026-09-24] — PR #49
 
 ### Changed

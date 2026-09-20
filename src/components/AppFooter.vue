@@ -19,14 +19,14 @@ const cookieStore = useCookieStore()
 <template>
   <footer class="w-full bg-slate-300 dark:bg-slate-900 py-3 px-4">
     <div class="max-w-screen-laptop mx-auto flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-slate-600 dark:text-slate-400">
-      <RouterLink :to="{ name: 'legal-cookies' }" class="hover:underline">{{ t('Legal.Privacy.CookiesPolicyLink') }}</RouterLink>
+      <RouterLink :to="{ name: 'legal-cookies' }" class="inline-block py-1.5 hover:underline">{{ t('Legal.Privacy.CookiesPolicyLink') }}</RouterLink>
       <span aria-hidden="true">&middot;</span>
-      <RouterLink :to="{ name: 'legal-privacy' }" class="hover:underline">{{ t('Legal.Cookies.PrivacyPolicyLink') }}</RouterLink>
+      <RouterLink :to="{ name: 'legal-privacy' }" class="inline-block py-1.5 hover:underline">{{ t('Legal.Cookies.PrivacyPolicyLink') }}</RouterLink>
       <span aria-hidden="true">&middot;</span>
-      <RouterLink :to="{ name: 'legal-mentions' }" class="hover:underline">{{ t('Legal.Mentions.PageTitle') }}</RouterLink>
+      <RouterLink :to="{ name: 'legal-mentions' }" class="inline-block py-1.5 hover:underline">{{ t('Legal.Mentions.PageTitle') }}</RouterLink>
       <template v-if="props.showPreferences">
         <span aria-hidden="true">&middot;</span>
-        <button type="button" class="hover:underline" @click="cookieStore.openPreferencesModal()">
+        <button type="button" class="inline-block py-1.5 hover:underline" @click="cookieStore.openPreferencesModal()">
           {{ t('Cookies.Button.Preferences') }}
         </button>
       </template>

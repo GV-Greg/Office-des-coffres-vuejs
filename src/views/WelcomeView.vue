@@ -30,9 +30,11 @@
         </div>
 
         <div class="flex flex-col items-center space-y-8">
-          <button 
+          <button
             @click="router.push('/login')"
             class="inline-flex items-center justify-center"
+            :aria-label="t('Welcome.EnterAriaLabel')"
+            type="button"
           >
             <v-icon 
               name="bi-shield-lock-fill" 

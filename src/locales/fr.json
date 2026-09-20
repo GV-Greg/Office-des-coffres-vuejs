@@ -101,7 +101,8 @@
       "Text": "Vous pouvez franchir le seuil de l'Office sans y déposer votre nom — la plupart des outils vous sont ouverts. Vous enregistrer à la réception vous ouvrira l'accès aux coffres les mieux gardés et à vos propres registres."
     },
     "Disclaimer": "Site d'aide, non officiel, à la communauté du jeu {link}.",
-    "Copyright": "© {years} Office des coffres. Tous droits réservés."
+    "Copyright": "© {years} Office des coffres. Tous droits réservés.",
+    "EnterAriaLabel": "Entrer dans l'Office — accéder à la connexion"
   },
   "Home": {
     "WelcomeMessage": "L'{brand} vous souhaite la bienvenue !",
