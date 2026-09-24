@@ -6,6 +6,20 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-24] — PR #56
+
+### Fixed
+- **`.page-container` n'impose plus `text-white` à son contenu.** Cause racine du texte invisible
+  des pages légales (#54 en était l'override d'urgence). Inventaire préalable en navigateur,
+  **11 états × 2 thèmes** des quatre autres vues qui l'utilisent (Login, Register, VerifyEmail,
+  AddCharacter — états d'erreur, « vérifiez votre boîte », renvoi, lien invalide compris) :
+  **aucun texte n'en dépendait** (contrôle positif : 72 dépendances retrouvées sur l'ancienne page
+  de confidentialité). Rendu vérifié identique au pixel sur 16 états × 2 thèmes.
+
+### Added
+- `tests/enforcement/page-container-no-text-color.unit.test.js` — `.page-container` ne déclare
+  aucune couleur de texte.
+
 ## [2026-09-24] — PR #55
 
 ### Added

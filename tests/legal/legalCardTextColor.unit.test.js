@@ -15,8 +15,9 @@ import { fileURLToPath } from 'node:url'
   24/09/2026. axe ne le classe qu'« à vérifier », jamais en violation.
 
   jsdom ne calcule pas les couleurs Tailwind : ce test vérifie la déclaration dans la source ; le
-  rendu réel se vérifie en navigateur. Il reste nécessaire tant que `.page-container` impose le
-  blanc (désamorçage prévu dans une PR distincte).
+  rendu réel se vérifie en navigateur (tests/browser/textContrast.mjs). `.page-container`
+  n'impose plus le blanc depuis le 24/09/2026 (garde-fou dans tests/enforcement) : ce test reste
+  la seconde ligne — la carte porte sa couleur quel que soit le conteneur.
 */
 
 const viewsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/views/legal')

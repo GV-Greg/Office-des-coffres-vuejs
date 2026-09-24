@@ -225,8 +225,13 @@
   }
 
   /* Layouts communs */
+  /* Pas de couleur de texte ici. `text-white` y était imposé à tout le contenu : les <h3>,
+     <li> et <strong> des pages légales en héritaient sur une carte blanche (thème clair),
+     effaçant le responsable de traitement (PR #54). Retiré le 24/09/2026 après inventaire en
+     navigateur de 11 états × 2 thèmes des quatre autres vues : aucun texte n'en dépendait.
+     Chaque bloc déclare sa propre couleur, par thème. */
   .page-container {
-    @apply mx-0 w-full flex flex-col text-white;
+    @apply mx-0 w-full flex flex-col;
   }
 
   .page-header {
