@@ -1,5 +1,5 @@
 {
-  "note": "Référence figée — voir l'en-tête de textContrast.mjs. Régénérer avec --update-baseline, et relire le diff : chaque ligne qui bouge est un fait nouveau.",
+  "note": "Référence figée — voir l'en-tête de textContrast.mjs. Mise à jour dans le MÊME COMMIT que la correction qui la motive ; c'est le diff de ce fichier qui se relit. Jamais de régénération en bloc pour faire passer.",
   "belowThreshold": [
     "dark /legal/privacy th.text-left.py-2 « Base légale » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",
     "dark /legal/privacy th.text-left.py-2.pr-4 « Donnée » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",

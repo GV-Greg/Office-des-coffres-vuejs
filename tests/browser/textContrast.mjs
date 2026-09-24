@@ -33,6 +33,15 @@
   d'œil humain, pas un silence). Même principe que l'« incomplete » d'axe, qui se fige et ne
   s'ignore pas.
 
+  ⚠️ DISCIPLINE DE LA RÉFÉRENCE — c'est elle qui garde, pas le script :
+  - chaque correction de contraste fait échouer la mesure avec « DISPARU », et c'est VOULU ;
+  - la mise à jour de la référence va dans le MÊME COMMIT que la correction qui la motive ;
+  - c'est le DIFF DE LA RÉFÉRENCE qui se relit : chaque ligne retirée doit correspondre à une
+    correction du commit, chaque ligne ajoutée à un défaut assumé et expliqué ;
+  - jamais de régénération « pour faire passer ». Le jour où la régénérer en bloc devient une
+    habitude, le garde-fou est mort sans que rien ne le signale. `--update-baseline` affiche
+    donc le diff avant d'écrire.
+
   Usage : node tests/browser/textContrast.mjs <baseURL> [cheminChrome] [--update-baseline]
   (build de prod servi par `vite preview` ; API simulée, aucune requête ne part vers la prod).
 */
@@ -180,8 +189,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   current.belowThreshold.sort(); current.unmeasurable.sort()
 
   if (update) {
+    // La régénération n'est jamais silencieuse : le diff s'affiche, ligne par ligne.
+    if (existsSync(BASELINE)) {
+      const previous = JSON.parse(readFileSync(BASELINE, 'utf-8'))
+      for (const kind of ['belowThreshold', 'unmeasurable']) {
+        const before = new Set(previous[kind]); const after = new Set(current[kind])
+        for (const l of current[kind]) if (!before.has(l)) console.log(`  + ${l}`)
+        for (const l of previous[kind]) if (!after.has(l)) console.log(`  - ${l}`)
+      }
+      console.log('Diff de la référence ci-dessus : à relire, et à committer AVEC la correction qui le motive.')
+    }
     writeFileSync(BASELINE, JSON.stringify({
-      note: 'Référence figée — voir l\'en-tête de textContrast.mjs. Régénérer avec --update-baseline, et relire le diff : chaque ligne qui bouge est un fait nouveau.',
+      note: 'Référence figée — voir l\'en-tête de textContrast.mjs. Mise à jour dans le MÊME COMMIT que la correction qui la motive ; c\'est le diff de ce fichier qui se relit. Jamais de régénération en bloc pour faire passer.',
       ...current,
     }, null, 2) + '\n')
     console.log(`Référence écrite : ${current.belowThreshold.length} sous le seuil, ${current.unmeasurable.length} non mesurables.`)
@@ -199,7 +218,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const removed = [...before].filter((k) => !now.has(k))
     const label = kind === 'belowThreshold' ? 'sous le seuil' : 'non mesurable'
     for (const k of added) console.log(`  ✗ NOUVEAU ${label} : ${now.get(k)}`)
-    for (const k of removed) console.log(`  ✓ DISPARU (${label}) : ${k} — mettre à jour la référence si c'est une correction`)
+    for (const k of removed) console.log(`  ✓ DISPARU (${label}) : ${k} — si c'est une correction, mettre à jour la référence DANS LE MÊME COMMIT`)
     changed += added.length + removed.length
   }
   console.log(`\n${current.belowThreshold.length} sous le seuil (référence : ${baseline.belowThreshold.length}) · ${current.unmeasurable.length} non mesurables (référence : ${baseline.unmeasurable.length})`)
