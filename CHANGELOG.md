@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [à dater au merge] — PR #59
+## [2026-09-25] — PR #59
 
 ### Added
 - **Référence figée pour la mesure de contraste** (`tests/browser/textContrast.baseline.json`) :
