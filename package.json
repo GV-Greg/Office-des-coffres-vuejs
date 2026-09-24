@@ -20,6 +20,7 @@
     "test:legal": "vitest run tests/legal",
     "test:enforcement": "vitest run tests/enforcement",
     "test:coverage": "vitest run --coverage",
+    "test:contrast": "node tests/browser/textContrast.mjs",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
   },
@@ -46,6 +47,7 @@
     "eslint-plugin-vue": "^10.10.0",
     "globals": "^17.9.0",
     "jsdom": "^29.1.1",
+    "playwright-core": "1.63.0",
     "postcss": "^8.4.35",
     "postcss-nesting": "^12.0.2",
     "prettier": "^3.0.3",

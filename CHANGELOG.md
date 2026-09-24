@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — PR #55
+
+### Added
+- `tests/browser/textContrast.mjs` (`npm run test:contrast -- <url> [chrome]`) — contraste de
+  chaque texte contre son **fond résolu**, dans un vrai navigateur, sur les 7 pages publiques et
+  les **deux thèmes** (la bascule est constatée sur `<html>`, sinon la mesure est refusée). Seuil
+  4,5:1, ou 3:1 pour le grand texte. Fond résolu en composant les ancêtres semi-transparents ;
+  fond en **dégradé mesuré contre chaque arrêt**, le pire décide ; texte en
+  `background-clip: text` classé **non mesurable**, jamais estimé depuis sa `color` (qui vaut
+  `rgba(0,0,0,0)`). Remplace la mesure « texte de la couleur de son fond » utilisée pour #54, qui
+  annonçait 0 défaut alors que des textes restaient sous le seuil. **Pas encore branché en CI** :
+  26 textes sous le seuil aujourd'hui, à traiter par le lot « contrastes de texte » avant que le
+  garde-fou ne gate.
+- `playwright-core` 1.63.0 en dépendance de développement (version exacte).
+
 ## [2026-09-24] — PR #54
 
 ### Fixed
