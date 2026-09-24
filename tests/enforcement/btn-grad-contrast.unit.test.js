@@ -15,6 +15,12 @@ import colors from 'tailwindcss/colors'
   qui éclaircit repasserait sous le seuil sans que rien d'autre ne le signale.
 
   Planchers et raisonnement : commentaire au-dessus de `.btn-grad-blue` dans style.css.
+
+  ⚠️ PORTÉE LIMITÉE — ce test ne lit QUE `style.css`. Un dégradé écrit directement dans une vue
+  (classes `from-… to-…` dans un .vue) lui échappe : c'est ainsi que « Entrez sans compte »
+  (LoginView.vue, 2,26:1) est passé le 24/09/2026. La page rendue est couverte par
+  tests/browser/textContrast.mjs (dégradés mesurés arrêt par arrêt) — c'est lui qui fait foi ;
+  ce test-ci n'est qu'un retour rapide sur la charte. À retirer quand textContrast passe en CI.
 */
 
 const css = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../../src/assets/style.css'), 'utf-8')
@@ -55,6 +61,6 @@ describe('Contraste des boutons en dégradé à texte blanc', () => {
       .filter(({ ratio }) => ratio < 4.5)
       .map(({ token, ratio }) => `${token} → ${ratio.toFixed(2)}:1`)
 
-    expect(failures, `.${name} : texte blanc sous 4,5:1 sur ${failures.join(', ')} — voir le commentaire de contraste dans style.css`).toEqual([])
+    expect(failures, `.${name} : texte blanc sous 4,5:1 sur ${failures.join(', ')} — voir le commentaire de contraste dans style.css (ce test ne voit que style.css, pas les dégradés écrits dans les vues)`).toEqual([])
   })
 })

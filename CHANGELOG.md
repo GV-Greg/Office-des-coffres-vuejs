@@ -6,6 +6,20 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-25] — PR #59
+
+### Added
+- **Référence figée pour la mesure de contraste** (`tests/browser/textContrast.baseline.json`) :
+  les 26 textes sous le seuil et les textes non mesurables connus. `textContrast.mjs` compare à
+  cette référence et **échoue dès que l'ensemble change** — un nouveau défaut, ou un défaut
+  corrigé sans mise à jour de la référence. `--update-baseline` pour la régénérer, diff à relire.
+  Contrôlé dans les deux sens (ligne retirée → « NOUVEAU », ligne fictive → « DISPARU »).
+
+### Changed
+- `btn-grad-contrast.unit.test.js` dit ce qu'il ne regarde pas : il ne lit que `style.css`, pas
+  les dégradés écrits dans les vues (« Entrez sans compte » lui a échappé) — la page rendue fait
+  foi via `textContrast.mjs`. À retirer quand celui-ci passera en CI.
+
 ## [2026-09-25] — PR #57
 
 ### Docs
