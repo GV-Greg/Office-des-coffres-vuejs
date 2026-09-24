@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 24/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 25/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -260,6 +260,14 @@ inline (requis/min/max/email/confirmation).
   `.btn-yellow`/`.btn-rose`/`.btn-teal` restent nécessaires telles quelles — consommées
   dynamiquement par `NavMenu.vue` (menu circulaire), ne jamais les modifier sans vérifier cet
   usage.
+  ⚠️ **Contraste** : chaque dégradé à texte blanc part de l'arrêt le plus clair qui passe 4,5:1
+  (planchers commentés au-dessus de `.btn-grad-blue`), le survol ne fait qu'assombrir — gardé par
+  `tests/enforcement/btn-grad-contrast.unit.test.js`.
+  **`.page-card`** = carte de contenu des pages `/app/*` (ex-sélecteur d'élément `main`). ⚠️ Ne
+  jamais styler l'élément `main` : `App.vue` porte l'**unique** repère `<main>` de chaque page ;
+  les vues n'en déclarent pas. **`.page-container`** ne déclare aucune couleur de texte (elle
+  imposait `text-white`, cause du texte invisible des pages légales en clair) — chaque bloc
+  déclare la sienne, par thème.
 - **`use/useNavigationLoading.js`** — état partagé de l'overlay de navigation (délai anti-flash de
   150 ms, contexte `office`/`chest`). **`use/useFormValidation.js`** — messages d'erreur inline
   des formulaires, avec `modules/Validators.js`.
