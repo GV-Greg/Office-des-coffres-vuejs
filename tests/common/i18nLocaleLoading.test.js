@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { watch } from 'vue'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 
@@ -92,7 +93,7 @@ describe('i18n — anglais indisponible', () => {
     expect(useCookieStore().getComfortData('locale', null)).not.toBe('en')
   })
 
-  it("SelectorLanguage le signale par un toast, dans la langue restée active", async () => {
+  it("SelectorLanguage le signale par un toast, dans la langue DEMANDÉE", async () => {
     makeEnUnavailable()
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const { wrapper } = await mountSelector()
@@ -101,9 +102,72 @@ describe('i18n — anglais indisponible', () => {
     await vi.waitFor(() => expect(warn).toHaveBeenCalled())
     await vi.waitFor(() => expect(pushError).toHaveBeenCalledOnce())
 
-    // Le français est la seule langue garantie : le message doit être le vrai texte FR, pas
-    // la clé brute que renverrait une locale absente.
-    expect(pushError.mock.calls[0][0]).toContain("L'anglais n'a pas pu être chargé")
+    // Qui clique sur « EN » ne lit peut-être pas le français : le message est en anglais, et
+    // propose de recharger — un import dynamique raté reste en échec dans le registre de
+    // modules du navigateur, un second clic ne retenterait rien (vérifié le 24/09/2026).
+    const message = pushError.mock.calls[0][0]
+    expect(message).toContain('English could not be loaded')
+    expect(message).toMatch(/reload the page/i)
+  })
+
+  it("la locale n'est jamais basculée, même un instant, quand l'anglais échoue", async () => {
+    makeEnUnavailable()
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { default: i18n, setLocale } = await importI18n()
+
+    // Observateur synchrone : il enregistre CHAQUE valeur prise par la locale, pas seulement
+    // la dernière. Un état à moitié basculé — locale posée avant la résolution du chargement,
+    // puis rétablie — passerait inaperçu d'une simple lecture finale.
+    const seen = []
+    const stop = watch(i18n.global.locale, (value) => seen.push(value), { flush: 'sync' })
+
+    await setLocale('en')
+    stop()
+
+    expect(seen).not.toContain('en')
+    expect(i18n.global.locale.value).toBe('fr')
+    expect(document.documentElement.getAttribute('lang')).not.toBe('en')
+  })
+})
+
+describe('i18n — ce qui est écrit à côté, en stockage', () => {
+  /*
+    Le toast conseille de recharger. Si la préférence « en » était persistée AVANT que le
+    chargement réussisse, le rechargement repartirait sur une page qui retente l'anglais,
+    échoue au démarrage et retombe en français : le remède mènerait à un état pire. Le test
+    de locale ci-dessus suit la langue EN MÉMOIRE ; celui-ci suit ce qui est ÉCRIT.
+    Consentement accepté dans les deux cas : sans lui rien n'est jamais persisté, et un test
+    « rien n'a été écrit » passerait pour une mauvaise raison.
+  */
+  const acceptConsent = async () => {
+    const { useCookieStore } = await import('../../src/stores/cookieStore.js')
+    const store = useCookieStore()
+    store.acceptPreferences()
+    return store
+  }
+  const persistedLocale = () => JSON.parse(localStorage.getItem('comfort-cookies') || '{}').locale
+
+  it("un échec ne persiste pas la préférence anglaise", async () => {
+    makeEnUnavailable()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { wrapper } = await mountSelector()
+    await acceptConsent()
+
+    await wrapper.get('button').trigger('click')
+    await vi.waitFor(() => expect(warn).toHaveBeenCalled())
+    await vi.waitFor(() => expect(pushError).toHaveBeenCalled())
+
+    expect(persistedLocale()).not.toBe('en')
+  })
+
+  it('contrôle positif : une bascule réussie, elle, persiste « en »', async () => {
+    const { i18n, wrapper } = await mountSelector()
+    await acceptConsent()
+
+    await wrapper.get('button').trigger('click')
+    await vi.waitFor(() => expect(i18n.global.locale.value).toBe('en'))
+
+    expect(persistedLocale()).toBe('en')
   })
 })
 
