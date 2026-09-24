@@ -14,6 +14,17 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
   aucun texte. `aria-label` traduit FR + EN.
 - **Aucune page n'avait de repère `<main>`** — le conteneur de `RouterView` était un `<div>`.
   C'est le repère qui permet d'atteindre le contenu directement, sans parcourir la navigation.
+  ⚠️ Une règle CSS globale sur l'élément `main` (carte de contenu, `style.css`) habillait alors
+  toute la page, et les six vues de `/app/*` qui s'en servaient créaient des `<main>` imbriqués.
+  La règle devient la classe `.page-card`, les vues passent en `<div class="page-card">` : un
+  seul repère `<main>` par page, porté par `App.vue`.
+
+### Changed
+- **Footers et carte de contenu, thème clair.** Les footers (`AppFooter`, accueil) n'ont plus de
+  fond propre : ils partagent celui de la page, comme la barre de navigation. La carte des pages
+  `/app/*` passe de `gray-200` — même luminosité que la page, autre teinte, les deux se
+  confondaient — à `slate-50`, avec un filet plein au lieu du pointillé et une ombre diffuse
+  teintée ardoise. Le fond de la carte en thème sombre est inchangé.
 - **Les liens du footer étaient trop petits pour être visés** : `text-xs` sans remplissage donne
   environ 16 px de haut, contre les 24 px minimum du critère WCAG 2.2 (2.5.8). Portés à ~28 px
   sans changer la mise en page.

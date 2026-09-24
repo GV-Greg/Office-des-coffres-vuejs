@@ -68,7 +68,7 @@
     <!-- Footer : fusionne le disclaimer/copyright d'origine avec les liens légaux (Cookies #12).
          Pas de bouton "Gérer mes préférences" ni de mention "outil non officiel" séparée ici —
          déjà couverts par le disclaimer ci-dessous, pas de doublon (retour de Greg). -->
-    <div class="absolute bottom-0 inset-x-0 bg-slate-300 dark:bg-slate-900 py-3 px-4 text-center space-y-1">
+    <div class="absolute bottom-0 inset-x-0 py-3 px-4 text-center space-y-1">
       <nav class="flex flex-wrap items-center justify-center gap-x-2 text-xs text-slate-700 dark:text-slate-200">
         <RouterLink :to="{ name: 'legal-cookies' }" class="hover:underline">{{ t('Legal.Privacy.CookiesPolicyLink') }}</RouterLink>
         <span aria-hidden="true">&middot;</span>

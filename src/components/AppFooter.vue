@@ -17,7 +17,7 @@ const cookieStore = useCookieStore()
 </script>
 
 <template>
-  <footer class="w-full bg-slate-300 dark:bg-slate-900 py-3 px-4">
+  <footer class="w-full py-3 px-4">
     <div class="max-w-screen-laptop mx-auto flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-slate-600 dark:text-slate-400">
       <RouterLink :to="{ name: 'legal-cookies' }" class="inline-block py-1.5 hover:underline">{{ t('Legal.Privacy.CookiesPolicyLink') }}</RouterLink>
       <span aria-hidden="true">&middot;</span>

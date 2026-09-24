@@ -70,7 +70,7 @@
 </script>
 
 <template>
-  <main>
+  <div class="page-card">
     <div class="w-full max-w-2xl overflow-y-auto flex flex-col flex-grow items-center">
       <h2>{{ t('Profil.Title') }}</h2>
       <p class="text-gray-500 dark:text-gray-500 mb-4">{{ authStore.getUser?.email }}</p>
@@ -237,5 +237,5 @@
     />
 
     <NavMenu />
-  </main>
+  </div>
 </template>

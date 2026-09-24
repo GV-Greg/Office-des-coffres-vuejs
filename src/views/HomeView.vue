@@ -29,7 +29,7 @@
 </script>
 
 <template>
-  <main>
+  <div class="page-card">
     <div class="overflow-y-auto flex flex-col flex-grow">
       <i18n-t keypath="Home.WelcomeMessage" tag="h2" scope="global">
         <template #brand>
@@ -105,7 +105,7 @@
       </div>
     </div>
     <NavMenu />
-  </main>
+  </div>
 </template>
 
 <style scoped>

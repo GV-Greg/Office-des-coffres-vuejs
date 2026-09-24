@@ -6,10 +6,10 @@
 </script>
 
 <template>
-  <main>
+  <div class="page-card">
     <div class="overflow-y-auto flex flex-col flex-grow">
       <h2>{{ t('Company.Title') }}</h2>
     </div>
     <NavMenu />
-  </main>
+  </div>
 </template>
