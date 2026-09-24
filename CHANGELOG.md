@@ -6,6 +6,27 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — PR #54
+
+### Fixed
+- 🔴 **Pages légales illisibles en thème clair — mention obligatoire RGPD effacée.**
+  `.page-container` impose `text-white` à tout son contenu ; les `<p>` ont leur propre couleur,
+  mais les `<h3>`, `<li>` et `<strong>` héritaient du blanc, sur la carte blanche : 1:1,
+  invisibles. Mesuré en navigateur sur `main` : **72** éléments de texte invisibles sur
+  `/legal/privacy`, 45 sur `/legal/cookies`, 23 sur `/legal/mentions` — dont le **nom et
+  l'adresse postale du responsable de traitement** (RGPD art. 13(1)(a)) ; seul l'email restait,
+  parce que c'est un lien. La carte des trois pages déclare désormais sa couleur de texte par
+  thème (`text-slate-800 dark:text-white`) : **0** élément invisible après correctif, thème
+  sombre identique au pixel près. Exposition : le thème part d'un défaut sombre écrit en dur
+  (pas de `prefers-color-scheme`) — la page cassée touchait qui passait en clair, et restait
+  cassée à chaque visite si les préférences étaient acceptées.
+
+### Added
+- `tests/legal/legalCardTextColor.unit.test.js` — chaque carte de page légale déclare une
+  couleur de texte foncée en clair et une couleur en sombre. Échoue sur les trois pages
+  d'origine. Correctif d'urgence : le désamorçage de `text-white` dans `.page-container`
+  (Login, Register, VerifyEmail, AddCharacter s'y appuient) fera l'objet d'une PR distincte.
+
 ## [2026-09-24] — PR #53
 
 ### Fixed

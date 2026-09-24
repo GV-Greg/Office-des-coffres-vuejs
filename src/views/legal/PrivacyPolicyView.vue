@@ -47,7 +47,7 @@
 
         <div
           data-testid="privacy-policy-content"
-          class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 tablet:p-10 space-y-8"
+          class="bg-white dark:bg-gray-800 text-slate-800 dark:text-white rounded-lg shadow-md p-6 tablet:p-10 space-y-8"
         >
           <p>
             <i18n-t keypath="Legal.Privacy.Preamble" scope="global">
