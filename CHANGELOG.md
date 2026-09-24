@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-25] — PR #60
+
+### Changed
+- **Discipline de la référence de contraste, écrite là où elle s'applique** (en-tête de
+  `textContrast.mjs`, note de `textContrast.baseline.json`, message « DISPARU ») : chaque
+  correction fait échouer la mesure avec « DISPARU », et c'est voulu ; la mise à jour de la
+  référence va **dans le même commit** que la correction ; c'est le **diff de la référence** qui
+  se relit ; jamais de régénération en bloc pour faire passer. `--update-baseline` affiche
+  désormais ce diff ligne par ligne avant d'écrire.
+
 ## [2026-09-25] — PR #59
 
 ### Added
