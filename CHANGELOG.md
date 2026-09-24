@@ -6,7 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-09-24] — PR #56
+## [2026-09-25] — PR #57
+
+### Docs
+- **Thème sombre par défaut : décision écrite** (`docs/DECISIONS.md`) — délibéré (Greg,
+  24/09/2026), et non un oubli de `prefers-color-scheme`. Raisons : identité visuelle (le sombre
+  est le thème fini) et état du thème clair (26 textes sous le seuil de contraste). **Condition de
+  réouverture** : la mesure au ratio au vert sur les deux thèmes. L'argument énergétique n'est
+  gardé qu'en remarque secondaire, borné (surtout OLED, peu sur LCD, et le site s'utilise sur
+  ordinateur). Commentaire posé sur `DEFAULT_COMFORT_DATA` dans `cookieStore.js`. Aucun
+  changement de comportement.
+- Date de l'entrée #56 corrigée : 25/09, et non 24/09 — merge à 00:00:06 (heure de Bruxelles).
+
+## [2026-09-25] — PR #56
 
 ### Fixed
 - **`.page-container` n'impose plus `text-white` à son contenu.** Cause racine du texte invisible

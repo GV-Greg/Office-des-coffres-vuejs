@@ -84,3 +84,36 @@ chemins de publication différents (`buildPayload()` groupé pour les nouveauté
 
 **Conséquences** — Le guard ne s'applique qu'à `/login` et `/register`, pas à la landing. Un
 comportement volontairement asymétrique, pas un oubli.
+
+## Thème sombre par défaut, sans lecture de `prefers-color-scheme`
+
+**Contexte** — Au premier chargement (`localStorage` vide), le thème part de
+`DEFAULT_COMFORT_DATA.theme = 'dark'` (`src/stores/cookieStore.js`) : la préférence clair/sombre
+du système n'est pas lue. Relevé le 24/09/2026 pendant l'audit d'accessibilité — un visiteur dont
+l'OS est en clair arrive quand même en sombre. Sans décision écrite, ça se lit comme un oubli.
+
+**Décision (Greg, 24/09/2026)** — Le sombre par défaut est **délibéré**, et on ne lit pas
+`prefers-color-scheme`. Raisons :
+- **L'identité visuelle** : le site est conçu sombre ; c'est le thème fini, celui dont le rendu a
+  été travaillé et vérifié.
+- **L'état du thème clair** : au 24/09/2026, la mesure au ratio (`tests/browser/textContrast.mjs`)
+  relève **26 textes sous le seuil** sur les pages publiques, et le clair a porté un défaut
+  bloquant (texte blanc sur blanc des pages légales, PR #54). Suivre le réglage système
+  exposerait d'un coup à ce thème tous les visiteurs dont l'appareil est en clair.
+
+**Condition de réouverture** — La bascule vers `prefers-color-scheme` redevient envisageable
+**quand la mesure au ratio passe au vert sur les deux thèmes**. Pas avant, et pas sur un autre
+critère.
+
+**Remarque secondaire, bornée** — Un fond sombre consomme moins d'énergie à l'affichage, mais
+surtout sur écran **OLED** ; sur un LCD le rétroéclairage reste allumé quel que soit le contenu,
+et ce site s'utilise sur **ordinateur** (arbitrage du 20/09/2026 : pas de copier-coller depuis le
+client de jeu mobile). Ce n'est donc pas une raison de la décision, tout au plus un effet de bord
+favorable sur les écrans qui s'y prêtent.
+
+**Conséquences** —
+- **Ne pas « corriger » en lisant `prefers-color-scheme`** tant que la condition de réouverture
+  n'est pas remplie.
+- Le thème clair n'en est pas secondaire pour autant : tout audit (contraste, axe) couvre **les
+  deux thèmes explicitement**, en constatant la bascule — le défaut sombre fait qu'un audit qui
+  ne force rien ne mesure que le sombre.
