@@ -5,8 +5,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import { createI18n } from 'vue-i18n'
-import messages from '@intlify/unplugin-vue-i18n/messages'
+import i18n, { setLocale, DEFAULT_LOCALE } from '@/i18n/index'
+import { useCookieStore } from '@/stores/cookieStore'
 import { createNotivue } from 'notivue'
 
 // Importez le style de Notivue
@@ -92,13 +92,6 @@ addIcons(
   FaHardHat
 )
 
-const i18n = createI18n({
-  legacy: false,
-  locale: 'fr',
-  fallbackLocale: 'fr',
-  messages
-})
-
 // Configuration de Notivue
 const notivue = createNotivue({
   position: 'top-right',
@@ -120,4 +113,22 @@ app.component('v-icon', OhVueIcon)
 
 app.use(notivue)
 
-app.mount('#app')
+// La locale est chargée AVANT le montage : elle était jusqu'ici appliquée dans un
+// `onMounted` de SelectorLanguage, donc après un premier rendu en français — un visiteur
+// anglophone voyait la page s'afficher en français puis basculer. Charger ici supprime ce
+// flash, qui existait déjà, et empêche celui qu'aurait introduit le chargement à la demande.
+//
+// Enveloppé plutôt qu'en `await` de premier niveau : la cible de build (es2020) ne supporte
+// pas le top-level await, et l'élever changerait la compatibilité navigateur du site pour
+// une commodité d'écriture. `setLocale` ne rejette jamais : si l'anglais ne se charge pas,
+// l'application se monte en français, embarqué dans le bundle (voir src/i18n/index.js).
+// La langue mémorisée est relue via cookieStore, jamais par un accès direct au stockage :
+// c'est la règle du projet (une seule porte d'entrée vers localStorage), tenue par
+// tests/enforcement/storage-usage.unit.test.js. `initializeCookies()` est idempotente et
+// sera rappelée par App.vue au montage — l'avancer ici ne fait que rendre la préférence
+// disponible avant le premier rendu.
+const cookieStore = useCookieStore()
+cookieStore.initializeCookies()
+
+setLocale(cookieStore.getComfortData('locale', DEFAULT_LOCALE))
+  .finally(() => app.mount('#app'))

@@ -6,6 +6,42 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-24] — PR #49
+
+### Changed
+- **L'anglais est chargé à la demande**, le français reste embarqué. `fr.json` et `en.json`
+  partaient tous deux dans le bundle d'entrée alors qu'un visiteur n'en lit qu'un. Le bundle
+  principal passe de **323,0 à 215,4 Ko brut** (69,5 → 65,2 Ko brotli) et **repasse sous son
+  budget de 300 Ko**, franchi depuis le 19/09. Total d'entrée d'un visiteur francophone :
+  498,7 → 381,7 Ko brut ; un anglophone y ajoute le chunk `en-*` (37,3 Ko).
+  Charger aussi le français à la demande gagnait ~40 Ko de plus, mais une requête de locale en
+  échec (réseau coupé, chunk absent après un déploiement) faisait alors afficher à l'interface
+  ses clés brutes (`Welcome.Intro`…) — constaté en navigateur. Embarqué, le français sert de
+  repli : si l'anglais ne se charge pas, le site s'affiche en français, avec un avertissement
+  lisible en console, et la préférence n'est pas mémorisée.
+- **La langue mémorisée est appliquée avant le montage de l'application.** Elle l'était dans un
+  `onMounted` de `SelectorLanguage`, donc après un premier rendu en français : un visiteur
+  anglophone voyait la page s'afficher en français puis basculer. Ce flash existait déjà et
+  disparaît ; le chargement à la demande en aurait introduit un plus long.
+
+### Fixed
+- **Les messages de validation et les toasts d'authentification ignoraient la langue choisie.**
+  Deux instances i18n coexistaient — celle de `main.js` pour les composants, et une seconde dans
+  `src/i18n/index.js` pour `Validators.js` et `authStore.js`, qui ne peuvent pas appeler
+  `useI18n()`. Personne ne changeant jamais la locale de la seconde, tout ce qu'elle produisait
+  restait en français : « Le champ est requis », les erreurs de longueur et d'email, les toasts
+  de session. Une seule instance désormais, ce qui supprime la classe de bug entière.
+- 4 `console.log` actifs en production retirés de `SelectorLanguage.vue`.
+
+### Added
+- `tests/enforcement/i18n-parity.unit.test.js` — échoue sur toute clé présente dans une locale et
+  absente de l'autre, ou sur une valeur vide. `fallbackLocale: 'fr'` est conservé (le français
+  étant toujours chargé, il ne coûte rien) : le test empêche l'oubli, le fallback en rattrape
+  l'effet à l'écran.
+- `tests/common/i18nLocaleLoading.test.js` — anglais indisponible : l'application reste en
+  français, sans rejet ni clé brute, et `SelectorLanguage` ne mémorise pas la langue ratée ;
+  anglais disponible : `Validators.js` suit la bascule (instance unique).
+
 ## [2026-09-20] — PR #46
 
 ### Added

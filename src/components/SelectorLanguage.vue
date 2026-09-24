@@ -12,34 +12,32 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useCookieStore } from '@/stores/cookieStore'
+  import { computed } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  import { useCookieStore } from '@/stores/cookieStore'
+  import { setLocale } from '@/i18n/index'
 
-const { t, locale } = useI18n()
-const cookieStore = useCookieStore()
+  const { t, locale } = useI18n()
+  const cookieStore = useCookieStore()
 
-const isCurrentFrench = computed(() => locale.value === 'fr')
-const currentLocale = computed(() => isCurrentFrench.value ? 'FR' : 'EN')
+  const isCurrentFrench = computed(() => locale.value === 'fr')
+  const currentLocale = computed(() => isCurrentFrench.value ? 'FR' : 'EN')
 
-const applyLocale = (newLocale) => {
-  console.log('Applying locale:', newLocale)
-  locale.value = newLocale
-  cookieStore.setLocale(newLocale)
-}
+  /*
+    La restauration de la langue mémorisée ne se fait plus ici. Elle vivait dans un
+    `onMounted`, donc après un premier rendu en français : un visiteur anglophone voyait la
+    page s'afficher en français avant de basculer. Elle est désormais appliquée dans
+    `main.js` avant le montage — ce composant ne fait plus que changer de langue à la
+    demande.
 
-const toggleLocale = () => {
-  console.log('Current locale:', locale.value)
-  const newLocale = isCurrentFrench.value ? 'en' : 'fr'
-  console.log('Switching to:', newLocale)
-  applyLocale(newLocale)
-}
-
-onMounted(() => {
-  const savedLocale = cookieStore.comfortData.locale || 'fr'
-  console.log('Initial locale:', savedLocale)
-  if (['fr', 'en'].includes(savedLocale)) {
-    applyLocale(savedLocale)
+    `setLocale` est asynchrone : le fichier de la langue cible est chargé à la demande, et
+    la bascule n'a lieu qu'une fois les messages en place, jamais avant. Si le chargement
+    échoue, l'interface reste dans la langue courante et la préférence n'est pas mémorisée —
+    sinon chaque visite suivante retenterait une langue qui n'a jamais été affichée.
+  */
+  const toggleLocale = async () => {
+    const newLocale = isCurrentFrench.value ? 'en' : 'fr'
+    const applied = await setLocale(newLocale)
+    if (applied === newLocale) cookieStore.setLocale(newLocale)
   }
-})
 </script>
