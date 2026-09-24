@@ -16,6 +16,7 @@
   import { useI18n } from 'vue-i18n'
   import { useCookieStore } from '@/stores/cookieStore'
   import { setLocale } from '@/i18n/index'
+  import { push } from 'notivue'
 
   const { t, locale } = useI18n()
   const cookieStore = useCookieStore()
@@ -34,10 +35,16 @@
     la bascule n'a lieu qu'une fois les messages en place, jamais avant. Si le chargement
     échoue, l'interface reste dans la langue courante et la préférence n'est pas mémorisée —
     sinon chaque visite suivante retenterait une langue qui n'a jamais été affichée.
+    Un toast le dit : sans lui, le bouton semblait simplement ne pas répondre. Il s'affiche
+    dans la langue restée active, la seule dont les messages sont garantis.
   */
   const toggleLocale = async () => {
     const newLocale = isCurrentFrench.value ? 'en' : 'fr'
     const applied = await setLocale(newLocale)
-    if (applied === newLocale) cookieStore.setLocale(newLocale)
+    if (applied === newLocale) {
+      cookieStore.setLocale(newLocale)
+    } else {
+      push.error(t('Common.Language.LoadFailed'))
+    }
   }
 </script>

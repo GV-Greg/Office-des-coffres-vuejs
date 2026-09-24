@@ -41,7 +41,8 @@
     "Language": {
       "Title": "Langue",
       "French": "Français",
-      "English": "Anglais"
+      "English": "Anglais",
+      "LoadFailed": "L'anglais n'a pas pu être chargé. Vérifiez votre connexion, puis réessayez."
     },
     "Footer": {
       "UnofficialTool": "Outil non officiel"
