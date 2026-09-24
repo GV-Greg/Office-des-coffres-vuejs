@@ -6,6 +6,33 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — PR #58
+
+### Fixed
+- **Mouvement réduit enfin honoré, et fin de la boucle infinie de l'accueil (WCAG 2.2.2, A).**
+  L'invite « cliquez » bondissait à l'infini (`animate-bounce`), dès le chargement, et ignorait
+  `prefers-reduced-motion` — le cadenas aussi (animation au survol d'oh-vue-icons). La préférence
+  n'était qu'annoncée : même un audit « en mouvement réduit » voyait la page bouger, et deux
+  captures du même code différaient.
+  - L'invite rebondit **3 × 1 s = 3 s** — budget de conception, que le test fait respecter —
+    loin du plafond réglementaire de 5 s (2.2.2 vise ce qui dure *plus* de 5 s), nommé à côté
+    comme ce qu'on n'approche jamais ; puis **s'arrête en haut du mouvement** ; seulement
+    derrière `motion-safe:`.
+  - **Règle globale** `@media (prefers-reduced-motion: reduce)` dans `base.css` : animations et
+    transitions ramenées à **0,01 ms, une itération** — pas `none`, pour que
+    `transitionend`/`animationend` partent toujours. Vérifié : aucune animation en `reduce`, cinq
+    captures successives de l'accueil identiques ; bannière cookies, modale de préférences, toast
+    et overlay de navigation se retirent tous, avec et sans mouvement réduit.
+
+### Added
+- Au survol du cadenas, l'invite **rejoue un rebond plus vif pendant 3 s** (6 × 0,5 s), puis
+  s'arrête en haut ; pas de relance en cours de rebond ; rien en mouvement réduit.
+- `tests/enforcement/motion.unit.test.js` — animations maison finies, ≤ budget de 3 s et
+  strictement sous le plafond de 5 s, aucune animation
+  Tailwind infinie (`animate-bounce/spin/ping/pulse`) dans les vues, règle globale de mouvement
+  réduit présente. Échoue sur les 3 points avec le code d'origine. Tests du survol dans
+  `tests/common/WelcomeView.test.js`.
+
 ## [2026-09-25] — PR #61
 
 ### Docs

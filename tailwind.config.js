@@ -98,7 +98,20 @@ export default {
       gridTemplateRows: {
         // Simple 15 row grid
         '15': 'repeat(15, minmax(0, 1fr))',
-      }
+      },
+      // Rebond FINI pour l'invite « cliquez » de l'accueil. L'`animate-bounce` natif boucle à
+      // l'infini : un mouvement automatique de PLUS de 5 s sans moyen de l'arrêter est un écart
+      // WCAG 2.2.2 (niveau A). DEUX NOMBRES, pas un :
+      //   - BUDGET DE CONCEPTION : 3 s (ici 3 × 1 s) — ce que le test fait respecter ; attirer
+      //     l'œil sur « cliquez » n'en demande pas plus ;
+      //   - PLAFOND RÉGLEMENTAIRE : 5 s — ce qu'on n'approche JAMAIS.
+      // L'écart entre les deux EST la marge : un cycle allongé, un délai, un arrondi de
+      // navigateur ne doivent pas suffire à basculer dans un écart de niveau A.
+      // `forwards` : la flèche s'arrête EN HAUT du mouvement (demande de Greg, 25/09/2026).
+      // À n'employer que derrière `motion-safe:`.
+      animation: {
+        'bounce-hint': 'bounce 1s 3 forwards',
+      },
     },
   },
   plugins: [],

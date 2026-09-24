@@ -114,3 +114,23 @@ body {
   background: var(--odc-primary);
   color: white;
 }
+
+/*
+  Mouvement réduit — honoré par le CSS, pour tout le site. Quand le système annonce
+  `prefers-reduced-motion: reduce`, animations et transitions sont coupées. Sans cette règle,
+  la préférence n'était qu'annoncée : la flèche de l'accueil (boucle infinie) et le cadenas
+  (au survol, via oh-vue-icons) continuaient de bouger — et toute capture ou audit « en
+  mouvement réduit » restait non déterministe (constaté le 24/09/2026).
+  0,01 ms plutôt que `none` : les événements animationend/transitionend se déclenchent encore,
+  ce dont un composant peut dépendre.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
