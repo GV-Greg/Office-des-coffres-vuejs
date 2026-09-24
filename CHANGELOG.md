@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [à dater au merge] — PR #52
+## [2026-09-24] — PR #52
 
 ### Fixed
 - **Le message d'échec de chargement de l'anglais était en français** — donc illisible pour qui
@@ -23,12 +23,21 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - Test : la locale n'est **jamais** basculée, même transitoirement, quand l'anglais échoue
   (observateur synchrone sur la locale) — un état « posé avant la résolution du chargement puis
   rétabli » donnerait la bonne valeur finale et passerait inaperçu autrement.
+- Tests de **persistance** : consentement accepté, un échec n'écrit pas la préférence « en » en
+  `localStorage` (sinon le rechargement conseillé repartirait sur l'anglais en échec), avec un
+  contrôle positif — une bascule réussie, elle, l'écrit. Vérifié aussi en navigateur : stockage
+  inchangé après l'échec, rechargement propre en français, sans toast au démarrage.
+- Commentaire « rechargez, jamais réessayez » à côté des littéraux, qui étend l'avertissement à
+  **tout** `import()` dynamique — y compris les 13 routes découpées de `src/router/index.js`, dont
+  l'échec de chargement est aujourd'hui silencieux (relevé en roadmap).
 
 ### Notes
 - Annonce aux lecteurs d'écran vérifiée dans le DOM rendu : notivue insère le message dans une
   zone `role="alert"` + `aria-live="assertive"`. Limite connue : cette zone ne porte pas
   `lang="en"`, un lecteur d'écran réglé sur la page (`lang="fr"`) prononcera la phrase anglaise
-  avec une voix française. notivue ne permet pas de la poser par notification.
+  avec une voix française (écart WCAG 3.1.2). notivue 2.4.5 ne rend que du texte brut dans la
+  zone annoncée, aucun `<span lang>` possible : limite consignée dans
+  `admin/content/roadmap-a11y.md`, sans retouche du DOM après coup.
 
 ## [2026-09-24] — PR #51
 

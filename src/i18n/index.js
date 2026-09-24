@@ -54,9 +54,18 @@ const loaded = new Set([DEFAULT_LOCALE])
   pas). Un littéral, lui, part dans le bundle d'entrée comme le reste du code : il est
   toujours là.
 
-  « Rechargez la page », et non « réessayez » : vérifié en navigateur le 24/09/2026, un import
-  dynamique qui a échoué reste en échec dans le registre de modules de Chrome — le second clic
-  ne refait aucune requête. Seul un rechargement retente le téléchargement.
+  ⚠️ « RECHARGEZ LA PAGE », JAMAIS « RÉESSAYEZ ». Ne pas « améliorer » ce texte vers un
+  réessai : il redeviendrait faux sans qu'aucun test ne tombe. Vérifié en navigateur le
+  24/09/2026 : un import dynamique qui a échoué reste en échec dans le registre de modules du
+  navigateur (Chrome) — le second clic ne refait AUCUNE requête, et échoue encore. Seul un
+  rechargement retente le téléchargement. Rien ne se voit de l'extérieur : aucune erreur
+  nouvelle, juste un bouton qui ne fait plus rien.
+
+  La portée dépasse les locales : TOUT `import()` dynamique a cette propriété. Les routes de
+  `src/router/index.js` sont découpées ainsi (13 pages) : une coupure réseau d'une seconde
+  pendant une navigation rend la page inaccessible jusqu'au rechargement, et la personne n'a
+  aucune raison de deviner que c'est le remède. Tout message d'échec de chargement d'un chunk,
+  où qu'il soit, doit dire de recharger.
 
   L'entrée `fr` est inatteignable aujourd'hui (le français est embarqué, il ne peut pas
   échouer à se charger) : elle existe pour qu'une future locale chargée à la demande ne

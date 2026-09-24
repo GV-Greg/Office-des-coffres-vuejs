@@ -130,6 +130,47 @@ describe('i18n — anglais indisponible', () => {
   })
 })
 
+describe('i18n — ce qui est écrit à côté, en stockage', () => {
+  /*
+    Le toast conseille de recharger. Si la préférence « en » était persistée AVANT que le
+    chargement réussisse, le rechargement repartirait sur une page qui retente l'anglais,
+    échoue au démarrage et retombe en français : le remède mènerait à un état pire. Le test
+    de locale ci-dessus suit la langue EN MÉMOIRE ; celui-ci suit ce qui est ÉCRIT.
+    Consentement accepté dans les deux cas : sans lui rien n'est jamais persisté, et un test
+    « rien n'a été écrit » passerait pour une mauvaise raison.
+  */
+  const acceptConsent = async () => {
+    const { useCookieStore } = await import('../../src/stores/cookieStore.js')
+    const store = useCookieStore()
+    store.acceptPreferences()
+    return store
+  }
+  const persistedLocale = () => JSON.parse(localStorage.getItem('comfort-cookies') || '{}').locale
+
+  it("un échec ne persiste pas la préférence anglaise", async () => {
+    makeEnUnavailable()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { wrapper } = await mountSelector()
+    await acceptConsent()
+
+    await wrapper.get('button').trigger('click')
+    await vi.waitFor(() => expect(warn).toHaveBeenCalled())
+    await vi.waitFor(() => expect(pushError).toHaveBeenCalled())
+
+    expect(persistedLocale()).not.toBe('en')
+  })
+
+  it('contrôle positif : une bascule réussie, elle, persiste « en »', async () => {
+    const { i18n, wrapper } = await mountSelector()
+    await acceptConsent()
+
+    await wrapper.get('button').trigger('click')
+    await vi.waitFor(() => expect(i18n.global.locale.value).toBe('en'))
+
+    expect(persistedLocale()).toBe('en')
+  })
+})
+
 describe('i18n — anglais disponible', () => {
   it('bascule, et les consommateurs hors composant suivent (instance unique)', async () => {
     const { setLocale } = await importI18n()
