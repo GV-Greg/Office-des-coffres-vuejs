@@ -1,0 +1,49 @@
+name: A11y — faisabilité navigateur (sonde, branche jetable)
+
+# Vérification de faisabilité (admin/content/roadmap-a11y.md, révision du 24/09/2026) :
+# le runner peut-il faire tourner axe-core contre la page réellement rendue, et avec quelle
+# stabilité ? Ne tourne que sur cette branche, ne garde aucun déploiement.
+on:
+  push:
+    branches:
+      - chore/a11y-browser-feasibility
+
+jobs:
+  probe:
+    name: Sonde axe navigateur (runner ${{ matrix.runner }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci
+
+      # URL factice : toutes les requêtes /api/v1/ sont interceptées par la sonde.
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_ENDPOINT_PROD: https://api.invalid/api/v1/
+
+      - name: Outils de la sonde (hors package.json, versions épinglées)
+        run: npm i --no-save playwright-core@1.63.0 axe-core@4.13.0
+
+      - name: Chrome du runner
+        run: |
+          which google-chrome && google-chrome --version
+
+      - name: Servir le build
+        run: |
+          npx vite preview --port 4173 --strictPort &
+          for i in $(seq 1 30); do curl -sf http://localhost:4173/ >/dev/null && exit 0; sleep 1; done
+          echo "preview injoignable"; exit 1
+
+      - name: 10 runs axe complets
+        run: node scripts/a11y-browser-probe.mjs http://localhost:4173 10 "$(which google-chrome)"
