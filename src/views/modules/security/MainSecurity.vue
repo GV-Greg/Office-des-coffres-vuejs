@@ -10,7 +10,7 @@
 </script>
 
 <template>
-  <main>
+  <div class="page-card">
     <div class="w-full flex flex-grow mb-2">
       <div class="w-1/6 flex flex-col justify-start text-rose-600">
         <h3 class="text-center">{{ t('Security.Title') }}</h3>
@@ -24,5 +24,5 @@
       </div>
     </div>
     <NavMenu />
-  </main>
+  </div>
 </template>

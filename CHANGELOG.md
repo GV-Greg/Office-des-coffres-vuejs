@@ -6,6 +6,39 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-24] — PR #50
+
+### Fixed
+- **Le bouton cadenas de l'accueil n'avait aucun nom accessible.** C'est la porte d'entrée
+  principale du site, et un lecteur d'écran n'annonçait qu'« bouton » : l'icône seule ne porte
+  aucun texte. `aria-label` traduit FR + EN.
+- **Aucune page n'avait de repère `<main>`** — le conteneur de `RouterView` était un `<div>`.
+  C'est le repère qui permet d'atteindre le contenu directement, sans parcourir la navigation.
+  ⚠️ Une règle CSS globale sur l'élément `main` (carte de contenu, `style.css`) habillait alors
+  toute la page, et les six vues de `/app/*` qui s'en servaient créaient des `<main>` imbriqués.
+  La règle devient la classe `.page-card`, les vues passent en `<div class="page-card">` : un
+  seul repère `<main>` par page, porté par `App.vue`.
+
+### Changed
+- **Footers et carte de contenu, thème clair.** Les footers (`AppFooter`, accueil) n'ont plus de
+  fond propre : ils partagent celui de la page, comme la barre de navigation. La carte des pages
+  `/app/*` passe de `gray-200` — même luminosité que la page, autre teinte, les deux se
+  confondaient — à `slate-50`, avec un filet plein au lieu du pointillé et une ombre diffuse
+  teintée ardoise. Le fond de la carte en thème sombre est inchangé.
+- **Les liens du footer étaient trop petits pour être visés** : `text-xs` sans remplissage donne
+  environ 16 px de haut, contre les 24 px minimum du critère WCAG 2.2 (2.5.8). Portés à ~28 px
+  sans changer la mise en page.
+- **Aucune `meta description`** : les moteurs composaient l'extrait des résultats à partir du
+  texte de la page. Elle mentionne l'essentiel et le caractère non officiel du site.
+
+### Notes
+- ⚠️ **Le défaut de contraste signalé sur la bannière cookies n'est pas corrigé ici, délibérément.**
+  Enquête faite, il ne vient pas de la bannière mais de la charte `.btn-grad-*` entière : le texte
+  blanc sur `green-400` donne **1,74:1**, sur `red-400` **2,77:1**, contre 4,5:1 requis. Les textes
+  de la bannière, eux, passent largement (6,97:1 en clair, 14,48:1 en sombre). Corriger reviendrait
+  à modifier l'apparence de tous les boutons du site — une décision de design, pas une correction
+  technique. En attente d'arbitrage.
+
 ## [2026-09-24] — PR #49
 
 ### Changed

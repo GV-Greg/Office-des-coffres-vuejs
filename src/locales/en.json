@@ -101,7 +101,8 @@
       "Text": "You may cross the threshold of the Office without giving your name — most tools stand open to you. Registering at the reception will unlock the best-guarded coffers and your own registries."
     },
     "Disclaimer": "Unofficial help site for the {link} community.",
-    "Copyright": "© {years} Office des coffres. All rights reserved."
+    "Copyright": "© {years} Office des coffres. All rights reserved.",
+    "EnterAriaLabel": "Enter the Office — go to the login page"
   },
   "Home": {
     "WelcomeMessage": "The {brand} welcomes you!",
