@@ -41,7 +41,8 @@
     "Language": {
       "Title": "Language",
       "French": "French",
-      "English": "English"
+      "English": "English",
+      "LoadFailed": "English could not be loaded. Check your connection, then try again."
     },
     "Footer": {
       "UnofficialTool": "Unofficial tool"

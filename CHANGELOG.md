@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-24] — PR #51
+
+### Fixed
+- **Le bouton de langue ne répondait plus visiblement quand l'anglais ne se chargeait pas.** Le
+  repli était correct (le site reste en français, la préférence n'est pas mémorisée), mais
+  l'avertissement n'allait qu'en console : pour la personne, un bouton qui ne fait rien. Un toast
+  d'erreur l'explique désormais, dans la langue restée active (`Common.Language.LoadFailed`,
+  FR + EN). Testé dans `tests/common/i18nLocaleLoading.test.js` et vérifié en navigateur, chunk
+  `en-*` bloqué.
+
 ## [2026-09-24] — PR #50
 
 ### Fixed

@@ -24,11 +24,24 @@ const makeEnUnavailable = () => {
   })
 }
 
+const pushError = vi.fn()
+
 beforeEach(() => {
   vi.resetModules()
   vi.doUnmock(EN_PATH)
+  vi.doMock('notivue', () => ({ push: { error: pushError } }))
+  pushError.mockClear()
   localStorage.clear()
 })
+
+const mountSelector = async () => {
+  const { default: i18n } = await importI18n()
+  const { default: SelectorLanguage } = await import('../../src/components/SelectorLanguage.vue')
+  const pinia = createPinia()
+  setActivePinia(pinia)
+  const wrapper = mount(SelectorLanguage, { global: { plugins: [pinia, i18n] } })
+  return { i18n, wrapper }
+}
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -78,6 +91,20 @@ describe('i18n — anglais indisponible', () => {
     expect(wrapper.text()).toBe('FR')
     expect(useCookieStore().getComfortData('locale', null)).not.toBe('en')
   })
+
+  it("SelectorLanguage le signale par un toast, dans la langue restée active", async () => {
+    makeEnUnavailable()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { wrapper } = await mountSelector()
+
+    await wrapper.get('button').trigger('click')
+    await vi.waitFor(() => expect(warn).toHaveBeenCalled())
+    await vi.waitFor(() => expect(pushError).toHaveBeenCalledOnce())
+
+    // Le français est la seule langue garantie : le message doit être le vrai texte FR, pas
+    // la clé brute que renverrait une locale absente.
+    expect(pushError.mock.calls[0][0]).toContain("L'anglais n'a pas pu être chargé")
+  })
 })
 
 describe('i18n — anglais disponible', () => {
@@ -91,5 +118,14 @@ describe('i18n — anglais disponible', () => {
     // seconde instance, jamais basculée, lui était réservée.
     expect(useValidators().isRequired('email', '')).toContain('is required')
     expect(document.documentElement.getAttribute('lang')).toBe('en')
+  })
+
+  it("SelectorLanguage bascule sans toast d'erreur", async () => {
+    const { i18n, wrapper } = await mountSelector()
+
+    await wrapper.get('button').trigger('click')
+    await vi.waitFor(() => expect(i18n.global.locale.value).toBe('en'))
+
+    expect(pushError).not.toHaveBeenCalled()
   })
 })
