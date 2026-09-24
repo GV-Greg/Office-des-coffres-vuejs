@@ -6,6 +6,25 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — PR #53
+
+### Fixed
+- **Contraste des boutons en dégradé (WCAG 1.4.3).** Le texte blanc passait sous 4,5:1 sur
+  l'arrêt clair de tous les dégradés : `green-400` 1,74:1, `red-400` 2,77:1, orange du bouton
+  principal 2,26:1… Décision de Greg (24/09) : on garde le texte blanc, on fonce les fonds.
+  Chaque dégradé part désormais de l'arrêt le plus clair qui passe 4,5:1 — `slate-500`,
+  `red-600`, `blue-600`, `purple-600`, `green-700`, `yellow-700`, `cyan-700`, `orange-700` —
+  en gardant son écart de deux crans ; le survol ne fait qu'assombrir. Même traitement pour les
+  dégradés orange → rouge hors charte (`.btn-primary`/`.btn-default`, `SelectorCharacter`,
+  pastilles de `HelpModal`). Aucun libellé ne change. Mesuré sur le rendu réel (arrêts calculés
+  par le navigateur, repos et survol, thèmes clair et sombre) : tous ≥ 4,76:1.
+
+### Added
+- `tests/enforcement/btn-grad-contrast.unit.test.js` — calcule le contraste du blanc sur
+  **chaque arrêt** de chaque dégradé à texte blanc de `style.css`, survol compris. axe classe
+  ces boutons « à vérifier » (fond en dégradé), jamais en violation : sans ce test, le futur
+  garde-fou axe ne verrait pas une régression. Échoue sur 9 règles avec la charte d'origine.
+
 ## [2026-09-24] — PR #52
 
 ### Fixed

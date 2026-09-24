@@ -48,7 +48,7 @@
           <h4 class="text-xs font-bold uppercase tracking-wide text-orange-500 mb-3">{{ t('Common.HelpModal.Steps') }}</h4>
           <ol class="relative border-l-2 border-slate-300 dark:border-slate-600 space-y-5">
             <li v-for="(step, i) in steps" :key="i" class="relative pl-6">
-              <span class="absolute -left-[0.95rem] top-0 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-red-600 ring-4 ring-white dark:ring-slate-800 text-white text-xs font-bold">
+              <span class="absolute -left-[0.95rem] top-0 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-orange-700 to-red-800 ring-4 ring-white dark:ring-slate-800 text-white text-xs font-bold">
                 {{ i + 1 }}
               </span>
               <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ step }}</p>
