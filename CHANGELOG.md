@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [à dater au merge] — PR #57
+## [2026-09-25] — PR #57
 
 ### Docs
 - **Thème sombre par défaut : décision écrite** (`docs/DECISIONS.md`) — délibéré (Greg,
