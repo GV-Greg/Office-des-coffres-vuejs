@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [à dater au merge] — PR #56
+## [2026-09-24] — PR #56
 
 ### Fixed
 - **`.page-container` n'impose plus `text-white` à son contenu.** Cause racine du texte invisible
