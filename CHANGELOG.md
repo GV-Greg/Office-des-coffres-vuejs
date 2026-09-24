@@ -6,6 +6,30 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — PR #52
+
+### Fixed
+- **Le message d'échec de chargement de l'anglais était en français** — donc illisible pour qui
+  a justement demandé l'anglais. Il se dit désormais dans la langue **demandée**. Une clé dans
+  `en.json` ne pouvait pas convenir : elle ne s'afficherait que si `en.json` était chargé, soit
+  le cas où le message ne sert pas. D'où une paire de littéraux FR + EN dans
+  `src/i18n/index.js`, **exception documentée** à la règle « tout texte dans les JSON ». La clé
+  `Common.Language.LoadFailed` (#51), morte côté anglais, est retirée des deux fichiers.
+- **« Réessayez » était faux.** Vérifié en navigateur : un import dynamique raté reste en échec
+  dans le registre de modules de Chrome, le second clic ne refait aucune requête. Le message
+  demande donc de **recharger la page**, seule action qui retente le téléchargement.
+
+### Added
+- Test : la locale n'est **jamais** basculée, même transitoirement, quand l'anglais échoue
+  (observateur synchrone sur la locale) — un état « posé avant la résolution du chargement puis
+  rétabli » donnerait la bonne valeur finale et passerait inaperçu autrement.
+
+### Notes
+- Annonce aux lecteurs d'écran vérifiée dans le DOM rendu : notivue insère le message dans une
+  zone `role="alert"` + `aria-live="assertive"`. Limite connue : cette zone ne porte pas
+  `lang="en"`, un lecteur d'écran réglé sur la page (`lang="fr"`) prononcera la phrase anglaise
+  avec une voix française. notivue ne permet pas de la poser par notification.
+
 ## [2026-09-24] — PR #51
 
 ### Fixed

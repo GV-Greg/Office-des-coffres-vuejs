@@ -42,6 +42,35 @@ const i18n = createI18n({
 
 const loaded = new Set([DEFAULT_LOCALE])
 
+/*
+  ⚠️ EXCEPTION ASSUMÉE à la règle du projet « tout texte d'interface vit dans fr.json ET
+  en.json ». Ces deux messages sont des littéraux, volontairement.
+
+  Ils disent qu'une langue n'a pas pu être chargée, et doivent se dire dans la langue
+  DEMANDÉE : la personne qui clique sur « EN » veut de l'anglais, et ne lit peut-être pas le
+  français. Or la langue demandée est précisément celle dont le fichier de traduction vient
+  d'échouer — une clé dans `en.json` serait inatteignable par construction (elle ne
+  s'afficherait que si `en.json` était chargé, soit exactement le cas où ce message ne sert
+  pas). Un littéral, lui, part dans le bundle d'entrée comme le reste du code : il est
+  toujours là.
+
+  « Rechargez la page », et non « réessayez » : vérifié en navigateur le 24/09/2026, un import
+  dynamique qui a échoué reste en échec dans le registre de modules de Chrome — le second clic
+  ne refait aucune requête. Seul un rechargement retente le téléchargement.
+
+  L'entrée `fr` est inatteignable aujourd'hui (le français est embarqué, il ne peut pas
+  échouer à se charger) : elle existe pour qu'une future locale chargée à la demande ne
+  retombe pas sur un message dans la mauvaise langue.
+*/
+const LOAD_FAILED_MESSAGES = {
+  fr: "Le français n'a pas pu être chargé. Rechargez la page pour réessayer.",
+  en: 'English could not be loaded. Reload the page to try again.',
+}
+
+export function loadFailedMessage(locale) {
+  return LOAD_FAILED_MESSAGES[locale] ?? LOAD_FAILED_MESSAGES.en
+}
+
 export async function loadLocaleMessages(locale) {
   if (loaded.has(locale)) return
   const messages = await loaders[locale]()
