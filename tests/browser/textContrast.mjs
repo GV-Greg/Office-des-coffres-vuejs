@@ -26,10 +26,21 @@
   - hors périmètre : l'empilement visuel sans lien de parenté DOM (un élément positionné par-dessus
     un autre). Le fond est lu dans la chaîne des ancêtres.
 
-  Usage : node tests/browser/textContrast.mjs <baseURL> [cheminChrome]
+  RÉFÉRENCE FIGÉE (`textContrast.baseline.json`, à côté de ce fichier) : les textes sous le seuil
+  ET les textes non mesurables connus. Tant qu'ils ne sont pas corrigés, un nouveau défaut se
+  fondrait dans le tas ; le contrôle échoue donc dès que l'ENSEMBLE CHANGE — un défaut de plus,
+  mais aussi un défaut corrigé sans mise à jour de la référence (un fait nouveau demande un coup
+  d'œil humain, pas un silence). Même principe que l'« incomplete » d'axe, qui se fige et ne
+  s'ignore pas.
+
+  Usage : node tests/browser/textContrast.mjs <baseURL> [cheminChrome] [--update-baseline]
   (build de prod servi par `vite preview` ; API simulée, aucune requête ne part vers la prod).
 */
 import { chromium } from 'playwright-core'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
+const BASELINE = fileURLToPath(new URL('./textContrast.baseline.json', import.meta.url))
 
 export const PUBLIC_PAGES = ['/', '/login', '/register', '/legal/cookies', '/legal/privacy', '/legal/mentions', '/page-inexistante']
 export const THEMES = ['light', 'dark']
@@ -145,25 +156,57 @@ export async function auditPage(browser, baseURL, path, theme) {
   return results
 }
 
+// Clé stable d'un constat : ni ratio ni couleurs (un cran corrigé changerait la clé sans que le
+// défaut disparaisse), mais thème, page, élément et texte.
+const keyOf = (theme, path, r) => `${theme} ${path} ${r.element} « ${r.text} »`
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const [baseURL, executablePath] = process.argv.slice(2)
+  const args = process.argv.slice(2)
+  const update = args.includes('--update-baseline')
+  const [baseURL, executablePath] = args.filter((a) => !a.startsWith('--'))
   const browser = await chromium.launch({ ...(executablePath ? { executablePath } : {}), args: ['--no-sandbox'] })
-  let failures = 0
-  const unmeasurable = new Set()
+  const current = { belowThreshold: [], unmeasurable: [] }
   try {
     for (const theme of THEMES) for (const path of PUBLIC_PAGES) {
       const results = await auditPage(browser, baseURL, path, theme)
-      const fails = results.filter((r) => r.status === 'fail')
-      failures += fails.length
-      for (const u of results.filter((r) => r.status === 'unmeasurable')) unmeasurable.add(`${u.element} « ${u.text} » — ${u.reason}`)
-      console.log(`${theme.padEnd(5)} ${path.padEnd(18)} ${results.length} textes · ${fails.length} sous le seuil`)
-      for (const f of fails) console.log(`      ✗ ${f.ratio}:1 < ${f.threshold}:1  ${f.color} sur ${f.background}  ${f.size}px${f.large ? ' (grand)' : ''}  ${f.element} « ${f.text} »`)
+      for (const r of results) {
+        if (r.status === 'fail') current.belowThreshold.push(`${keyOf(theme, path, r)} — ${r.ratio}:1 < ${r.threshold}:1 (${r.color} sur ${r.background})`)
+        if (r.status === 'unmeasurable') current.unmeasurable.push(`${keyOf(theme, path, r)} — ${r.reason}`)
+      }
     }
   } finally {
     await browser.close()
   }
-  console.log(`\nNon mesurables (${unmeasurable.size}), à vérifier autrement :`)
-  for (const u of unmeasurable) console.log(`   · ${u}`)
-  console.log(`\nBILAN : ${failures} texte(s) sous le seuil`)
-  process.exit(failures ? 1 : 0)
+  current.belowThreshold.sort(); current.unmeasurable.sort()
+
+  if (update) {
+    writeFileSync(BASELINE, JSON.stringify({
+      note: 'Référence figée — voir l\'en-tête de textContrast.mjs. Régénérer avec --update-baseline, et relire le diff : chaque ligne qui bouge est un fait nouveau.',
+      ...current,
+    }, null, 2) + '\n')
+    console.log(`Référence écrite : ${current.belowThreshold.length} sous le seuil, ${current.unmeasurable.length} non mesurables.`)
+    process.exit(0)
+  }
+
+  if (!existsSync(BASELINE)) { console.error('Référence absente : lancer avec --update-baseline, puis relire.'); process.exit(1) }
+  const baseline = JSON.parse(readFileSync(BASELINE, 'utf-8'))
+  const strip = (line) => line.split(' — ')[0]
+  let changed = 0
+  for (const kind of ['belowThreshold', 'unmeasurable']) {
+    const before = new Set(baseline[kind].map(strip))
+    const now = new Map(current[kind].map((l) => [strip(l), l]))
+    const added = [...now.keys()].filter((k) => !before.has(k))
+    const removed = [...before].filter((k) => !now.has(k))
+    const label = kind === 'belowThreshold' ? 'sous le seuil' : 'non mesurable'
+    for (const k of added) console.log(`  ✗ NOUVEAU ${label} : ${now.get(k)}`)
+    for (const k of removed) console.log(`  ✓ DISPARU (${label}) : ${k} — mettre à jour la référence si c'est une correction`)
+    changed += added.length + removed.length
+  }
+  console.log(`\n${current.belowThreshold.length} sous le seuil (référence : ${baseline.belowThreshold.length}) · ${current.unmeasurable.length} non mesurables (référence : ${baseline.unmeasurable.length})`)
+  if (changed) {
+    console.log(`BILAN : l'ensemble a CHANGÉ (${changed} ligne(s)). Seuil WCAG 1.4.3 : 4,5:1, 3:1 pour le grand texte. Corriger, ou — si c'est une correction voulue — régénérer avec --update-baseline et relire le diff.`)
+    process.exit(1)
+  }
+  console.log('BILAN : conforme à la référence.')
+  process.exit(0)
 }
