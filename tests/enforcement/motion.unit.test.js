@@ -23,8 +23,14 @@ const vueFiles = (dir) => readdirSync(dir).flatMap((name) => {
 
 const seconds = (token) => (token.endsWith('ms') ? parseFloat(token) / 1000 : parseFloat(token))
 
+// Deux nombres, pas un. Le budget est ce que le test fait respecter ; le plafond réglementaire
+// (WCAG 2.2.2 vise ce qui dure PLUS de 5 s) est ce qu'on n'approche jamais. Un garde-fou dont
+// la valeur de passage serait le seuil d'échec ne pourrait que constater, jamais prévenir.
+const DESIGN_BUDGET_S = 3
+const WCAG_CEILING_S = 5
+
 describe('Mouvement', () => {
-  it("les animations maison de la config Tailwind sont finies et durent au plus 5 s", () => {
+  it(`les animations maison de la config Tailwind sont finies et tiennent dans le budget de ${DESIGN_BUDGET_S} s`, () => {
     const animations = tailwindConfig.theme?.extend?.animation ?? {}
     expect(Object.keys(animations), 'aucune animation maison lue — le test ne prouverait rien').toContain('bounce-hint')
 
@@ -34,7 +40,10 @@ describe('Mouvement', () => {
       const iterations = parts.find((p) => p === 'infinite' || /^\d+$/.test(p)) ?? '1'
       expect(iterations, `animate-${name} boucle à l'infini : écart WCAG 2.2.2`).not.toBe('infinite')
       const total = seconds(duration) * Number(iterations)
-      expect(total, `animate-${name} dure ${total} s (${duration} × ${iterations}) : au-delà de 5 s, WCAG 2.2.2 exige un moyen de l'arrêter`).toBeLessThanOrEqual(5)
+      expect(total, `animate-${name} dure ${total} s (${duration} × ${iterations}) : budget de conception ${DESIGN_BUDGET_S} s`).toBeLessThanOrEqual(DESIGN_BUDGET_S)
+      // Redondant tant que le budget est sous le plafond — il reste là pour qu'un budget relevé
+      // un jour jusqu'au plafond échoue quand même : STRICTEMENT inférieur, jamais « au plus ».
+      expect(total, `animate-${name} dure ${total} s : doit rester STRICTEMENT sous le plafond WCAG 2.2.2 de ${WCAG_CEILING_S} s`).toBeLessThan(WCAG_CEILING_S)
     }
   })
 
