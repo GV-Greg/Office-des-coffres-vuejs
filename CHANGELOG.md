@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — PR #61
+
+### Docs
+- `docs/TESTS.md` : dossier `tests/browser/` (mesure de contraste en navigateur, hors Vitest,
+  référence figée), script `test:contrast`, garde-fous ajoutés le 24-25/09 (`i18n-parity`,
+  `btn-grad-contrast` et sa portée limitée, `page-container-no-text-color`,
+  `legalCardTextColor`, `i18nLocaleLoading`).
+- `docs/ARCHITECTURE.md` : `.page-card`, repère `<main>` unique porté par `App.vue`,
+  `.page-container` sans couleur de texte, règle de contraste de la charte `.btn-grad-*`.
+
 ## [2026-09-25] — PR #60
 
 ### Changed

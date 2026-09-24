@@ -18,9 +18,10 @@ réservée à la fin d'une tâche cohérente ou juste avant un push.
 | Cookies | `tests/cookies/` | `npm run test:cookies` | `cookieStore`, `CookiesBanner`, `CookiesModal` |
 | Économie | `tests/eco/` | `npm run test:eco` | `mineParser` (logique pure), `EconomyMines` |
 | Sécurité | `tests/security/` | `npm run test:security` | `SecurityGuet` |
-| Commun | `tests/common/` | `npm run test:common` | `NavBar`, `NavMenu`, `HomeView`, `WelcomeView` (footer fusionné), `App` (footer légal conditionnel), `goBackOrWelcome`, `HelpModal`, `Validators`, `kingdomTranslations`, `whatsNewAnnounce`, `gameCalendar`, `checkBundleBudget` (transverse — utilisé par Économie et à terme le Guet/la Douane, pas propre à un domaine) |
-| Légal | `tests/legal/` | `npm run test:legal` | `CookiesPolicyView`/`PrivacyPolicyView`/`MentionsLegalesView`, routes `/legal/cookies`, `/legal/privacy` et `/legal/mentions` |
-| Enforcement | `tests/enforcement/` | `npm run test:enforcement` | `storage-usage` (logique pure) — garde-fou admin/strategies/cookies.md §9 : `localStorage`/`sessionStorage`/`document.cookie` interdits hors `cookieStore.js` (whitelist `authStore.js`) |
+| Commun | `tests/common/` | `npm run test:common` | `NavBar`, `NavMenu`, `HomeView`, `WelcomeView` (footer fusionné), `App` (footer légal conditionnel), `goBackOrWelcome`, `HelpModal`, `Validators`, `kingdomTranslations`, `whatsNewAnnounce`, `gameCalendar`, `checkBundleBudget`, `i18nLocaleLoading` (anglais indisponible → repli français, préférence non persistée, instance i18n unique) (transverse — utilisé par Économie et à terme le Guet/la Douane, pas propre à un domaine) |
+| Légal | `tests/legal/` | `npm run test:legal` | `CookiesPolicyView`/`PrivacyPolicyView`/`MentionsLegalesView`, routes `/legal/cookies`, `/legal/privacy` et `/legal/mentions`, `legalCardTextColor` (la carte déclare sa couleur de texte dans les deux thèmes) |
+| Enforcement | `tests/enforcement/` | `npm run test:enforcement` | `storage-usage` (logique pure) — garde-fou admin/strategies/cookies.md §9 : `localStorage`/`sessionStorage`/`document.cookie` interdits hors `cookieStore.js` (whitelist `authStore.js`) ; `i18n-parity` (clés FR/EN identiques) ; `btn-grad-contrast` (chaque arrêt des dégradés à texte blanc de `style.css` ≥ 4,5:1 — ⚠️ ne voit **que** `style.css`) ; `page-container-no-text-color` |
+| Navigateur | `tests/browser/` | `npm run test:contrast -- <url> [chrome]` | **Hors Vitest**, vrai navigateur (`playwright-core`) sur un build servi par `vite preview` : `textContrast.mjs` mesure le ratio de chaque texte contre son fond résolu (dégradés arrêt par arrêt), 7 pages publiques × 2 thèmes, contre une **référence figée** (`textContrast.baseline.json`) — échoue dès que l'ensemble change. Mise à jour de la référence **dans le même commit** que la correction. Non branché en CI (26 défauts connus, lot contrastes). |
 | — | `tests/fixtures/` | — | Données réelles anonymisées, partagées entre domaines |
 
 **Suffixe `.unit.test.js` = logique pure sans DOM** (parseurs, calculs, helpers) — rapide, pas de
@@ -39,6 +40,7 @@ scripts pointent sur le dossier entier (`vitest run tests/<domaine>`).
 | `npm run test:logic` | Tests `.unit.test.js` uniquement (voir piège ci-dessous) |
 | `npm run test:<domaine>` | Un domaine ciblé (table ci-dessus) |
 | `npm run test:coverage` | Suite complète + rapport de couverture |
+| `npm run test:contrast -- <url> [chrome] [--update-baseline]` | Mesure de contraste en navigateur (`tests/browser/`, hors Vitest) |
 
 ### ⚠️ Piège : un glob ne fonctionne pas en argument positionnel Vitest
 
