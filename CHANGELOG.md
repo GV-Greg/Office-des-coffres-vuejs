@@ -6,11 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [à dater au merge] — PR #49
-
-> ⚠️ Date volontairement non figée : l'entrée est écrite à l'ouverture de la PR, qui ne peut pas
-> connaître sa date de merge. Convention inscrite dans `CLAUDE.md` le 20/09/2026 — la date de
-> merge fait foi, et se remplit **au merge**.
+## [2026-09-24] — PR #49
 
 ### Changed
 - **L'anglais est chargé à la demande**, le français reste embarqué. `fr.json` et `en.json`
