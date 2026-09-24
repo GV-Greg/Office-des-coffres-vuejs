@@ -18,6 +18,9 @@ const CONSENTED_PREFIXES = ['cookie-', 'comfort-']
 const RENEWAL_AFTER_MS = 183 * 24 * 60 * 60 * 1000
 
 const DEFAULT_COMFORT_DATA = {
+  // Sombre par défaut, DÉLIBÉRÉMENT, sans lire prefers-color-scheme : c'est le thème fini, et
+  // le clair n'est pas encore au seuil de contraste. Ce n'est pas un oubli — condition de
+  // réouverture dans docs/DECISIONS.md, « Thème sombre par défaut ». Auditer les DEUX thèmes.
   theme: 'dark',
   locale: 'fr',
 }
