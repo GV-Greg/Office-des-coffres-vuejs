@@ -6,14 +6,10 @@ import { fileURLToPath } from 'node:url'
 /*
   Garde-fou — parité des clés FR / EN.
 
-  Ce test est la contrepartie du chargement à la demande des locales (src/i18n/index.js).
-  Tant que les deux fichiers partaient dans le bundle, `fallbackLocale: 'fr'` rattrapait
-  silencieusement une clé absente de `en.json`. Charger une seule langue supprime ce filet :
-  une clé manquante s'afficherait telle quelle à l'écran, en anglais comme en français.
-
-  Rétablir le fallback coûterait de charger les deux fichiers, soit exactement ce que le
-  découpage évite. La parité vérifiée remplace donc le fallback — c'est elle qui rend le
-  retrait sûr, et non l'espoir que personne n'oublie une traduction.
+  Contrepartie du chargement à la demande de l'anglais (src/i18n/index.js). Le français,
+  embarqué, reste le `fallbackLocale` : une clé absente de `en.json` s'afficherait donc en
+  français au milieu d'une page anglaise, sans que personne ne le remarque. Ce test fait
+  échouer l'oubli au lieu de laisser le fallback le masquer.
 
   ⚠️ Lecture par `fs`, jamais par `import` : le plugin @intlify précompile les .json en
   fonctions de rendu, et un import statique ne rendrait pas l'objet attendu ici.

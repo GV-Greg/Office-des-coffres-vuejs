@@ -120,9 +120,8 @@ app.use(notivue)
 //
 // Enveloppé plutôt qu'en `await` de premier niveau : la cible de build (es2020) ne supporte
 // pas le top-level await, et l'élever changerait la compatibilité navigateur du site pour
-// une commodité d'écriture. `finally` garantit que l'application se monte même si le
-// chargement des messages échoue — une page affichant ses clés reste préférable à une page
-// blanche.
+// une commodité d'écriture. `setLocale` ne rejette jamais : si l'anglais ne se charge pas,
+// l'application se monte en français, embarqué dans le bundle (voir src/i18n/index.js).
 // La langue mémorisée est relue via cookieStore, jamais par un accès direct au stockage :
 // c'est la règle du projet (une seule porte d'entrée vers localStorage), tenue par
 // tests/enforcement/storage-usage.unit.test.js. `initializeCookies()` est idempotente et
@@ -132,5 +131,4 @@ const cookieStore = useCookieStore()
 cookieStore.initializeCookies()
 
 setLocale(cookieStore.getComfortData('locale', DEFAULT_LOCALE))
-  .catch(() => setLocale(DEFAULT_LOCALE))
   .finally(() => app.mount('#app'))

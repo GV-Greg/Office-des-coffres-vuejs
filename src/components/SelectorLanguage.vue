@@ -31,11 +31,13 @@
     demande.
 
     `setLocale` est asynchrone : le fichier de la langue cible est chargé à la demande, et
-    la bascule n'a lieu qu'une fois les messages en place, jamais avant.
+    la bascule n'a lieu qu'une fois les messages en place, jamais avant. Si le chargement
+    échoue, l'interface reste dans la langue courante et la préférence n'est pas mémorisée —
+    sinon chaque visite suivante retenterait une langue qui n'a jamais été affichée.
   */
   const toggleLocale = async () => {
     const newLocale = isCurrentFrench.value ? 'en' : 'fr'
-    await setLocale(newLocale)
-    cookieStore.setLocale(newLocale)
+    const applied = await setLocale(newLocale)
+    if (applied === newLocale) cookieStore.setLocale(newLocale)
   }
 </script>

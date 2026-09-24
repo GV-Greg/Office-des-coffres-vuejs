@@ -1,4 +1,5 @@
 import { createI18n } from 'vue-i18n'
+import fr from '../locales/fr.json'
 
 /*
   Instance i18n unique de l'application.
@@ -10,41 +11,58 @@ import { createI18n } from 'vue-i18n'
   d'authentification — restait en français même après un passage en anglais. Une seule
   instance supprime la classe de bug entière.
 
-  Les messages ne sont plus embarqués au démarrage : `fr.json` et `en.json` partaient tous
-  deux dans le bundle d'entrée alors qu'un visiteur n'en lit qu'un. Ils sont désormais
-  chargés à la demande, en chunks séparés.
+  Le français est embarqué dans le bundle d'entrée, l'anglais est chargé à la demande.
+  Charger aussi le français à la demande gagnait ~40 Ko de plus, mais au prix d'un mode de
+  défaillance que le site n'avait pas : si la requête de la locale échoue (réseau coupé,
+  chunk absent après un déploiement, cache empoisonné), l'interface affiche ses clés brutes
+  (`Welcome.Intro`…) — constaté en navigateur le 24/09/2026. Avec le français toujours
+  présent, l'application parle toujours : au pire en français au lieu de l'anglais.
 */
 
 export const SUPPORTED_LOCALES = ['fr', 'en']
 export const DEFAULT_LOCALE = 'fr'
 
+// Chemins littéraux : Vite doit pouvoir les énumérer à la compilation pour produire un
+// chunk par locale chargée à la demande. Le français n'y figure pas, il est déjà là.
+const loaders = {
+  en: () => import('../locales/en.json'),
+}
+
 const i18n = createI18n({
   legacy: false,
   locale: DEFAULT_LOCALE,
-  // Pas de `fallbackLocale` vers une autre langue : elle forcerait à charger les deux
-  // fichiers, ce que ce découpage cherche précisément à éviter. La parité des clés FR/EN
-  // est garantie par `tests/enforcement/i18n-parity.unit.test.js` — c'est ce test qui rend
-  // le fallback inutile plutôt que de s'en remettre au hasard.
-  fallbackLocale: false,
+  // Le français étant toujours chargé, le fallback ne coûte plus rien : une clé oubliée
+  // dans `en.json` s'affiche en français plutôt que brute. La parité des clés reste
+  // vérifiée par `tests/enforcement/i18n-parity.unit.test.js`.
+  fallbackLocale: DEFAULT_LOCALE,
   missingWarn: false,
   fallbackWarn: false,
-  messages: {}
+  messages: { fr }
 })
 
-const loaded = new Set()
+const loaded = new Set([DEFAULT_LOCALE])
 
 export async function loadLocaleMessages(locale) {
   if (loaded.has(locale)) return
-  // Chemin dynamique mais littéral : Vite doit pouvoir énumérer les fichiers à la
-  // compilation pour produire un chunk par locale.
-  const messages = await import(`../locales/${locale}.json`)
+  const messages = await loaders[locale]()
   i18n.global.setLocaleMessage(locale, messages.default ?? messages)
   loaded.add(locale)
 }
 
+/*
+  Ne rejette jamais : une langue qui ne se charge pas laisse l'application dans la langue
+  courante, avec un avertissement lisible en console, plutôt qu'une promesse rejetée que
+  personne n'attrape. Renvoie la locale effectivement active — l'appelant sait ainsi si la
+  bascule a eu lieu (SelectorLanguage ne mémorise la préférence qu'en cas de succès).
+*/
 export async function setLocale(locale) {
   const target = SUPPORTED_LOCALES.includes(locale) ? locale : DEFAULT_LOCALE
-  await loadLocaleMessages(target)
+  try {
+    await loadLocaleMessages(target)
+  } catch (error) {
+    console.warn(`[i18n] Impossible de charger la langue « ${target} », l'interface reste en « ${i18n.global.locale.value} ».`, error)
+    return i18n.global.locale.value
+  }
   i18n.global.locale.value = target
   document.documentElement?.setAttribute('lang', target)
   return target
