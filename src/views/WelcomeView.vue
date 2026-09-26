@@ -3,6 +3,7 @@
   import { RouterLink, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import SelectorMenu from '@/components/SelectorMenu.vue'
+  import logoVertical from '@/assets/logo/logo-vertical.svg'
   const router = useRouter()
   const { t } = useI18n()
 
@@ -43,11 +44,13 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex flex-col items-center px-4 pt-16 tablet:pt-24">
+    <div class="flex flex-col items-center px-4 pt-4 tablet:pt-6">
       <div class="max-w-4xl w-full space-y-12">
         <div class="text-center">
-          <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600 mb-6">
-            {{ t('Common.SiteName') }}
+          <!-- Logo vertical à la place du titre texte (Greg, 27/09/2026). Le <h1> reste : c'est
+               le titre de la page, son nom accessible vient de l'alt traduit. -->
+          <h1 class="mb-6 flex justify-center">
+            <img :src="logoVertical" :alt="t('Common.SiteName')" class="h-40 tablet:h-52 w-auto">
           </h1>
         </div>
 

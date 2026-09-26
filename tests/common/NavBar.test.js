@@ -121,4 +121,25 @@ describe('NavBar', () => {
 
     expect(cookieStore.openPreferencesModal).toHaveBeenCalled()
   })
+
+  it("affiche le logo comme lien vers l'accueil, avec un texte alternatif traduit", async () => {
+    const { wrapper } = await mountNavBar()
+    const logo = wrapper.find('[data-testid="site-logo"]')
+    expect(logo.attributes('href')).toBe('/app/')
+    expect(logo.find('img').attributes('alt')).toBe('Office des coffres')
+  })
+
+  it("montre le logo aussi sur la page d'accueil (plus de masquage sur `home`)", async () => {
+    const { wrapper } = await mountNavBar()
+    expect(wrapper.find('[data-testid="site-logo"]').classes()).not.toContain('invisible')
+  })
+
+  it('les boutons à icône seule portent un nom accessible traduit', async () => {
+    const { wrapper } = await mountNavBar({ isLoggedIn: true })
+    const iconOnly = wrapper.findAll('.odc-btn--icon')
+    expect(iconOnly.length).toBeGreaterThan(0)
+    for (const button of iconOnly) {
+      expect(button.attributes('aria-label')).toBeTruthy()
+    }
+  })
 })

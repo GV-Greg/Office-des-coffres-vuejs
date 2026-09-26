@@ -10,6 +10,8 @@
   import { useAuthStore } from '@/stores/authStore'
   import { useCookieStore } from '@/stores/cookieStore'
   import { ADMIN_ORIGIN } from '@/api.js'
+  import logoHorizontal from '@/assets/logo/logo-horizontal.svg'
+  import logoEcu from '@/assets/logo/ecu.svg'
 
   const router = useRouter()
   const { t } = useI18n()
@@ -29,31 +31,44 @@
       <div class="flex items-center justify-end p-4">
         <nav class="w-full grid grid-cols-3 justify-items-stretch">
           <div class="space-x-3 justify-self-start flex items-center">
-            <RouterLink :to="{ name: 'home' }" class="btn-grad-blue flex items-center rounded-lg pl-1.5 pr-3 py-0.5 no-underline font-semibold">
-              <v-icon name="gi-medieval-pavilion" scale="2" class="mr-1"/><span class="font-bold text-xl">{{ t('NavBar.Home') }}</span>
+            <!-- Boutons odc-* au niveau STANDARD (`--soft`, sans laiton : le relief complet est
+                 réservé au menu M1), tous à la même hauteur (44 px, taille par défaut). La taille
+                 des icônes est fixée par `.odc-btn > svg`, pas par `scale`. -->
+            <RouterLink :to="{ name: 'home' }" class="odc-btn odc-btn--soft odc-btn--rect odc--blue">
+              <v-icon name="gi-medieval-pavilion" />{{ t('NavBar.Home') }}
             </RouterLink>
             <a
               v-if="authStore.isLoggedIn && authStore.isAdmin"
               :href="`${ADMIN_ORIGIN}/dashboard`"
               target="_blank"
               rel="noopener noreferrer"
-              class="btn-grad-dark flex items-center rounded-lg pl-1.5 pr-3 py-0.5 no-underline font-semibold"
+              class="odc-btn odc-btn--soft odc-btn--rect odc--dark"
             >
-              <v-icon name="ri-home-gear-line" scale="1.3" class="mr-1"/><span class="font-bold text-lg">{{ t('NavBar.Admin') }}</span>
+              <v-icon name="ri-home-gear-line" />{{ t('NavBar.Admin') }}
             </a>
             <button
               type="button"
-              class="btn btn-grad-slate btn-sm"
+              class="odc-btn odc-btn--soft odc-btn--rect odc--slate"
               @click="cookieStore.openPreferencesModal()"
             >
               {{ t('Cookies.Button.Preferences') }}
             </button>
           </div>
           <div class="space-x-3 justify-self-center flex items-center">
-            <div class="text-3xl font-bold text-transparent"
-                 :class="{ 'bg-clip-text bg-gradient-to-br from-orange-400 to-red-600': router.currentRoute._value.name !== 'home' }">
-              {{ t('Common.SiteName') }}
-            </div>
+            <!-- Logo visible sur toutes les pages /app/*, accueil compris (Greg, 27/09/2026 —
+                 l'ancien titre texte était masqué sur `home`). Sous `tablet`, l'écu seul : le
+                 logo horizontal (≈ 165 px) ne tient pas dans la colonne centrale.
+                 Texte du logo vectorisé dans le SVG : aucune police à charger. -->
+            <RouterLink
+              :to="{ name: 'home' }"
+              class="flex items-center"
+              data-testid="site-logo"
+            >
+              <picture>
+                <source :srcset="logoHorizontal" media="(min-width: 640px)">
+                <img :src="logoEcu" :alt="t('Common.SiteName')" class="h-12 laptop:h-14 w-auto">
+              </picture>
+            </RouterLink>
           </div>
           <div class="space-x-3 justify-self-end flex items-center">
             <SelectorCharacter />
@@ -62,15 +77,11 @@
               v-if="authStore.isLoggedIn"
               type="button"
               @click="logout"
-              class="btn-grad-red relative z-50 p-2 inline-flex items-center justify-center cursor-pointer rounded-md border border-red-600 hover:border-red-700 transition-colors duration-200 focus:outline-none"
+              class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc--red z-50"
               :aria-label="t('NavBar.Logout')"
               :title="t('NavBar.Logout')"
             >
-              <v-icon
-                name="fa-power-off"
-                class="w-6 h-6 text-white"
-                scale="1.2"
-              />
+              <v-icon name="fa-power-off" />
             </button>
           </div>
         </nav>

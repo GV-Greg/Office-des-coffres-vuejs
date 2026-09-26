@@ -1,15 +1,11 @@
 <template>
   <button
     @click="toggleTheme"
-    class="btn-grad-slate relative z-50 p-2 cursor-pointer rounded-md border border-slate-300 dark:border-slate-600 focus:outline-none"
+    class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc--slate z-50"
     :aria-label="t('Common.Theme.Title')"
     type="button"
   >
-    <v-icon
-      :name="isDark ? 'ri-moon-fill' : 'ri-sun-fill'"
-      class="w-6 h-6 text-white"
-      scale="1.2"
-    />
+    <v-icon :name="isDark ? 'ri-moon-fill' : 'ri-sun-fill'" />
   </button>
 </template>
 
@@ -27,7 +23,7 @@
     console.log('Toggle theme clicked')
     const newTheme = isDark.value ? 'light' : 'dark'
     cookieStore.setTheme(newTheme)
-    
+
     // Appliquer le thème à l'élément racine
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark')

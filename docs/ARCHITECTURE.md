@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 25/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 27/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -139,8 +139,9 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   (`authStore.getCharacters`) en cartes à liseré latéral (vert validé / rouge en attente), avec
   leur résidence (ville → province → royaume, noms de royaumes traduits par
   `kingdomTranslations.js`), un bouton « Modifier la résidence » (`updateCharacterCity` — repasse
-  le personnage en attente de validation admin), le choix du personnage **à la connexion** (badge
-  couronne sur l'avatar), un bouton « Gérer mes préférences » (cookies, second point d'accès avec
+  le personnage en attente de validation admin), le choix du personnage **à la connexion** (étoile
+  `fa-star` sur l'avatar et badge plat « Personnage actif à la connexion » — ni coche, réservée
+  au statut Validé, ni heaume, déjà l'avatar), un bouton « Gérer mes préférences » (cookies, second point d'accès avec
   `NavBar.vue`) et un lien vers `AddCharacterView`. En bas de page, une **zone dangereuse**
   (`data-testid="danger-zone"`) porte la suppression de compte self-service via
   `DeleteAccountModal.vue` : l'appel API et la redirection vivent ici, la modale ne rend que le
@@ -185,10 +186,16 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 - **`NavBar.vue`** — header `/app/*` (named view `Nav`, donc partagé par home, éco, sécu, company,
   anim, profil). Contient `SelectorMenu`, `SelectorCharacter`, le bouton de déconnexion, le bouton
   « Gérer mes préférences » (cookies) à côté d'Accueil, et le lien vers le panneau d'administration
-  Blade (`ADMIN_ORIGIN`), visible seulement si `authStore.isAdmin`.
+  Blade (`ADMIN_ORIGIN`), visible seulement si `authStore.isAdmin`. Colonne centrale : le **logo**
+  (`assets/logo/logo-horizontal.svg`, texte vectorisé, aucune police chargée), lien vers `home`,
+  `alt` = `Common.SiteName`, visible sur toutes les pages `/app/*` accueil compris ; sous
+  `tablet`, l'écu seul (`assets/logo/ecu.svg`) via `<picture>`. Tous ses boutons sont des
+  `odc-btn odc-btn--rect` de 44 px (voir `assets/odc-buttons.css`).
 - **`SelectorCharacter.vue`** — bascule de personnage **pour la session en cours**, monté
   directement dans `NavBar.vue` (jamais dans `SelectorMenu`, partagé avec les pages publiques) et
-  visible seulement si connecté avec plus d'un personnage.
+  visible seulement si connecté avec plus d'un personnage. Bouton `odc-*` : le relief ne se
+  dessine pas sur un `<select>` (pas de `::before`/`::after`), c'est donc le conteneur qui porte
+  les classes, et le `<select>` natif est posé par-dessus, transparent, sur toute la surface.
 - **`DeleteAccountModal.vue`** — confirmation de suppression de compte en **deux étapes** (art. 17
   RGPD) : la première nomme ce qui va disparaître (email, personnages cités par leur pseudo,
   préférences), la seconde redemande le mot de passe, le bouton restant désactivé tant qu'il est
@@ -201,8 +208,15 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   `EconomyMines.vue`.
 - **`forms/CityCascadeSelect.vue`** — sélecteur royaume → province → ville en cascade, alimenté
   par `GET map`.
-- **`NavMenu.vue`** — menu circulaire (Accueil/Éco/Sécu/Anim/Profil). Labels réactifs au
-  changement de langue (`computed()` + `t()`, jamais un tableau JS figé).
+- **`NavMenu.vue`** — menu circulaire M1 « relief 3D » (Accueil/Économie/Sécurité/Animation/
+  Profil), tout en CSS scopé, sans image. Labels réactifs au changement de langue (`computed()` +
+  `t()`, jamais un tableau JS figé). **Couleurs en variables CSS** (`--c1…--c3`, `--icon`) tirées
+  de la table `PALETTE` du composant — plus aucune classe construite, donc plus de safelist
+  Tailwind (garde-fou `tests/enforcement/tailwind-safelist.unit.test.js`). Page courante via le
+  slot `custom` de `RouterLink` (`aria-current="page"`, correspondance **exacte** pour Accueil :
+  `/app/` préfixe toutes les pages). 88 px (72 sous `tablet`) ; cotes exprimées en fraction de
+  `--s`. Écarts délibérés avec la référence : pas de tranche bronze ni de liseré extérieur, plaque
+  du nom sur le gris du fond de page.
 - **`SelectorMenu.vue`** = `SelectorTheme` + `SelectorLanguage` uniquement. Présent sur
   Welcome/Login/Register et sur toutes les pages `/app/*` via `NavBar`.
 - **`buttons/*`**, **`forms/*`** — génériques, texte/label passés en props par l'appelant (donc
@@ -256,10 +270,10 @@ inline (requis/min/max/email/confirmation).
 - **`data/whatsNew.json`** — entrées de la « Chronique de l'Office » (`HomeView.vue`), scope
   public/privé par entrée.
 - **`assets/style.css`** — styles globaux Tailwind (`@layer components`). Charte de boutons
-  dégradée `.btn-grad-{couleur}` pour toute action ; les classes plates `.btn-slate`/
-  `.btn-yellow`/`.btn-rose`/`.btn-teal` restent nécessaires telles quelles — consommées
-  dynamiquement par `NavMenu.vue` (menu circulaire), ne jamais les modifier sans vérifier cet
-  usage.
+  dégradée `.btn-grad-{couleur}` pour les actions pas encore migrées. Les classes plates
+  `.btn-blue`/`.btn-yellow`/`.btn-rose`/`.btn-teal`/`.btn-slate`/`.btn-menu-rounded` ont été
+  **supprimées** le 27/09/2026 : leur seul consommateur, `NavMenu.vue`, passe par des variables
+  CSS.
   ⚠️ **Contraste** : chaque dégradé à texte blanc part de l'arrêt le plus clair qui passe 4,5:1
   (planchers commentés au-dessus de `.btn-grad-blue`), le survol ne fait qu'assombrir — gardé par
   `tests/enforcement/btn-grad-contrast.unit.test.js`.
@@ -268,6 +282,26 @@ inline (requis/min/max/email/confirmation).
   les vues n'en déclarent pas. **`.page-container`** ne déclare aucune couleur de texte (elle
   imposait `text-white`, cause du texte invisible des pages légales en clair) — chaque bloc
   déclare la sienne, par thème.
+- **`assets/odc-buttons.css`** — boutons « relief 3D » de l'identité visuelle du 27/09/2026
+  (copie de `logo/boutons/`, hors dépôt), importés dans `main.js` après `style.css`, hors
+  Tailwind (classes préfixées `odc-`). **Cible pour tout nouveau bouton** : `odc-btn` (+ `--rect`,
+  `--icon`, `--sm`/`--lg`) et une couleur `odc--{orange|green|red|blue|gold|teal|rose|violet|
+  slate|dark}` ; `odc-dot` pour les pastilles (chronique de `HomeView`). Migrés à ce jour : la
+  `NavBar` (et `SelectorTheme`/`SelectorLanguage`, donc aussi sur les pages publiques), les
+  pastilles de la chronique, `ProfilView`, et les boutons de génération d'`EconomyMines`
+  (mise en forme du jour, bilan hebdomadaire) et de `SecurityGuet` (entrées/sorties) ;
+  `btn-primary`/`btn-grad-*` restent ailleurs (exports BBcode, flèches de semaine, formulaires)
+  jusqu'à leur migration. Pilules pour les actions de page (`--sm` dans les cartes), rectangles pour la
+  barre de navigation et les formulaires.
+  **Trois niveaux** (voir `logo/boutons/README.md`) : **signature** `odc-btn` seul (laiton
+  complet, réservé au menu M1), **standard** `odc-btn--soft` (face colorée sans laiton : barre de
+  navigation, actions principales et actions des cartes), **discret** `odc-btn--quiet` (fond
+  teinté clair, sans relief : Annuler, Gérer mes préférences). Ne jamais poser le relief complet
+  sur une action ordinaire : tout crierait au même niveau.
+  ⚠️ Trois écarts avec la source, consignés dans `logo/boutons/README.md` (« Retouches
+  validées ») : police héritée du site (Manrope n'est pas chargée), **aucun éclaircissement au
+  survol d'un bouton texte** (`brightness(1.08)` passait 6 couleurs sur 9 sous 4,5:1), et pas de
+  liseré foncé extérieur autour du laiton. Contraste des `--b1` gardé par `tests/enforcement/odc-buttons-contrast.unit.test.js`.
 - **`use/useNavigationLoading.js`** — état partagé de l'overlay de navigation (délai anti-flash de
   150 ms, contexte `office`/`chest`). **`use/useFormValidation.js`** — messages d'erreur inline
   des formulaires, avec `modules/Validators.js`.

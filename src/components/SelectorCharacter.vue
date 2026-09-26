@@ -1,25 +1,26 @@
 <template>
-  <div v-if="authStore.isLoggedIn && authStore.getCharacters.length > 1" class="relative z-50">
-    <v-icon
-      name="gi-barbute"
-      scale="1.2"
-      class="absolute z-10 left-2 top-1/2 -translate-y-1/2 text-white pointer-events-none"
-    />
+  <!-- Bouton « relief 3D » habillant un <select> natif. Un <select> ne rend pas les
+       pseudo-éléments ::before/::after qui dessinent le relief : c'est donc le conteneur qui
+       porte les classes odc-*, et le <select> est posé par-dessus, transparent, sur toute la
+       surface. Il reste l'élément réel : clavier, lecteur d'écran et liste native du système.
+       Le pseudo affiché est une copie visuelle (aria-hidden), le nom accessible vient de
+       l'aria-label et de l'option sélectionnée. -->
+  <div
+    v-if="authStore.isLoggedIn && authStore.getCharacters.length > 1"
+    class="odc-btn odc-btn--soft odc-btn--rect odc--orange odc-select z-50"
+  >
+    <v-icon name="gi-barbute" />
+    <span aria-hidden="true">{{ authStore.activeCharacter?.pseudo }}</span>
+    <v-icon name="fa-chevron-down" class="odc-caret" />
     <select
       :value="authStore.activeCharacter?.id"
       @change="authStore.setActiveCharacter(Number($event.target.value))"
-      class="appearance-none pl-9 pr-7 py-2 cursor-pointer bg-gradient-to-br from-orange-700 to-red-800 hover:from-orange-800 hover:to-red-900 rounded-md border border-orange-300 focus:outline-none text-white font-bold text-sm"
       :aria-label="t('NavBar.CharacterSelector')"
     >
       <option v-for="character in authStore.getCharacters" :key="character.id" :value="character.id" class="text-slate-800 bg-white">
         {{ character.pseudo }}
       </option>
     </select>
-    <v-icon
-      name="fa-chevron-down"
-      scale="0.6"
-      class="absolute z-10 right-2.5 top-1/2 -translate-y-1/2 text-white pointer-events-none"
-    />
   </div>
 </template>
 
@@ -30,3 +31,20 @@ import { useAuthStore } from '@/stores/authStore'
 const { t } = useI18n()
 const authStore = useAuthStore()
 </script>
+
+<style scoped>
+.odc-select > select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font: inherit;
+}
+/* Le focus arrive sur le <select> invisible : l'anneau se dessine sur le bouton visible. */
+.odc-select:has(> select:focus-visible) {
+  outline: 3px solid #fde68a;
+  outline-offset: 5px;
+}
+</style>

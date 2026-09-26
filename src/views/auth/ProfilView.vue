@@ -77,7 +77,7 @@
 
       <button
         type="button"
-        class="btn btn-grad-slate btn-sm mb-4"
+        class="odc-btn odc-btn--quiet odc-btn--sm odc--slate mb-4"
         @click="cookieStore.openPreferencesModal()"
       >
         {{ t('Cookies.Button.Preferences') }}
@@ -108,7 +108,7 @@
                   class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-gradient-to-br from-orange-400 to-red-600 ring-2 ring-white flex items-center justify-center"
                   :title="t('Profil.ActiveCharacter')"
                 >
-                  <v-icon name="gi-crown-coin" scale="0.55" class="text-white" />
+                  <v-icon name="fa-star" scale="0.55" class="text-white" />
                 </div>
               </div>
               <div>
@@ -119,10 +119,14 @@
                 </p>
               </div>
             </div>
+            <!-- Badge d'état, pas un bouton : cartouche plat, sans relief ni ombre ni survol, pour
+                 ne pas se confondre avec les actions odc-*. L'étoile (« choisi par défaut ») répond à la pastille de l'avatar ; ni coche (statut Validé), ni heaume (déjà l'avatar).
+                 orange-800 sur orange-50 ≈ 6,9:1. -->
             <span
               v-if="authStore.defaultCharacter?.id === character.id"
-              class="shrink-0 text-[0.65rem] uppercase tracking-wide font-bold text-orange-600 whitespace-nowrap"
+              class="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-bold text-orange-800 whitespace-nowrap"
             >
+              <v-icon name="fa-star" class="w-3.5 h-3.5 text-orange-600" />
               {{ t('Profil.ActiveCharacter') }}
             </span>
           </div>
@@ -139,20 +143,20 @@
               <button
                 v-if="editingCharacterId !== character.id"
                 type="button"
-                class="btn btn-grad-blue btn-sm"
+                class="odc-btn odc-btn--soft odc-btn--sm odc--blue"
                 @click="startEditResidence(character)"
               >
-                <v-icon name="fa-edit" class="w-3.5 h-3.5" />
+                <v-icon name="fa-edit" />
                 {{ t('Profil.EditResidence') }}
               </button>
             </div>
             <button
               v-if="authStore.defaultCharacter?.id !== character.id"
               type="button"
-              class="btn btn-grad-slate btn-sm"
+              class="odc-btn odc-btn--soft odc-btn--sm odc--slate"
               @click="authStore.setDefaultCharacter(character.id)"
             >
-              <v-icon name="gi-barbute" class="w-3.5 h-3.5" />
+              <v-icon name="gi-barbute" />
               {{ t('Profil.SetActive') }}
             </button>
           </div>
@@ -168,14 +172,14 @@
             <div class="flex items-center gap-2 mt-2">
               <button
                 type="button"
-                class="btn btn-primary btn-sm"
+                class="odc-btn odc-btn--soft odc-btn--sm odc--orange"
                 @click="saveResidence(character.id)"
               >
                 {{ t('Profil.SaveResidence') }}
               </button>
               <button
                 type="button"
-                class="btn btn-grad-slate btn-sm"
+                class="odc-btn odc-btn--quiet odc-btn--sm odc--slate"
                 @click="cancelEditResidence"
               >
                 {{ t('Profil.CancelEdit') }}
@@ -187,9 +191,9 @@
 
       <RouterLink
         to="/app/character/new"
-        class="btn btn-primary mt-4"
+        class="odc-btn odc-btn--soft odc--orange mt-4"
       >
-        <v-icon name="fa-user-plus" scale="1" />
+        <v-icon name="fa-user-plus" />
         {{ t('Profil.AddCharacter') }}
       </RouterLink>
 
@@ -218,11 +222,11 @@
 
           <button
             type="button"
-            class="btn btn-grad-red btn-sm mt-4"
+            class="odc-btn odc-btn--soft odc-btn--sm odc--red mt-4"
             data-testid="delete-account-open"
             @click="isDeleteModalOpen = true"
           >
-            <v-icon name="fa-trash-alt" class="w-3.5 h-3.5" />
+            <v-icon name="fa-trash-alt" />
             {{ t('Profil.DeleteAccount.Button') }}
           </button>
         </div>

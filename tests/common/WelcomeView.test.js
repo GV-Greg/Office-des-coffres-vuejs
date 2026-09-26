@@ -105,3 +105,12 @@ describe('WelcomeView — rebond de la flèche au survol du cadenas', () => {
     expect(animate).not.toHaveBeenCalled()
   })
 })
+
+describe('WelcomeView — logo à la place du titre texte (identité visuelle, 27/09/2026)', () => {
+  it('le titre de page est le logo, nommé par le nom du site traduit', () => {
+    const wrapper = mountWelcome()
+    const img = wrapper.find('h1 img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('alt')).toBe('Office des coffres')
+  })
+})

@@ -1,13 +1,11 @@
 <template>
   <button
     @click="toggleLocale"
-    class="btn-grad-slate relative z-50 px-3 py-2 cursor-pointer rounded-md border border-slate-300 dark:border-slate-600 focus:outline-none"
+    class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc--slate z-50"
     :aria-label="t('Common.Language.Title')"
     type="button"
   >
-    <span class="w-6 h-6 text-white font-bold">
-      {{ currentLocale.toUpperCase() }}
-    </span>
+    {{ currentLocale.toUpperCase() }}
   </button>
 </template>
 
