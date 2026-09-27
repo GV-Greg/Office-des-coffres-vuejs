@@ -141,7 +141,10 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 - **`auth/VerifyEmailView.vue`** (route `/verify-email`) — lit `token`/`error`
   en query string (le backend y redirige après validation du lien signé). Si `token` : connexion
   automatique (`setToken` + `checkAuth`) puis redirection vers `/app/character/new` (aucun
-  personnage) ou `/app/profil`. Si `error` : message + mini-formulaire de renvoi. Même structure
+  personnage) ou `/app/profil`. **Tout autre cas** — `?error`, aucun paramètre, ou jeton refusé
+  par le serveur (`checkAuth()` l'efface alors) — affiche le message + mini-formulaire de renvoi
+  (avant le 27/09/2026, seul `?error` y menait : la page restait sinon bloquée sur « Vérification
+  en cours… »). Même structure
   que la connexion (logo horizontal, carte claire, « Renvoyer le lien » en `odc-btn--soft
   odc--blue`) ; « Vérification en cours… » annoncé en `role="status"`, lisible dans les deux thèmes.
 - **`auth/AddCharacterView.vue`** (route `/app/character/new`, gardée par
