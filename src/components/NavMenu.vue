@@ -6,6 +6,7 @@
   import { RouterLink } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { useAuthStore } from '@/stores/authStore'
+  import { PALETTE, PLATES } from '@/components/navMenuPalette'
 
 /*
   User data
@@ -14,25 +15,27 @@
   const { t } = useI18n()
 
 /*
-  Couleurs du menu M1 (identité visuelle du 27/09/2026, logo/menu-circulaire/ hors dépôt).
-  Passées en variables CSS depuis cette table, et non plus en classes construites
-  (`btn-${color}`, `text-${color}-100`) : le JIT Tailwind ne voyait pas ces classes, d'où le
-  safelist et son garde-fou. Plus aucune classe dynamique ici — ne pas en réintroduire (voir
-  tests/enforcement/tailwind-safelist.unit.test.js).
-  disc : dégradé du disque, clair → foncé · icon : teinte `<couleur>-100` de l'icône.
+  Couleurs du menu (variante X3, navMenuPalette.js) passées en variables CSS, et non en classes
+  construites : le JIT Tailwind ne verrait pas `btn-${color}`. Plus aucune classe dynamique ici —
+  ne pas en réintroduire (voir tests/enforcement/tailwind-safelist.unit.test.js).
+  --c1…--c3 : disque au repos · --h1…--h3 : survol · --k1…--k3 : page courante · --icon.
 */
-  const PALETTE = {
-    blue: { disc: ['#93c5fd', '#2563eb', '#1e3a8a'], icon: '#dbeafe' },
-    yellow: { disc: ['#fde68a', '#d97706', '#78350f'], icon: '#fef9c3' },
-    rose: { disc: ['#fda4af', '#e11d48', '#881337'], icon: '#ffe4e6' },
-    teal: { disc: ['#99f6e4', '#0d9488', '#134e4a'], icon: '#ccfbf1' },
-    slate: { disc: ['#cbd5e1', '#475569', '#1e293b'], icon: '#f1f5f9' },
+  const paletteVars = (color) => {
+    const { rest: [c1, c2, c3], hover: [h1, h2, h3], current: [k1, k2, k3], icon } = PALETTE[color]
+    return {
+      '--c1': c1, '--c2': c2, '--c3': c3,
+      '--h1': h1, '--h2': h2, '--h3': h3,
+      '--k1': k1, '--k2': k2, '--k3': k3,
+      '--icon': icon,
+    }
   }
 
-  const paletteVars = (color) => {
-    const { disc: [c1, c2, c3], icon } = PALETTE[color]
-    return { '--c1': c1, '--c2': c2, '--c3': c3, '--icon': icon }
-  }
+  const gradient = (stops) => `linear-gradient(180deg, ${stops.join(', ')})`
+  const plateVars = Object.fromEntries(Object.entries(PLATES).flatMap(([state, { stops, border, text }]) => [
+    [`--plate-${state}-bg`, gradient(stops)],
+    [`--plate-${state}-bd`, border],
+    [`--plate-${state}-fg`, text],
+  ]))
 
 /*
   Menu items
@@ -49,7 +52,7 @@
 </script>
 
 <template>
-  <nav class="flex flex-wrap justify-center gap-x-4 gap-y-3 laptop:gap-x-10">
+  <nav class="flex flex-wrap justify-center gap-x-4 gap-y-3 laptop:gap-x-10" :style="plateVars">
     <RouterLink
       v-for="(page, index) in pages"
       :key="index"
@@ -60,23 +63,18 @@
     >
       <a
         :href="href"
-        class="m1"
-        :class="{ 'm1--current': page.exact ? isExactActive : isActive }"
+        class="menu-btn"
+        :class="{ 'menu-btn--current': page.exact ? isExactActive : isActive }"
         :aria-current="(page.exact ? isExactActive : isActive) ? 'page' : undefined"
         :style="paletteVars(page.color)"
         @click="navigate"
       >
-        <span class="m1-body" aria-hidden="true">
-          <span class="m1-ground" />
-          <span class="m1-ring" />
-          <span class="m1-bevel" />
-          <span class="m1-disc">
-            <span class="m1-shine" />
-            <span class="m1-bounce" />
+        <span class="menu-ring" aria-hidden="true">
+          <span class="menu-disc">
             <v-icon :name="page.icon" />
           </span>
         </span>
-        <span class="m1-plate">{{ page.name }}</span>
+        <span class="menu-plate">{{ page.name }}</span>
       </a>
     </RouterLink>
   </nav>
@@ -84,157 +82,146 @@
 
 <style scoped>
 /*
-  Menu circulaire M1 « relief 3D » — reproduit logo/menu-circulaire/menu-m1-reference.html
-  (hors dépôt), construit de l'arrière vers l'avant : ombre au sol, anneau laiton,
-  biseau, disque de couleur enfoncé, reflets, icône en relief, plaque du nom.
-  Toutes les cotes de la référence (bouton de 124 px) sont exprimées en fraction de --s, pour
-  réduire le bouton sur mobile sans redessiner quoi que ce soit.
+  Menu circulaire — variante X3 « équilibre » M1 + D2 (Greg, 27/09/2026 ; comparaison hors dépôt
+  dans logo/menu-circulaire/mix/). De D2 : l'anneau laiton lumineux, le disque plein, les états
+  (halo de survol, page courante enfoncée et cerclée d'or, plaque dorée). De M1 : le biseau fin
+  (bordure du disque, pas une couche de plus) et l'icône gravée. Plaque ardoise de M1, bord ambre.
+  Sans tranche bronze ni liseré foncé extérieur (retouches de Greg).
+  5 éléments sous le lien : anneau, disque, reflet (::before), icône, plaque.
+  Toutes les cotes sont en --u = 1 px de la référence D2 (116 px), sauf les bords de 2 px.
 */
-.m1 {
-  /* 124 px dans la référence : jugé trop gros à l'écran par Greg le 27/09/2026. 88 px reste
-     proche de l'ancien menu (80 px), relief compris. Mobile : 5 boutons en flex-wrap, cible ≫ 44 px. */
-  --s: 72px;
-  --u: calc(var(--s) / 124);               /* 1 px de la référence */
+.menu-btn {
+  --s: 72px;                               /* mobile : 5 boutons en flex-wrap, cible ≫ 44 px */
+  --u: calc(var(--s) / 116);
   --lift: 0px;
+  --d1: var(--c1); --d2: var(--c2); --d3: var(--c3); --dy: 28%; --shine: .5;
+  --ring-bg: linear-gradient(160deg, #fef3c7 0%, #fbbf24 22%, #b45309 55%, #78350f 80%, #f59e0b 100%);
   --glow: 0 0 0 0 transparent;
+  --plate-bg: var(--plate-rest-bg); --plate-bd: var(--plate-rest-bd); --plate-fg: var(--plate-rest-fg);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: calc(var(--u) * 132);
+  width: calc(var(--u) * 128);
   text-decoration: none;
   border-radius: 9999px;
   -webkit-tap-highlight-color: transparent;
 }
 @media (min-width: 640px) {
-  .m1 { --s: 88px; }
+  .menu-btn { --s: 88px; }
 }
 
-.m1-body {
+.menu-ring {
   position: relative;
   width: var(--s);
-  height: calc(var(--u) * 140);
-  transform: translateY(var(--lift));
-  transition: transform .12s ease;
-}
-.m1-body > span { position: absolute; border-radius: 50%; }
-
-.m1-ground {
-  left: calc(var(--u) * 8);
-  top: calc(var(--u) * 116);
-  width: calc(var(--u) * 108);
-  height: calc(var(--u) * 14);
-  background: radial-gradient(closest-side, rgba(0,0,0,.55), rgba(0,0,0,0));
-  /* l'ombre reste au sol quand le bouton monte ou s'enfonce */
-  transform: translateY(calc(var(--lift) * -1));
-  transition: transform .12s ease;
-}
-/* Pas de tranche bronze sous l'anneau (couche 2 de la référence) : retirée à la demande de Greg
-   le 27/09/2026 — le halo de survol l'éclaircissait en une bande orange qui alourdissait le
-   menu. Le relief tient à l'anneau, au biseau et à l'ombre au sol. */
-.m1-ring {
-  left: 0;
-  top: 0;
-  width: var(--s);
   height: var(--s);
-  background: conic-gradient(from 210deg, #fff7d6, #fbbf24 12%, #b45309 26%, #78350f 38%, #d97706 50%, #fde68a 62%, #fbbf24 72%, #92400e 86%, #fff7d6);
-  /* Sans le liseré foncé extérieur (#451a03, 2 px) de la référence : retiré par Greg le 27/09. */
-  box-shadow: inset 0 3px 2px rgba(255,255,255,.75), inset 0 -4px 5px rgba(0,0,0,.5), var(--glow);
-  transition: box-shadow .12s ease;
+  border-radius: 50%;
+  padding: calc(var(--u) * 7);
+  background: var(--ring-bg);
+  box-shadow: 0 calc(var(--u) * 9) calc(var(--u) * 14) rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.7), inset 0 -2px 0 rgba(0,0,0,.35), var(--glow);
+  transform: translateY(var(--lift));
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-.m1-bevel {
-  left: calc(var(--u) * 9);
-  top: calc(var(--u) * 9);
-  width: calc(var(--u) * 106);
-  height: calc(var(--u) * 106);
-  background: linear-gradient(180deg, #78350f 0%, #b45309 45%, #fde68a 100%);
-  box-shadow: 0 0 0 1.5px #451a03;
-}
-.m1-disc {
-  left: calc(var(--u) * 14);
-  top: calc(var(--u) * 14);
-  width: calc(var(--u) * 96);
-  height: calc(var(--u) * 96);
+
+/* Disque + biseau fin de M1 : bordure transparente sur laquelle se peint le dégradé du biseau. */
+.menu-disc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: calc(var(--u) * 3) solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 30%, var(--c1) 0%, var(--c2) 55%, var(--c3) 100%);
-  box-shadow: inset 0 calc(var(--u) * 7) calc(var(--u) * 12) rgba(0,0,0,.6), inset 0 calc(var(--u) * -4) calc(var(--u) * 8) rgba(255,255,255,.22);
+  background:
+    radial-gradient(circle at 50% var(--dy), var(--d1) 0%, var(--d2) 55%, var(--d3) 100%) padding-box,
+    linear-gradient(180deg, #78350f 0%, #b45309 45%, #fde68a 100%) border-box;
+  box-shadow: 0 0 0 1.5px #451a03, inset 0 calc(var(--u) * -9) calc(var(--u) * 14) rgba(0,0,0,.45), inset 0 3px 0 rgba(255,255,255,.3);
 }
-.m1-shine,
-.m1-bounce { position: absolute; border-radius: 50%; }
-.m1-shine {
-  left: 16.67%;
-  top: 7.3%;
-  width: 66.67%;
-  height: 31.25%;
-  background: linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,0));
+.menu-disc::before {
+  content: "";
+  position: absolute;
+  top: 7%;
+  left: 20%;
+  width: 60%;
+  height: 34%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,var(--shine)), rgba(255,255,255,0));
 }
-.m1-bounce {
-  left: 22.92%;
-  bottom: 6.25%;
-  width: 54.17%;
-  height: 10.42%;
-  background: radial-gradient(closest-side, rgba(255,255,255,.35), rgba(255,255,255,0));
-}
-/* icône gravée : arête claire au-dessus, ombre dessous */
-.m1-disc > svg {
+/* Icône gravée (M1) : arête claire au-dessus, ombre dessous. Géométriquement centrée, elle
+   paraissait basse — l'ombre ajoute de la masse sous l'icône et le reflet éclaire le haut du
+   disque. Remontée optique de 3 unités (Greg, 27/09/2026). */
+.menu-disc > svg {
   position: relative;
-  width: 60.4%;
-  height: 60.4%;
+  width: calc(var(--u) * 56);
+  height: calc(var(--u) * 56);
   color: var(--icon);
+  transform: translateY(calc(var(--u) * -3));
   filter: drop-shadow(0 -1px 0 rgba(255,255,255,.5)) drop-shadow(0 3px 0 rgba(0,0,0,.5)) drop-shadow(0 5px 4px rgba(0,0,0,.35));
 }
 
-/* Plaque du nom : texte crème #fef3c7, au-dessus de 4,5:1 sur chaque arrêt du fond. */
-.m1-plate {
-  margin-top: calc(var(--u) * -18);
+/* Plaque du nom : couleurs par état dans navMenuPalette.js (PLATES), contraste gardé par test. */
+.menu-plate {
+  margin-top: calc(var(--u) * -14);
   position: relative;
   padding: 3px 10px 4px;
   border-radius: 7px;
-  /* Fond de la page (gray-800), éclairci vers le haut (gray-600) — Greg, 27/09/2026, au lieu
-     du quasi-noir de la référence. Crème sur gray-600, l'arrêt le plus clair : ≈ 7,2:1. */
-  background: linear-gradient(180deg, #4b5563 0%, #374151 55%, #1f2937 100%);
-  border: 2px solid #fbbf24;
-  box-shadow: 0 4px 0 #78350f, 0 7px 8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.25);
-  color: #fef3c7;
+  background: var(--plate-bg);
+  border: 2px solid var(--plate-bd);
+  box-shadow: 0 3px 6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.15);
+  color: var(--plate-fg);
   font-weight: 800;
   font-size: 12px;
   line-height: 1.2;
+  letter-spacing: .3px;
   white-space: nowrap;
-  text-shadow: 0 1px 0 #000;
 }
 
 /* ---------- États ---------- */
 
-/* Survol : le bouton monte, halo doré. */
-.m1:hover {
-  --lift: -3px;
-  --glow: 0 0 0 4px rgba(251,191,36,.35), 0 0 18px rgba(251,146,60,.6);
+/* Survol et focus clavier : l'anneau s'éclaire, halo doré, le bouton monte, disque d'un cran plus
+   clair (teintes `hover` de la palette — pas de filter: brightness, qui éclaircirait aussi
+   l'anneau et la plaque). */
+.menu-btn:hover,
+.menu-btn:focus-visible {
+  --lift: calc(var(--u) * -3);
+  --d1: var(--h1); --d2: var(--h2); --d3: var(--h3); --shine: .6;
+  --ring-bg: linear-gradient(160deg, #fff 0%, #fde68a 22%, #d97706 55%, #92400e 80%, #fbbf24 100%);
+  --glow: 0 0 0 3px rgba(251,191,36,.45), 0 0 26px rgba(251,146,60,.75);
+  --plate-bg: var(--plate-hover-bg); --plate-bd: var(--plate-hover-bd); --plate-fg: var(--plate-hover-fg);
 }
 
-/* Page courante : anneau doré, bouton enfoncé, plaque dorée. Le texte passe en sombre sur
-   l'or (#1c1917 sur #fbbf24 ≈ 10:1) : le crème de la plaque normale n'y serait plus lisible. */
-.m1--current {
-  --lift: 4px;
-  --glow: 0 0 0 3px #fde68a, 0 0 14px rgba(251,191,36,.7);
+/* Page courante : enfoncée, cerclée d'or, disque plus sombre et sans reflet, plaque dorée. */
+.menu-btn--current,
+.menu-btn--current:hover,
+.menu-btn--current:focus-visible {
+  --lift: calc(var(--u) * 3);
+  --d1: var(--k1); --d2: var(--k2); --d3: var(--k3); --dy: 36%; --shine: 0;
+  --plate-bg: var(--plate-current-bg); --plate-bd: var(--plate-current-bd); --plate-fg: var(--plate-current-fg);
 }
-.m1--current:hover { --lift: 4px; }
-.m1--current .m1-plate {
-  background: linear-gradient(180deg, #fde68a 0%, #fbbf24 55%, #d97706 100%);
-  border-color: #fef3c7;
-  color: #1c1917;
-  text-shadow: 0 1px 0 rgba(255,255,255,.4);
+.menu-btn--current .menu-ring {
+  box-shadow: 0 0 0 4px #fbbf24, 0 4px 8px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.7), var(--glow);
+}
+.menu-btn--current .menu-disc {
+  box-shadow: 0 0 0 1.5px #451a03, inset 0 calc(var(--u) * 8) calc(var(--u) * 14) rgba(0,0,0,.5);
 }
 
-.m1:focus-visible { outline: none; }
-.m1:focus-visible .m1-ring { outline: 3px solid #fde68a; outline-offset: 5px; }
+.menu-btn[aria-disabled="true"] {
+  filter: grayscale(1);
+  opacity: .45;
+  pointer-events: none;
+}
 
-/* Mouvement réduit : pas de translation au survol (le halo suffit à signaler la cible).
-   L'enfoncement de la page courante reste : c'est un état fixe, pas un mouvement. Les durées
-   de transition sont par ailleurs neutralisées globalement (base.css, forme de la PR #58). */
+.menu-btn:focus-visible { outline: none; }
+.menu-btn:focus-visible .menu-ring { outline: 3px solid #fde68a; outline-offset: 5px; }
+
+/* Mouvement réduit : pas de translation au survol (le halo suffit). L'enfoncement de la page
+   courante reste : c'est un état fixe, pas un mouvement. Durées neutralisées globalement
+   (base.css, #58). */
 @media (prefers-reduced-motion: reduce) {
-  .m1:hover { --lift: 0px; }
-  .m1--current:hover { --lift: 4px; }
-  .m1-body, .m1-ground, .m1-ring { transition: none; }
+  .menu-btn:hover,
+  .menu-btn:focus-visible { --lift: 0px; }
+  .menu-btn--current:hover,
+  .menu-btn--current:focus-visible { --lift: calc(var(--u) * 3); }
+  .menu-ring { transition: none; }
 }
 </style>

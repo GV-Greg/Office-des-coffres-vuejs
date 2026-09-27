@@ -65,6 +65,9 @@ plat pour `NavMenu`) — ce n'est pas une incohérence à corriger, c'est un cho
 
 ## Identité visuelle : menu M1 et boutons `odc-*` (27/09/2026)
 
+> ⚠️ **Partie « menu » remplacée le 27/09/2026** par « Menu circulaire : mix M1 + D2 (variante X3) »
+> ci-dessous. La partie « boutons `odc-*` » reste valable.
+
 **Contexte** — Greg a arrêté une identité visuelle (logo, favicon, menu circulaire M1, boutons
 « relief 3D »), sources hors dépôt dans `ODC/logo/`, brief `admin/content/brief-identite-visuelle.md`.
 Elle entre en conflit avec l'entrée précédente, « `NavMenu` exempté de la charte de boutons »,
@@ -85,6 +88,27 @@ aucune classe n'est construite à l'exécution (garde-fou `tailwind-safelist.uni
 pour l'état inverse). Deux chartes coexistent le temps de la migration : `odc-*` (NavBar,
 chronique, Profil) et `.btn-grad-*` (le reste). Tant que les deux existent, le contraste se garde
 des deux côtés (`btn-grad-contrast`, `odc-buttons-contrast`).
+
+## Menu circulaire : mix M1 + D2 (variante X3) (27/09/2026)
+
+**Contexte** — Le menu M1, fusionné par #62, a été jugé à l'écran moins lumineux et moins lisible
+que la planche D2. Brief `admin/content/brief-menu-d2.md` : revenir à D2, ou mélanger les deux
+en gardant le relief de M1. Trois mélanges comparés hors dépôt
+(`logo/menu-circulaire/mix/menu-mix-comparaison.html`, fond sombre et fond clair, 4 états).
+
+**Décision** — Greg retient **X3 « équilibre »** : l'anneau laiton lumineux, le disque et les
+états de D2 (halo de survol, page courante enfoncée et cerclée d'or, plaque dorée corrigée), le
+biseau fin et l'icône gravée de M1. Deux retouches : l'icône remontée de 3 unités (géométriquement
+centrée, elle paraissait basse à cause de son ombre gravée et du reflet), et la **plaque au fond
+ardoise de M1** (bord ambre de D2). Pas de tranche bronze ni de liseré foncé extérieur,
+conformément aux retouches précédentes. Elle remplace la partie « menu » de l'entrée
+« Identité visuelle : menu M1 et boutons `odc-*` ».
+
+**Conséquences** — Les couleurs vivent dans `components/navMenuPalette.js` : trois teintes de
+disque par entrée (repos, survol, page courante — pas de `filter: brightness`, qui éclaircirait
+aussi l'anneau et la plaque) et les plaques par état, passées en variables CSS au composant et
+lues telles quelles par le garde-fou `navmenu-plate-contrast`. Toujours aucune classe construite
+ni safelist. La plaque dorée finit à `#d97706`, jamais `#b45309` (3,82:1).
 
 ## Salon Discord Forum pour les correctifs, Texte pour les nouveautés
 

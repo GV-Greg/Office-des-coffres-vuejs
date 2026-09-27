@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [AAAA-MM-JJ — à dater au merge] — PR #…
+
+### Changed
+- **Menu circulaire : variante X3, mix M1 + D2** (brief `admin/content/brief-menu-d2.md`) —
+  anneau laiton lumineux et états de D2 (halo de survol, page courante enfoncée et cerclée d'or,
+  plaque dorée), biseau fin et icône gravée de M1, plaque ardoise bordée d'ambre, icône recentrée
+  optiquement. Couleurs sorties dans `components/navMenuPalette.js` (teintes repos/survol/page
+  courante, plaques par état). ADR dans `docs/DECISIONS.md`.
+
+### Added
+- Garde-fou `navmenu-plate-contrast` : texte des plaques ≥ 4,5:1 sur chaque arrêt du dégradé.
+- Tests `NavMenu` : 5 entrées, Profil masqué hors connexion et visible une fois connecté.
+
 ## [2026-09-27] — PR #63
 
 ### Docs

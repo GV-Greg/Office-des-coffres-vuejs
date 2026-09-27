@@ -14,7 +14,7 @@ const i18n = createI18n({
   }
 })
 
-async function mountNavMenu() {
+async function mountNavMenu({ isLoggedIn = false } = {}) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -30,7 +30,14 @@ async function mountNavMenu() {
 
   return mount(NavMenu, {
     global: {
-      plugins: [createTestingPinia({ createSpy: vi.fn }), router, i18n]
+      plugins: [
+        createTestingPinia({
+          createSpy: vi.fn,
+          initialState: { auth: { token: isLoggedIn ? 'fake-token' : null, user: isLoggedIn ? { characters: [] } : null } },
+        }),
+        router,
+        i18n,
+      ]
     }
   })
 }
@@ -58,7 +65,7 @@ describe('NavMenu', () => {
     const current = wrapper.findAll('[aria-current="page"]')
     expect(current).toHaveLength(1)
     expect(current[0].text()).toContain('Accueil')
-    expect(current[0].classes()).toContain('m1--current')
+    expect(current[0].classes()).toContain('menu-btn--current')
   })
 
   it("sur une page de module, Accueil n'est plus marqué courant", async () => {
@@ -72,8 +79,23 @@ describe('NavMenu', () => {
 
   it('passe les couleurs en variables CSS, sans classe construite', async () => {
     const wrapper = await mountNavMenu()
-    const first = wrapper.find('a.m1')
+    const first = wrapper.find('a.menu-btn')
     expect(first.attributes('style')).toContain('--c2: #2563eb')
     expect(first.classes().some((c) => c.startsWith('btn-'))).toBe(false)
+  })
+
+  it('affiche les 5 entrées, Profil masqué hors connexion', async () => {
+    const wrapper = await mountNavMenu()
+    const links = wrapper.findAll('a.menu-btn')
+    expect(links).toHaveLength(5)
+    const profil = links.find((l) => l.text().includes('Profil'))
+    expect(profil.isVisible()).toBe(false)
+    expect(links.filter((l) => l.isVisible())).toHaveLength(4)
+  })
+
+  it('montre Profil une fois connecté', async () => {
+    const wrapper = await mountNavMenu({ isLoggedIn: true })
+    const profil = wrapper.findAll('a.menu-btn').find((l) => l.text().includes('Profil'))
+    expect(profil.isVisible()).toBe(true)
   })
 })
