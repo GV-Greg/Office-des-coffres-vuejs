@@ -224,3 +224,15 @@ describe('CookiesBanner', () => {
     expect(push.success).not.toHaveBeenCalled()
   })
 })
+
+describe('CookiesBanner — refus aussi visible que l’acceptation (CNIL, 27/09/2026)', () => {
+  it('« Refuser » et « Accepter » ont exactement le même style', async () => {
+    const wrapper = await mountBanner()
+    const buttons = wrapper.findAll('.fixed.bottom-0 button')
+    const decline = buttons.find((b) => b.text() === 'Refuser')
+    const accept = buttons.find((b) => b.text() === 'Accepter')
+    expect(decline.classes()).toEqual(accept.classes())
+    expect(decline.classes()).not.toContain('odc--red')
+  })
+})
+

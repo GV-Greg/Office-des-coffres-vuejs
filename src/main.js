@@ -54,7 +54,8 @@ import {
   FaExclamationTriangle,
   FaTrashAlt,
   FaHardHat,
-  FaStar
+  FaStar,
+  FaSlidersH
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -94,7 +95,8 @@ addIcons(
   FaExclamationTriangle,
   FaTrashAlt,
   FaHardHat,
-  FaStar
+  FaStar,
+  FaSlidersH
 )
 
 // Configuration de Notivue

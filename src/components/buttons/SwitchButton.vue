@@ -1,20 +1,32 @@
 <template>
+    <!-- Interrupteur accessible (27/09/2026) : `type="button"` (dans un formulaire, un bouton sans
+         type le soumettrait), `role="switch"` + `aria-checked` (l'état est annoncé), `disabled`
+         natif pour un choix obligatoire. Un `id` passé par l'appelant tombe sur ce <button> :
+         un <label for> s'y rattache et le bascule au clic.
+         Rail éteint slate-500 / slate-400 en sombre : l'ancien slate-300 passait sous 3:1
+         (contraste non textuel) sur fond blanc. -->
     <button
+        type="button"
+        role="switch"
+        :aria-checked="checked ? 'true' : 'false'"
+        :disabled="disabled"
         :class="[
-        'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none',
-        checked ? 'bg-green-600' : 'bg-slate-300 dark:bg-slate-600',
+        'relative inline-flex h-6 w-11 flex-none items-center rounded-full transition-colors',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+        'disabled:cursor-not-allowed disabled:opacity-60',
+        checked ? 'bg-green-600' : 'bg-slate-500 dark:bg-slate-400',
         ]"
         @click="toggle"
     >
         <span
         :class="[
-            'inline-block h-5 w-5 transform rounded-full bg-white transition-transform',
-            checked ? 'translate-x-6' : 'translate-x-1',
+            'inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform',
+            checked ? 'translate-x-5' : 'translate-x-0.5',
         ]"
         />
     </button>
 </template>
-  
+
 <script setup>
 import { ref, watch } from 'vue';
 
@@ -52,7 +64,3 @@ if (!props.disabled) {
 }
 };
 </script>
-  
-<style scoped>
-/* Styles supplémentaires si nécessaire */
-</style>

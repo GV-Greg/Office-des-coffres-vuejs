@@ -81,7 +81,8 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   `hasAcceptedPreferences`. `clearConsentedStorage()` purge uniquement les préfixes
   `cookie-*`/`comfort-*` (jamais `auth_*`). `isPreferencesModalOpen` +
   `openPreferencesModal()`/`closePreferencesModal()` pilotent la modale (`CookiesBanner.vue`
-  la monte, `NavBar.vue` et `ProfilView.vue` l'ouvrent) sans état local par composant. Palier 3
+  la monte, `NavBar.vue`, la bannière et le footer des pages publiques l'ouvrent — plus
+  `ProfilView`, qui doublait la NavBar) sans état local par composant. Palier 3
   "compte" (données communautaires partagées, ex. future liste rouge du module Douane) reste
   hors scope — nécessiterait une vraie table backend, pas du cookie.
 
@@ -107,11 +108,13 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   « Chroniques de l'Office » (entrées `type: "feature"`) et « Le Registre des Réparations »
   (`type: "fix"`), en deux colonnes, les entrées `scope: "private"` n'apparaissant que connecté.
   Bouton « Se connecter » si déconnecté.
-- **`404.vue`** (route `not-found`, catch-all `meta.public`) — page introuvable : coffre, code
-  404, texte roleplay, et deux sorties — « Retour à l'Office » (vers `home` si connecté, `welcome`
-  sinon, la route n'ayant pas de NavBar) et « Page précédente » (`goBackOrWelcome`, qui retombe
-  sur Welcome en arrivée directe). Porte son propre `SelectorMenu` comme Welcome et les pages
-  légales.
+- **`404.vue`** (route `not-found`, catch-all `meta.public`) — page introuvable : logo vertical,
+  titre, texte roleplay (plus de code « 404 », 27/09/2026). **Un seul bouton** « Retour à l'Office »
+  (`odc-btn--soft odc--orange`, flèche `fa-reply`) : retour à la page précédente de l'historique
+  **du navigateur** (`window.history.length > 1` — une URL cassée tapée dans la barre recharge la
+  page et vide l'historique du routeur), sinon `home` si connecté, `welcome` sinon. Pas de hauteur
+  minimale propre : `App.vue` pousse déjà le footer en bas. Porte son propre `SelectorMenu` comme
+  Welcome et les pages légales.
 - **`legal/CookiesPolicyView.vue`**, **`legal/PrivacyPolicyView.vue`**,
   **`legal/MentionsLegalesView.vue`** — pages légales publiques, FR + EN, contenu en i18n sous le
   namespace `Legal` (clés de contact partagées dans `Legal.Common.Contact.*`). ⚠️ Les listes y
@@ -138,21 +141,27 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 - **`auth/VerifyEmailView.vue`** (route `/verify-email`) — lit `token`/`error`
   en query string (le backend y redirige après validation du lien signé). Si `token` : connexion
   automatique (`setToken` + `checkAuth`) puis redirection vers `/app/character/new` (aucun
-  personnage) ou `/app/profil`. Si `error` : message + mini-formulaire de renvoi.
+  personnage) ou `/app/profil`. Si `error` : message + mini-formulaire de renvoi. Même structure
+  que la connexion (logo horizontal, carte claire, « Renvoyer le lien » en `odc-btn--soft
+  odc--blue`) ; « Vérification en cours… » annoncé en `role="status"`, lisible dans les deux thèmes.
 - **`auth/AddCharacterView.vue`** (route `/app/character/new`, gardée par
   `redirectToHomeIfNotLoggedIn`) — sélecteur royaume → province → ville en cascade (fetch
   `GET map` au montage, ~300 villes chargées en un seul payload, pas de pagination), pseudo,
   soumission via `authStore.createCharacter`. Accessible aussi depuis `ProfilView` pour ajouter un
   personnage supplémentaire à un compte qui en a déjà.
-- **`auth/ProfilView.vue`** — affiche la **liste** des personnages du compte
-  (`authStore.getCharacters`) en cartes à liseré latéral (vert validé / rouge en attente), avec
-  leur résidence (ville → province → royaume, noms de royaumes traduits par
-  `kingdomTranslations.js`), un bouton « Modifier la résidence » (`updateCharacterCity` — repasse
-  le personnage en attente de validation admin), le choix du personnage **à la connexion** (étoile
-  `fa-star` sur l'avatar et badge plat « Personnage actif à la connexion » — ni coche, réservée
-  au statut Validé, ni heaume, déjà l'avatar), un bouton « Gérer mes préférences » (cookies, second point d'accès avec
-  `NavBar.vue`) et un lien vers `AddCharacterView`. En bas de page, une **zone dangereuse**
-  (`data-testid="danger-zone"`) porte la suppression de compte self-service via
+- **`auth/ProfilView.vue`** — structure revue le 27/09/2026 : titre + email en sous-titre, puis
+  **deux colonnes à partir de laptop** (tient sans défilement sur ordinateur). À gauche (2/3) :
+  « Ajouter un personnage » en tête (lien vers `AddCharacterView`), puis la **liste** des
+  personnages (`authStore.getCharacters`) en cartes `<article>` à liseré latéral (vert validé /
+  rouge en attente). Carte : **identité en haut** (pseudo + badge de statut plat « Validé » / « En
+  attente », résidence ville → province → royaume traduite par `kingdomTranslations.js`),
+  explication du statut juste dessous, **actions groupées en bas** (« Modifier la résidence » —
+  `updateCharacterCity`, repasse le personnage en attente de validation admin — et « Définir comme
+  actif »). Le personnage **à la connexion** porte l'étoile `fa-star` sur l'avatar et le badge plat
+  « Personnage actif à la connexion » (ni coche, réservée au statut, ni heaume, déjà l'avatar). Pas
+  de bouton « Gérer mes préférences » (déjà dans la NavBar). À droite (1/3) : la **zone
+  dangereuse** (`data-testid="danger-zone"`), dépliant `<details>` natif replié par défaut, porte la
+  suppression de compte self-service via
   `DeleteAccountModal.vue` : l'appel API et la redirection vivent ici, la modale ne rend que le
   verdict.
 - **`modules/security/MainSecurity.vue`** — shell + lien vers `security-guet`.
@@ -183,6 +192,16 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 
 ## Composants (`src/components/`)
 
+- **`CookiesBanner.vue`** / **`CookiesModal.vue`** — bannière de consentement (première visite)
+  et modale des préférences, montées une seule fois dans `App.vue`. Boutons `odc-*` (27/09/2026) :
+  dans la bannière, « Refuser » et « Accepter » ont **exactement le même style** (standard
+  ardoise — la CNIL demande un refus aussi simple et visible que l'acceptation ; l'ancien rouge
+  « danger » le présentait comme une faute), « Gérer mes préférences » en discret avec l'icône
+  `fa-sliders-h` ; dans la modale, « Annuler » discret, « Enregistrer » standard vert. Gardé par
+  un test (`CookiesBanner.test.js`).
+- **`buttons/SwitchButton.vue`** — interrupteur de la modale cookies : `type="button"`,
+  `role="switch"` + `aria-checked`, `disabled` natif pour un choix obligatoire ; un `id` passé
+  par l'appelant le relie au `<label for>`. Rail éteint slate-500 (≥ 3:1).
 - **`AppFooter.vue`** — footer légal unique, monté dans `App.vue` **hors du cadre de contenu** de
   chaque page, sur toutes les routes sauf `welcome` (qui a le sien, fusionné avec son disclaimer).
   Liens vers les trois pages légales ; « Gérer mes préférences » et la mention « outil non
@@ -299,7 +318,8 @@ inline (requis/min/max/email/confirmation).
   `--icon`, `--sm`/`--lg`) et une couleur `odc--{orange|green|red|blue|gold|teal|rose|violet|
   slate|dark}` ; `odc-dot` pour les pastilles (chronique de `HomeView`). Migrés à ce jour : la
   `NavBar` (et `SelectorTheme`/`SelectorLanguage`, donc aussi sur les pages publiques), les
-  pastilles de la chronique, `ProfilView`, et les boutons de génération d'`EconomyMines`
+  pastilles de la chronique, `ProfilView`, les pages publiques (connexion, inscription,
+  vérification d'email, 404, bannière et modale cookies), et les boutons de génération d'`EconomyMines`
   (mise en forme du jour, bilan hebdomadaire) et de `SecurityGuet` (entrées/sorties) ;
   `btn-primary`/`btn-grad-*` restent ailleurs (exports BBcode, flèches de semaine, formulaires)
   jusqu'à leur migration. Pilules pour les actions de page (`--sm` dans les cartes), rectangles pour la

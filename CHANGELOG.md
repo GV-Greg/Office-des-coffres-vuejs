@@ -6,6 +6,33 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-27] — PR #67
+
+### Changed
+- **Boutons `odc-*` sur les pages publiques** :
+  - bannière cookies : « Refuser » et « Accepter » au même niveau et dans le même style (CNIL :
+    refus aussi visible que l'acceptation ; l'ancien rouge « danger » le présentait comme une
+    faute), boutons sur une ligne, titre lisible en thème sombre ;
+  - modale cookies : « Annuler » discret, « Enregistrer » vert ;
+  - vérification d'email : même structure que la connexion (logo, carte claire, bouton bleu) ;
+    « Vérification en cours… » lisible en thème clair (il était blanc sur fond clair) ;
+  - 404 : logo à la place du coffre, plus de code « 404 », un seul bouton « Retour à l'Office »
+    qui revient à la page précédente du navigateur (accueil en onglet neuf), plus de défilement
+    inutile (hauteur minimale en double retirée).
+- Icône `fa-sliders-h` sur les boutons « Gérer mes préférences » (NavBar, bannière).
+- **Page Profil restructurée** : deux colonnes à partir de laptop (tient sans défilement sur
+  ordinateur), email en sous-titre, « Ajouter un personnage » en tête de liste, cartes remises en
+  ordre (statut en badge à côté du pseudo, explication dessous, actions groupées), suppression du
+  compte repliée dans un dépliant, bouton « Gérer mes préférences » retiré (déjà dans la NavBar).
+- Référence de contraste : les deux « 404 » grisés sous le seuil disparaissent (11 → 9).
+
+### Fixed
+- `SwitchButton` : `type="button"`, `role="switch"`, `aria-checked`, relié à son libellé, rail
+  éteint visible (≥ 3:1).
+
+### Removed
+- Clés i18n `NotFound.Code`, `NotFound.BackPrevious`.
+
 ## [2026-09-27] — PR #66
 
 ### Changed

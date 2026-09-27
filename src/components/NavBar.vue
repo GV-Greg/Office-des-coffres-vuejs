@@ -51,6 +51,7 @@
               class="odc-btn odc-btn--soft odc-btn--rect odc--slate"
               @click="cookieStore.openPreferencesModal()"
             >
+              <v-icon name="fa-sliders-h" />
               {{ t('Cookies.Button.Preferences') }}
             </button>
           </div>

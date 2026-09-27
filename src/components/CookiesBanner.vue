@@ -3,9 +3,6 @@ import { useI18n } from "vue-i18n";
 import { useCookieStore } from '@/stores/cookieStore';
 import { onMounted, ref, computed } from 'vue';
 import { push } from 'notivue';
-import PrimaryButton from './buttons/PrimaryButton.vue';
-import SuccessButton from './buttons/SuccessButton.vue';
-import DangerButton from './buttons/DangerButton.vue';
 import CookiesModal from './CookiesModal.vue';
 
 const { t } = useI18n();
@@ -71,24 +68,32 @@ onMounted(() => {
   <Transition name="slide-up">
     <div v-if="showBanner" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-300 dark:bg-slate-900 shadow-lg z-50">
       <div class="max-w-screen-laptop mx-auto">
-        <div class="flex flex-row items-center justify-between gap-4">
+        <!-- Colonne sur mobile, ligne à partir de laptop ; les boutons ne passent jamais à la ligne
+             entre eux (« Accepter » seul dessous cassait la symétrie avec « Refuser »). -->
+        <div class="flex flex-col laptop:flex-row items-center justify-between gap-4">
           <!-- Message (aligné à gauche) -->
           <div class="flex-grow text-slate-700 dark:text-slate-200 text-center">
-            <h2 class="text-lg font-semibold mb-2">{{ t('Cookies.Banner.Title') }}</h2>
+            <!-- Couleur explicite : le bleu-800 hérité des <h2> du site était illisible sur le fond
+                 slate-900 de la bannière en thème sombre. -->
+            <h2 class="text-lg font-semibold mb-2 text-slate-800 dark:text-slate-100">{{ t('Cookies.Banner.Title') }}</h2>
             <p class="text-sm">{{ t('Cookies.Banner.Description') }}</p>
           </div>
 
-          <!-- Boutons (alignés à droite) -->
-          <div class="flex flex-row gap-x-8">
-            <PrimaryButton @click="cookieStore.openPreferencesModal()">
+          <!-- Boutons odc-* (27/09/2026). « Refuser » et « Accepter » au MÊME niveau et dans le
+               même style : la CNIL demande un refus aussi simple et visible que l'acceptation —
+               l'ancien rouge « danger » présentait le refus comme une faute. « Gérer mes
+               préférences » en discret. -->
+          <div class="flex flex-none flex-col tablet:flex-row justify-center gap-3">
+            <button type="button" class="odc-btn odc-btn--quiet odc--slate" @click="cookieStore.openPreferencesModal()">
+              <v-icon name="fa-sliders-h" />
               {{ t('Cookies.Button.Preferences') }}
-            </PrimaryButton>
-            <DangerButton @click="handleDeclineAll">
+            </button>
+            <button type="button" class="odc-btn odc-btn--soft odc--slate" @click="handleDeclineAll">
               {{ t('Cookies.Button.Decline') }}
-            </DangerButton>
-            <SuccessButton @click="handleAcceptAll">
+            </button>
+            <button type="button" class="odc-btn odc-btn--soft odc--slate" @click="handleAcceptAll">
               {{ t('Cookies.Button.Accept') }}
-            </SuccessButton>
+            </button>
           </div>
         </div>
       </div>
