@@ -1,10 +1,32 @@
 <script setup>
-  import { computed } from 'vue'
+  import { computed, ref } from 'vue'
   import { RouterLink, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import SelectorMenu from '@/components/SelectorMenu.vue'
   const router = useRouter()
   const { t } = useI18n()
+
+  /*
+    Au survol du cadenas, la flèche « cliquez » rejoue son rebond, plus vif : 6 × 0,5 s = 3 s,
+    en plus du rebond d'arrivée (5 × 1 s, config Tailwind `bounce-hint`). Déclenché par la
+    personne, ce mouvement ne relève pas de WCAG 2.2.2 ; il respecte quand même
+    prefers-reduced-motion. Web Animations plutôt qu'une classe `:hover` : retirer la classe en
+    fin de survol relancerait l'animation de base (5 s de rebond imprévues). Mêmes images-clés
+    que le `bounce` de Tailwind, et `fill: 'forwards'` : la flèche s'arrête EN HAUT.
+  */
+  const hint = ref(null)
+  let replay = null
+  const HINT_KEYFRAMES = [
+    { transform: 'translateY(-25%)', easing: 'cubic-bezier(0.8, 0, 1, 1)' },
+    { transform: 'none', easing: 'cubic-bezier(0, 0, 0.2, 1)', offset: 0.5 },
+    { transform: 'translateY(-25%)' },
+  ]
+  const replayHint = () => {
+    if (!hint.value?.animate) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    if (replay?.playState === 'running') return // pas de relance en cours de rebond
+    replay = hint.value.animate(HINT_KEYFRAMES, { duration: 500, iterations: 6, fill: 'forwards' })
+  }
 
   const START_YEAR = 2026
   const currentYear = new Date().getFullYear()
@@ -32,6 +54,7 @@
         <div class="flex flex-col items-center space-y-8">
           <button
             @click="router.push('/login')"
+            @mouseenter="replayHint"
             class="inline-flex items-center justify-center"
             :aria-label="t('Welcome.EnterAriaLabel')"
             type="button"
@@ -45,7 +68,7 @@
             />
           </button>
           
-          <div class="animate-bounce grid grid-cols-1 justify-items-center">
+          <div ref="hint" class="motion-safe:animate-bounce-hint grid grid-cols-1 justify-items-center">
             <div class="transform rotate-225">
               <v-icon name="gi-broadhead-arrow" scale="2" class="text-slate-800 dark:text-slate-200" />
             </div>
