@@ -24,7 +24,8 @@ const i18n = createI18n({
     fr: {
       Common: { SiteName: 'Office des coffres' },
       Register: {
-        BackLink: 'Retour',
+        HasAccount: 'Vous avez déjà un compte ?',
+        LoginLink: 'Connectez-vous',
         Heading: 'Créez votre compte',
         SubmitButton: "S'enregistrer",
         Modules: { Intro: 'En créant un compte gratuit, vous débloquez des outils privés — voir {privacyLink}.' }
@@ -50,7 +51,7 @@ const i18n = createI18n({
 })
 
 // Stub maison plutôt que `RouterLink: true` : ce dernier n'expose pas le contenu du slot
-// par défaut, ce qui masquerait le texte des liens (BackLink, pitch #11) dans les assertions.
+// par défaut, ce qui masquerait le texte des liens (lien de connexion, pitch #11) dans les assertions.
 const RouterLinkStub = {
   props: ['to'],
   template: '<a :href="typeof to === \'string\' ? to : JSON.stringify(to)"><slot /></a>',
@@ -109,5 +110,24 @@ describe('RegisterView', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-testid="check-email-message"]').exists()).toBe(true)
+  })
+})
+
+describe('RegisterView — logo à la place du titre texte (identité visuelle, 27/09/2026)', () => {
+  it('le titre de page est le logo, nommé par le nom du site traduit', () => {
+    const wrapper = mountRegister()
+    const img = wrapper.find('h1 img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('alt')).toBe('Office des coffres')
+  })
+})
+
+describe('RegisterView — retour vers la connexion (structure du 27/09/2026)', () => {
+  it('propose le lien vers la connexion au bas de la carte, plus de bouton Retour isolé', () => {
+    const wrapper = mountRegister()
+    const link = wrapper.findAll('a').find((a) => a.attributes('href') === '/login')
+    expect(link.text()).toBe('Connectez-vous')
+    expect(wrapper.text()).toContain('Vous avez déjà un compte ?')
+    expect(wrapper.text()).not.toContain('Retour')
   })
 })

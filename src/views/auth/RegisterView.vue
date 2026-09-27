@@ -8,8 +8,8 @@
   import InputEmail from "@/components/forms/InputEmail.vue"
   import InputPassword from "@/components/forms/InputPassword.vue"
   import InputConfirm from "@/components/forms/InputConfirm.vue"
-  import DefaultSubmitButton from "@/components/buttons/DefaultSubmitButton.vue"
   import SelectorMenu from '@/components/SelectorMenu.vue'
+  import logoHorizontal from '@/assets/logo/logo-horizontal.svg'
   import validation from '@/directives/validation'
   import { useAuthStore } from "@/stores/authStore"
   import { push } from 'notivue'
@@ -58,47 +58,60 @@
     <div class="absolute top-4 right-4">
       <SelectorMenu />
     </div>
-    <h1 >{{ t('Common.SiteName') }}</h1>
-    <div class="page-content grid grid-cols-3 gap-0 justify-items-center">
-      <div class="w-full col-start-2 col-span-1">
-          <!-- Bouton retour -->
-          <div class="w-full flex justify-center mb-1">
-            <RouterLink to="/login" class="btn btn-grad-slate">
-              <v-icon name="fa-arrow-alt-circle-left" scale="1" />
-              {{ t('Register.BackLink') }}
-            </RouterLink>
-          </div>
 
-        <div class="w-12/12 my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl">
-          <div class="w-full mt-2 laptop:mt-5 px-7 overflow-y-auto">
-            <template v-if="!registered">
-              <h2 class="text-white dark:text-blue-800">{{ t('Register.Heading') }}</h2>
-              <form class="mt-6" v-on:submit.prevent="register">
-                <InputEmail v-model="user.email" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
-                <InputPassword v-model="user.password" name="password" :label="t('password')" :placeholder="t('Auth.PasswordPlaceholder')"/>
-                <InputConfirm v-model="user.confirmation" confirmField="password" :confirmValue="user.password"
-                  name="confirmation" :label="t('confirmation')" :placeholder="t('Auth.ConfirmationPlaceholder')"/>
-                <DefaultSubmitButton :text="t('Register.SubmitButton')" />
-              </form>
-            </template>
-            <div v-else class="py-6 text-center" data-testid="check-email-message">
-              <h2 class="text-white dark:text-blue-800">{{ t('Register.CheckEmailTitle') }}</h2>
-              <p class="text-gray-200 dark:text-gray-700 whitespace-pre-line">{{ t('Register.CheckEmailMessage') }}</p>
+    <!-- Même structure que la connexion (revue le 27/09/2026) : une colonne, une carte claire dans
+         les deux thèmes (elle s'inversait avec le thème et ses libellés passaient sous 4,5:1), le
+         retour vers la connexion en lien au bas de la carte plutôt qu'en bouton isolé. -->
+    <div class="w-full max-w-md mx-auto px-4 pt-20 tablet:pt-8 pb-8 flex flex-col items-center gap-6">
+      <!-- Logo horizontal à la place du titre texte (Greg, 27/09/2026). Le <h1> reste : c'est le
+           titre de la page, son nom accessible vient de l'alt traduit. -->
+      <h1 class="m-0 flex justify-center">
+        <img :src="logoHorizontal" :alt="t('Common.SiteName')" class="h-16 tablet:h-20 w-auto">
+      </h1>
+
+      <!-- Couleurs de texte répétées en `dark:` à cause de la règle globale `.dark p`. -->
+      <section class="w-full rounded-2xl border border-slate-300 bg-slate-50 p-6 tablet:p-8 shadow-xl shadow-black/20">
+        <template v-if="!registered">
+          <h2 class="mt-0 mb-5">{{ t('Register.Heading') }}</h2>
+          <form v-on:submit.prevent="register">
+            <div class="form-group">
+              <InputEmail v-model="user.email" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
             </div>
-          </div>
-        </div>
+            <div class="form-group">
+              <InputPassword v-model="user.password" name="password" :label="t('password')" :placeholder="t('Auth.PasswordPlaceholder')"/>
+            </div>
+            <div class="form-group">
+              <InputConfirm v-model="user.confirmation" confirmField="password" :confirmValue="user.password"
+                name="confirmation" :label="t('confirmation')" :placeholder="t('Auth.ConfirmationPlaceholder')"/>
+            </div>
+            <button type="submit" class="mt-2 odc-btn odc-btn--soft odc--blue w-full">
+              {{ t('Register.SubmitButton') }}
+            </button>
+          </form>
 
-        <p v-if="!registered" class="text-sm text-slate-700 dark:text-slate-300 text-center mt-4">
-          <i18n-t keypath="Register.Modules.Intro" scope="global">
-            <template #privacyLink>
-              <RouterLink
-                :to="{ name: 'legal-privacy' }"
-                class="italic underline hover:text-slate-900 dark:hover:text-slate-100"
-              >{{ t('Legal.Cookies.PrivacyPolicyLink') }}</RouterLink>
-            </template>
-          </i18n-t>
-        </p>
-      </div>
+          <p class="mt-6 text-center text-sm text-slate-700 dark:text-slate-700">
+            {{ t('Register.HasAccount') }}
+            <RouterLink to="/login" class="font-bold text-blue-700 hover:underline underline-offset-2">
+              {{ t('Register.LoginLink') }}
+            </RouterLink>
+          </p>
+        </template>
+        <div v-else class="py-2 text-center" data-testid="check-email-message">
+          <h2 class="mt-0 mb-4">{{ t('Register.CheckEmailTitle') }}</h2>
+          <p class="text-slate-700 dark:text-slate-700 whitespace-pre-line">{{ t('Register.CheckEmailMessage') }}</p>
+        </div>
+      </section>
+
+      <p v-if="!registered" class="text-sm text-slate-700 dark:text-slate-300 text-center">
+        <i18n-t keypath="Register.Modules.Intro" scope="global">
+          <template #privacyLink>
+            <RouterLink
+              :to="{ name: 'legal-privacy' }"
+              class="italic underline hover:text-slate-900 dark:hover:text-slate-100"
+            >{{ t('Legal.Cookies.PrivacyPolicyLink') }}</RouterLink>
+          </template>
+        </i18n-t>
+      </p>
     </div>
   </div>
 </template>

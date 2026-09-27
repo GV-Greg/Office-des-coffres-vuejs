@@ -6,6 +6,23 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-27] — PR #66
+
+### Changed
+- **Connexion et inscription restructurées** : une colonne, logo horizontal à la place du titre
+  texte, carte claire dans les deux thèmes (elle s'inversait avec le thème, libellés sous 4,5:1).
+  Connexion : « Entrez sans compte » en tête mais en bouton de la charte (dégradé orange-rouge
+  lisible, au lieu du grand bloc à 2,26:1), alerte « email non vérifié » dans la carte
+  (`role="alert"`) au lieu d'une colonne à part, case « Rester connecté » dessinée et alignée,
+  « Se connecter » en bleu. Inscription : même carte, « S'enregistrer » en bleu, lien « Vous avez
+  déjà un compte ? Connectez-vous » à la place du bouton « Retour ».
+- Référence de contraste : **15 défauts corrigés** (26 → 11 sous le seuil) et 4 titres non
+  mesurables retirés (16 → 12), aucun ajout — diff relu.
+
+### Added
+- Clés i18n `Login.Or`, `Register.HasAccount`, `Register.LoginLink` (FR + EN) ;
+  `Register.BackLink` retirée (plus d'usage).
+
 ## [2026-09-27] — PR #65
 
 ### Changed

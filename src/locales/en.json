@@ -143,17 +143,19 @@
     "NoAccount": "Don't have an account?",
     "RegisterLink": "Sign up!",
     "UnverifiedWarning": "Your email is not verified yet. Check your inbox, or request a new link below.",
-    "ResendButton": "Resend verification email"
+    "ResendButton": "Resend verification email",
+    "Or": "or"
   },
   "Register": {
-    "BackLink": "Back",
     "Heading": "Create your account",
     "SubmitButton": "Sign up",
     "CheckEmailTitle": "Check your inbox",
     "CheckEmailMessage": "A confirmation email was just sent to you.\nClick the link inside it to activate your account.",
     "Modules": {
       "Intro": "By creating a free account, you can manage your characters, keep your own registries, and access additional private tools. No advertising cookies, no tracking, no third-party sharing — see {privacyLink}."
-    }
+    },
+    "HasAccount": "Already have an account?",
+    "LoginLink": "Log in"
   },
   "VerifyEmail": {
     "Verifying": "Verifying...",

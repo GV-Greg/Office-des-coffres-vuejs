@@ -143,17 +143,19 @@
     "NoAccount": "Vous n'avez pas de compte ?",
     "RegisterLink": "Enregistrez-vous!",
     "UnverifiedWarning": "Votre email n'est pas encore vérifié. Vérifiez votre boîte mail, ou demandez un nouveau lien ci-dessous.",
-    "ResendButton": "Renvoyer l'email de vérification"
+    "ResendButton": "Renvoyer l'email de vérification",
+    "Or": "ou"
   },
   "Register": {
-    "BackLink": "Retour",
     "Heading": "Créez votre compte",
     "SubmitButton": "S'enregistrer",
     "CheckEmailTitle": "Vérifiez votre boîte mail",
     "CheckEmailMessage": "Un email de confirmation vient de vous être envoyé.\nCliquez sur le lien qu'il contient pour activer votre compte.",
     "Modules": {
       "Intro": "En créant un compte gratuit, vous pouvez gérer vos personnages, tenir vos propres registres et accéder à des outils privés supplémentaires. Aucun cookie publicitaire, aucun traçage, aucun partage avec des tiers — voir {privacyLink}."
-    }
+    },
+    "HasAccount": "Vous avez déjà un compte ?",
+    "LoginLink": "Connectez-vous"
   },
   "VerifyEmail": {
     "Verifying": "Vérification en cours...",
