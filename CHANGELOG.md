@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [AAAA-MM-JJ — à dater au merge] — PR #64
+## [2026-09-27] — PR #64
 
 ### Changed
 - **Menu circulaire : variante X3, mix M1 + D2** (brief `admin/content/brief-menu-d2.md`) —
