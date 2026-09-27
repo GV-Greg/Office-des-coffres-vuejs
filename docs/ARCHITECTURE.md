@@ -97,7 +97,10 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 
 ## Vues (`src/views/`)
 
-- **`WelcomeView.vue`** — landing (cadenas animé), `SelectorMenu` en haut à droite, intro roleplay
+- **`WelcomeView.vue`** — landing : logo vertical en guise de `<h1>`, cadenas (lien vers la
+  connexion), invite « cliquez » en **rebond fini** (`motion-safe:animate-bounce-hint`, 3 × 1 s,
+  arrêt en haut) rejoué au survol du cadenas par Web Animations (6 × 0,5 s, ignoré en mouvement
+  réduit), `SelectorMenu` en haut à droite, intro roleplay
   et **footer propre** fusionnant le disclaimer « outil non officiel », le copyright et les liens
   légaux — seule page exemptée d'`AppFooter` (voir `App.vue`).
 - **`HomeView.vue`** — `NavMenu` + deux rubriques alimentées par `src/data/whatsNew.json` :
@@ -302,6 +305,15 @@ inline (requis/min/max/email/confirmation).
   validées ») : police héritée du site (Manrope n'est pas chargée), **aucun éclaircissement au
   survol d'un bouton texte** (`brightness(1.08)` passait 6 couleurs sur 9 sous 4,5:1), et pas de
   liseré foncé extérieur autour du laiton. Contraste des `--b1` gardé par `tests/enforcement/odc-buttons-contrast.unit.test.js`.
+- **Mouvement (WCAG 2.2.2, PR #58)** — `assets/base.css` porte une règle **globale**
+  `@media (prefers-reduced-motion: reduce)` : durées d'animation et de transition à `0.01ms`
+  `!important` (pas `none` : `animationend`/`transitionend` se déclenchent encore), une seule
+  itération, `scroll-behavior: auto`. Toute animation automatique est **finie** : jamais
+  `animate-bounce`/`spin`/`ping`/`pulse` (infinies) dans une vue ; une animation maison se déclare
+  dans `tailwind.config.js` (`extend.animation`, ex. `bounce-hint`) et s'emploie derrière
+  `motion-safe:`. Deux nombres : **budget de conception 3 s**, **plafond réglementaire 5 s**
+  jamais approché. Gardé par `tests/enforcement/motion.unit.test.js`. Un composant qui déplace un
+  élément au survol neutralise aussi la translation en mouvement réduit (ex. `NavMenu`).
 - **`use/useNavigationLoading.js`** — état partagé de l'overlay de navigation (délai anti-flash de
   150 ms, contexte `office`/`chest`). **`use/useFormValidation.js`** — messages d'erreur inline
   des formulaires, avec `modules/Validators.js`.
