@@ -19,9 +19,12 @@
   const resendEmail = reactive({ value: '' })
   const resendSent = ref(false)
 
+  // Tout ce qui n'aboutit pas à une connexion bascule sur l'erreur + le formulaire de renvoi.
+  // Jusqu'au 27/09/2026, seule la présence de `?error` y menait : sans paramètre (lien tronqué,
+  // accès direct) ou avec un jeton refusé par le serveur (expiré, révoqué), la page restait
+  // indéfiniment sur « Vérification en cours… », sans rien proposer.
   onMounted(async () => {
     const token = route.query.token
-    const error = route.query.error
 
     if (token) {
       authStore.setToken(token)
@@ -32,9 +35,7 @@
       }
     }
 
-    if (error) {
-      state.value = 'error'
-    }
+    state.value = 'error'
   })
 
   const resend = () => {

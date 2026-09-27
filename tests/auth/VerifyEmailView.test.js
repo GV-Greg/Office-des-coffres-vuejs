@@ -75,4 +75,22 @@ describe('VerifyEmailView', () => {
     expect(wrapper.text()).toContain('Lien invalide.')
     expect(wrapper.find('input[name="email"]').exists()).toBe(true)
   })
+
+  // Défaut corrigé le 27/09/2026 : la page ne sortait de « Vérification en cours… » que si l'URL
+  // portait `error`. Sans paramètre, ou avec un jeton refusé par le serveur, elle attendait
+  // indéfiniment, sans rien proposer.
+  it("sans jeton ni erreur dans l'URL, affiche l'erreur et le renvoi au lieu d'attendre indéfiniment", async () => {
+    const { wrapper } = await mountView({})
+    expect(wrapper.text()).not.toContain('Vérification en cours...')
+    expect(wrapper.text()).toContain('Lien invalide.')
+    expect(wrapper.find('input[name="email"]').exists()).toBe(true)
+  })
+
+  it('avec un jeton refusé par le serveur, affiche l’erreur et le renvoi', async () => {
+    const { wrapper, router } = await mountView({ token: 'expire' }, { checkAuthResult: false })
+    expect(router.currentRoute.value.name).toBe('verify-email')
+    expect(wrapper.text()).not.toContain('Vérification en cours...')
+    expect(wrapper.text()).toContain('Lien invalide.')
+  })
 })
+

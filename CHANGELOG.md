@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [AAAA-MM-JJ — à dater au merge] — PR #…
+
+### Fixed
+- **Vérification d'email bloquée sur « Vérification en cours… »** : sans paramètre dans l'URL
+  (lien tronqué, accès direct) ou avec un jeton refusé par le serveur (expiré, révoqué), la page
+  attendait indéfiniment — seul `?error` menait à l'écran d'erreur. Tout échec y mène désormais,
+  avec le formulaire de renvoi. Deux tests reproduisent les deux cas.
+
 ## [2026-09-27] — PR #67
 
 ### Changed
