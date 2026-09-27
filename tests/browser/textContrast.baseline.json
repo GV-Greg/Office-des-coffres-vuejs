@@ -29,7 +29,6 @@
     "light /register label.form-label « mot de passe » — 2.18:1 < 4.5:1 (rgb(100,116,139) sur rgb(51,65,85))"
   ],
   "unmeasurable": [
-    "dark / h1.text-5xl.font-extrabold.text-transparent.bg-clip-text « Office des coffres » — texte en dégradé (background-clip: text)",
     "dark /legal/cookies h1 « Politique cookies et stockage local » — texte en dégradé (background-clip: text)",
     "dark /legal/cookies h4.text-lg « Stockage local (localStorage) — Jetons d'authentification » — texte en dégradé (background-clip: text)",
     "dark /legal/cookies h4.text-lg « Stockage local (localStorage) — Préférences » — texte en dégradé (background-clip: text)",
@@ -38,7 +37,6 @@
     "dark /login h1 « Office des coffres » — texte en dégradé (background-clip: text)",
     "dark /page-inexistante h1 « Page introuvable » — texte en dégradé (background-clip: text)",
     "dark /register h1 « Office des coffres » — texte en dégradé (background-clip: text)",
-    "light / h1.text-5xl.font-extrabold.text-transparent.bg-clip-text « Office des coffres » — texte en dégradé (background-clip: text)",
     "light /legal/cookies h1 « Politique cookies et stockage local » — texte en dégradé (background-clip: text)",
     "light /legal/cookies h4.text-lg « Stockage local (localStorage) — Jetons d'authentification » — texte en dégradé (background-clip: text)",
     "light /legal/cookies h4.text-lg « Stockage local (localStorage) — Préférences » — texte en dégradé (background-clip: text)",

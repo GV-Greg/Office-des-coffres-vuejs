@@ -6,6 +6,15 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-27] — PR #65
+
+### Changed
+- Référence de contraste (`tests/browser/textContrast.baseline.json`) : retrait des deux titres
+  en dégradé « Office des coffres » de Welcome (sombre et clair), non mesurables — remplacés par
+  le logo en #62. Diff relu : 2 lignes retirées, aucune ajoutée ; 26 textes sous le seuil
+  inchangés, 18 → 16 non mesurables. Les nouveaux boutons `odc-*` des pages publiques (thème,
+  langue) passent.
+
 ## [2026-09-27] — PR #64
 
 ### Changed
