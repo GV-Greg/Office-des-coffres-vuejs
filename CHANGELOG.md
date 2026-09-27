@@ -6,6 +6,13 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [AAAA-MM-JJ — à dater au merge] — PR #…
+
+### Docs
+- Suite de #58, prévue au merge : `docs/ARCHITECTURE.md` décrit la règle globale de mouvement
+  réduit (`base.css`), l'animation finie `bounce-hint` et le budget 3 s / plafond 5 s ;
+  `docs/TESTS.md` ajoute le garde-fou `motion` et les tests de survol de `WelcomeView`.
+
 ## [2026-09-27] — PR #62
 
 ### Added
