@@ -211,15 +211,17 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   `EconomyMines.vue`.
 - **`forms/CityCascadeSelect.vue`** — sélecteur royaume → province → ville en cascade, alimenté
   par `GET map`.
-- **`NavMenu.vue`** — menu circulaire M1 « relief 3D » (Accueil/Économie/Sécurité/Animation/
-  Profil), tout en CSS scopé, sans image. Labels réactifs au changement de langue (`computed()` +
-  `t()`, jamais un tableau JS figé). **Couleurs en variables CSS** (`--c1…--c3`, `--icon`) tirées
-  de la table `PALETTE` du composant — plus aucune classe construite, donc plus de safelist
-  Tailwind (garde-fou `tests/enforcement/tailwind-safelist.unit.test.js`). Page courante via le
-  slot `custom` de `RouterLink` (`aria-current="page"`, correspondance **exacte** pour Accueil :
-  `/app/` préfixe toutes les pages). 88 px (72 sous `tablet`) ; cotes exprimées en fraction de
-  `--s`. Écarts délibérés avec la référence : pas de tranche bronze ni de liseré extérieur, plaque
-  du nom sur le gris du fond de page.
+- **`NavMenu.vue`** — menu circulaire, variante **X3** (mix M1 + D2, 27/09/2026) : anneau laiton
+  lumineux et états de D2, biseau fin et icône gravée de M1, plaque ardoise bordée d'ambre (Accueil/
+  Économie/Sécurité/Animation/Profil). Tout en CSS scopé, sans image, 5 éléments sous le lien.
+  Labels réactifs au changement de langue (`computed()` + `t()`, jamais un tableau JS figé).
+  **Couleurs dans `navMenuPalette.js`** : `PALETTE` (disque repos/survol/page courante + icône,
+  convertis en `--c*`/`--h*`/`--k*` par `paletteVars()`) et `PLATES` (plaques par état, passées en
+  `--plate-*`) — une seule source pour le rendu et pour le garde-fou `navmenu-plate-contrast`.
+  Plus aucune classe construite, donc plus de safelist Tailwind (garde-fou
+  `tests/enforcement/tailwind-safelist.unit.test.js`). Page courante via le slot `custom` de
+  `RouterLink` (`aria-current="page"`, correspondance **exacte** pour Accueil : `/app/` préfixe
+  toutes les pages). 88 px (72 sous `tablet`), cotes en `--u` = 1 px de la référence D2 (116 px).
 - **`SelectorMenu.vue`** = `SelectorTheme` + `SelectorLanguage` uniquement. Présent sur
   Welcome/Login/Register et sur toutes les pages `/app/*` via `NavBar`.
 - **`buttons/*`**, **`forms/*`** — génériques, texte/label passés en props par l'appelant (donc
