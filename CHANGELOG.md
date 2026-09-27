@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-27] — PR #70
+
+### Fixed
+- Pages légales (cookies, confidentialité, mentions) : `min-h-screen` retiré, comme sur la 404
+  (#67). `App.vue` occupe déjà l'écran et pousse le footer en bas ; la hauteur minimale en double
+  ajoutait le footer sous un écran plein. Sans effet visible aujourd'hui (texte plus long qu'un
+  écran), mais une page légale courte aurait défilé pour rien.
+
 ## [2026-09-27] — PR #69
 
 ### Changed
