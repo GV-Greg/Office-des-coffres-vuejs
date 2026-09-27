@@ -125,4 +125,17 @@ describe('CookiesModal', () => {
 
     expect(wrapper.emitted('close')).toBeTruthy()
   })
+
+  it('les interrupteurs sont accessibles : type button, role switch, état annoncé, reliés au libellé', () => {
+    const buttons = wrapper.findAllComponents(SwitchButton).map((c) => c.find('button'))
+    for (const b of buttons) {
+      expect(b.attributes('type')).toBe('button')
+      expect(b.attributes('role')).toBe('switch')
+      expect(['true', 'false']).toContain(b.attributes('aria-checked'))
+    }
+    const session = wrapper.find('#session')
+    expect(session.exists()).toBe(true)
+    expect(wrapper.find('label[for="session"]').exists()).toBe(true)
+  })
 })
+

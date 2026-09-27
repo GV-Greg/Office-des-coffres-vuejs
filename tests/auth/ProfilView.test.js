@@ -4,7 +4,6 @@ import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import ProfilView from '../../src/views/auth/ProfilView.vue'
-import { useCookieStore } from '../../src/stores/cookieStore'
 
 const i18n = createI18n({
   legacy: false,
@@ -100,12 +99,24 @@ describe('ProfilView', () => {
     expect(wrapper.text()).toContain('Ajouter un personnage')
   })
 
-  it('ouvre la modale de préférences cookies au clic sur Gérer mes préférences', async () => {
+  it("ne double plus le bouton « Gérer mes préférences » : il est dans la NavBar", () => {
     const wrapper = mountProfil({ id: 1, email: 'artifice@test.com', characters: [] })
-    const cookieStore = useCookieStore()
-    const button = wrapper.findAll('button').find((b) => b.text().includes('Gérer mes préférences'))
-    await button.trigger('click')
+    expect(wrapper.findAll('button').some((b) => b.text().includes('Gérer mes préférences'))).toBe(false)
+  })
 
-    expect(cookieStore.openPreferencesModal).toHaveBeenCalled()
+  it('affiche le statut en badge à côté du pseudo, pas dans la ligne des actions', () => {
+    const wrapper = mountProfil({ id: 1, email: 'artifice@test.com', characters: [
+      { id: 1, pseudo: 'Artifice', is_validated: true, city_name: 'Dole' },
+    ] })
+    const card = wrapper.find('article')
+    const pseudo = card.findAll('p').find((p) => p.text() === 'Artifice')
+    expect(pseudo.element.parentElement.textContent).toContain('Validé')
+  })
+
+  it('replie la suppression du compte dans un dépliant fermé par défaut', () => {
+    const wrapper = mountProfil({ id: 1, email: 'artifice@test.com', characters: [] })
+    const zone = wrapper.find('[data-testid="danger-zone"]')
+    expect(zone.element.tagName).toBe('DETAILS')
+    expect(zone.attributes('open')).toBeUndefined()
   })
 })

@@ -4,14 +4,12 @@
     "dark /legal/privacy th.text-left.py-2 « Base légale » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",
     "dark /legal/privacy th.text-left.py-2.pr-4 « Donnée » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",
     "dark /legal/privacy th.text-left.py-2.pr-4 « Finalité » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",
-    "dark /page-inexistante div.text-7xl.tablet:text-8xl.font-extrabold.tracking-widest « 404 » — 1.93:1 < 3:1 (rgb(71,85,105) sur rgb(30,41,59))",
     "light /legal/cookies button.inline-block.text-slate-300.hover:text-white.dark:text-slate-400 « ← Office des coffres » — 1.2:1 < 4.5:1 (rgb(203,213,225) sur rgb(226,232,240))",
     "light /legal/mentions button.inline-block.text-slate-300.hover:text-white.dark:text-slate-400 « ← Office des coffres » — 1.2:1 < 4.5:1 (rgb(203,213,225) sur rgb(226,232,240))",
     "light /legal/privacy button.inline-block.text-slate-300.hover:text-white.dark:text-slate-400 « ← Office des coffres » — 1.2:1 < 4.5:1 (rgb(203,213,225) sur rgb(226,232,240))",
     "light /legal/privacy th.text-left.py-2 « Base légale » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",
     "light /legal/privacy th.text-left.py-2.pr-4 « Donnée » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",
-    "light /legal/privacy th.text-left.py-2.pr-4 « Finalité » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))",
-    "light /page-inexistante div.text-7xl.tablet:text-8xl.font-extrabold.tracking-widest « 404 » — 2.08:1 < 3:1 (rgb(148,163,184) sur rgb(226,232,240))"
+    "light /legal/privacy th.text-left.py-2.pr-4 « Finalité » — 1.67:1 < 4.5:1 (rgb(254,215,170) sur rgb(251,146,60) (arrêt le plus défavorable du dégradé))"
   ],
   "unmeasurable": [
     "dark /legal/cookies h1 « Politique cookies et stockage local » — texte en dégradé (background-clip: text)",

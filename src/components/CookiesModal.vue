@@ -2,8 +2,6 @@
 import { useI18n } from "vue-i18n";
 import { useCookieStore } from '@/stores/cookieStore';
 import { computed, watch, ref } from 'vue';
-import SuccessButton from './buttons/SuccessButton.vue';
-import DangerButton from './buttons/DangerButton.vue';
 import SwitchButton from './buttons/SwitchButton.vue';
 
 const props = defineProps({
@@ -110,6 +108,7 @@ const handleCancel = () => {
                   <div v-for="item in category.items" :key="item.value" class="flex items-start">
                     <div class="flex h-5 items-center">
                       <SwitchButton
+                        :id="item.value"
                         :checked="isCookieChecked(item)"
                         :disabled="isRequired(item)"
                         @update:checked="(value) => handleCookieChange(item, value)"
@@ -130,13 +129,15 @@ const handleCancel = () => {
           </div>
 
           <!-- Footer -->
-          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3 flex justify-between">
-            <DangerButton @click="handleCancel">
+          <!-- Boutons odc-* (27/09/2026) : « Annuler » en discret, « Enregistrer » en standard
+               vert (valider). L'ancien « Annuler » rouge « danger » n'avait rien de dangereux. -->
+          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3 flex justify-between gap-3">
+            <button type="button" class="odc-btn odc-btn--quiet odc--slate" @click="handleCancel">
               {{ t('Cookies.Button.Cancel') }}
-            </DangerButton>
-            <SuccessButton @click="handleSave">
+            </button>
+            <button type="button" class="odc-btn odc-btn--soft odc--green" @click="handleSave">
               {{ t('Cookies.Button.Save') }}
-            </SuccessButton>
+            </button>
           </div>
         </div>
       </div>

@@ -113,12 +113,10 @@
     "LoginButton": "Log in"
   },
   "NotFound": {
-    "Code": "404",
     "Title": "Page not found",
     "Lead": "This chest appears on none of the Office's ledgers.",
     "Hint": "The address may have been mistyped, or the page has moved since your last visit.",
-    "BackHome": "Back to the Office",
-    "BackPrevious": "Previous page"
+    "BackHome": "Back to the Office"
   },
   "Auth": {
     "UsernamePlaceholder": "Enter your username",

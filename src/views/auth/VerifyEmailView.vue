@@ -6,7 +6,7 @@
   import { useRoute, useRouter, RouterLink } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import InputEmail from '@/components/forms/InputEmail.vue'
-  import DefaultSubmitButton from '@/components/buttons/DefaultSubmitButton.vue'
+  import logoHorizontal from '@/assets/logo/logo-horizontal.svg'
   import { useAuthStore } from '@/stores/authStore'
   import { push } from 'notivue'
 
@@ -50,28 +50,41 @@
 
 <template>
   <div class="page-container">
-    <h1>{{ t('Common.SiteName') }}</h1>
-    <div class="page-content grid grid-cols-3 gap-0 justify-items-center">
-      <div class="col-start-2 col-span-1 w-full text-center text-white">
-        <div v-if="state === 'verifying'" class="my-10">
-          {{ t('VerifyEmail.Verifying') }}
-        </div>
+    <!-- Même structure que la connexion (27/09/2026) : logo horizontal, carte claire dans les deux
+         thèmes. Le texte « Vérification en cours… » était blanc sur la page claire (1,23:1). -->
+    <div class="w-full max-w-md mx-auto px-4 pt-20 tablet:pt-8 pb-8 flex flex-col items-center gap-6">
+      <!-- Le <h1> reste : titre de la page, nom accessible par l'alt traduit. -->
+      <h1 class="m-0 flex justify-center">
+        <img :src="logoHorizontal" :alt="t('Common.SiteName')" class="h-16 tablet:h-20 w-auto">
+      </h1>
 
-        <div v-else class="my-5 bg-slate-700 dark:bg-gray-200 shadow-lg flex flex-col items-center justify-center rounded-xl p-6">
-          <p class="text-red-400 dark:text-red-600 font-bold mb-4">{{ t('VerifyEmail.InvalidLink') }}</p>
+      <!-- Couleurs de texte répétées en `dark:` à cause de la règle globale `.dark p`. -->
+      <section class="w-full rounded-2xl border border-slate-300 bg-slate-50 p-6 tablet:p-8 shadow-xl shadow-black/20 text-center">
+        <p v-if="state === 'verifying'" class="my-4 text-slate-700 dark:text-slate-700" role="status">
+          {{ t('VerifyEmail.Verifying') }}
+        </p>
+
+        <template v-else>
+          <p class="mb-4 font-bold text-red-700 dark:text-red-700" role="alert">{{ t('VerifyEmail.InvalidLink') }}</p>
 
           <template v-if="!resendSent">
-            <p class="text-gray-200 dark:text-gray-700 text-sm mb-4">{{ t('VerifyEmail.ResendPrompt') }}</p>
-            <form class="w-full" @submit.prevent="resend">
-              <InputEmail v-model="resendEmail.value" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
-              <DefaultSubmitButton :text="t('VerifyEmail.ResendButton')" />
+            <p class="mb-5 text-sm text-slate-700 dark:text-slate-700">{{ t('VerifyEmail.ResendPrompt') }}</p>
+            <form class="w-full text-left" @submit.prevent="resend">
+              <div class="form-group">
+                <InputEmail v-model="resendEmail.value" name="email" :label="t('email')" :placeholder="t('Auth.EmailPlaceholder')" />
+              </div>
+              <button type="submit" class="mt-2 odc-btn odc-btn--soft odc--blue w-full">
+                {{ t('VerifyEmail.ResendButton') }}
+              </button>
             </form>
           </template>
-          <p v-else class="text-green-400 dark:text-green-700 font-bold">{{ t('VerifyEmail.ResendSuccess') }}</p>
+          <p v-else class="font-bold text-green-800 dark:text-green-800">{{ t('VerifyEmail.ResendSuccess') }}</p>
 
-          <RouterLink to="/login" class="mt-4 font-bold text-blue-300 dark:text-blue-600">{{ t('Login.Heading') }}</RouterLink>
-        </div>
-      </div>
+          <p class="mt-6 text-sm">
+            <RouterLink to="/login" class="font-bold text-blue-700 hover:underline underline-offset-2">{{ t('Login.Heading') }}</RouterLink>
+          </p>
+        </template>
+      </section>
     </div>
   </div>
 </template>
