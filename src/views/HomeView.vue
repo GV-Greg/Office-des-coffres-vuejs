@@ -54,10 +54,10 @@
           <ol class="relative border-l-2 border-slate-300 dark:border-slate-300 space-y-6">
             <li v-for="item in visibleNews" :key="item.id" class="relative pl-6">
               <span
-                class="absolute -left-[0.95rem] top-0 flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-gray-200 dark:ring-gray-200"
-                :class="item.scope === 'private' ? 'bg-gradient-to-br from-green-400 to-green-600' : 'bg-gradient-to-br from-orange-400 to-red-600'"
+                class="odc-dot absolute -left-[0.95rem] top-0"
+                :class="item.scope === 'private' ? 'odc--green' : 'odc--orange'"
               >
-                <v-icon name="gi-bugle-call" scale="0.65" class="text-white" />
+                <v-icon name="gi-bugle-call" />
               </span>
               <div class="flex items-baseline gap-2 flex-wrap">
                 <time class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">{{ formatNewsDate(item.date) }}</time>
@@ -82,10 +82,10 @@
           <ol class="relative border-l-2 border-slate-300 dark:border-slate-300 space-y-6">
             <li v-for="item in visibleFixes" :key="item.id" class="relative pl-6">
               <span
-                class="absolute -left-[0.95rem] top-0 flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-gray-200 dark:ring-gray-200"
-                :class="item.scope === 'private' ? 'bg-gradient-to-br from-violet-400 to-violet-600' : 'bg-gradient-to-br from-blue-400 to-blue-600'"
+                class="odc-dot absolute -left-[0.95rem] top-0"
+                :class="item.scope === 'private' ? 'odc--violet' : 'odc--blue'"
               >
-                <v-icon name="gi-bugle-call" scale="0.65" class="text-white" />
+                <v-icon name="gi-bugle-call" />
               </span>
               <div class="flex items-baseline gap-2 flex-wrap">
                 <time class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">{{ formatNewsDate(item.date) }}</time>

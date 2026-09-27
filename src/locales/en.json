@@ -190,9 +190,9 @@
   },
   "NavMenu": {
     "Home": "Home",
-    "Economy": "Eco",
-    "Security": "Sec",
-    "Animation": "Anim",
+    "Economy": "Economy",
+    "Security": "Security",
+    "Animation": "Animation",
     "Profile": "Profile"
   },
   "Security": {

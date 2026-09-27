@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
@@ -51,5 +51,29 @@ describe('NavMenu', () => {
     expect(wrapper.text()).toContain('Eco')
 
     i18n.global.locale.value = 'fr'
+  })
+
+  it("sur /app/, seule l'entrée Accueil est la page courante (correspondance exacte)", async () => {
+    const wrapper = await mountNavMenu()
+    const current = wrapper.findAll('[aria-current="page"]')
+    expect(current).toHaveLength(1)
+    expect(current[0].text()).toContain('Accueil')
+    expect(current[0].classes()).toContain('m1--current')
+  })
+
+  it("sur une page de module, Accueil n'est plus marqué courant", async () => {
+    const wrapper = await mountNavMenu()
+    await wrapper.vm.$router.push('/app/eco')
+    await flushPromises()
+    const current = wrapper.findAll('[aria-current="page"]')
+    expect(current).toHaveLength(1)
+    expect(current[0].text()).toContain('Éco')
+  })
+
+  it('passe les couleurs en variables CSS, sans classe construite', async () => {
+    const wrapper = await mountNavMenu()
+    const first = wrapper.find('a.m1')
+    expect(first.attributes('style')).toContain('--c2: #2563eb')
+    expect(first.classes().some((c) => c.startsWith('btn-'))).toBe(false)
   })
 })

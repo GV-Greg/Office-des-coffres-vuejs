@@ -7,29 +7,12 @@ export default {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
-  // Safelist réduit au strict nécessaire : Tailwind détecte seul toute classe écrite
-  // littéralement dans les fichiers de `content`. Seules les classes **construites
-  // dynamiquement** lui échappent, et il n'y en a qu'une source dans tout le projet :
-  // `NavMenu.vue` (menu circulaire), qui compose `btn-${page.color}` et
-  // `text-${page.color}-100` à partir des 5 couleurs de son tableau `pages`.
-  // ⚠️ Les deux patterns sont nécessaires, pour deux raisons différentes :
-  //   - `text-<couleur>-100` : utilitaire Tailwind, jamais écrit en toutes lettres.
-  //   - `btn-<couleur>` : classe composant définie dans `assets/style.css` (@apply). Être
-  //     définie dans le CSS source ne suffit PAS à la préserver — une règle d'un `@layer
-  //     components` est purgée si la classe n'est détectée nulle part dans `content`. Les
-  //     retirer d'ici fait disparaître les couleurs du menu circulaire (constaté en prod-build,
-  //     les 5 pastilles ressortent uniformément bleues). Le warning « doesn't match any Tailwind
-  //     CSS classes » que Tailwind émet sur ce pattern est trompeur : il parle de la génération
-  //     d'utilitaires, pas de la préservation des classes composant.
-  // ⚠️ Ajouter une entrée de menu d'une nouvelle couleur impose d'ajouter cette couleur ici.
-  safelist: [
-    {
-      pattern: /text-(blue|yellow|rose|teal|slate)-100/,
-    },
-    {
-      pattern: /btn-(blue|yellow|rose|teal|slate)/,
-    },
-  ],
+  // Pas de safelist (27/09/2026). Tailwind détecte seul toute classe écrite littéralement dans
+  // les fichiers de `content` ; seules les classes CONSTRUITES à l'exécution lui échappent. Leur
+  // unique source était `NavMenu.vue` (`btn-${color}`, `text-${color}-100`) : le menu M1 passe
+  // désormais ses couleurs en variables CSS. Construire une classe Tailwind par concaténation
+  // la ferait disparaître du build de prod, sans erreur — c'est ce que garde
+  // tests/enforcement/tailwind-safelist.unit.test.js.
   theme: {
     screens: {
       'tablet': '640px',

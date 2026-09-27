@@ -1,0 +1,312 @@
+/* ==========================================================================
+   Office des Coffres : boutons « relief 3D » (même rendu que le menu M1)
+   --------------------------------------------------------------------------
+   .odc-round           bouton rond à icône (68 px)
+   .odc-round--sm       bouton rond compact (44 px)
+   .odc-btn             bouton texte (pilule), libellé libre, icône optionnelle
+   .odc-btn--sm / --lg  tailles
+   .odc-btn--rect       rectangulaire · .odc-btn--icon carré à icône seule
+   .odc-dot             pastille ronde SANS contour (chronique, badges, puces)
+   Couleurs : odc--orange (principal) · odc--green · odc--red · odc--blue
+              odc--gold · odc--teal · odc--rose · odc--violet · odc--slate · odc--dark
+   États : :hover · :active · :focus-visible · :disabled
+           (classes .is-hover / .is-active pour les maquettes)
+   Tout est en CSS : aucune image.
+
+   Copie de logo/boutons/odc-buttons.css (hors dépôt, identité visuelle du 27/09/2026), avec
+   trois écarts délibérés :
+   1. Police héritée du site, au lieu de "Manrope" : Manrope n'est pas chargée (aucune police
+      web), la pile retombait sur system-ui — une autre police que le reste de l'interface.
+   2. Pas de filtre éclaircissant au survol des boutons TEXTE : brightness(1.08) faisait passer
+      le texte blanc sous 4,5:1 sur 6 couleurs sur 9 (rose 3,89, rouge 4,03). Même règle que la
+      charte `.btn-grad-*` : le survol n'éclaircit jamais une face qui porte du texte. Le halo
+      doré et la montée suffisent à signaler le survol.
+   3. Pas de liseré foncé extérieur (#451a03 autour du contour laiton) : retiré par Greg à
+      l'intégration, sur tous les boutons comme sur le menu M1 — il alourdissait le relief. Le
+      filet foncé intérieur, entre le laiton et la face, reste.
+   Contraste des --b1 : tests/enforcement/odc-buttons-contrast.unit.test.js.
+   ========================================================================== */
+
+.odc-round,
+.odc-btn {
+  --odc-edge: #451a03;
+  --c1: #fdba74; --c2: #ea580c; --c3: #991b1b;
+  --b1: #c2410c; --b2: #7f1d1d;
+  --lift: var(--d);
+  --glow: 0 0 0 0 transparent;
+  position: relative;
+  border: 0;
+  cursor: pointer;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+
+/* couleur par défaut des pastilles (avant les classes de couleur, qui la remplacent) */
+.odc-dot { --c1: #fdba74; --c2: #ea580c; --c3: #991b1b; }
+
+/* ---------- Couleurs ----------
+   --c1/--c2/--c3 : disque des boutons ronds (icône, pas de texte).
+   --b1/--b2      : face des boutons TEXTE. ⚠️ CONTRASTE 4,5:1 avec le texte blanc, mesuré
+   contre l'arrêt le plus CLAIR (--b1) : chaque --b1 est un plancher de la charte
+   (style.css, commentaire au-dessus de .btn-grad-blue). Ne jamais éclaircir un --b1
+   sans refaire le calcul ; le reflet reste au-dessus de la ligne de texte. */
+.odc--orange { --c1: #fdba74; --c2: #ea580c; --c3: #991b1b; --b1: #c2410c; --b2: #7f1d1d; }
+.odc--green  { --c1: #86efac; --c2: #16a34a; --c3: #14532d; --b1: #15803d; --b2: #14532d; }
+.odc--red    { --c1: #fca5a5; --c2: #dc2626; --c3: #7f1d1d; --b1: #dc2626; --b2: #7f1d1d; }
+.odc--blue   { --c1: #93c5fd; --c2: #2563eb; --c3: #1e3a8a; --b1: #2563eb; --b2: #1e3a8a; }
+.odc--gold   { --c1: #fde68a; --c2: #d97706; --c3: #78350f; --b1: #a16207; --b2: #713f12; }
+.odc--teal   { --c1: #99f6e4; --c2: #0d9488; --c3: #134e4a; --b1: #0f766e; --b2: #134e4a; }
+.odc--rose   { --c1: #fda4af; --c2: #e11d48; --c3: #881337; --b1: #e11d48; --b2: #881337; }
+.odc--slate  { --c1: #cbd5e1; --c2: #475569; --c3: #1e293b; --b1: #64748b; --b2: #1e293b; }
+.odc--violet { --c1: #c4b5fd; --c2: #7c3aed; --c3: #4c1d95; --b1: #7c3aed; --b2: #4c1d95; }
+.odc--dark   { --c1: #57534e; --c2: #1c1917; --c3: #0c0a09; --b1: #44403c; --b2: #0c0a09; }
+
+/* ==========================================================================
+   Bouton rond
+   ========================================================================== */
+.odc-round {
+  --s: 68px;
+  --i: calc(var(--s) * .42);
+  --d: calc(var(--s) * .05);
+  display: inline-grid;
+  place-items: center;
+  width: var(--s);
+  height: var(--s);
+  padding: 0;
+  border-radius: 50%;
+  color: #fff;
+  --inset: 4px;
+  /* même contour laiton que .odc-btn */
+  background: linear-gradient(180deg, #fff7d6 0%, #fbbf24 22%, #b45309 55%, #78350f 80%, #f59e0b 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.8),
+    0 calc(var(--lift) + 2px) 8px rgba(0,0,0,.45),
+    var(--glow);
+}
+/* disque de couleur enfoncé et reflets */
+.odc-round::after {
+  content: "";
+  position: absolute;
+  inset: var(--inset);
+  border-radius: 50%;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 62% 32% at 50% 19%, rgba(255,255,255,.58), rgba(255,255,255,0) 72%),
+    radial-gradient(ellipse 48% 12% at 50% 90%, rgba(255,255,255,.3), rgba(255,255,255,0) 70%),
+    radial-gradient(circle at 50% 30%, var(--c1) 0%, var(--c2) 55%, var(--c3) 100%);
+  box-shadow: 0 0 0 1.5px var(--odc-edge), inset 0 calc(var(--s) * .06) calc(var(--s) * .1) rgba(0,0,0,.55);
+}
+/* icône gravée en relief */
+.odc-round > svg {
+  width: var(--i);
+  height: var(--i);
+  filter: drop-shadow(0 -1px 0 rgba(255,255,255,.45)) drop-shadow(0 2px 0 rgba(0,0,0,.55)) drop-shadow(0 3px 3px rgba(0,0,0,.35));
+}
+.odc-round--sm { --s: 44px; --i: 24px; --inset: 3px; }
+.odc-round--sm::after {
+  background:
+    radial-gradient(ellipse 62% 30% at 50% 18%, rgba(255,255,255,.4), rgba(255,255,255,0) 72%),
+    radial-gradient(circle at 50% 35%, var(--c2) 0%, var(--c3) 100%);
+}
+
+/* ==========================================================================
+   Bouton texte (pilule)
+   ========================================================================== */
+.odc-btn {
+  --h: 44px;
+  --d: 3px;
+  --inset: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5em;
+  min-height: var(--h);
+  padding: 0 1.4em;
+  border-radius: 999px;
+  /* ODC : police du site (voir en-tête) — `inherit` est interdit dans le raccourci `font` */
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: .2px;
+  white-space: nowrap;
+  color: #fff;
+  text-decoration: none;
+  text-shadow: 0 1px 0 rgba(0,0,0,.55), 0 2px 3px rgba(0,0,0,.35);
+  background: linear-gradient(180deg, #fff7d6 0%, #fbbf24 22%, #b45309 55%, #78350f 80%, #f59e0b 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.8),
+    0 calc(var(--lift) + 2px) 8px rgba(0,0,0,.45),
+    var(--glow);
+}
+/* face colorée */
+.odc-btn::before {
+  content: "";
+  position: absolute;
+  inset: var(--inset);
+  border-radius: inherit;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--b1) 0%, var(--b2) 100%);
+  box-shadow: 0 0 0 1.5px var(--odc-edge), inset 0 -3px 5px rgba(0,0,0,.35);
+}
+/* reflet */
+.odc-btn::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--inset) + 8px);
+  right: calc(var(--inset) + 8px);
+  top: calc(var(--inset) + 2px);
+  height: 20%;
+  border-radius: 999px;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,0));
+}
+.odc-btn > svg {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.55));
+}
+.odc-btn.odc--dark { color: #fef3c7; }
+/* rectangulaire (barre de navigation, formulaires) */
+.odc-btn--rect { border-radius: 10px; --inset: 2.5px; }
+.odc-btn--rect::after { border-radius: 5px; }
+/* carré à icône seule (ou 2-3 lettres : « FR ») — penser à aria-label */
+.odc-btn--icon { width: var(--h); padding: 0; }
+.odc-btn--icon > svg { width: 1.45em; height: 1.45em; }
+/* chevron de menu déroulant, placé après le libellé */
+.odc-btn > svg.odc-caret { width: .9em; height: .9em; margin-left: -.1em; opacity: .9; }
+.odc-btn--sm { --h: 34px; --d: 2px; --inset: 3px; padding: 0 1.1em; font-size: 13px; }
+.odc-btn--lg { --h: 54px; --d: 4px; --inset: 5px; padding: 0 1.8em; font-size: 18px; }
+.odc-btn--rect.odc-btn--sm { --inset: 2px; }
+.odc-btn--rect.odc-btn--lg { --inset: 3px; }
+
+/* ==========================================================================
+   Pastille sans contour (chronique, badges) — pas un bouton : pas d'états
+   ========================================================================== */
+.odc-dot {
+  --s: 24px;
+  --i: calc(var(--s) * .62);
+  display: inline-grid;
+  place-items: center;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  color: #fff;
+  /* relief léger : reflet discret, dégradé doux, ombre faible */
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 18%, rgba(255,255,255,.28), rgba(255,255,255,0) 72%),
+    linear-gradient(160deg, var(--c2) 0%, var(--c2) 45%, var(--c3) 120%);
+  box-shadow:
+    inset 0 -1px 2px rgba(0,0,0,.18),
+    0 1px 2px rgba(0,0,0,.22);
+}
+.odc-dot > svg {
+  width: var(--i);
+  height: var(--i);
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.25));
+}
+.odc-dot--md { --s: 32px; }
+.odc-dot--lg { --s: 44px; }
+
+/* ==========================================================================
+   États (communs)
+   ========================================================================== */
+.odc-round:hover, .odc-round.is-hover,
+.odc-btn:hover,   .odc-btn.is-hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08) saturate(1.05);
+  --glow: 0 0 0 4px rgba(251,191,36,.35), 0 0 18px rgba(251,146,60,.6);
+}
+/* ODC : aucun éclaircissement d'une face à texte (contraste 4,5:1), voir en-tête */
+.odc-btn:hover, .odc-btn.is-hover { filter: none; }
+.odc-round:active, .odc-round.is-active,
+.odc-btn:active,   .odc-btn.is-active {
+  --lift: 0px;
+  transform: translateY(2px);
+  filter: brightness(.95);
+}
+.odc-round:focus-visible,
+.odc-btn:focus-visible {
+  outline: 3px solid #fde68a;
+  outline-offset: 5px;
+}
+.odc-round:disabled, .odc-round[aria-disabled="true"],
+.odc-btn:disabled,   .odc-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  transform: none;
+  filter: grayscale(1) brightness(.85);
+  opacity: .55;
+  --glow: 0 0 0 0 transparent;
+}
+@media (prefers-reduced-motion: reduce) {
+  .odc-round, .odc-btn { transition: none; }
+}
+
+/* ==========================================================================
+   ODC — Hiérarchie des boutons (27/09/2026)
+   Le relief laiton complet (.odc-btn seul) est la SIGNATURE : réservé au menu M1 et aux rares
+   moments de marque. Appliqué à chaque action, il faisait tout crier au même niveau (retour de
+   Greg sur la page Profil). Deux niveaux plus calmes, même famille :
+   - .odc-btn--soft  STANDARD : même face colorée (--b1 → --b2, donc même contraste), sans
+                     laiton ; filet de la teinte foncée, reflet léger, ombre courte.
+                     Barre de navigation, action principale d'un bloc.
+   - .odc-btn--quiet DISCRET : fond teinté clair, texte et filet de la couleur, sans relief.
+                     Actions secondaires posées sur une carte claire.
+   Couleurs du niveau discret : --q-fg (texte, ≥ 4,5:1 sur --q-bg ET --q-bg-hover), --q-bg,
+   --q-bg-hover, --q-bd. Déclinées pour blue, slate, red, orange, green ; slate par défaut.
+   ========================================================================== */
+
+/* ---------- Standard ---------- */
+.odc-btn--soft {
+  background: linear-gradient(180deg, var(--b1) 0%, var(--b2) 100%);
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(0,0,0,.35);
+  box-shadow:
+    inset 0 0 0 1px var(--b2),
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 1px 2px rgba(0,0,0,.25),
+    var(--glow);
+}
+.odc-btn--soft::before { display: none; }
+.odc-btn--soft::after {
+  left: 8px;
+  right: 8px;
+  top: 2px;
+  height: 22%;
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0));
+}
+.odc-btn--soft:hover, .odc-btn--soft.is-hover {
+  transform: translateY(-1px);
+  filter: none;
+  --glow: 0 0 0 2px rgba(251,191,36,.45);
+}
+.odc-btn--soft:active, .odc-btn--soft.is-active { transform: translateY(1px); }
+
+/* ---------- Discret ---------- */
+.odc-btn--quiet {
+  --q-fg: #334155; --q-bg: #f8fafc; --q-bg-hover: #f1f5f9; --q-bd: #cbd5e1;
+  background: var(--q-bg);
+  color: var(--q-fg);
+  font-weight: 700;
+  text-shadow: none;
+  box-shadow: inset 0 0 0 1px var(--q-bd);
+}
+.odc-btn--quiet::before,
+.odc-btn--quiet::after { display: none; }
+.odc-btn--quiet > svg { filter: none; }
+.odc-btn--quiet:hover, .odc-btn--quiet.is-hover {
+  transform: none;
+  filter: none;
+  background: var(--q-bg-hover);
+}
+.odc-btn--quiet:active, .odc-btn--quiet.is-active { transform: none; }
+.odc-btn--quiet.odc--blue   { --q-fg: #1d4ed8; --q-bg: #eff6ff; --q-bg-hover: #dbeafe; --q-bd: #bfdbfe; }
+.odc-btn--quiet.odc--red    { --q-fg: #b91c1c; --q-bg: #fef2f2; --q-bg-hover: #fee2e2; --q-bd: #fecaca; }
+.odc-btn--quiet.odc--orange { --q-fg: #9a3412; --q-bg: #fff7ed; --q-bg-hover: #ffedd5; --q-bd: #fed7aa; }
+.odc-btn--quiet.odc--green  { --q-fg: #166534; --q-bg: #f0fdf4; --q-bg-hover: #dcfce7; --q-bd: #bbf7d0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .odc-btn--soft:hover, .odc-btn--soft:active { transform: none; }
+}

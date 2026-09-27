@@ -1,5 +1,8 @@
 import './assets/base.css'
 import './assets/style.css'
+// Boutons « relief 3D » (classes `odc-*`, hors Tailwind) : à côté de la charte `.btn-*`,
+// qu'ils remplaceront page par page. Importés après style.css pour passer devant le preflight.
+import './assets/odc-buttons.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -50,7 +53,8 @@ import {
   FaTimes,
   FaExclamationTriangle,
   FaTrashAlt,
-  FaHardHat
+  FaHardHat,
+  FaStar
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -89,7 +93,8 @@ addIcons(
   FaTimes,
   FaExclamationTriangle,
   FaTrashAlt,
-  FaHardHat
+  FaHardHat,
+  FaStar
 )
 
 // Configuration de Notivue

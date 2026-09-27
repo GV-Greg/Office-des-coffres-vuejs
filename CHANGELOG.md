@@ -6,6 +6,38 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-27] — PR #62
+
+### Added
+- **Identité visuelle arrêtée le 27/09/2026** (sources hors dépôt dans `ODC/logo/`, brief
+  `admin/content/brief-identite-visuelle.md`) :
+  - favicon « écu seul » (`favicon.ico`, `favicon.svg`, `apple-touch-icon.png`) ;
+  - logo horizontal dans la `NavBar` (écu seul sous `tablet`), visible accueil compris ; logo
+    vertical à la place du titre texte de `WelcomeView` ;
+  - menu circulaire M1 « relief 3D » dans `NavMenu` (88 px, 72 sur mobile), page courante
+    signalée (`aria-current`), libellés en toutes lettres (Économie, Sécurité, Animation) ;
+  - boutons `odc-*` (`assets/odc-buttons.css`) en trois niveaux — signature (laiton, menu M1
+    seul), standard `--soft`, discret `--quiet` — sur la `NavBar`, les pastilles de la
+    chronique, `ProfilView` et les boutons de génération d'Économie et de Sécurité.
+- `ProfilView` : badge plat « Personnage actif à la connexion » avec étoile, au lieu d'une
+  mention en petites capitales.
+- Chronique de l'Office : entrée « L'Office fait peau neuve » (`whatsNew.json`, annoncée sur
+  Discord au déploiement).
+- Garde-fou `odc-buttons-contrast` : texte ≥ 4,5:1 sur chaque face et chaque niveau, et aucun
+  éclaircissement au survol d'un bouton texte.
+
+### Changed
+- Veto « `NavMenu` exempté de la charte » levé par Greg (ADR du 27/09 dans `docs/DECISIONS.md`,
+  l'ancienne entrée est conservée). Couleurs du menu en variables CSS : **safelist Tailwind
+  supprimé**, garde-fou `tailwind-safelist` réécrit pour l'état inverse.
+- `.htaccess` : les icônes à nom fixe (favicon, icône iOS) en cache une semaine, au lieu
+  d'« immutable » un an via la règle `svg`.
+
+### Removed
+- Classes plates `.btn-blue`/`.btn-yellow`/`.btn-rose`/`.btn-teal`/`.btn-slate`/
+  `.btn-menu-rounded`, sans consommateur.
+- Dossier `static/` : `index.html` pointait vers `/static/favicon.ico`, jamais déployé (seul
+  `dist/` part en FTP) — l'URL répondait 404 en prod. Rien à supprimer côté serveur.
 ## [2026-09-27] — PR #58
 
 ### Fixed

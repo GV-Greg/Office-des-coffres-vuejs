@@ -47,4 +47,11 @@
   <FilesMatch "\.html$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
+  # Icônes du site (27/09/2026) : servies à la racine sous un nom FIXE, pas depuis /assets/.
+  # Le bloc js|css|svg ci-dessus leur donnerait « immutable » pendant un an — un favicon
+  # retouché ne serait alors jamais revu par les visiteurs déjà passés. Une semaine suffit.
+  # Placé après : pour un même en-tête, le dernier `Header set` l'emporte.
+  <FilesMatch "^(favicon\.(svg|ico)|apple-touch-icon\.png)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
 </IfModule>

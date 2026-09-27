@@ -32,7 +32,8 @@ sémantique (bleu = édition, slate = neutre, rouge = danger, vert = confirmatio
 (pas de raison de le faire, aucun risque de régression). Les classes plates existantes
 (`.btn-secondary`, `.btn-slate`, `.btn-yellow`, etc.) ne sont **jamais** retouchées : elles sont
 consommées dynamiquement par `NavMenu.vue` (`:class="'btn-${page.color}'"`), qui doit rester
-visuellement inchangé.
+visuellement inchangé. *(27/09/2026 : les classes plates du menu sont supprimées, voir
+« Identité visuelle : menu M1 et boutons `odc-*` ».)*
 
 ## Régime i18n différencié entre les trois exports BBcode
 
@@ -49,6 +50,9 @@ uniforme. Ne pas rouvrir ce sujet sans une raison nouvelle et explicite de Greg.
 
 ## `NavMenu` exempté de la charte de boutons
 
+> ⚠️ **Remplacée le 27/09/2026** par « Identité visuelle : menu M1 et boutons `odc-*` » ci-dessous.
+> Conservée pour l'historique.
+
 **Contexte** — Le menu circulaire des modules (`NavMenu.vue`) utilise un système de couleurs
 dynamique propre (`:class="'btn-${page.color}'"`, classes plates `.btn-slate`/`.btn-yellow`/
 `.btn-rose`/`.btn-teal`), antérieur à la charte dégradée.
@@ -58,6 +62,29 @@ même par cohérence. Design volontairement distinct, à préserver tel quel.
 
 **Conséquences** — Deux systèmes de boutons coexistent dans le code (dégradé partout ailleurs,
 plat pour `NavMenu`) — ce n'est pas une incohérence à corriger, c'est un choix design assumé.
+
+## Identité visuelle : menu M1 et boutons `odc-*` (27/09/2026)
+
+**Contexte** — Greg a arrêté une identité visuelle (logo, favicon, menu circulaire M1, boutons
+« relief 3D »), sources hors dépôt dans `ODC/logo/`, brief `admin/content/brief-identite-visuelle.md`.
+Elle entre en conflit avec l'entrée précédente, « `NavMenu` exempté de la charte de boutons »,
+dont le veto (« ne jamais convertir `NavMenu` vers la palette dégradée ») protégeait le design
+plat d'origine.
+
+**Décision** — Greg lève lui-même ce veto en validant le menu M1. Ce n'est pas une conversion
+vers la palette `.btn-grad-*` : c'est un nouveau design propre au menu, en relief 3D, couleurs
+passées en variables CSS. Les boutons `odc-*` (`assets/odc-buttons.css`) deviennent la cible de
+toute action, et remplaceront `btn-primary`/`btn-grad-*` page par page. Retouches arbitrées à
+l'écran le jour même (taille du menu, sans tranche ni liseré foncé extérieur, plaque sur le gris
+du fond, survol sans éclaircissement des boutons texte), consignées dans les README de
+`ODC/logo/` (« Retouches validées à l'intégration »), qui priment sur les fichiers sources.
+
+**Conséquences** — Les classes plates `.btn-blue`/`.btn-yellow`/`.btn-rose`/`.btn-teal`/
+`.btn-slate`/`.btn-menu-rounded` et le safelist Tailwind qui les protégeait sont supprimés : plus
+aucune classe n'est construite à l'exécution (garde-fou `tailwind-safelist.unit.test.js`, réécrit
+pour l'état inverse). Deux chartes coexistent le temps de la migration : `odc-*` (NavBar,
+chronique, Profil) et `.btn-grad-*` (le reste). Tant que les deux existent, le contraste se garde
+des deux côtés (`btn-grad-contrast`, `odc-buttons-contrast`).
 
 ## Salon Discord Forum pour les correctifs, Texte pour les nouveautés
 
