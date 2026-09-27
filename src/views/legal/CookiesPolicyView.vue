@@ -28,7 +28,7 @@
 </script>
 
 <template>
-  <div class="page-container relative min-h-screen">
+  <div class="page-container relative">
     <div class="absolute top-4 right-4">
       <SelectorMenu />
     </div>
