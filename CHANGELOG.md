@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [AAAA-MM-JJ — à dater au merge] — PR #…
+
+### Changed
+- **`base.css` aligné sur la charte graphique** (`CHARTE-GRAPHIQUE.md` §12, arbitré par Greg) :
+  35 variables `--odc-*` sans usage supprimées (bleu primaire, couleurs d'état, espacements,
+  z-index), ainsi que le fond et le texte du `body`, recouverts par `style.css`. Focus clavier par
+  défaut **à deux tons** (or `#fde68a` + brun `#451a03`) au lieu du bleu : visible sur les cartes
+  claires comme sur le fond sombre — l'or seul tombait à 1,2:1 sur fond clair. Sélection de texte
+  en or. Référence de contraste inchangée.
+
 ## [2026-09-27] — PR #68
 
 ### Fixed

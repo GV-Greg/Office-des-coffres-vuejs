@@ -336,6 +336,13 @@ inline (requis/min/max/email/confirmation).
   validées ») : police héritée du site (Manrope n'est pas chargée), **aucun éclaircissement au
   survol d'un bouton texte** (`brightness(1.08)` passait 6 couleurs sur 9 sous 4,5:1), et pas de
   liseré foncé extérieur autour du laiton. Contraste des `--b1` gardé par `tests/enforcement/odc-buttons-contrast.unit.test.js`.
+- **`assets/base.css`** — jetons de base alignés sur `CHARTE-GRAPHIQUE.md` (27/09/2026) : ne
+  restent que les jetons utilisés (l'ancien bloc de 45 variables `--odc-*`, dont un bleu primaire
+  contraire à la charte, en comptait 35 sans usage). **Focus clavier par défaut à deux tons** — or
+  `#fde68a` contre l'élément (`box-shadow`), brun `#451a03` autour (`outline`) : l'or seul tombe à
+  1,2:1 sur une carte claire. Les composants `odc-*` et le menu gardent leur propre anneau doré.
+  Sélection de texte or sur quasi-noir, barre de défilement ardoise. Fond et couleur du `body`
+  portés par `style.css`/`App.vue`, plus par ce fichier.
 - **Mouvement (WCAG 2.2.2, PR #58)** — `assets/base.css` porte une règle **globale**
   `@media (prefers-reduced-motion: reduce)` : durées d'animation et de transition à `0.01ms`
   `!important` (pas `none` : `animationend`/`transitionend` se déclenchent encore), une seule
