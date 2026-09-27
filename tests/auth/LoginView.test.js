@@ -152,3 +152,12 @@ describe('LoginView — pré-remplissage "Rester connecté" (Refinement Option B
     expect(wrapper.find('input[name="remember_me"]').element.checked).toBe(false)
   })
 })
+
+describe('LoginView — logo à la place du titre texte (identité visuelle, 27/09/2026)', () => {
+  it('le titre de page est le logo, nommé par le nom du site traduit', () => {
+    const wrapper = mountLogin()
+    const img = wrapper.find('h1 img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('alt')).toBe('Office des coffres')
+  })
+})

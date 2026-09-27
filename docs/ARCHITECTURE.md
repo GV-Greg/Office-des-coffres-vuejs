@@ -117,16 +117,22 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   namespace `Legal` (clés de contact partagées dans `Legal.Common.Contact.*`). ⚠️ Les listes y
   sont rendues avec `tm()` **+ `rt()`** : `tm()` seul renvoie des AST compilés, affichés tels
   quels à l'écran mais invisibles en test (les mocks ne sont pas précompilés).
-- **`auth/LoginView.vue`** — connexion par **email** (jamais par pseudo), `SelectorMenu`, checkbox
-  « Rester connecté » (préférence mémorisée entre visites via la comfort data
-  `remember_me_preference`) et lien « Entrez sans compte » vers `/app/`. Bandeau "email non
-  vérifié" + bouton de renvoi
-  (`authStore.resendVerification`). Comparaison `error_message.value === 'Email non vérifié.'`
+- **`auth/LoginView.vue`** — connexion par **email** (jamais par pseudo). Structure (27/09/2026) :
+  une colonne `max-w-md` — logo horizontal en `<h1>`, « Entrez sans compte » vers `/app/`
+  (`odc-btn--soft` au dégradé orange-rouge `.enter-free`, 20 px gras : grand texte, seuil 3:1),
+  séparateur « ou », puis une **carte claire dans les deux thèmes** (`bg-slate-50`, textes répétés
+  en `dark:` à cause de `.dark p`). Dans la carte : alerte « email non vérifié » en tête
+  (`role="alert"`) + bouton de renvoi (`authStore.resendVerification`), champs, case « Rester
+  connecté » native dessinée (`.remember-check` ; préférence mémorisée entre visites via la
+  comfort data `remember_me_preference`), « Se connecter » en `odc-btn--soft odc--blue` pleine
+  largeur, lien d'inscription. Comparaison `error_message.value === 'Email non vérifié.'`
   **volontairement pas traduite** : c'est le message brut renvoyé par l'API (backend français
   uniquement), pas du texte UI. Après connexion réussie, redirige vers `/app/character/new` si le
   compte n'a aucun personnage, sinon `/app/`.
 - **`auth/RegisterView.vue`** — ne demande que email + mot de passe + confirmation (pseudo/ville
-  déplacés vers `AddCharacterView`). Après soumission, affiche
+  déplacés vers `AddCharacterView`). Même structure que la connexion (logo horizontal, carte
+  claire, « S'enregistrer » en `odc-btn--soft odc--blue`, lien « Vous avez déjà un compte ?
+  Connectez-vous » au bas de la carte à la place de l'ancien bouton « Retour » isolé). Après soumission, affiche
   un écran "vérifiez votre boîte mail" (`data-testid="check-email-message"`) au lieu de connecter
   ou rediriger — le compte n'est utilisable qu'après confirmation du lien reçu par email.
 - **`auth/VerifyEmailView.vue`** (route `/verify-email`) — lit `token`/`error`
