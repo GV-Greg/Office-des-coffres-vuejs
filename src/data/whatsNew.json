@@ -30,5 +30,13 @@
     "type": "feature",
     "fr": "Le serveur Discord de l'Office des coffres relance ses portes ! Rejoignez-nous : https://discord.gg/7U3u9bDepH",
     "en": "The Office des coffres Discord server is back! Join us: https://discord.gg/7U3u9bDepH"
+  },
+  {
+    "id": "visual-identity",
+    "date": "2026-09-27",
+    "scope": "public",
+    "type": "feature",
+    "fr": "L'Office fait peau neuve : nouvel écusson, nouveaux coffres, nouvelle déco.",
+    "en": "The Office gets a makeover: a new crest, new chests, new decor."
   }
 ]

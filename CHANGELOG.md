@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [AAAA-MM-JJ — à dater au merge] — PR #62
+## [2026-09-27] — PR #62
 
 ### Added
 - **Identité visuelle arrêtée le 27/09/2026** (sources hors dépôt dans `ODC/logo/`, brief
@@ -21,6 +21,8 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
     chronique, `ProfilView` et les boutons de génération d'Économie et de Sécurité.
 - `ProfilView` : badge plat « Personnage actif à la connexion » avec étoile, au lieu d'une
   mention en petites capitales.
+- Chronique de l'Office : entrée « L'Office fait peau neuve » (`whatsNew.json`, annoncée sur
+  Discord au déploiement).
 - Garde-fou `odc-buttons-contrast` : texte ≥ 4,5:1 sur chaque face et chaque niveau, et aucun
   éclaircissement au survol d'un bouton texte.
 
