@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [AAAA-MM-JJ — à dater au merge] — PR #…
+## [AAAA-MM-JJ — à dater au merge] — PR #62
 
 ### Added
 - **Identité visuelle arrêtée le 27/09/2026** (sources hors dépôt dans `ODC/logo/`, brief
