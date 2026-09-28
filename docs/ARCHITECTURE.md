@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 29/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 01/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -57,7 +57,9 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   `logout`, `deleteAccount` (DELETE `auth/account`, art. 17 RGPD : purge la session locale **et**
   les comfort data liées au compte — `default_character_id` devenu une référence morte,
   `last_login_email` une donnée personnelle ; ne touche ni au consentement cookies ni au thème),
-  `checkAuth` (auto-appelée si token présent au démarrage du store), `createCharacter`,
+  `checkAuth` (auto-appelée si token présent au démarrage du store ; **une seule requête
+  `auth/me` en vol par token**, rendue aux appels concurrents — sans ça, le premier garde qui crée
+  le store doublait l'hydratation, garde-fou dans `authStore.test.js`), `createCharacter`,
   `updateCharacterCity` (PATCH `characters/{id}`, resynchronise via `checkAuth()`),
   `setActiveCharacter`/`setDefaultCharacter`, `setToken`/`setUser`.
   **Deux niveaux de personnage** : `defaultCharacter` est le choix persistant (comfort data

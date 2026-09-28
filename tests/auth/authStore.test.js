@@ -357,6 +357,56 @@ describe('Auth Store', () => {
     })
   })
 
+  // Garde-fou perf : invisible en revue comme en test d'interface, le doublon ne se voit qu'en
+  // réseau (Welcome → /login → /app/ : 2 auth/me + 2 préflights, mesure du 28/09/2026).
+  describe('checkAuth() — une seule requête en vol', () => {
+    it('deux appels concurrents ne déclenchent qu\'une requête auth/me', async () => {
+      store.setToken('tok_valide')
+      http.get.mockResolvedValue({ data: { success: true, user: mockUser } })
+
+      const [first, second] = await Promise.all([store.checkAuth(), store.checkAuth()])
+
+      expect(http.get).toHaveBeenCalledTimes(1)
+      expect(first).toBe(true)
+      expect(second).toBe(true)
+    })
+
+    it('l\'hydratation au démarrage et le garde de route partagent la même requête', async () => {
+      localStorageMock.setItem('auth_token', 'tok_stocke')
+      http.get.mockResolvedValue({ data: { success: true, user: mockUser } })
+      setActivePinia(createPinia())
+
+      const freshStore = useAuthStore() // hydratation : premier checkAuth()
+      await freshStore.checkAuth()      // garde : ne doit pas relancer
+
+      expect(http.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('une vérification terminée n\'est pas réutilisée : l\'appel suivant repart au serveur', async () => {
+      store.setToken('tok_valide')
+      http.get.mockResolvedValue({ data: { success: true, user: mockUser } })
+
+      await store.checkAuth()
+      await store.checkAuth()
+
+      expect(http.get).toHaveBeenCalledTimes(2)
+    })
+
+    it('un token remplacé pendant la vérification relance une requête avec le nouveau', async () => {
+      store.setToken('tok_ancien')
+      http.get.mockResolvedValue({ data: { success: true, user: mockUser } })
+
+      const first = store.checkAuth()
+      store.setToken('tok_nouveau')
+      await Promise.all([first, store.checkAuth()])
+
+      expect(http.get).toHaveBeenCalledTimes(2)
+      expect(http.get).toHaveBeenLastCalledWith('auth/me', {
+        headers: { Authorization: 'Bearer tok_nouveau' },
+      })
+    })
+  })
+
   describe('createCharacter()', () => {
     it('crée un personnage et resynchronise la liste via checkAuth', async () => {
       store.setToken('tok123')

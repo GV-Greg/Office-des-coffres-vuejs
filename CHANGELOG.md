@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-01] — PR #71
+
+### Fixed
+- **Un seul `auth/me` par navigation** : Welcome → `/app/` (via le garde de `/login`) envoyait
+  deux `auth/me` et deux préflights, soit ~1,9 s d'allers-retours en prod (mesure du 28/09/2026 ;
+  le 01/10, préflights supprimés par back #28, les deux `auth/me` coûtaient encore 0,72 + 1,13 s
+  contre 0,37 s pour un seul). Le premier garde qui crée le store doublait l'hydratation de démarrage.
+  `checkAuth()` rend désormais la requête déjà en vol aux appels concurrents (même token) ; la
+  vérification serveur à chaque garde est conservée. Garde-fou Vitest : deux appels concurrents
+  = une seule requête HTTP.
+
 ## [2026-10-01] — PR #74
 
 ### Security
