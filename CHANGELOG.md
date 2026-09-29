@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-09-29] — PR #72
+
+### Fixed
+- **Délai d'attente de 20 s sur toute requête d'API** (`src/api.js`). axios n'en pose aucun par
+  défaut : une requête que le serveur ne rend jamais laissait un bouton tourner sans fin. Cas réel
+  constaté le 29/09/2026 : en prod, la couche d'hébergement retient les réponses 429 du limiteur
+  Laravel (les 404/405/401 et une rafale de 401 répondent normalement, seul le 429 reste sans
+  réponse). Au-delà du délai, l'appelant affiche son message réseau habituel. Préalable au merge
+  de la limitation de débit backend (#29). Garde-fou `tests/common/api.unit.test.js`.
+- **Un délai dépassé ne déconnecte plus** (`src/stores/authStore.js`). Seul un refus explicite du
+  serveur (400/401 sur `auth/refresh` ou `auth/me`) purge désormais la session ; sans réponse, elle
+  est gardée et la requête suivante retente. Sans cette distinction, le délai d'attente aurait
+  transformé un incident réseau passager en déconnexion — l'intercepteur 401 et `checkAuth()`
+  purgeaient sur n'importe quelle erreur.
+
 ## [2026-09-27] — PR #70
 
 ### Fixed

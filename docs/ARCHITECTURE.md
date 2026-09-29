@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 27/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 29/09/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -67,7 +67,9 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   **Intercepteur axios 401 avec mutex** enregistré ici (pas dans `api.js`) : un access token
   expiré déclenche un seul appel à `auth/refresh` même si plusieurs requêtes échouent en
   parallèle, puis rejoue la requête d'origine ; `auth/login` et `auth/refresh` en sont exclus pour
-  ne pas boucler, et un échec du refresh purge la session avec un toast « session expirée ».
+  ne pas boucler. Seul un **refus** du refresh (400/401) purge la session avec un toast « session
+  expirée » ; un refresh resté sans réponse (délai d'`api.js` dépassé, réseau coupé) la garde, la
+  requête suivante retente. `checkAuth()` applique la même règle.
 - **`cookieStore.js`** (style options) — modèle de consentement nommé et extensible :
   `consent: { preferences: bool, choiceMadeAt: number }` (clé `cookie-consent`, migration
   silencieuse depuis l'ancien format `cookie-comply` au chargement, sans nouvelle sollicitation
@@ -88,7 +90,9 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
 
 ## Services
 
-- **`src/api.js`** — seul client HTTP du projet (`http`, instance Axios). Le bearer token est
+- **`src/api.js`** — seul client HTTP du projet (`http`, instance Axios), **délai d'attente de 20 s**
+  (`HTTP_TIMEOUT_MS` ; axios n'en a aucun par défaut, une requête jamais rendue bloquait l'interface —
+  cas réel : la prod retient les 429 du limiteur Laravel). Le bearer token est
   attaché manuellement par appel ; l'unique intercepteur (401 → refresh) est enregistré par
   `authStore.js`, pas ici. Exporte aussi `ADMIN_ORIGIN`, dérivé de `VITE_API_ENDPOINT_*` — le
   panneau admin Blade est servi par la même origine que l'API.

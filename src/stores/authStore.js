@@ -14,6 +14,14 @@ const { t } = i18n.global
 // un seul intercepteur est enregistré (voir plus bas), donc une seule promesse à partager.
 let refreshPromise = null
 
+// Le serveur a répondu et refuse la session (refresh token révoqué ou expiré, compte supprimé) :
+// elle est réellement morte, on la purge. À distinguer d'une requête restée sans réponse (délai
+// d'attente de `api.js` dépassé, réseau coupé) ou d'une erreur serveur, qui ne disent rien de la
+// session : la purger transformerait un incident passager en déconnexion. Avant le délai
+// d'attente, un refresh qui traînait pendait indéfiniment — réversible ; purger sur ce délai
+// aurait été une régression (brief admin/content/brief-rate-limit.md, 29/09/2026).
+const isSessionRejected = (error) => [400, 401].includes(error?.response?.status)
+
 export const useAuthStore = defineStore('auth', () => {
   const cookieStore = useCookieStore()
 
@@ -205,10 +213,14 @@ export const useAuthStore = defineStore('auth', () => {
       })
       setUser(response.data.user)
       return true
-    } catch {
-      setToken(null)
-      setUser(null)
-      setRefreshToken(null, false)
+    } catch (error) {
+      // false dans les deux cas (rien n'a été vérifié), mais seul un refus explicite purge : sans
+      // réponse, le jeton local reste, la vérification suivante retentera.
+      if (isSessionRejected(error)) {
+        setToken(null)
+        setUser(null)
+        setRefreshToken(null, false)
+      }
       return false
     }
   }
@@ -258,10 +270,14 @@ export const useAuthStore = defineStore('auth', () => {
         originalRequest.headers = { ...originalRequest.headers, Authorization: `Bearer ${newAccessToken}` }
         return http.request(originalRequest)
       } catch (refreshError) {
-        setToken(null)
-        setUser(null)
-        setRefreshToken(null, false)
-        push.error(t('Auth.Errors.SessionExpired'))
+        // Sans réponse du serveur, la session est gardée : l'appelant affiche déjà son erreur
+        // réseau (`Auth.Errors.NetworkError`), et la requête suivante retentera le refresh.
+        if (isSessionRejected(refreshError)) {
+          setToken(null)
+          setUser(null)
+          setRefreshToken(null, false)
+          push.error(t('Auth.Errors.SessionExpired'))
+        }
         return Promise.reject(refreshError)
       }
     }

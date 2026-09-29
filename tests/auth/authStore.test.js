@@ -336,12 +336,24 @@ describe('Auth Store', () => {
 
     it('efface le token si la réponse est 401', async () => {
       store.setToken('tok_expire')
-      http.get.mockRejectedValueOnce(new Error('Unauthorized'))
+      http.get.mockRejectedValueOnce({ response: { status: 401 } })
 
       const result = await store.checkAuth()
 
       expect(result).toBe(false)
       expect(store.token).toBeNull()
+    })
+
+    // Délai d'attente d'api.js dépassé ou réseau coupé : axios rejette sans `response`. Rien ne
+    // dit que la session est morte, la purger déconnecterait sur un simple incident réseau.
+    it('garde le token si aucune réponse n\'arrive (délai dépassé)', async () => {
+      store.setToken('tok_valide')
+      http.get.mockRejectedValueOnce({ code: 'ECONNABORTED', message: 'timeout of 20000ms exceeded' })
+
+      const result = await store.checkAuth()
+
+      expect(result).toBe(false)
+      expect(store.token).toBe('tok_valide')
     })
   })
 
@@ -470,13 +482,52 @@ describe('Auth Store', () => {
       await store.login({ email: 'test@test.com', password: 'pass1234' })
 
       const onRejected = http.interceptors.response.use.mock.calls[0][1]
-      http.post.mockRejectedValueOnce(new Error('refresh token révoqué'))
+      // Refresh token révoqué : AuthController@refresh répond 401.
+      http.post.mockRejectedValueOnce({ response: { status: 401 } })
 
       const error = { response: { status: 401 }, config: { url: 'characters', headers: {} } }
       await expect(onRejected(error)).rejects.toBeDefined()
 
       expect(store.token).toBeNull()
       expect(store.isLoggedIn).toBe(false)
+    })
+
+    it('garde la session si le refresh reste sans réponse (délai dépassé)', async () => {
+      http.post.mockResolvedValueOnce({
+        data: { success: true, access_token: 'tok456', refresh_token: 'refresh456', expires_in: 900, user: mockUser },
+      })
+      await store.login({ email: 'test@test.com', password: 'pass1234' })
+
+      const onRejected = http.interceptors.response.use.mock.calls[0][1]
+      const timeout = { code: 'ECONNABORTED', message: 'timeout of 20000ms exceeded' }
+      http.post.mockRejectedValueOnce(timeout)
+
+      const error = { response: { status: 401 }, config: { url: 'characters', headers: {} } }
+      // L'appelant reçoit l'erreur sans réponse et affiche son message réseau.
+      await expect(onRejected(error)).rejects.toBe(timeout)
+
+      expect(store.token).toBe('tok456')
+      expect(store.isLoggedIn).toBe(true)
+    })
+
+    it('retente le refresh à la requête suivante après un délai dépassé', async () => {
+      http.post.mockResolvedValueOnce({
+        data: { success: true, access_token: 'tok456', refresh_token: 'refresh456', expires_in: 900, user: mockUser },
+      })
+      await store.login({ email: 'test@test.com', password: 'pass1234' })
+
+      const onRejected = http.interceptors.response.use.mock.calls[0][1]
+      http.post.mockRejectedValueOnce({ code: 'ECONNABORTED' })
+      await expect(onRejected({ response: { status: 401 }, config: { url: 'characters', headers: {} } })).rejects.toBeDefined()
+
+      http.post.mockResolvedValueOnce({
+        data: { success: true, access_token: 'tokNew', refresh_token: 'refreshNew', expires_in: 900 },
+      })
+      http.request.mockResolvedValueOnce({ data: {} })
+      await onRejected({ response: { status: 401 }, config: { url: 'characters', headers: {} } })
+
+      expect(http.post.mock.calls.filter(call => call[0] === 'auth/refresh')).toHaveLength(2)
+      expect(store.token).toBe('tokNew')
     })
   })
 })

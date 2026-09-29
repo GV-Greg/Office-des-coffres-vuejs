@@ -7,8 +7,15 @@ if(import.meta.env.PROD) {
     API_URL = import.meta.env.VITE_API_ENDPOINT_DEV
 }
 
+// Délai d'attente borné : axios n'en a aucun par défaut, et une requête sans réponse laissait un
+// bouton tourner indéfiniment. Cas réel (29/09/2026) : en prod, la couche d'hébergement retient
+// les réponses 429 du limiteur Laravel sans jamais les rendre. Au-delà du délai, l'appelant
+// reçoit une erreur sans `response` et affiche son message réseau habituel.
+export const HTTP_TIMEOUT_MS = 20000
+
 export const http = axios.create({
     baseURL: API_URL,
+    timeout: HTTP_TIMEOUT_MS,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
