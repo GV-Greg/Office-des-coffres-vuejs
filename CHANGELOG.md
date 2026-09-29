@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [date de merge] — PR #?
+## [2026-09-29] — PR #72
 
 ### Fixed
 - **Délai d'attente de 20 s sur toute requête d'API** (`src/api.js`). axios n'en pose aucun par
