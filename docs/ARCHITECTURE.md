@@ -67,7 +67,9 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   **Intercepteur axios 401 avec mutex** enregistré ici (pas dans `api.js`) : un access token
   expiré déclenche un seul appel à `auth/refresh` même si plusieurs requêtes échouent en
   parallèle, puis rejoue la requête d'origine ; `auth/login` et `auth/refresh` en sont exclus pour
-  ne pas boucler, et un échec du refresh purge la session avec un toast « session expirée ».
+  ne pas boucler. Seul un **refus** du refresh (400/401) purge la session avec un toast « session
+  expirée » ; un refresh resté sans réponse (délai d'`api.js` dépassé, réseau coupé) la garde, la
+  requête suivante retente. `checkAuth()` applique la même règle.
 - **`cookieStore.js`** (style options) — modèle de consentement nommé et extensible :
   `consent: { preferences: bool, choiceMadeAt: number }` (clé `cookie-consent`, migration
   silencieuse depuis l'ancien format `cookie-comply` au chargement, sans nouvelle sollicitation

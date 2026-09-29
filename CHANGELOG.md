@@ -15,6 +15,11 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
   Laravel (les 404/405/401 et une rafale de 401 répondent normalement, seul le 429 reste sans
   réponse). Au-delà du délai, l'appelant affiche son message réseau habituel. Préalable au merge
   de la limitation de débit backend (#29). Garde-fou `tests/common/api.unit.test.js`.
+- **Un délai dépassé ne déconnecte plus** (`src/stores/authStore.js`). Seul un refus explicite du
+  serveur (400/401 sur `auth/refresh` ou `auth/me`) purge désormais la session ; sans réponse, elle
+  est gardée et la requête suivante retente. Sans cette distinction, le délai d'attente aurait
+  transformé un incident réseau passager en déconnexion — l'intercepteur 401 et `checkAuth()`
+  purgeaient sur n'importe quelle erreur.
 
 ## [2026-09-27] — PR #70
 
