@@ -93,6 +93,40 @@ jobs:
 
           echo "✅ Headers de cache conformes sur les assets et index.html."
 
+      # Origine canonique (voir public/.htaccess) : les trois autres variantes doivent rediriger
+      # vers https://officedescoffres.creacube.be en gardant chemin et paramètres. Une seule
+      # origine peut être autorisée par CORS côté API : une variante qui servirait de nouveau
+      # l'application y aurait ses appels d'API bloqués. 301 ou 302 acceptés (302 le temps de
+      # vérifier la règle en prod, 301 ensuite). La variante canonique, elle, doit répondre 200
+      # sans redirection — une boucle échouerait ici.
+      - name: Vérifier la redirection vers l'origine canonique
+        run: |
+          CANONICAL="https://officedescoffres.creacube.be"
+          PROBE="/app/profil?verif=1"
+          FAILED=0
+
+          STATUS=$(curl -sS -o /dev/null --max-time 10 -w '%{http_code}' "${CANONICAL}${PROBE}")
+          echo "${CANONICAL}${PROBE} → ${STATUS}"
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::L'origine canonique répond ${STATUS} au lieu de 200 (boucle de redirection ?)."
+            FAILED=1
+          fi
+
+          for VARIANT in https://www.officedescoffres.creacube.be http://officedescoffres.creacube.be http://www.officedescoffres.creacube.be; do
+            RESULT=$(curl -sS -o /dev/null --max-time 10 -w '%{http_code} %{redirect_url}' "${VARIANT}${PROBE}")
+            echo "${VARIANT}${PROBE} → ${RESULT}"
+            case "$RESULT" in
+              "301 ${CANONICAL}${PROBE}"|"302 ${CANONICAL}${PROBE}") ;;
+              *)
+                echo "::error::${VARIANT} ne redirige pas vers ${CANONICAL}${PROBE}."
+                FAILED=1
+                ;;
+            esac
+          done
+
+          if [ "$FAILED" != "0" ]; then exit 1; fi
+          echo "✅ Les trois variantes redirigent vers l'origine canonique."
+
       - name: Annoncer la Chronique / le Registre des Réparations sur Discord
         if: success() && github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
         continue-on-error: true
