@@ -363,7 +363,12 @@ inline (requis/min/max/email/confirmation).
   d'historique).
 - **`public/.htaccess`** — déployé tel quel dans `dist/` : fallback SPA (`mod_rewrite`),
   `Cache-Control: public, max-age=31536000, immutable` sur `/assets/*.js|css`, `no-cache` sur
-  `index.html`. ⚠️ À traiter avec la stratégie `admin/strategies/performance.md`.
+  `index.html`. **Origine canonique** (29/09/2026) : `www` et `http://` redirigent vers
+  `https://officedescoffres.creacube.be` (chemin et paramètres conservés, `/.well-known/` exclu),
+  avant le fallback SPA — une seule origine peut être autorisée par CORS côté API. Garde-fous :
+  `tests/enforcement/htaccess-canonical-origin.unit.test.js` et l'étape de `deploy.yml` qui sonde
+  les quatre variantes en prod. Pas de HSTS (décision séparée). ⚠️ À traiter avec la stratégie
+  `admin/strategies/performance.md`.
 - **`scripts/`** (hors bundle) — `vite-bundle-budget.mjs` + `checkBundleBudget.mjs` (budget de
   taille : le brotli bloque le build, le brut avertit), `docs-sync-check.sh` (CI : un seul
   décompte de tests dans le repo, `ARCHITECTURE.md` pas périmée de plus de 30 jours sur le dernier

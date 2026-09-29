@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [date de merge] — PR #?
+
+### Security
+- **Une seule adresse pour le site** (`public/.htaccess`). Les quatre variantes (`http`/`https`,
+  avec ou sans `www`) servaient toutes l'application, deux d'entre elles en clair. Elles redirigent
+  désormais vers `https://officedescoffres.creacube.be`, chemin et paramètres conservés, en
+  **302** le temps de vérifier la règle en prod (301 ensuite). Préalable à la restriction CORS de
+  l'API, qui ne peut autoriser qu'une origine. Vérifié à chaque déploiement (`deploy.yml`) et par
+  `tests/enforcement/htaccess-canonical-origin.unit.test.js`. Pas de HSTS : décision séparée.
+
 ## [2026-09-29] — PR #72
 
 ### Fixed
