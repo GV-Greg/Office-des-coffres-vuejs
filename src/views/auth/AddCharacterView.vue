@@ -9,12 +9,14 @@
   import SelectorMenu from '@/components/SelectorMenu.vue'
   import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import useNavigationLoading from '@/use/useNavigationLoading'
   import validation from '@/directives/validation'
   import { push } from 'notivue'
 
   const { t } = useI18n()
   const router = useRouter()
   const authStore = useAuthStore()
+  const { trackApiCall } = useNavigationLoading()
 
 /*
   form data
@@ -31,7 +33,7 @@
     } else if (validation(!selectedCityId.value, t('AddCharacter.Errors.CityRequired'))) {
       // erreur déjà affichée par validation()
     } else {
-      authStore.createCharacter({ pseudo: pseudo.value, city_id: Number(selectedCityId.value) })
+      trackApiCall(authStore.createCharacter({ pseudo: pseudo.value, city_id: Number(selectedCityId.value) }), { navigates: true })
           .then(() => {
             router.push('/app/profil')
           })

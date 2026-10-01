@@ -9,6 +9,7 @@
   import SelectorCharacter from '@/components/SelectorCharacter.vue'
   import { useAuthStore } from '@/stores/authStore'
   import { useCookieStore } from '@/stores/cookieStore'
+  import useNavigationLoading from '@/use/useNavigationLoading'
   import { ADMIN_ORIGIN } from '@/api.js'
   import logoHorizontal from '@/assets/logo/logo-horizontal.svg'
   import logoEcu from '@/assets/logo/ecu.svg'
@@ -16,10 +17,11 @@
   const router = useRouter()
   const { t } = useI18n()
   const authStore = useAuthStore()
+  const { trackApiCall } = useNavigationLoading()
   const cookieStore = useCookieStore()
 
   const logout = async () => {
-    await authStore.logout()
+    await trackApiCall(authStore.logout(), { navigates: true })
     push.success(t('NavBar.LoggedOut'))
     router.push({ name: 'welcome' })
   }

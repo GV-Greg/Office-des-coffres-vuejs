@@ -8,8 +8,8 @@ const i18n = createI18n({
   legacy: false,
   locale: 'fr',
   messages: {
-    fr: { Common: { LoadingOffice: "Ouverture de l'office…", LoadingChest: 'Ouverture du coffre…' } },
-    en: { Common: { LoadingOffice: 'Opening the office…', LoadingChest: 'Opening the chest…' } }
+    fr: { Common: { LoadingOffice: "Ouverture de l'office…", LoadingChest: 'Ouverture du coffre…', LoadingApi: 'Le greffe traite votre demande…' } },
+    en: { Common: { LoadingOffice: 'Opening the office…', LoadingChest: 'Opening the chest…', LoadingApi: 'The clerk is handling your request…' } }
   }
 })
 
@@ -51,6 +51,16 @@ describe('LoadingOverlay', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.chest-icon').attributes('name')).toBe('gi-chest')
     expect(wrapper.text()).toContain('Ouverture du coffre')
+  })
+
+  it('affiche le pavillon et la phrase du greffe pendant un envoi à l\'API', async () => {
+    const { startNavigationLoading } = useNavigationLoading()
+    const wrapper = mountOverlay()
+    startNavigationLoading('api')
+    vi.advanceTimersByTime(150)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.chest-icon').attributes('name')).toBe('gi-medieval-pavilion')
+    expect(wrapper.text()).toContain('Le greffe traite votre demande')
   })
 
   it('expose role="status" et aria-live="polite" pour l\'accessibilité', async () => {

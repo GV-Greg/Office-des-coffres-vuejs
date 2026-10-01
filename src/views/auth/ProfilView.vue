@@ -9,6 +9,7 @@
   import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
   import DeleteAccountModal from '@/components/DeleteAccountModal.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import useNavigationLoading from '@/use/useNavigationLoading'
   import { translateKingdomName } from '@/modules/kingdomTranslations'
   import { push } from 'notivue'
 
@@ -18,6 +19,7 @@
   const { t, locale } = useI18n()
   const router = useRouter()
   const authStore = useAuthStore()
+  const { trackApiCall } = useNavigationLoading()
 
 /*
   édition de la résidence
@@ -34,7 +36,7 @@
     editCityId.value = ''
   }
   const saveResidence = (characterId) => {
-    authStore.updateCharacterCity(characterId, Number(editCityId.value))
+    trackApiCall(authStore.updateCharacterCity(characterId, Number(editCityId.value)))
       .then(() => {
         push.success(t('Profil.ResidenceUpdated'))
         cancelEditResidence()
@@ -51,7 +53,7 @@
   const characterNames = computed(() => authStore.getCharacters.map(c => c.pseudo))
 
   const confirmDeleteAccount = (password, { onError }) => {
-    authStore.deleteAccount(password)
+    trackApiCall(authStore.deleteAccount(password), { navigates: true })
       .then(() => {
         isDeleteModalOpen.value = false
         push.success(t('Profil.DeleteAccount.SuccessToast'))
