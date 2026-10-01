@@ -204,9 +204,27 @@ export const useAuthStore = defineStore('auth', () => {
     activeCharacterId.value = null
   }
 
-  const checkAuth = async () => {
-    if (!token.value) return false
+  // Une seule vérification en vol par token : le premier garde de route qui crée ce store
+  // (ex. Welcome → /login → /app/) déclenche l'hydratation ci-dessous PUIS appelle lui-même
+  // checkAuth() — deux auth/me et deux préflights pour une navigation. Les appels concurrents
+  // reçoivent la même promesse. Liée au token : un token remplacé entre-temps (VerifyEmailView)
+  // relance une vérification plutôt que d'hériter du verdict de l'ancien.
+  let pendingCheck = null
+  let pendingCheckToken = null
 
+  const checkAuth = () => {
+    if (!token.value) return Promise.resolve(false)
+    if (pendingCheck && pendingCheckToken === token.value) return pendingCheck
+
+    pendingCheckToken = token.value
+    const check = fetchAuthenticatedUser().finally(() => {
+      if (pendingCheck === check) pendingCheck = null
+    })
+    pendingCheck = check
+    return check
+  }
+
+  const fetchAuthenticatedUser = async () => {
     try {
       const response = await http.get('auth/me', {
         headers: { Authorization: `Bearer ${token.value}` },
