@@ -26,8 +26,10 @@
 #  - %{HTTPS} est fiable derrière PowerBoost : PHP voit le vrai schéma (Laravel
 #    redirige en http:// une requête http://, vérifié en prod le 29/09/2026), donc
 #    pas de boucle à craindre.
-#  - 302 d'abord : une 301 fausse resterait en cache chez chaque visiteur. Passage
-#    en 301 une fois les quatre entrées vérifiées en prod. Pas de HSTS ici (en-tête
+#  - 301 depuis le 01/10/2026, après une phase en 302 (une 301 fausse resterait en
+#    cache chez chaque visiteur) : règle vérifiée en prod du 29/09 au 01/10. Ne plus
+#    laisser cPanel écrire dans ce fichier : le retrait de sa redirection de
+#    sous-domaine, le 01/10, l'a réécrit sans ce bloc. Pas de HSTS ici (en-tête
 #    irrévocable chez les clients) : décision séparée si on en veut un jour.
 # Contrôlée à chaque déploiement par .github/workflows/deploy.yml.
 <IfModule mod_rewrite.c>
@@ -37,7 +39,7 @@
   RewriteCond %{REQUEST_URI} !^/\.well-known/
   RewriteCond %{HTTPS} !=on [OR]
   RewriteCond %{HTTP_HOST} !^officedescoffres\.creacube\.be$ [NC]
-  RewriteRule ^(.*)$ https://officedescoffres.creacube.be/$1 [R=302,L]
+  RewriteRule ^(.*)$ https://officedescoffres.creacube.be/$1 [R=301,L]
 
   RewriteCond %{REQUEST_URI} !^/assets/
   RewriteCond %{REQUEST_URI} !^/\.well-known/
