@@ -12,6 +12,7 @@
   import { useAuthStore } from '@/stores/authStore'
   import { useCookieStore } from '@/stores/cookieStore'
   import validation from '@/directives/validation'
+  import useNavigationLoading from '@/use/useNavigationLoading'
   import { push } from 'notivue'
 
   const { t } = useI18n()
@@ -33,6 +34,10 @@
     value: ''
   })
   const resendSent = ref(false)
+  // auth/login précède toute navigation : sans garde, chaque clic de plus pendant l'attente
+  // envoie une tentative, décomptée par le limiteur (5/min).
+  const isSubmitting = ref(false)
+  const { trackApiCall } = useNavigationLoading()
 /*
   submit form
 */
@@ -40,6 +45,7 @@
   const authStore = useAuthStore()
 
   const connect = () => {
+    if (isSubmitting.value) return
     if(validation(!user.email || !user.password, t('Auth.Errors.RequiredFields'))) {
       // erreur déjà affichée par validation()
     } else if(validation(user.email.length > 190, t('Auth.Errors.EmailTooLong'))) {
@@ -50,11 +56,14 @@
       // erreur déjà affichée par validation()
     } else {
       resendSent.value = false
-      authStore.login({ ...user, remember_me: rememberMe.value })
+      isSubmitting.value = true
+      // Même écran que la navigation (« Ouverture de l'office… »), tenu jusqu'à l'arrivée.
+      trackApiCall(authStore.login({ ...user, remember_me: rememberMe.value }), { context: 'office', navigates: true })
           .then(() => {
             router.push(authStore.hasCharacters ? '/app/' : '/app/character/new')
           })
           .catch(error => {
+            isSubmitting.value = false
             error_message.value = error.response?.data?.message ?? t('Auth.Errors.NetworkError')
             push.error(error_message.value)
           })
@@ -62,7 +71,7 @@
   }
 
   const resendVerification = () => {
-    authStore.resendVerification(user.email)
+    trackApiCall(authStore.resendVerification(user.email))
       .then(() => {
         resendSent.value = true
       })

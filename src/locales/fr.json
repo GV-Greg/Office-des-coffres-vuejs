@@ -32,6 +32,7 @@
     "Placeholder": "Test",
     "LoadingOffice": "Ouverture de l'office…",
     "LoadingChest": "Ouverture du coffre…",
+    "LoadingApi": "Le greffe traite votre demande…",
     "Theme": {
       "Title": "Thème",
       "Light": "Mode clair",

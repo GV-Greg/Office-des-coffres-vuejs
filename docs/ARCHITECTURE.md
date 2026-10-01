@@ -40,7 +40,9 @@ compte déjà connecté qui atterrit sur `/login` ou `/register` part directemen
 
 **Hooks globaux de navigation** : `beforeEach`/`afterEach`/`onError` pilotent `LoadingOverlay.vue`
 via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X » (`economy`,
-`economy-mines`, `security`, `security-guet`, `animation`), `office` pour tout le reste.
+`economy-mines`, `security`, `security-guet`, `animation`), `office` pour tout le reste. Les
+envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent par `trackApiCall()`
+(voir `use/useNavigationLoading.js` plus bas).
 
 ## Stores Pinia (`src/stores/`)
 
@@ -218,7 +220,8 @@ via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X »
   est déjà dans la `NavBar`).
 - **`LoadingOverlay.vue`** — overlay plein écran pendant la navigation, monté dans `App.vue` et
   piloté par les hooks du router via `useNavigationLoading`. Icône et texte selon le contexte
-  (pavillon « Ouverture de l'office… » / coffre « Ouverture du coffre… »), `role="status"` +
+  (pavillon « Ouverture de l'office… » / coffre « Ouverture du coffre… » / pavillon « Le greffe
+  traite votre demande… » pendant un envoi à l'API), `role="status"` +
   `aria-live`, `prefers-reduced-motion` respecté.
 - **`NavBar.vue`** — header `/app/*` (named view `Nav`, donc partagé par home, éco, sécu, company,
   anim, profil). Contient `SelectorMenu`, `SelectorCharacter`, le bouton de déconnexion, le bouton
@@ -359,7 +362,14 @@ inline (requis/min/max/email/confirmation).
   jamais approché. Gardé par `tests/enforcement/motion.unit.test.js`. Un composant qui déplace un
   élément au survol neutralise aussi la translation en mouvement réduit (ex. `NavMenu`).
 - **`use/useNavigationLoading.js`** — état partagé de l'overlay de navigation (délai anti-flash de
-  150 ms, contexte `office`/`chest`). **`use/useFormValidation.js`** — messages d'erreur inline
+  150 ms, contexte `office`/`chest`/`api`). `trackApiCall(promesse, { context, navigates })`
+  couvre un envoi à l'API : sans lui, rien ne bougeait pendant l'attente, jusqu'aux 20 s du
+  délai d'`api.js`. Branché sur la connexion (contexte `office`, même écran que la navigation),
+  l'inscription, les renvois de lien, l'ajout de personnage, la résidence, la suppression de
+  compte et la déconnexion. `navigates: true` **tient** l'écran : la navigation qui suit n'en
+  change ni la phrase ni le délai, un seul écran du clic à l'arrivée ; `afterEach`/`onError` ou
+  l'échec de l'envoi le libèrent. `LoginView` ignore en plus un second envoi pendant l'attente
+  (le limiteur `login` compte chaque tentative). **`use/useFormValidation.js`** — messages d'erreur inline
   des formulaires, avec `modules/Validators.js`.
 - **`modules/goBackOrWelcome.js`** — retour arrière sûr (revient à `welcome` quand il n'y a pas
   d'historique).

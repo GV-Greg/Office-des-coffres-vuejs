@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import LoginView from '../../src/views/auth/LoginView.vue'
@@ -160,4 +160,22 @@ describe('LoginView — logo à la place du titre texte (identité visuelle, 27/
     expect(img.exists()).toBe(true)
     expect(img.attributes('alt')).toBe('Office des coffres')
   })
+
+  it("n'envoie qu'une tentative tant que la première est en attente (le limiteur les compte toutes)", async () => {
+    const wrapper = mountLogin()
+    const authStore = useAuthStore()
+    let reject
+    authStore.login.mockReturnValueOnce(new Promise((_, r) => { reject = r }))
+    await fillAndSubmit(wrapper)
+    await wrapper.find('form').trigger('submit')
+    expect(authStore.login).toHaveBeenCalledTimes(1)
+
+    // Un échec rend la main : la tentative suivante part.
+    reject({ response: { data: { message: 'Identifiants incorrects.' } } })
+    await flushPromises()
+    authStore.login.mockRejectedValueOnce({ response: { data: { message: 'Identifiants incorrects.' } } })
+    await wrapper.find('form').trigger('submit')
+    expect(authStore.login).toHaveBeenCalledTimes(2)
+  })
 })
+

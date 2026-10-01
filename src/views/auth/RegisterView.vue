@@ -11,6 +11,7 @@
   import SelectorMenu from '@/components/SelectorMenu.vue'
   import logoHorizontal from '@/assets/logo/logo-horizontal.svg'
   import validation from '@/directives/validation'
+  import useNavigationLoading from '@/use/useNavigationLoading'
   import { useAuthStore } from "@/stores/authStore"
   import { push } from 'notivue'
 
@@ -29,6 +30,7 @@
   submit form
 */
   const authStore = useAuthStore()
+  const { trackApiCall } = useNavigationLoading()
 
   const register = async () => {
     if(validation(!user.email || !user.password || !user.confirmation, t('Auth.Errors.RequiredFields'))) {
@@ -42,7 +44,7 @@
     } else if(validation(user.password !== user.confirmation, t('Auth.Errors.ConfirmationMismatch'))) {
       // erreur déjà affichée par validation()
     } else {
-      authStore.register(user)
+      trackApiCall(authStore.register(user))
           .then(() => {
             registered.value = true
           })

@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-01] — PR #75
+
+### Fixed
+- **Un écran d'attente pendant les envois à l'API** (`useNavigationLoading.trackApiCall`). La
+  connexion envoyait sa requête avant toute navigation : l'écran « Ouverture de l'office… », piloté
+  par le routeur seul, n'apparaissait pas, et rien ne bougeait pendant l'attente. Il couvre
+  désormais la connexion, du clic à l'arrivée sur `/app/`. Les autres envois (inscription, renvoi
+  du lien, ajout de personnage, résidence, suppression de compte, déconnexion) ont le même écran
+  avec une autre phrase : « Le greffe traite votre demande… ». La connexion ignore aussi un second
+  clic pendant l'attente, chaque tentative comptant pour le limiteur (5/min).
+
 ## [2026-10-01] — PR #71
 
 ### Fixed

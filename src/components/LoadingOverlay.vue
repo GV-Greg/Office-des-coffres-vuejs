@@ -7,7 +7,8 @@ const { t } = useI18n()
 const { isNavigationLoading, navigationContext } = useNavigationLoading()
 
 const iconName = computed(() => navigationContext.value === 'chest' ? 'gi-chest' : 'gi-medieval-pavilion')
-const loadingText = computed(() => t(navigationContext.value === 'chest' ? 'Common.LoadingChest' : 'Common.LoadingOffice'))
+const LOADING_TEXT_KEYS = { chest: 'Common.LoadingChest', api: 'Common.LoadingApi' }
+const loadingText = computed(() => t(LOADING_TEXT_KEYS[navigationContext.value] ?? 'Common.LoadingOffice'))
 </script>
 
 <template>

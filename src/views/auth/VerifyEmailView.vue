@@ -8,12 +8,14 @@
   import InputEmail from '@/components/forms/InputEmail.vue'
   import logoHorizontal from '@/assets/logo/logo-horizontal.svg'
   import { useAuthStore } from '@/stores/authStore'
+  import useNavigationLoading from '@/use/useNavigationLoading'
   import { push } from 'notivue'
 
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
   const authStore = useAuthStore()
+  const { trackApiCall } = useNavigationLoading()
 
   const state = ref('verifying') // 'verifying' | 'error'
   const resendEmail = reactive({ value: '' })
@@ -39,7 +41,7 @@
   })
 
   const resend = () => {
-    authStore.resendVerification(resendEmail.value)
+    trackApiCall(authStore.resendVerification(resendEmail.value))
       .then(() => {
         resendSent.value = true
       })

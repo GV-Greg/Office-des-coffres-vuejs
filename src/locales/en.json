@@ -32,6 +32,7 @@
     "Placeholder": "Test",
     "LoadingOffice": "Opening the office…",
     "LoadingChest": "Opening the chest…",
+    "LoadingApi": "The clerk is handling your request…",
     "Theme": {
       "Title": "Theme",
       "Light": "Light mode",
