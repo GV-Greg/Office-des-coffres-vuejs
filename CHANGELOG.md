@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-01] — PR #74
+
+### Security
+- **Redirection vers l'adresse unique rétablie, et passée en 301** (`public/.htaccess`). Le
+  01/10/2026, le retrait de l'ancienne redirection de sous-domaine dans cPanel a réécrit le
+  fichier sur le serveur sans la règle de #73 : les quatre variantes répondaient de nouveau 200,
+  dont deux en clair. Un redéploiement à l'identique ne la remettait pas, l'envoi FTP ne
+  transférant que les fichiers modifiés. Cette modification renvoie le fichier, cette fois en
+  **301** : la règle avait été vérifiée en prod en 302 du 29/09 au 01/10.
+
 ## [2026-09-29] — PR #73
 
 ### Security
