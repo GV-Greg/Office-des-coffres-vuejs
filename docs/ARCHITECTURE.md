@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 01/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 02/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -373,7 +373,10 @@ inline (requis/min/max/email/confirmation).
   des formulaires, avec `modules/Validators.js`.
 - **`modules/goBackOrWelcome.js`** — retour arrière sûr (revient à `welcome` quand il n'y a pas
   d'historique).
-- **`public/.htaccess`** — déployé tel quel dans `dist/` : fallback SPA (`mod_rewrite`),
+- **`public/.htaccess`** — déployé tel quel dans `dist/` : fallback SPA (`mod_rewrite`), qui
+  exclut `/assets/`, `/.well-known/` et tout chemin contenant `/api/` (02/10/2026 : un scanner
+  obtenait 200 sur `/access/api/v1/system/ping`) — garde-fou
+  `tests/enforcement/htaccess-spa-fallback.unit.test.js`,
   `Cache-Control: public, max-age=31536000, immutable` sur `/assets/*.js|css`, `no-cache` sur
   `index.html`. **Origine canonique** (29/09/2026) : `www` et `http://` redirigent vers
   `https://officedescoffres.creacube.be` (chemin et paramètres conservés, `/.well-known/` exclu),
