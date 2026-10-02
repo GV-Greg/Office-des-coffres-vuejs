@@ -14,7 +14,18 @@
 #  - /.well-known/ : chemins normalisés (RFC 8615). Un client qui y cherche un
 #    fichier absent doit recevoir 404, pas une page d'accueil.
 #
-# Aucune route du SPA ne commence par ces préfixes (vérifié dans router/index.js),
+#  - tout chemin contenant /api/ (02/10/2026) : /access/api/v1/system/ping
+#    répondait 200 avec index.html, journaux d'accès à l'appui. Un scanner qui
+#    cherche un point d'entrée d'API doit recevoir 404. L'API vit sur
+#    odc-admin.creacube.be, jamais sur ce domaine. Règle volontairement étroite :
+#    un chemin de page inconnu sans /api/ sert toujours index.html, pour que la
+#    vue 404 de l'application s'affiche (front #45).
+#
+# En prod, ces 404 portent quand même le corps d'index.html (1213 octets) :
+# l'ErrorDocument du vhost O2Switch le sert, vérifié le 02/10/2026 sur /assets/
+# et /.well-known/. C'est le STATUT qui compte, pas le corps.
+#
+# Aucune route du SPA ne contient ces préfixes (vérifié dans router/index.js),
 # l'exclusion ne peut donc pas casser un lien direct.
 #
 # Origine canonique (29/09/2026) : https://officedescoffres.creacube.be, sans www.
@@ -43,6 +54,7 @@
 
   RewriteCond %{REQUEST_URI} !^/assets/
   RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteCond %{REQUEST_URI} !/api/
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]

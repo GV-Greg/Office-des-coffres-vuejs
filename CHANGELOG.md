@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [date du merge] — PR #?
+
+### Security
+- **Le fallback SPA ne répond plus 200 à un chemin d'API** (`public/.htaccess`). Tout chemin
+  contenant `/api/` reçoit un 404, alors que `/access/api/v1/system/ping` renvoyait `index.html`
+  (journaux d'accès du 02/10). L'API vit sur `odc-admin.creacube.be`, jamais sur ce domaine.
+  Règle étroite : une page inconnue sans `/api/` sert toujours `index.html`, pour que la vue 404
+  s'affiche (front #45). Vérifié sur un Apache jetable avec une copie du `.htaccess` : `/api/`
+  en 404, les routes de l'application, une page inconnue et `/legal/cookies` en 200, les
+  exclusions `/assets/` et `/.well-known/` intactes. En prod, le 404 garde le corps
+  d'`index.html` (`ErrorDocument` du vhost O2Switch, comme les deux autres exclusions) : seul le
+  statut change. Gardé par
+  `tests/enforcement/htaccess-spa-fallback.unit.test.js` (exclusions, fallback maintenu,
+  conditions jamais en `[OR]`).
+
 ## [2026-10-01] — PR #75
 
 ### Fixed
