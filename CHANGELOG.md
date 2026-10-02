@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [date du merge] — PR #76
+## [2026-10-02] — PR #76
 
 ### Security
 - **Le fallback SPA ne répond plus 200 à un chemin d'API** (`public/.htaccess`). Tout chemin
