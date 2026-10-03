@@ -15,6 +15,7 @@ réservée à la fin d'une tâche cohérente ou juste avant un push.
 | Domaine | Dossier | Script | Contenu |
 |---|---|---|---|
 | Auth | `tests/auth/` | `npm run test:auth` | `authStore`, `LoginView`, `RegisterView`, `ProfilView`, `AddCharacterView`, `VerifyEmailView`, guards de route |
+| Mandats | `tests/mandates/` + `tests/province/` | `npm run test:mandates` | bloc « Postes » du Profil, modales de demande et de déclaration de poste, messages d'erreur de l'API |
 | Cookies | `tests/cookies/` | `npm run test:cookies` | `cookieStore`, `CookiesBanner`, `CookiesModal` |
 | Économie | `tests/eco/` | `npm run test:eco` | `mineParser` (logique pure), `EconomyMines` |
 | Sécurité | `tests/security/` | `npm run test:security` | `SecurityGuet` |
