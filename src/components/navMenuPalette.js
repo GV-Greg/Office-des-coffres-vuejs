@@ -33,6 +33,13 @@ export const PALETTE = {
     current: ['#5eead4', '#0f766e', '#042f2e'],
     icon: '#ccfbf1',
   },
+  // Violet PROVISOIRE (Greg, 03/10/2026 : « on verra dans l'interface ») — « Ma province ».
+  violet: {
+    rest: ['#c4b5fd', '#7c3aed', '#4c1d95'],
+    hover: ['#ddd6fe', '#8b5cf6', '#5b21b6'],
+    current: ['#a78bfa', '#6d28d9', '#2e1065'],
+    icon: '#ede9fe',
+  },
   slate: {
     rest: ['#cbd5e1', '#475569', '#1e293b'],
     hover: ['#e2e8f0', '#64748b', '#334155'],

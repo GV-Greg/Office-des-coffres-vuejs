@@ -86,6 +86,85 @@
       "Step2PasswordLabel": "Current password",
       "Step2Confirm": "Delete permanently",
       "SuccessToast": "Your account has been deleted. Thank you for using the Office des coffres."
+    },
+    "Mandates": {
+      "Title": "Offices",
+      "NotValidated": "Your character must be validated before requesting an office.",
+      "Post": {
+        "mayor": "Mayor of {place}",
+        "council": "County council of {place} — {office}"
+      },
+      "Level": {
+        "mayor": "Mayor",
+        "council": "County council"
+      },
+      "Status": {
+        "pending": "Awaiting verification",
+        "elected": "Elected, awaiting the leader's election",
+        "active": "Active until {date}",
+        "extended": "Extended until the leader's election (at the latest {date})",
+        "expired": "Expired",
+        "rejected": "Rejected",
+        "revoked": "Revoked"
+      },
+      "Reason": "Reason: {reason}",
+      "WrittenIn": {
+        "fr": "written in French",
+        "en": "written in English"
+      },
+      "OfficePending": "Declared office: {office} — awaiting approval.",
+      "NoOfficeWindow": "No office for now. When the leader of the province is elected, every office is emptied until the leader makes appointments: that is the rule of the game.",
+      "CancelRequest": "Cancel the request",
+      "Renew": "Renew",
+      "DeclareOffice": "Declare my office",
+      "History": "History",
+      "Period": "{office}: from {from} to {to} — {reason}",
+      "Past": "Ended terms ({count})",
+      "RequestButton": "Request an office",
+      "RequestSent": "Request sent. You will receive an email with the decision.",
+      "RenewSent": "Renewal sent. You will receive an email with the decision.",
+      "CancelDone": "Request cancelled.",
+      "DeclareSent": "Declaration sent. The new office will count once approved.",
+      "LoadError": "Your offices cannot be loaded right now.",
+      "Cancel": "Cancel",
+      "Form": {
+        "Title": "Request an office for {pseudo}",
+        "RenewTitle": "Renew the term of {pseudo}",
+        "Level": "Level",
+        "Place": "Place",
+        "PlaceHelp": "Preselected from the residence, can be changed: an office can be held outside one's city or province of residence.",
+        "Office": "Council office (optional)",
+        "OfficeNone": "Not yet appointed / without an office",
+        "OfficeHelp": "If you have just been elected, leave it empty: the leader of the province assigns offices after being elected. You will declare yours afterwards.",
+        "StartedAt": "Start date of the term",
+        "StartedAtCouncilHelp": "Date of the council election, not the leader's (Count, Duke…). If you are replacing a councillor during the term, also give the council election date.",
+        "Announcement": "Link to the public announcement",
+        "AnnouncementHelp": "The link to the announcement of your election (game forum or gazette). It is what allows your request to be verified.",
+        "Info": "Your request will be checked by hand. You will receive an email with the decision. A mayor's term lasts 30 days, a county councillor's 60 days, from the start date. A new councillor only takes office when the leader of the province (Count, Duke…) is elected; until then, outgoing councillors stay in office, within a limit checked by the administration. Remember to renew after each re-election.",
+        "Submit": "Send the request",
+        "Errors": {
+          "PlaceRequired": "Choose the place of the office.",
+          "DateRequired": "Enter the start date.",
+          "DateFuture": "The start date cannot be in the future.",
+          "UrlRequired": "The link to the announcement is required.",
+          "UrlHttps": "The link must start with https://"
+        }
+      },
+      "Declare": {
+        "Title": "Declare my office",
+        "Label": "My council office",
+        "Placeholder": "Choose an office",
+        "None": "Without an office",
+        "Warning": "You lose your office of {office} right now. The new office will only count once approved by the administration. In between, you will hold no office.",
+        "NoCurrent": "Your declaration will be checked by the administration; the office will count once approved.",
+        "Submit": "Send the declaration",
+        "ChangeTitle": "Change office"
+      },
+      "Empty": "No office declared for this character.",
+      "ChangeOffice": "Change office",
+      "HistoryOffices": "Offices during this term",
+      "HistoryTerms": "Previous terms",
+      "Term": "from {from} to {to} — {status}"
     }
   },
   "Validation": {
@@ -194,7 +273,8 @@
     "Economy": "Economy",
     "Security": "Security",
     "Animation": "Animation",
-    "Profile": "Profile"
+    "Profile": "Profile",
+    "Province": "My province"
   },
   "Security": {
     "Title": "Security Chest",
@@ -368,7 +448,7 @@
       },
       "Section3": {
         "Title": "3. When you create an account",
-        "Intro": "Creating a user account is optional. The site can be browsed freely without an account, with access to public tools (Watch, Mines Report, calendar). A free account unlocks additional features tied to your game history (Customs, Mines Registry — upcoming modules).",
+        "Intro": "Creating a user account is optional. The site can be browsed freely without an account, with access to public tools (Watch, Mines Report). A free account unlocks additional features tied to your game history (Customs, Mines Registry — upcoming modules).",
         "AccountFieldsIntro": "To create an account, only two pieces of information are requested:",
         "AccountFields": [
           {
@@ -393,6 +473,10 @@
           {
             "Label": "Validation status",
             "Text": "indicates whether the character has been verified as legitimate by an administrator."
+          },
+          {
+            "Label": "Declared offices (optional)",
+            "Text": "the office (mayor, or county councillor and their title), the city or province, the dates of the term and the link to the public announcement, which you provide to have your authority validated in the modules, as well as the history of your council offices."
           }
         ]
       },
@@ -433,6 +517,11 @@
             "Data": "Role (user / administrator)",
             "Purpose": "Access control to administration functions reserved for the site editor",
             "LegalBasis": "Legitimate interest"
+          },
+          {
+            "Data": "Declared offices (terms)",
+            "Purpose": "Check your office, then tell the modules who may write on behalf of a position",
+            "LegalBasis": "Performance of the contract"
           }
         ],
         "NoCommercialUse": "No personal data is used for commercial, advertising, aggregate statistics, or profiling purposes."
@@ -441,15 +530,17 @@
         "Title": "5. How long we keep your data",
         "ActiveAccount": "Active account: your data is kept as long as your account exists.",
         "InactiveAccount": "Inactive account: after 2 years without login, your account may be automatically deleted, following a notice email to the declared address.",
-        "DeletedAccount": "Deleted account: immediate and definitive deletion of the associated personal data (email, hashed password, linked characters). No partial anonymization, no archive.",
-        "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased."
+        "DeletedAccount": "Deleted account: immediate and definitive deletion of the associated personal data (email, hashed password, linked characters).",
+        "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased.",
+        "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account)."
       },
       "Section6": {
         "Title": "6. Who can access your data",
         "Yourself": "Yourself, via your account (Profile page).",
-        "Editor": "The site editor (see §2), for technical administration and user support — access limited to the strict minimum.",
-        "NoOneElse": "No one else. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
-        "Hosting": "Data is hosted on servers located in the European Union (host: o2switch, France)."
+        "Editor": "The site editor (see §2), for technical administration, user support and checking your office requests — access limited to the strict minimum.",
+        "NoOneElse": "No one else beyond the above. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
+        "Hosting": "Data is hosted on servers located in the European Union (host: o2switch, France).",
+        "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes."
       },
       "Section7": {
         "Title": "7. Your GDPR rights",
@@ -555,5 +646,28 @@
   "username": "username",
   "password": "password",
   "email": "email",
-  "confirmation": "password confirmation"
+  "confirmation": "password confirmation",
+  "Province": {
+    "Title": "My province: {province}",
+    "TitleShort": "My province",
+    "For": "For your character {pseudo}",
+    "Warning": "The Office only records what players declare: an office missing here is not necessarily vacant in the game.",
+    "Loading": "Loading the history…",
+    "LoadError": "The province history cannot be loaded right now.",
+    "NoCharacter": "Add a character first: this page follows its province of residence.",
+    "NoResidence": "This character's residence is unknown: set it from your profile.",
+    "ToProfile": "Go to profile",
+    "CopyForForum": "Copy for the forum",
+    "Copied": "History copied: paste it on the game forum.",
+    "CopyError": "Copying failed.",
+    "Council": "County council",
+    "NoCouncil": "No council office has been declared in this province.",
+    "OfficesWithout": "No declared holder: {offices}.",
+    "Mayors": "Mayors",
+    "NoMayor": "No mayor declared in this province.",
+    "CitiesWithout": "{count} city without a declared term | {count} cities without a declared term",
+    "Since": "since {from}",
+    "FromTo": "from {from} to {to}",
+    "Ongoing": "Ongoing"
+  }
 }
