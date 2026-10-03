@@ -6,7 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [date du merge] — PR #? (mandats — « Ma province »)
+## [2026-10-04] — PR #77 (mandats : postes dans le Profil, « Ma province »)
+
+Pendant frontend de back #44 (déployée le 04/10).
+
+#### « Ma province » et historique
 
 ### Added
 - **Page « Ma province »** (`/app/province`, 6ᵉ bouton du menu, tour sous bannière, violet
@@ -22,7 +26,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
   Retirés : « aucune anonymisation partielle, aucune archive » (devenu faux) et l'outil
   « calendrier » (inexistant) ; « Personne d'autre en dehors de ce qui précède ».
 
-## [date du merge] — PR #? (mandats, lot 2)
+#### Lot 2 — bloc « Postes » du Profil
 
 ### Added
 - **Bloc « Postes » dans le Profil** (`components/mandates/`, `stores/mandateStore.js` ;
