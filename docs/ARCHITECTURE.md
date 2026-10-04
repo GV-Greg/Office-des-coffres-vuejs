@@ -28,6 +28,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/app/company` | `company` | — |
 | `/app/anim` | `animation` | — |
 | `/app/profil` | `profil` | `redirectToHomeIfNotLoggedIn` |
+| `/app/province` | `province` | `redirectToHomeIfNotLoggedIn` — « Ma province » |
 | `/app/character/new` | `character-new` | `redirectToHomeIfNotLoggedIn` |
 | `/:pathMatch(.*)*` | `not-found` | — (`meta.public`) |
 
@@ -74,6 +75,14 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   ne pas boucler. Seul un **refus** du refresh (400/401) purge la session avec un toast « session
   expirée » ; un refresh resté sans réponse (délai d'`api.js` dépassé, réseau coupé) la garde, la
   requête suivante retente. `checkAuth()` applique la même règle.
+- **`mandateStore.js`** (style setup) — mandats de maire et de conseiller comtal : `mandates`,
+  `characters` (avec `requestable` par niveau, Q6), `offices` (référentiel public avec libellés
+  FR/EN). Actions `fetchAll`, `fetchOffices`, `requestMandate`, `renew`, `cancel`, `declareOffice`.
+  ⚠️ **Le frontend ne recode aucune règle et ne traduit aucun code** : les titres, motifs et causes
+  de fin arrivent de l'API en FR et EN (Q11), les refus avec `messages[champ][langue]` (Q9) ;
+  `apiFieldErrors` / `apiMessage` choisissent la langue de l'interface. Seuls les **statuts** et le
+  texte d'interface sont dans les locales (`Profil.Mandates.*`). Arbitrages :
+  `admin/echanges/mandats-lot2/`.
 - **`cookieStore.js`** (style options) — modèle de consentement nommé et extensible :
   `consent: { preferences: bool, choiceMadeAt: number }` (clé `cookie-consent`, migration
   silencieuse depuis l'ancien format `cookie-comply` au chargement, sans nouvelle sollicitation
@@ -175,6 +184,13 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   suppression de compte self-service via
   `DeleteAccountModal.vue` : l'appel API et la redirection vivent ici, la modale ne rend que le
   verdict.
+- **`ProvinceView.vue`** (route `/app/province`, 6ᵉ bouton du menu) — « Ma province » : historique
+  des postes de la province de **résidence** du personnage actif (fil
+  `admin/echanges/mandats-historique` ; résidence seule, décision de Greg). Avertissement
+  **permanent en tête** (« l'Office n'enregistre que ce que les joueurs déclarent »), conseil par
+  titre, maires par ville, villes sans mandat comptées (jamais masquées), export forum
+  (`modules/provinceBBcode.js` : BBcode **français fixe**, dates en **1474**). États vides : aucun
+  personnage (lien vers l'ajout), résidence inconnue. Le personnage se change par la NavBar.
 - **`modules/security/MainSecurity.vue`** — shell + lien vers `security-guet`.
 - **`modules/security/SecurityGuet.vue`** — module public (pas de compte requis), pas juste un
   outil isolé : c'est le futur pendant public du module **Douane** (privé, compte requis,
@@ -250,7 +266,16 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   `overview`/`steps`, emit `close`), réutilisable par n'importe quel module. Consommée par
   `EconomyMines.vue`.
 - **`forms/CityCascadeSelect.vue`** — sélecteur royaume → province → ville en cascade, alimenté
-  par `GET map`.
+  par `GET map`. Prop `stopAt="province"` (mandats, demande de siège au conseil) : la cascade
+  s'arrête à la province, `initialCityId` présélectionne depuis la résidence.
+- **`mandates/CharacterMandates.vue`** — bloc « Postes » de chaque carte du Profil (mandats, lot 2) :
+  mandats et demandes avec un badge de statut **lisible sans la couleur**, motif d'un refus ou
+  d'une révocation, actions (annuler, renouveler, « Déclarer mon poste » sur un conseiller en
+  fonction), historique des postes replié, bouton « Demander un poste » piloté par `requestable`
+  de l'API. **`mandates/MandateRequestModal.vue`** (demande ou renouvellement : niveau et lieu
+  verrouillés, jamais de titre au renouvellement) et **`mandates/DeclareOfficeModal.vue`**
+  (avertissement en trois temps : perte immédiate, gain après validation, aucun poste entre les
+  deux). Les deux modales ont le focus piégé et Échap via `use/useDialogFocus.js`.
 - **`NavMenu.vue`** — menu circulaire, variante **X3** (mix M1 + D2, 27/09/2026) : anneau laiton
   lumineux et états de D2, biseau fin et icône gravée de M1, plaque ardoise bordée d'ambre (Accueil/
   Économie/Sécurité/Animation/Profil). Tout en CSS scopé, sans image, 5 éléments sous le lien.
@@ -309,7 +334,12 @@ inline (requis/min/max/email/confirmation).
   collé depuis le jeu, calcul du bilan par ressource, filtrage/complétude par semaine. Consommé
   par `EconomyMines.vue`.
 - **`gameCalendar.js`** — table d'ancrages année réelle ↔ année de jeu (2026 → 1474), transverse
-  à tout module manipulant des dates de jeu (Économie aujourd'hui, futur Guet/Douane).
+  à tout module manipulant des dates de jeu (Économie aujourd'hui, futur Guet/Douane). ⚠️
+  **Jumeau** de `app/Support/GameCalendar.php` (backend, emails) : `tests/common/gameCalendarTwin`
+  fige la table **et** des conversions, son jumeau backend aussi.
+- **`playerDates.js`** — **la seule déclaration** de l'année affichée pour chaque champ de date
+  (`game` → 1474, `real` → 2026) : le calendrier appartient au champ, jamais à l'écran (fil
+  `mandats-historique`, 06 et 09). Un champ non classé lève une erreur.
 - **`kingdomTranslations.js`** — traduction FR des noms de royaumes (l'API renvoie les noms dans
   leur langue d'origine), alignée sur `lang/fr.json` côté backend.
 - **`data/whatsNew.json`** — entrées de la « Chronique de l'Office » (`HomeView.vue`), scope
@@ -396,7 +426,7 @@ inline (requis/min/max/email/confirmation).
 
 Décompte à jour dans `README.md` (source unique, pas dupliqué ici — `npm test` lance la suite en
 one-shot, le mode watch vit sous `npm run test:watch`). Structure détaillée dans `docs/TESTS.md` :
-dossier = domaine (`auth/`, `cookies/`, `eco/`, `legal/`, `security/`, `common/`, `enforcement/`,
+dossier = domaine (`auth/`, `cookies/`, `eco/`, `legal/`, `mandates/`, `province/`, `security/`, `common/`, `enforcement/`,
 `fixtures/`). Toute vue utilisant `useI18n()` doit recevoir un
 plugin `createI18n({ legacy: false, ... })` dans `global.plugins` du test (miroir de la config
 `main.js`) — sinon `useI18n()` lève une erreur au montage.

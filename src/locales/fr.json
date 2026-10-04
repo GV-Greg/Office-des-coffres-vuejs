@@ -86,6 +86,85 @@
       "Step2PasswordLabel": "Mot de passe actuel",
       "Step2Confirm": "Supprimer définitivement",
       "SuccessToast": "Votre compte a été supprimé. Merci d'avoir utilisé l'Office des coffres."
+    },
+    "Mandates": {
+      "Title": "Postes",
+      "NotValidated": "Votre personnage doit d'abord être validé pour demander un poste.",
+      "Post": {
+        "mayor": "Maire de {place}",
+        "council": "Conseil comtal de {place} — {office}"
+      },
+      "Level": {
+        "mayor": "Maire",
+        "council": "Conseil comtal"
+      },
+      "Status": {
+        "pending": "En attente de vérification",
+        "elected": "Élu, en attente de l'élection du dirigeant",
+        "active": "Actif jusqu'au {date}",
+        "extended": "En prolongation, jusqu'à l'élection du dirigeant (au plus tard le {date})",
+        "expired": "Expiré",
+        "rejected": "Refusé",
+        "revoked": "Révoqué"
+      },
+      "Reason": "Motif : {reason}",
+      "WrittenIn": {
+        "fr": "rédigé en français",
+        "en": "rédigé en anglais"
+      },
+      "OfficePending": "Poste déclaré : {office} — en attente de validation.",
+      "NoOfficeWindow": "Aucun poste pour l'instant. À l'élection du dirigeant de la province, tous les postes sont vidés jusqu'à ses nominations : c'est la règle du jeu.",
+      "CancelRequest": "Annuler la demande",
+      "Renew": "Renouveler",
+      "DeclareOffice": "Déclarer mon poste",
+      "History": "Historique",
+      "Period": "{office} : du {from} au {to} — {reason}",
+      "Past": "Mandats terminés ({count})",
+      "RequestButton": "Demander un poste",
+      "RequestSent": "Demande envoyée. Vous recevrez un email à la décision.",
+      "RenewSent": "Renouvellement envoyé. Vous recevrez un email à la décision.",
+      "CancelDone": "Demande annulée.",
+      "DeclareSent": "Déclaration envoyée. Le nouveau poste comptera après validation.",
+      "LoadError": "Impossible de charger vos postes pour le moment.",
+      "Cancel": "Annuler",
+      "Form": {
+        "Title": "Demander un poste pour {pseudo}",
+        "RenewTitle": "Renouveler le mandat de {pseudo}",
+        "Level": "Niveau",
+        "Place": "Lieu",
+        "PlaceHelp": "Présélectionné sur la résidence, modifiable : on peut tenir un poste hors de sa ville ou de sa province de résidence.",
+        "Office": "Poste au conseil (facultatif)",
+        "OfficeNone": "Pas encore nommé / sans poste",
+        "OfficeHelp": "Si vous venez d'être élu, laissez vide : le dirigeant de la province attribue les postes après son élection. Vous le déclarerez ensuite.",
+        "StartedAt": "Date de début du mandat",
+        "StartedAtCouncilHelp": "Date de l'élection du conseil, et non celle du dirigeant (Comte, Duc…). Si vous remplacez un conseiller en cours de mandat, indiquez aussi la date d'élection du conseil.",
+        "Announcement": "Lien vers l'annonce publique",
+        "AnnouncementHelp": "Le lien vers l'annonce de votre élection (forum ou gazette du jeu). C'est ce qui permet de vérifier votre demande.",
+        "Info": "Votre demande sera vérifiée à la main. Vous recevrez un email à la décision. Un mandat de maire dure 30 jours, un mandat de conseiller comtal 60 jours, à compter de la date de début. Un nouveau conseiller n'entre en fonction qu'à l'élection du dirigeant de la province (Comte, Duc…) ; jusque-là, les conseillers sortants restent en poste, dans une limite vérifiée par l'administration. Pensez à renouveler après chaque réélection.",
+        "Submit": "Envoyer la demande",
+        "Errors": {
+          "PlaceRequired": "Choisissez le lieu du poste.",
+          "DateRequired": "Indiquez la date de début.",
+          "DateFuture": "La date de début ne peut pas être dans le futur.",
+          "UrlRequired": "Le lien vers l'annonce est obligatoire.",
+          "UrlHttps": "Le lien doit commencer par https://"
+        }
+      },
+      "Declare": {
+        "Title": "Déclarer mon poste",
+        "Label": "Mon poste au conseil",
+        "Placeholder": "Choisissez un poste",
+        "None": "Sans poste",
+        "Warning": "Vous perdez dès maintenant votre poste de {office}. Le nouveau poste ne comptera qu'après validation par l'administration. Entre les deux, vous n'aurez aucun poste.",
+        "NoCurrent": "Votre déclaration sera vérifiée par l'administration ; le poste comptera après validation.",
+        "Submit": "Envoyer la déclaration",
+        "ChangeTitle": "Changer de poste"
+      },
+      "Empty": "Aucun poste déclaré pour ce personnage.",
+      "ChangeOffice": "Changer de poste",
+      "HistoryOffices": "Postes de ce mandat",
+      "HistoryTerms": "Mandats précédents",
+      "Term": "du {from} au {to} — {status}"
     }
   },
   "Validation": {
@@ -194,7 +273,8 @@
     "Economy": "Économie",
     "Security": "Sécurité",
     "Animation": "Animation",
-    "Profile": "Profil"
+    "Profile": "Profil",
+    "Province": "Ma province"
   },
   "Security": {
     "Title": "Coffres Sécurité",
@@ -368,7 +448,7 @@
       },
       "Section3": {
         "Title": "3. Quand vous créez un compte",
-        "Intro": "La création d'un compte utilisateur est optionnelle. Le site est consultable librement sans compte, avec accès aux outils publics (Guet, Bilan des mines, calendrier). Un compte gratuit débloque des fonctionnalités supplémentaires liées à votre historique de jeu (Douane, Registre des mines — modules à venir).",
+        "Intro": "La création d'un compte utilisateur est optionnelle. Le site est consultable librement sans compte, avec accès aux outils publics (Guet, Bilan des mines). Un compte gratuit débloque des fonctionnalités supplémentaires liées à votre historique de jeu (Douane, Registre des mines — modules à venir).",
         "AccountFieldsIntro": "Pour créer un compte, seules deux informations sont demandées :",
         "AccountFields": [
           {
@@ -393,6 +473,10 @@
           {
             "Label": "Statut de validation",
             "Text": "indique si le personnage a été vérifié comme légitime par un administrateur."
+          },
+          {
+            "Label": "Postes déclarés (facultatif)",
+            "Text": "le poste (maire, ou conseiller comtal et son titre), la ville ou la province, les dates du mandat et le lien vers l'annonce publique, que vous fournissez pour faire valider votre autorité dans les modules, ainsi que l'historique de vos postes au conseil."
           }
         ]
       },
@@ -433,6 +517,11 @@
             "Data": "Rôle (utilisateur / administrateur)",
             "Purpose": "Contrôle d'accès aux fonctions d'administration réservées à l'éditeur du site",
             "LegalBasis": "Intérêt légitime"
+          },
+          {
+            "Data": "Postes déclarés (mandats)",
+            "Purpose": "Vérifier votre poste, puis indiquer aux modules qui peut écrire au titre d'une fonction",
+            "LegalBasis": "Exécution du contrat"
           }
         ],
         "NoCommercialUse": "Aucune donnée personnelle n'est utilisée à des fins commerciales, publicitaires, statistiques agrégées ou de profilage."
@@ -441,15 +530,17 @@
         "Title": "5. Combien de temps nous conservons vos données",
         "ActiveAccount": "Compte actif : vos données sont conservées tant que votre compte existe.",
         "InactiveAccount": "Compte inactif : après 2 ans sans connexion, votre compte peut être supprimé automatiquement, après un email de préavis à l'adresse déclarée.",
-        "DeletedAccount": "Compte supprimé : suppression immédiate et définitive des données personnelles associées (adresse email, mot de passe haché, personnages liés). Aucune anonymisation partielle, aucune archive.",
-        "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés."
+        "DeletedAccount": "Compte supprimé : suppression immédiate et définitive des données personnelles associées (adresse email, mot de passe haché, personnages liés).",
+        "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés.",
+        "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte)."
       },
       "Section6": {
         "Title": "6. À qui vos données sont accessibles",
         "Yourself": "Vous-même, via votre compte (page Profil).",
-        "Editor": "L'éditeur du site (voir §2), pour l'administration technique et le support utilisateur — accès limité au strict nécessaire.",
-        "NoOneElse": "Personne d'autre. Aucun partage, aucune revente, aucune transmission à des tiers, y compris à Celsius Online (éditeur du jeu Renaissance Kingdoms), sauf réquisition judiciaire dûment notifiée.",
-        "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : o2switch, France)."
+        "Editor": "L'éditeur du site (voir §2), pour l'administration technique, le support utilisateur et la vérification de vos demandes de poste — accès limité au strict nécessaire.",
+        "NoOneElse": "Personne d'autre en dehors de ce qui précède. Aucun partage, aucune revente, aucune transmission à des tiers, y compris à Celsius Online (éditeur du jeu Renaissance Kingdoms), sauf réquisition judiciaire dûment notifiée.",
+        "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : o2switch, France).",
+        "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration."
       },
       "Section7": {
         "Title": "7. Vos droits RGPD",
@@ -555,5 +646,28 @@
   "username": "pseudo",
   "password": "mot de passe",
   "email": "email",
-  "confirmation": "confirmation du mot de passe"
+  "confirmation": "confirmation du mot de passe",
+  "Province": {
+    "Title": "Ma province : {province}",
+    "TitleShort": "Ma province",
+    "For": "Pour votre personnage {pseudo}",
+    "Warning": "L'Office n'enregistre que ce que les joueurs déclarent : un poste absent ici n'est pas forcément vacant dans le jeu.",
+    "Loading": "Chargement de l'historique…",
+    "LoadError": "Impossible de charger l'historique de la province pour le moment.",
+    "NoCharacter": "Ajoutez d'abord un personnage : la page suit sa province de résidence.",
+    "NoResidence": "La résidence de ce personnage n'est pas connue : indiquez-la depuis votre profil.",
+    "ToProfile": "Aller au profil",
+    "CopyForForum": "Copier pour le forum",
+    "Copied": "Historique copié : collez-le sur le forum du jeu.",
+    "CopyError": "La copie a échoué.",
+    "Council": "Conseil comtal",
+    "NoCouncil": "Aucun poste du conseil n'a été déclaré dans cette province.",
+    "OfficesWithout": "Aucun détenteur déclaré : {offices}.",
+    "Mayors": "Maires",
+    "NoMayor": "Aucun maire déclaré dans cette province.",
+    "CitiesWithout": "{count} ville sans mandat déclaré | {count} villes sans mandat déclaré",
+    "Since": "depuis le {from}",
+    "FromTo": "du {from} au {to}",
+    "Ongoing": "En cours"
+  }
 }

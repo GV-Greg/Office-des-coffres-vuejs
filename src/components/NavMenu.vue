@@ -47,6 +47,7 @@
     { name: t('NavMenu.Economy'), link: "/app/eco", icon:"gi-crown-coin", color: "yellow", status: "public"},
     { name: t('NavMenu.Security'), link: "/app/secu/guet", icon:"gi-swords-emblem", color: "rose", status: "public"},
     { name: t('NavMenu.Animation'), link: "/app/anim", icon:"gi-rolling-dice-cup", color: "teal", status: "public"},
+    { name: t('NavMenu.Province'), link: "/app/province", icon: "gi-tower-flag", color: "violet", status: "private" },
     { name: t('NavMenu.Profile'), link: "/app/profil", icon:"gi-barbute", color: "slate", status: "private"},
   ])
 </script>

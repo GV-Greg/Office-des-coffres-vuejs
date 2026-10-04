@@ -12,6 +12,10 @@
  * l'écart est constant (552 ans) sur tout ce qui a pu être vérifié, mais si le jeu
  * introduit un jour une rupture (année sautée, calendrier accéléré lors d'un événement),
  * il suffira d'ajouter une ligne ici — le reste du code n'a pas à changer.
+ *
+ * ⚠️ JUMEAU : `app/Support/GameCalendar.php` (dépôt backend), pour les textes que le serveur
+ * rédige (emails). Table et logique doivent rester identiques ; un test par dépôt les fige
+ * (`tests/common/gameCalendarTwin.unit.test.js` ici). Modifier l'un = modifier l'autre.
  */
 
 /**
@@ -78,4 +82,18 @@ export function toGameDateIso(dateIso) {
   const year = Number(dateIso.slice(0, 4))
   if (!Number.isFinite(year) || year < REAL_YEAR_FLOOR) return dateIso
   return String(gameYear(year)) + dateIso.slice(4)
+}
+
+/**
+ * Inverse de `toGameDateIso()` : '1474-08-08' → '2026-08-08'. Idempotente (une date déjà
+ * réelle est renvoyée telle quelle) — un joueur peut saisir l'une ou l'autre année.
+ * Sert aux formulaires qui affichent l'année du jeu mais envoient une date réelle à l'API
+ * (mandats : date de début).
+ */
+export function toRealDateIso(dateIso) {
+  if (typeof dateIso !== 'string' || dateIso.length < 4) return dateIso
+
+  const year = Number(dateIso.slice(0, 4))
+  if (!Number.isFinite(year)) return dateIso
+  return String(realYear(year)) + dateIso.slice(4)
 }

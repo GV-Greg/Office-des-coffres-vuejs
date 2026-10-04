@@ -11,11 +11,25 @@
   const { t, locale } = useI18n()
 
   const props = defineProps({
+    // Mode « ville » (défaut) : l'id de la ville. Mode « province » : l'id de la province.
     modelValue: {
       type: [Number, String],
       default: '',
     },
+    // « province » arrête la cascade à la province (demande de siège au conseil comtal, mandats
+    // lot 2) : une option plutôt qu'une copie du composant.
+    stopAt: {
+      type: String,
+      default: 'city',
+      validator: (value) => ['city', 'province'].includes(value),
+    },
+    // Ville servant seulement à présélectionner royaume et province (la résidence), en mode province.
+    initialCityId: {
+      type: [Number, String],
+      default: '',
+    },
   })
+  const stopsAtProvince = computed(() => props.stopAt === 'province')
   const emit = defineEmits(['update:modelValue'])
 
 /*
@@ -39,7 +53,7 @@
   }
   const onProvinceChange = () => {
     selectedCityId.value = ''
-    emit('update:modelValue', '')
+    emit('update:modelValue', stopsAtProvince.value ? selectedProvinceId.value : '')
   }
   const onCityChange = () => {
     emit('update:modelValue', selectedCityId.value)
@@ -61,6 +75,16 @@
     }
   }
 
+  function preselectFromProvinceId(provinceId) {
+    for (const kingdom of kingdoms.value) {
+      if (kingdom.provinces.some(province => province.id === Number(provinceId))) {
+        selectedKingdomId.value = kingdom.id
+        selectedProvinceId.value = Number(provinceId)
+        return
+      }
+    }
+  }
+
 /*
   charger la carte
 */
@@ -68,7 +92,15 @@
     try {
       const response = await http.get('map')
       kingdoms.value = response.data.kingdoms
-      if (props.modelValue) {
+      if (stopsAtProvince.value) {
+        if (props.modelValue) {
+          preselectFromProvinceId(props.modelValue)
+        } else if (props.initialCityId) {
+          preselectFromCityId(props.initialCityId)
+          selectedCityId.value = ''
+          if (selectedProvinceId.value) emit('update:modelValue', selectedProvinceId.value)
+        }
+      } else if (props.modelValue) {
         preselectFromCityId(props.modelValue)
       }
     } catch {
@@ -110,7 +142,7 @@
       </div>
     </div>
 
-    <div class="form-group">
+    <div v-if="!stopsAtProvince" class="form-group">
       <label class="form-label">{{ t('AddCharacter.CityLabel') }} <span class="text-red-500">*</span></label>
       <div class="relative">
         <select v-model="selectedCityId" @change="onCityChange" :disabled="!selectedProvinceId" class="form-field appearance-none pr-10 w-full" :class="{ 'text-slate-500': !selectedCityId, 'border-green-500': selectedCityId, 'border-red-300': !selectedCityId }">
