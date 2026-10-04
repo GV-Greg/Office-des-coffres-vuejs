@@ -529,7 +529,8 @@
       "Section5": {
         "Title": "5. How long we keep your data",
         "ActiveAccount": "Active account: your data is kept as long as your account exists.",
-        "InactiveAccount": "Inactive account: after 2 years without login, your account may be automatically deleted, following a notice email to the declared address.",
+        "InactiveAccount": "Inactive account: after 1 year without login, your account may be automatically deleted, following a notice email to the declared address.",
+        "UnverifiedAccount": "Unverified account: if the email address is not confirmed, the account is deleted after 30 days, and no sooner than one week after a reminder sent to that address.",
         "DeletedAccount": "Deleted account: immediate and definitive deletion of the associated personal data (email, hashed password, linked characters).",
         "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased.",
         "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account)."

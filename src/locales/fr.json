@@ -529,7 +529,8 @@
       "Section5": {
         "Title": "5. Combien de temps nous conservons vos données",
         "ActiveAccount": "Compte actif : vos données sont conservées tant que votre compte existe.",
-        "InactiveAccount": "Compte inactif : après 2 ans sans connexion, votre compte peut être supprimé automatiquement, après un email de préavis à l'adresse déclarée.",
+        "InactiveAccount": "Compte inactif : après 1 an sans connexion, votre compte peut être supprimé automatiquement, après un email de préavis à l'adresse déclarée.",
+        "UnverifiedAccount": "Compte non confirmé : si l'adresse email n'est pas confirmée, le compte est supprimé au bout de 30 jours, et au plus tôt une semaine après un rappel envoyé à cette adresse.",
         "DeletedAccount": "Compte supprimé : suppression immédiate et définitive des données personnelles associées (adresse email, mot de passe haché, personnages liés).",
         "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés.",
         "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte)."

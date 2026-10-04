@@ -71,6 +71,7 @@ const messages = {
           Title: '5. Conservation',
           ActiveAccount: 'Compte actif : conservé.',
           InactiveAccount: 'Compte inactif : après [À REMPLIR PAR GREG : durée] sans connexion.',
+          UnverifiedAccount: 'Compte non confirmé : supprimé après un rappel.',
           DeletedAccount: 'Compte supprimé : effacé.',
           TechnicalLogs: 'Logs : 12 mois.',
         },
@@ -182,6 +183,11 @@ describe('PrivacyPolicyView', () => {
     expect(table.exists()).toBe(true)
     expect(table.text()).toContain('Authentifier')
     expect(table.text()).toContain('Contrat')
+  })
+
+  it('rend la règle des comptes non confirmés (§5)', () => {
+    const wrapper = mountView()
+    expect(wrapper.text()).toContain('Compte non confirmé : supprimé après un rappel.')
   })
 
   it('rend les droits RGPD (§7)', () => {
