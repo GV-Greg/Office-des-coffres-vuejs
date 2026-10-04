@@ -6,6 +6,13 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-05] — PR #80 (logo des emails servi par le site des joueurs)
+
+### Added
+- `public/images/email/logo-horizontal.png` : logo des emails du backend, servi par
+  `officedescoffres.creacube.be` au lieu du domaine de l'administration (un domaine « admin » dans
+  un email de joueur ressemble à de l'hameçonnage). Garde-fou `email-logo.unit.test.js`.
+
 ## [2026-10-04] — PR #79 (politique de confidentialité : 1 an, comptes non confirmés)
 
 Étape 5 du brief `admin/content/brief-politique-promesses.md` — pendant de back #45 à #50.
