@@ -14,7 +14,7 @@
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
   // à chaque modification substantielle (voir Legal.Privacy.Section10 / draft
   // admin/content/policy-privacy-draft.md).
-  const LAST_UPDATED = '2026-10-03'
+  const LAST_UPDATED = '2026-10-04'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
@@ -129,6 +129,7 @@
             <ul class="list-disc list-inside space-y-2">
               <li>{{ t('Legal.Privacy.Section5.ActiveAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.InactiveAccount') }}</li>
+              <li>{{ t('Legal.Privacy.Section5.UnverifiedAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.DeletedAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Mandates') }}</li>
               <li>{{ t('Legal.Privacy.Section5.TechnicalLogs') }}</li>
