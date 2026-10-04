@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-04] — PR #79 (politique de confidentialité : 1 an, comptes non confirmés)
+
+Étape 5 du brief `admin/content/brief-politique-promesses.md` — pendant de back #45 à #50.
+
+### Changed
+- **`/legal/privacy` §5** : compte inactif supprimé après **1 an** sans connexion (au lieu de 2), et
+  nouvelle ligne « Compte non confirmé » (30 jours, au plus tôt une semaine après un rappel), FR + EN,
+  chaînes validées par Greg. Dernière modification au 04/10/2026. `privacyPromises.unit.test.js`
+  fige les chaînes au mot près. Modification substantielle : notifiée par `policy:notify` (back).
+
 ## [2026-10-04] — PR #78 (sélecteur de personnage)
 
 ### Changed
