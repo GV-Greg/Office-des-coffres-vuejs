@@ -155,8 +155,10 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   Connectez-vous » au bas de la carte à la place de l'ancien bouton « Retour » isolé). Après soumission, affiche
   un écran "vérifiez votre boîte mail" (`data-testid="check-email-message"`) au lieu de connecter
   ou rediriger — le compte n'est utilisable qu'après confirmation du lien reçu par email.
-- **`auth/VerifyEmailView.vue`** (route `/verify-email`) — lit `token`/`error`
-  en query string (le backend y redirige après validation du lien signé). Si `token` : connexion
+- **`auth/VerifyEmailView.vue`** (route `/verify-email`) — **depuis le 05/10/2026, le lien de
+  l'email pointe ici** (`?id&hash&expires&signature`, jamais le domaine de l'API, qui ferait passer
+  l'email pour de l'hameçonnage) : la page rappelle l'API en JSON (`authStore.confirmEmail`). Lit
+  aussi `token`/`error` (le backend y redirige encore pour les liens envoyés avant). Si `token` : connexion
   automatique (`setToken` + `checkAuth`) puis redirection vers `/app/character/new` (aucun
   personnage) ou `/app/profil`. **Tout autre cas** — `?error`, aucun paramètre, ou jeton refusé
   par le serveur (`checkAuth()` l'efface alors) — affiche le message + mini-formulaire de renvoi

@@ -65,6 +65,26 @@ describe('Auth Store', () => {
     })
   })
 
+  describe('confirmEmail()', () => {
+    it("rappelle l'API avec les paramètres signés du lien, en JSON, et rend le jeton", async () => {
+      http.get.mockResolvedValueOnce({ data: { success: true, access_token: 'tok-api' } })
+
+      const token = await store.confirmEmail({ id: '42', hash: 'abc', expires: '1791676800', signature: 'sig' })
+
+      expect(token).toBe('tok-api')
+      expect(http.get).toHaveBeenCalledWith('auth/verify-email/42/abc', {
+        params: { expires: '1791676800', signature: 'sig' },
+        headers: { Accept: 'application/json' },
+      })
+    })
+
+    it("propage le refus de l'API", async () => {
+      http.get.mockRejectedValueOnce({ response: { status: 403 } })
+
+      await expect(store.confirmEmail({ id: '1', hash: 'x', expires: '1', signature: 'y' })).rejects.toBeDefined()
+    })
+  })
+
   describe('register()', () => {
     it("n'authentifie pas l'utilisateur — le compte doit d'abord être vérifié par email", async () => {
       http.post.mockResolvedValueOnce({ data: { success: true, message: 'Compte créé.' } })
