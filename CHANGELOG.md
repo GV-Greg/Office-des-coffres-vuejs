@@ -6,6 +6,13 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-05] — PR #81 (confirmer l'email depuis le site des joueurs)
+
+### Changed
+- Le lien de confirmation d'email pointe vers `/verify-email` de ce site (back #53) : `VerifyEmailView`
+  lit `id`/`hash`/`expires`/`signature` et rappelle l'API en JSON (`authStore.confirmEmail`).
+  `?token`/`?error` restent pour les liens envoyés avant.
+
 ## [2026-10-05] — PR #80 (logo des emails servi par le site des joueurs)
 
 ### Added

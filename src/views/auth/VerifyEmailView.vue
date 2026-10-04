@@ -25,8 +25,16 @@
   // Jusqu'au 27/09/2026, seule la présence de `?error` y menait : sans paramètre (lien tronqué,
   // accès direct) ou avec un jeton refusé par le serveur (expiré, révoqué), la page restait
   // indéfiniment sur « Vérification en cours… », sans rien proposer.
+  // Deux formes de lien, depuis le 05/10/2026 :
+  // - `?id&hash&expires&signature` : le lien de l'email pointe ici, et la page rappelle l'API ;
+  // - `?token` : redirection de l'API, pour les liens envoyés avant (ils pointaient vers l'API).
   onMounted(async () => {
-    const token = route.query.token
+    const { id, hash, expires, signature } = route.query
+    let token = route.query.token
+
+    if (!token && id && hash && expires && signature) {
+      token = await authStore.confirmEmail({ id, hash, expires, signature }).catch(() => null)
+    }
 
     if (token) {
       authStore.setToken(token)

@@ -137,6 +137,18 @@ export const useAuthStore = defineStore('auth', () => {
     return response.data
   }
 
+  // Lien de confirmation reçu par email (05/10/2026) : il pointe vers ce site — jamais vers l'API,
+  // dont le domaine « admin » ferait passer l'email pour de l'hameçonnage — et la page rappelle
+  // l'API avec les paramètres signés, tels quels. Renvoie le jeton d'accès ; lève l'erreur axios
+  // si le lien est refusé (signature, hash ou délai).
+  const confirmEmail = async ({ id, hash, expires, signature }) => {
+    const response = await http.get(`auth/verify-email/${encodeURIComponent(id)}/${encodeURIComponent(hash)}`, {
+      params: { expires, signature },
+      headers: { Accept: 'application/json' },
+    })
+    return response.data.access_token
+  }
+
   const login = async (credentials) => {
     const rememberMeChoice = !!credentials.remember_me
     const response = await http.post('auth/login', {
@@ -323,6 +335,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     resendVerification,
+    confirmEmail,
     logout,
     deleteAccount,
     checkAuth,

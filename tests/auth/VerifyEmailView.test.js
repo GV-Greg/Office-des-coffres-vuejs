@@ -29,7 +29,7 @@ const i18n = createI18n({
   }
 })
 
-async function mountView(query, { checkAuthResult = true, hasCharacters = false } = {}) {
+async function mountView(query, { checkAuthResult = true, hasCharacters = false, confirmEmail } = {}) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -51,6 +51,7 @@ async function mountView(query, { checkAuthResult = true, hasCharacters = false 
   // Configure le store AVANT le montage : onMounted appelle checkAuth() dès le render initial.
   const authStore = useAuthStore(pinia)
   authStore.checkAuth.mockResolvedValueOnce(checkAuthResult)
+  if (confirmEmail) authStore.confirmEmail.mockImplementationOnce(confirmEmail)
 
   const wrapper = mount(VerifyEmailView, {
     global: { plugins: [pinia, i18n, router] }
@@ -92,5 +93,27 @@ describe('VerifyEmailView', () => {
     expect(wrapper.text()).not.toContain('Vérification en cours...')
     expect(wrapper.text()).toContain('Lien invalide.')
   })
-})
 
+  // Lien de l'email depuis le 05/10/2026 : il pointe vers ce site, la page rappelle l'API.
+  const LINK = { id: '42', hash: 'abc', expires: '1791676800', signature: 'sig' }
+
+  it("avec les paramètres du lien, confirme l'email auprès de l'API puis connecte", async () => {
+    const { router, authStore } = await mountView(LINK, { confirmEmail: async () => 'tok-api' })
+    expect(authStore.confirmEmail).toHaveBeenCalledWith(LINK)
+    expect(authStore.setToken).toHaveBeenCalledWith('tok-api')
+    expect(router.currentRoute.value.name).toBe('character-new')
+  })
+
+  it("si l'API refuse le lien (signature, délai), affiche l'erreur et le renvoi", async () => {
+    const { wrapper, authStore } = await mountView(LINK, { confirmEmail: async () => { throw new Error('403') } })
+    expect(authStore.setToken).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('Lien invalide.')
+    expect(wrapper.find('input[name="email"]').exists()).toBe(true)
+  })
+
+  it("un lien incomplet n'appelle pas l'API", async () => {
+    const { wrapper, authStore } = await mountView({ id: '42', hash: 'abc' })
+    expect(authStore.confirmEmail).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('Lien invalide.')
+  })
+})
