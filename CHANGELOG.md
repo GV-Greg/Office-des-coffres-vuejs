@@ -6,6 +6,41 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-04] — PR #77 (mandats : postes dans le Profil, « Ma province »)
+
+Pendant frontend de back #44 (déployée le 04/10).
+
+#### « Ma province » et historique
+
+### Added
+- **Page « Ma province »** (`/app/province`, 6ᵉ bouton du menu, tour sous bannière, violet
+  provisoire) : historique des postes de la province de résidence du personnage actif, export
+  forum en BBcode français, dates en année du jeu.
+- `modules/playerDates.js` : l'année affichée de chaque champ de date, déclarée en un seul endroit.
+- Test jumeau du calendrier du jeu (`tests/common/gameCalendarTwin.unit.test.js`).
+- Chronique « demandes de postes municipaux ou comtaux » (`whatsNew.json`, connecté).
+
+### Changed
+- **Politique de confidentialité** §5-§6 : l'historique des postes survit à la suppression d'un
+  compte (pseudonyme, plus aucun lien vers la personne) et est visible des joueurs de la province.
+  Retirés : « aucune anonymisation partielle, aucune archive » (devenu faux) et l'outil
+  « calendrier » (inexistant) ; « Personne d'autre en dehors de ce qui précède ».
+
+#### Lot 2 — bloc « Postes » du Profil
+
+### Added
+- **Bloc « Postes » dans le Profil** (`components/mandates/`, `stores/mandateStore.js` ;
+  `admin/content/brief-mandats.md`, arbitrages `admin/echanges/mandats-lot2/`) : demander un
+  poste de maire ou de conseiller comtal, suivre son statut, annuler une demande, renouveler un
+  mandat, déclarer son poste au conseil (avertissement en trois temps), historique des postes.
+  Aucune règle ni aucun libellé recodé côté frontend : `requestable`, `renewable`, titres, motifs,
+  causes et messages d'erreur viennent de l'API, en FR et EN.
+- `CityCascadeSelect` sait s'arrêter à la province ; modales au focus piégé et fermées par Échap
+  (`use/useDialogFocus.js`).
+- **Politique de confidentialité** : les postes déclarés en §3, §4, §5 (conservés tant que le
+  compte existe) et §6 (vérification par l'éditeur), FR et EN ; dernière modification au 03/10.
+- 16 tests (`tests/mandates/`).
+
 ## [2026-10-02] — PR #76
 
 ### Security

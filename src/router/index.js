@@ -161,6 +161,16 @@ const router = createRouter({
       beforeEnter: redirectToHomeIfNotLoggedIn,
     },
     {
+      // « Ma province » : historique des postes de la province de résidence du personnage actif.
+      path: '/app/province',
+      name: 'province',
+      components: {
+        Nav,
+        default: () => import('@/views/ProvinceView.vue'),
+      },
+      beforeEnter: redirectToHomeIfNotLoggedIn,
+    },
+    {
       path: '/app/character/new',
       name: 'character-new',
       component: () => import('@/views/auth/AddCharacterView.vue'),

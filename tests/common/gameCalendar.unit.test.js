@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Logique pure, aucun DOM à monter — voir docs/TESTS.md.
 import { describe, it, expect } from 'vitest'
-import { gameYear, realYear, toGameDateIso, YEAR_ANCHORS } from '../../src/modules/gameCalendar'
+import { gameYear, realYear, toGameDateIso, YEAR_ANCHORS, toRealDateIso } from '../../src/modules/gameCalendar'
 
 describe('gameYear', () => {
   it('renvoie les années du jeu constatées', () => {
@@ -71,5 +71,16 @@ describe('toGameDateIso', () => {
     const once = toGameDateIso('2026-08-08')
     expect(toGameDateIso(once)).toBe(once)
     expect(toGameDateIso('1474-08-08')).toBe('1474-08-08')
+  })
+})
+
+describe('toRealDateIso', () => {
+  it('ramène une date de jeu en date réelle, sans toucher au jour ni au mois', () => {
+    expect(toRealDateIso('1474-09-23')).toBe('2026-09-23')
+  })
+
+  it('est idempotente : une date déjà réelle passe telle quelle', () => {
+    expect(toRealDateIso('2026-09-23')).toBe('2026-09-23')
+    expect(toRealDateIso(toRealDateIso('1474-09-23'))).toBe('2026-09-23')
   })
 })

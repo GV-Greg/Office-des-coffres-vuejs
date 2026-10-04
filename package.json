@@ -13,6 +13,7 @@
     "test:changed": "vitest run --changed",
     "test:logic": "vitest run unit.test",
     "test:auth": "vitest run tests/auth",
+    "test:mandates": "vitest run tests/mandates tests/province",
     "test:cookies": "vitest run tests/cookies",
     "test:eco": "vitest run tests/eco",
     "test:security": "vitest run tests/security",

@@ -38,5 +38,13 @@
     "type": "feature",
     "fr": "L'Office fait peau neuve : nouvel écusson, nouveaux coffres, nouvelle déco.",
     "en": "The Office gets a makeover: a new crest, new chests, new decor."
+  },
+  {
+    "id": "office-requests",
+    "date": "2026-10-04",
+    "scope": "private",
+    "type": "feature",
+    "fr": "Ajout des demandes de postes municipaux ou comtaux afin d'avoir accès à des coffres spéciaux.",
+    "en": "You can now request a municipal or county office, to gain access to special chests."
   }
 ]

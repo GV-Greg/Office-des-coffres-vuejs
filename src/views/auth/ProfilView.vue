@@ -2,12 +2,14 @@
 /*
  imports
 */
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { RouterLink, useRouter } from 'vue-router'
   import NavMenu from '@/components/NavMenu.vue'
   import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
   import DeleteAccountModal from '@/components/DeleteAccountModal.vue'
+  import CharacterMandates from '@/components/mandates/CharacterMandates.vue'
+  import { useMandateStore } from '@/stores/mandateStore'
   import { useAuthStore } from '@/stores/authStore'
   import useNavigationLoading from '@/use/useNavigationLoading'
   import { translateKingdomName } from '@/modules/kingdomTranslations'
@@ -20,6 +22,16 @@
   const router = useRouter()
   const authStore = useAuthStore()
   const { trackApiCall } = useNavigationLoading()
+
+/*
+  mandats (lot 2) : chargés une fois au montage ; chaque geste les recharge.
+*/
+  const mandateStore = useMandateStore()
+  onMounted(() => {
+    if (authStore.hasCharacters) {
+      Promise.resolve(mandateStore.fetchAll()).catch(() => push.error(t('Profil.Mandates.LoadError')))
+    }
+  })
 
 /*
   édition de la résidence
@@ -75,13 +87,13 @@
          tenir sans défilement sur ordinateur. Personnages à gauche (2/3), suppression du compte
          REPLIÉE à droite (1/3) — dépliée en grand, elle attirait l'œil juste après le titre. Sur
          mobile, tout reste empilé, personnages d'abord. -->
-    <div class="w-full max-w-5xl flex flex-col flex-grow">
+    <div class="w-full max-w-7xl flex flex-col flex-grow">
       <h2 class="mt-0 mb-1">{{ t('Profil.Title') }}</h2>
       <p class="mb-5 text-center text-sm text-slate-500 dark:text-slate-500 break-all">{{ authStore.getUser?.email }}</p>
 
-      <div class="grid grid-cols-1 laptop:grid-cols-3 gap-6 items-start">
+      <div class="grid grid-cols-1 laptop:grid-cols-4 gap-6 items-start">
         <!-- Personnages -->
-        <div class="laptop:col-span-2 flex flex-col gap-3">
+        <div class="laptop:col-span-3 flex flex-col gap-3">
           <!-- Ajout en tête de liste : sous la liste, il flottait et touchait le menu circulaire. -->
           <div class="flex justify-end">
             <RouterLink to="/app/character/new" class="odc-btn odc-btn--soft odc-btn--sm odc--orange">
@@ -106,7 +118,10 @@
               class="w-1.5 shrink-0"
               :class="character.is_validated ? 'bg-green-500' : 'bg-red-400'"
             />
-            <div class="flex-1 p-4 flex gap-3">
+            <!-- Deux zones à partir de laptop : le personnage à gauche, ses postes à droite (panneau
+                 teinté, filet vertical). Empilées en dessous, postes après les actions. -->
+            <div class="flex-1 min-w-0 grid grid-cols-1 laptop:grid-cols-5">
+            <div class="laptop:col-span-2 p-4 flex gap-3">
               <div class="relative h-11 w-11 shrink-0">
                 <div class="h-11 w-11 rounded-full bg-slate-700 flex items-center justify-center">
                   <v-icon name="gi-barbute" scale="1.2" class="text-white" />
@@ -121,7 +136,7 @@
               </div>
 
               <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-3">
+                <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
                   <div class="flex flex-wrap items-center gap-2">
                     <p class="font-extrabold text-slate-800 dark:text-slate-800 text-lg leading-tight">{{ character.pseudo }}</p>
                     <!-- Statut : badge plat à côté du pseudo, même famille que « Personnage actif ».
@@ -199,7 +214,15 @@
                     </button>
                   </div>
                 </div>
+
               </div>
+            </div>
+
+            <!-- Postes (mandats, lot 2) : demande, suivi, renouvellement, déclaration de poste. -->
+            <CharacterMandates
+              :character="character"
+              class="laptop:col-span-3 p-4 bg-slate-50 border-t laptop:border-t-0 laptop:border-l border-slate-200"
+            />
             </div>
           </article>
         </div>

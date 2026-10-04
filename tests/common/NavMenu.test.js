@@ -9,8 +9,8 @@ const i18n = createI18n({
   legacy: false,
   locale: 'fr',
   messages: {
-    fr: { NavMenu: { Home: 'Accueil', Economy: 'Éco', Security: 'Sécu', Animation: 'Anim', Profile: 'Profil' } },
-    en: { NavMenu: { Home: 'Home', Economy: 'Eco', Security: 'Sec', Animation: 'Anim', Profile: 'Profile' } }
+    fr: { NavMenu: { Home: 'Accueil', Economy: 'Éco', Security: 'Sécu', Animation: 'Anim', Profile: 'Profil', Province: 'Ma province' } },
+    en: { NavMenu: { Home: 'Home', Economy: 'Eco', Security: 'Sec', Animation: 'Anim', Profile: 'Profile', Province: 'My province' } }
   }
 })
 
@@ -84,12 +84,13 @@ describe('NavMenu', () => {
     expect(first.classes().some((c) => c.startsWith('btn-'))).toBe(false)
   })
 
-  it('affiche les 5 entrées, Profil masqué hors connexion', async () => {
+  it('affiche les 6 entrées, Profil et Ma province masqués hors connexion', async () => {
     const wrapper = await mountNavMenu()
     const links = wrapper.findAll('a.menu-btn')
-    expect(links).toHaveLength(5)
-    const profil = links.find((l) => l.text().includes('Profil'))
-    expect(profil.isVisible()).toBe(false)
+    expect(links).toHaveLength(6)
+    for (const name of ['Profil', 'Ma province']) {
+      expect(links.find((l) => l.text().includes(name)).isVisible()).toBe(false)
+    }
     expect(links.filter((l) => l.isVisible())).toHaveLength(4)
   })
 
