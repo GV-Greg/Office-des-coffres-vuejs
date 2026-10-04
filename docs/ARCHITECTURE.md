@@ -419,6 +419,10 @@ inline (requis/min/max/email/confirmation).
   `tests/enforcement/htaccess-canonical-origin.unit.test.js` et l'étape de `deploy.yml` qui sonde
   les quatre variantes en prod. Pas de HSTS (décision séparée). ⚠️ À traiter avec la stratégie
   `admin/strategies/performance.md`.
+- **`public/images/email/logo-horizontal.png`** (05/10/2026) — logo des emails du backend, servi par le
+  site des joueurs et non par l'admin (un domaine « admin » dans un email ressemble à de
+  l'hameçonnage). PNG 480 px (Gmail n'affiche pas le SVG). Hors bundle ; garde-fou
+  `tests/enforcement/email-logo.unit.test.js`. Ne pas le renommer : les emails déjà envoyés le chargent.
 - **`scripts/`** (hors bundle) — `vite-bundle-budget.mjs` + `checkBundleBudget.mjs` (budget de
   taille : le brotli bloque le build, le brut avertit), `docs-sync-check.sh` (CI : un seul
   décompte de tests dans le repo, `ARCHITECTURE.md` pas périmée de plus de 30 jours sur le dernier
