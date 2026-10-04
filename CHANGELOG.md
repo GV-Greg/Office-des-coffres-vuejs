@@ -6,6 +6,13 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-04] — PR #78 (sélecteur de personnage)
+
+### Changed
+- **Sélecteur de personnage** (`SelectorCharacter.vue`) : liste dessinée par le site, au motif
+  listbox de l'APG W3C, au lieu de la liste native du système, impossible à habiller (étroite,
+  grise, sans rapport avec le bouton). Clavier complet, focus visible sur l'option active
+  (liseré ≥ 3:1), coche du personnage de la session, étoile du personnage par défaut. 6 tests.
 ## [2026-10-04] — PR #77 (mandats : postes dans le Profil, « Ma province »)
 
 Pendant frontend de back #44 (déployée le 04/10).

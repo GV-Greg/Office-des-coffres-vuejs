@@ -249,9 +249,12 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   `odc-btn odc-btn--rect` de 44 px (voir `assets/odc-buttons.css`).
 - **`SelectorCharacter.vue`** — bascule de personnage **pour la session en cours**, monté
   directement dans `NavBar.vue` (jamais dans `SelectorMenu`, partagé avec les pages publiques) et
-  visible seulement si connecté avec plus d'un personnage. Bouton `odc-*` : le relief ne se
-  dessine pas sur un `<select>` (pas de `::before`/`::after`), c'est donc le conteneur qui porte
-  les classes, et le `<select>` natif est posé par-dessus, transparent, sur toute la surface.
+  visible seulement si connecté avec plus d'un personnage. Depuis le 03/10/2026, **liste dessinée
+  par le site** (la liste native d'un `<select>` est dessinée par le système, impossible à
+  habiller) au motif **listbox de l'APG W3C** : bouton `aria-haspopup="listbox"`, liste focalisée,
+  `aria-activedescendant`, ↑ ↓ Début Fin Entrée Espace Échap Tab, clic extérieur. Coche = personnage
+  de la session, étoile = personnage par défaut. L'option active porte un liseré orange-700
+  (5,18:1, WCAG 1.4.11) : un simple fond pâle (1,06:1) était invisible.
 - **`DeleteAccountModal.vue`** — confirmation de suppression de compte en **deux étapes** (art. 17
   RGPD) : la première nomme ce qui va disparaître (email, personnages cités par leur pseudo,
   préférences), la seconde redemande le mot de passe, le bouton restant désactivé tant qu'il est
