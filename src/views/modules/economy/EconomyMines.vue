@@ -438,13 +438,14 @@
               <td class="py-2 text-right">{{ formatNum(bilan.total.salaire) }}</td>
               <td class="py-2 text-right">{{ formatNum(bilan.total.pierre) }} / {{ formatNum(bilan.total.fer) }}</td>
               <td class="py-2 text-right">{{ formatNum(bilan.total.entretien) }}</td>
-              <td class="py-2 text-right">{{ formatNum(bilan.total.solde) }}</td>
+              <!-- Vide : le solde total EST le net, affiché une seule fois juste dessous (fil bilan-mines/07, B2). -->
+              <td class="py-2"></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="mt-3 font-bold text-lg">
+      <div class="mt-3 font-bold text-lg" data-testid="net-line">
         {{ t('EconomyMines.NetLabel') }} : {{ formatNum(bilan.net) }} {{ t('EconomyMines.Currency') }}
       </div>
       <!-- Convention de valorisation, écrite à l'écran plutôt que sous-entendue (§2.5). -->

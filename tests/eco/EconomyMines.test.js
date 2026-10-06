@@ -36,7 +36,7 @@ const i18n = createI18n({
         PriceClay: 'Argile (pain)',
         PriceSalt: 'Sel (boisseau)',
         PasteHelp: 'Collez les données avant de lancer un entretien.',
-        RateLabel: 'Salaire horaire des mineurs (écus/heure)',
+        RateLabel: 'Salaire/heure des mineurs',
         RateNotStored: 'Taux horaire non mémorisé pour cette semaine.',
         GenerateButton: 'Générer le bilan hebdomadaire',
         ExportButton: 'Copier en BBcode',
@@ -165,7 +165,9 @@ describe('EconomyMines — calcul du bilan', () => {
     // La production porte son unité (écus pour l'or, kg pour le fer…) : Greg, 05/10/2026.
     expect(or).toEqual(["#1 Mine d'or", '350 écus', '350', '70', '49', '2 / 1', '48,5', '252,5'])
     expect(fer).toEqual(['#2 Mine de fer', '14 kg', '273', '35', '24,5', '0 / 0', '0', '248,5'])
-    expect(wrapper.find('[data-testid="total-row"]').text()).toContain('501')
+    // Le net s'affiche UNE fois (fil bilan-mines/07, B2) : sous la table, jamais dans la ligne Total.
+    expect(wrapper.find('[data-testid="net-line"]').text()).toContain('501')
+    expect(wrapper.find('[data-testid="total-row"]').text()).not.toContain('501')
     expect(wrapper.find('[data-testid="convention"]').exists()).toBe(true)
   })
 
