@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [AAAA-MM-JJ — date de merge, à remplir au merge] — PR #82 (Bilan des mines : un bilan juste)
+## [2026-10-07] — PR #82 (Bilan des mines : un bilan juste)
 
 Brief `admin/content/brief-bilan-mines.md`, fil `admin/echanges/bilan-mines`.
 
