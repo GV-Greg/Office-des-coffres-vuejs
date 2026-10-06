@@ -4,6 +4,16 @@ import { createI18n } from 'vue-i18n'
 import { createPinia, setActivePinia } from 'pinia'
 import EconomyMines from '../../src/views/modules/economy/EconomyMines.vue'
 import { useCookieStore } from '../../src/stores/cookieStore'
+import { readFileSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+// Les clés que ce fichier ne fixe pas (unités, devise, libellés du BBcode) viennent du VRAI
+// fr.json, lu par fs : un import est précompilé par le plugin vue-i18n et rend undefined en test.
+// Les valeurs fixées plus bas restent prioritaires, les assertions qui les citent n'en dépendent pas.
+const realFr = JSON.parse(readFileSync(
+  resolve(dirname(fileURLToPath(import.meta.url)), '../../src/locales/fr.json'), 'utf-8'
+)).EconomyMines
 
 vi.mock('notivue', () => ({ push: { error: vi.fn(), success: vi.fn() } }))
 
@@ -12,6 +22,7 @@ const i18n = createI18n({
   messages: {
     fr: {
       EconomyMines: {
+        ...realFr,
         Title: 'Bilan des mines',
         PasteLabel: 'Colle ici le texte complet de la page "mines" du jeu',
         PastePlaceholder: 'Copie-colle ici...',
@@ -24,7 +35,9 @@ const i18n = createI18n({
         PriceIron: 'Fer (kg)',
         PriceClay: 'Argile (pain)',
         PriceSalt: 'Sel (boisseau)',
-        SalaryLabel: 'Salaire des mineurs (à saisir toi-même)',
+        PasteHelp: 'Collez les données avant de lancer un entretien.',
+        RateLabel: 'Salaire horaire des mineurs (écus/heure)',
+        RateNotStored: 'Taux horaire non mémorisé pour cette semaine.',
         GenerateButton: 'Générer le bilan hebdomadaire',
         ExportButton: 'Copier en BBcode',
         DayExportButton: 'Mise en forme du jour',
@@ -32,18 +45,17 @@ const i18n = createI18n({
         ColumnMine: 'Mine',
         ColumnHours: 'Heures',
         ColumnProduction: 'Production',
-        ColumnStone: 'Pierre',
-        ColumnIron: 'Fer',
-        MaintenanceLabel: 'Entretien',
+        ColumnValue: 'Valeur',
+        ColumnSalary: 'Salaire',
+        ColumnMaintenanceStoneIron: 'Entretien p/f',
+        ColumnMaintenanceValue: 'Entretien (écus)',
+        ColumnBalance: 'Solde',
         TotalLabel: 'Total',
         NetLabel: 'Net',
-        SyntheseTitle: 'Synthèse par ressource',
-        ColumnResource: 'Ressource',
-        ColumnUnitPrice: 'Prix unitaire',
-        ColumnMaintenanceSalary: 'Entretien/Salaires',
-        ColumnResultQuantity: 'Résultat (quantité)',
-        ColumnResultValue: 'Résultat (valeur)',
-        Resources: { OR: 'Or', FER: 'Fer', PIERRE: 'Pierre', ARGILE: 'Argile', SEL: 'Sel' },
+        IncompleteWeekTitle: 'Bilan provisoire — semaine incomplète',
+        Convention: 'Coût d’opportunité, pas une dépense.',
+        ThresholdReached: 'Au {date}, seuil atteint ({pierre} qtx de pierre / {fer} kg de fer).',
+        ThresholdNear: 'Au {date}, à 2 unités ou moins du seuil.',
         NoDataError: 'Aucune donnée reconnue.',
         CopiedSuccess: 'Copié dans le presse-papier.',
         CopyError: 'Impossible de copier.'
@@ -75,20 +87,47 @@ Ressources consommées par la mine ces 7 derniers jours
 Date	Qx de pierre	Kg de fer
 `
 
+// Semaine COMPLÈTE construite, du lundi 27/07 au dimanche 02/08 (1474 en jeu), calculée à la main.
+// Décalage d'un jour (brief §2.1) : la production du jour D s'apparie aux heures de D+1, donc les
+// heures vont du 28/07 au LUNDI SUIVANT 03/08.
+//   Mine 1 — or, nœud 236 : heures 10/jour → 70 h, salaire 70 × 0,70 = 49 ; production 50/jour →
+//     valeur 350 ; consommation le 29/07 : 2 qtx de pierre, 1 kg de fer → 2×14,5 + 19,5 = 48,5 ;
+//     solde 350 − 49 − 48,5 = 252,5
+//   Mine 2 — fer, nœud 228 : heures 5/jour → 35 h, salaire 24,5 ; production 2/jour → 14 kg ×
+//     19,5 = 273 ; solde 248,5
+//   Net : 501
+function weekText({ withNextMonday = true } = {}) {
+  const prodDays = ['07-27', '07-28', '07-29', '07-30', '07-31', '08-01', '08-02']
+  const hourDays = [...prodDays.slice(1), ...(withNextMonday ? ['08-03'] : [])]
+  const series = (days, value) => days.map(d => `1474-${d}\t${value}`).join('\n')
+  const mine = (n, label, noeud, hours, prod, conso) => `
+Mine ${n} : ${label} - Noeud ${noeud}
+Nombre d'heures travaillées ces 7 derniers jours
+Date	Heures
+${series(hourDays, hours)}
+Production des 7 derniers jours
+Date	Rendement
+${series(prodDays, prod)}
+Ressources consommées par la mine ces 7 derniers jours
+Date	Qx de pierre	Kg de fer
+${conso}
+`
+  return mine(1, "Mine d'or", 236, 10, 50, '1474-07-29\t2\t1') + mine(2, 'Mine de fer', 228, 5, 2, '')
+}
+
 let pinia
 
 beforeEach(() => {
   localStorage.clear()
   pinia = createPinia()
   setActivePinia(pinia)
-  // Les textes d'exemple sont datés en année de jeu (1474-08-01/02), comme un vrai
-  // collage depuis l'interface du jeu — c'est le décalage entre des jeux de test en
-  // année réelle et la réalité qui avait masqué le bug du sélecteur de semaine.
-  // Le parsing les ramène en 2026-08-01/02, soit la semaine réelle du 2026-07-27 au
-  // 2026-08-02 : on fige "aujourd'hui" dedans pour que la semaine sélectionnée par
-  // défaut corresponde, sans dépendre du jour où les tests s'exécutent.
+  // Les textes d'exemple sont datés en année de jeu (1474), comme un vrai collage depuis
+  // l'interface du jeu — c'est le décalage entre des jeux de test en année réelle et la réalité
+  // qui avait masqué le bug du sélecteur de semaine. On fige « aujourd'hui » au mardi 04/08/2026 :
+  // la semaine proposée par défaut est la dernière ACHEVÉE (brief §2.4), celle du 27/07 au 02/08,
+  // sans dépendre du jour où les tests s'exécutent.
   vi.useFakeTimers()
-  vi.setSystemTime(new Date('2026-08-01T12:00:00Z'))
+  vi.setSystemTime(new Date('2026-08-04T12:00:00Z'))
 })
 
 afterEach(() => {
@@ -99,32 +138,55 @@ function mountView() {
   return mount(EconomyMines, { global: { plugins: [pinia, i18n] } })
 }
 
-async function generate(wrapper, text = sampleText) {
+async function generate(wrapper, text = weekText()) {
   await wrapper.find('textarea').setValue(text)
   const buttons = wrapper.findAll('button')
   const generateButton = buttons.find(b => b.text() === 'Générer le bilan hebdomadaire')
   await generateButton.trigger('click')
 }
 
+const exportButton = wrapper => wrapper.findAll('button').find(b => b.text() === 'Copier en BBcode')
+
 describe('EconomyMines — calcul du bilan', () => {
-  it('calcule le détail par mine et la synthèse par ressource à partir du texte collé', async () => {
+  it('propose par défaut la dernière semaine achevée (§2.4)', () => {
+    expect(mountView().text()).toContain('Semaine du 27 juillet 1474 au 2 août 1474')
+  })
+
+  it('affiche UNE table par mine, avec sa ligne Total et la convention (§2.3, §2.5)', async () => {
     const wrapper = mountView()
     await generate(wrapper)
 
     const tables = wrapper.findAll('table')
-    expect(tables).toHaveLength(2) // détail par mine + synthèse par ressource
+    expect(tables).toHaveLength(1) // plus de synthèse par ressource
+    expect(tables[0].findAll('tbody tr')).toHaveLength(3) // 2 mines + Total
 
-    const mineRows = tables[0].findAll('tbody tr')
-    expect(mineRows).toHaveLength(2) // 2 mines, pas de ligne total dans ce tableau-ci
+    const [or, fer] = tables[0].findAll('tbody tr').map(row => row.findAll('td').map(td => td.text()))
+    // mine | production | valeur | heures | salaire | entretien p/f | entretien écus | solde
+    // La production porte son unité (écus pour l'or, kg pour le fer…) : Greg, 05/10/2026.
+    expect(or).toEqual(["#1 Mine d'or", '350 écus', '350', '70', '49', '2 / 1', '48,5', '252,5'])
+    expect(fer).toEqual(['#2 Mine de fer', '14 kg', '273', '35', '24,5', '0 / 0', '0', '248,5'])
+    expect(wrapper.find('[data-testid="total-row"]').text()).toContain('501')
+    expect(wrapper.find('[data-testid="convention"]').exists()).toBe(true)
+  })
 
-    const text = wrapper.text()
-    expect(text).toContain("Mine d'or")
-    expect(text).toContain('Mine de fer')
-    // OR : 500 (déjà en écus, pas de prix appliqué)
-    // FER : (20 production − 5 entretien fer) × 19,5 = 292,5
-    // PIERRE : (0 production − 10 entretien pierre) × 14,5 = -145
-    // net = 500 + 292,5 - 145 = 647,5
-    expect(text).toContain('647,5')
+  it('le salaire suit le taux horaire saisi', async () => {
+    const wrapper = mountView()
+    await wrapper.find('textarea').setValue(weekText())
+    const rateInput = wrapper.findAll('input[type="number"]').at(-1)
+    await rateInput.setValue(1)
+    await generate(wrapper)
+
+    const or = wrapper.findAll('tbody tr')[0].findAll('td').map(td => td.text())
+    expect(or[4]).toBe('70') // 70 h × 1
+  })
+
+  it("une semaine incomplète s'affiche marquée, mais ne s'exporte pas (Q10)", async () => {
+    const wrapper = mountView()
+    await generate(wrapper, weekText({ withNextMonday: false })) // le dimanche n'a pas ses heures
+
+    expect(wrapper.find('[data-testid="incomplete-week"]').text()).toBe('Bilan provisoire — semaine incomplète')
+    expect(wrapper.findAll('tbody tr')).toHaveLength(3)
+    expect(exportButton(wrapper)).toBeUndefined()
   })
 
   it("affiche une erreur si le texte collé n'est pas reconnu", async () => {
@@ -142,7 +204,7 @@ describe('EconomyMines — calcul du bilan', () => {
 
     const wrapper = mountView()
     await generate(wrapper)
-    await wrapper.findAll('button').find(b => b.text() === 'Copier en BBcode').trigger('click')
+    await exportButton(wrapper).trigger('click')
 
     const copied = writeText.mock.calls[0][0]
     // Semaine figée par les fake timers : lundi 27/07 → dimanche 02/08/2026, soit 1474
@@ -152,6 +214,66 @@ describe('EconomyMines — calcul du bilan', () => {
     expect(copied).not.toContain('2026')
     // Placé juste sous le titre, avant le détail par mine.
     expect(copied.indexOf('Semaine du')).toBeLessThan(copied.indexOf("Mine d'or"))
+  })
+
+  it("l'export reprend la table par mine et la convention, jamais la synthèse par ressource (Q11)", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, { clipboard: { writeText } })
+
+    const wrapper = mountView()
+    await generate(wrapper)
+    await exportButton(wrapper).trigger('click')
+
+    const copied = writeText.mock.calls[0][0]
+    // Format arrêté avec Greg le 05/10/2026 : un seul [quote], titre darkblue, semaine darkgreen,
+    // une liste par mine, soldes et net en vert/rouge, net à gauche en grand.
+    expect(copied.match(/\[quote\]/g)).toHaveLength(1)
+    expect(copied).toContain('[color=darkblue]Bilan des mines[/color]')
+    expect(copied).toContain('[color=darkgreen]Semaine du')
+    expect(copied).toContain("Mine d'or[/size][/b][/color] [size=10](#1 - Noeud 236)[/size]\n[list][*]Production : 350 écus")
+    expect(copied).toContain('[*]Production : 14 kg — valeur 273')
+    expect(copied).toContain('[*][b]Solde : [color=green]+252,5[/color][/b]\n[/list]')
+    expect(copied).toContain('[*]Salaires : 73,5 (105 h × 0,7)')
+    expect(copied).toContain('[size=18][b]Net : [color=green]+501[/color] écus[/b][/size]')
+    expect(copied).not.toContain('[center][size=18]')
+    expect(copied).toContain('Coût d’opportunité, pas une dépense.')
+    expect(copied).not.toContain('Synthèse')
+  })
+})
+
+describe("EconomyMines — alerte de seuil (§4), à l'écran seulement", () => {
+  const withState = (entretien, seuil) => `
+Mine 4 : Mine de fer - Noeud 226
+Niveau : 9
+Seuil de rupture : ${seuil}
+
+Entretien normal
+(${entretien})
+` + weekText()
+
+  it('signale une mine dont le cumul a atteint son seuil, datée du jour du collage', async () => {
+    const wrapper = mountView()
+    await wrapper.find('textarea').setValue(withState('9 qtx de pierre et 7 kg de fer', '9 qtx de pierre et 7 kg de fer'))
+
+    const alerts = wrapper.find('[data-testid="threshold-alerts"]')
+    expect(alerts.text()).toContain('#4 Mine de fer')
+    expect(alerts.text()).toContain('Au 04/08, seuil atteint (9 qtx de pierre / 7 kg de fer).')
+  })
+
+  it('prévient à 2 unités ou moins du seuil', async () => {
+    const wrapper = mountView()
+    await wrapper.find('textarea').setValue(withState('8 qtx de pierre et 3 kg de fer', '10 qtx de pierre et 8 kg de fer'))
+    expect(wrapper.find('[data-testid="threshold-alerts"]').text()).toContain('Au 04/08, à 2 unités ou moins du seuil.')
+  })
+
+  it("ne part jamais dans l'export du bilan (Q9 bis)", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, { clipboard: { writeText } })
+    const wrapper = mountView()
+    await generate(wrapper, withState('9 qtx de pierre et 7 kg de fer', '9 qtx de pierre et 7 kg de fer'))
+    await exportButton(wrapper).trigger('click')
+
+    expect(writeText.mock.calls[0][0]).not.toContain('seuil atteint')
   })
 })
 
@@ -305,26 +427,51 @@ describe('EconomyMines — mémorisation "confort" entre deux collages', () => {
   it('fusionne un second collage avec le premier une fois "comfort" accepté', async () => {
     useCookieStore().acceptedCookies = ['comfort']
     const wrapper = mountView()
-    await generate(wrapper)
+    // Premier collage, pris dimanche : il manque les heures du lundi suivant → semaine incomplète.
+    await generate(wrapper, weekText({ withNextMonday: false }))
+    expect(exportButton(wrapper)).toBeUndefined()
 
-    // Second collage : seule la mine 1 a de nouvelles données pour un autre jour.
+    // Second collage, le lundi : seules les heures du 03/08 sont nouvelles (elles mesurent le dimanche).
     const secondPaste = `
 Mine 1 : Mine d'or - Noeud 236
 Nombre d'heures travaillées ces 7 derniers jours
 Date	Heures
-1474-08-02	80
-Production des 7 derniers jours
-Date	Rendement
-1474-08-02	400
-Ressources consommées par la mine ces 7 derniers jours
-Date	Qx de pierre	Kg de fer
+1474-08-03	10
+
+Mine 2 : Mine de fer - Noeud 228
+Nombre d'heures travaillées ces 7 derniers jours
+Date	Heures
+1474-08-03	5
 `
     const secondVisit = mountView()
     await secondVisit.vm.$nextTick()
     expect(secondVisit.text()).toContain('Fusionné avec ton dernier collage mémorisé')
 
     await generate(secondVisit, secondPaste)
-    // La production cumulée de la mine d'or doit inclure les deux collages (500 + 400 = 900)
-    expect(secondVisit.text()).toContain('900')
+    // Les deux collages fusionnés font une semaine complète : soldes et export retrouvés.
+    expect(secondVisit.findAll('tbody tr')[0].text()).toContain('252,5')
+    expect(exportButton(secondVisit)).toBeDefined()
+  })
+
+  it('mémorise prix et taux AVEC la semaine, et les rend à sa réouverture (Q6)', async () => {
+    useCookieStore().acceptedCookies = ['comfort']
+    const wrapper = mountView()
+    await wrapper.find('textarea').setValue(weekText())
+    await wrapper.findAll('input[type="number"]').at(-1).setValue(0.99)
+    await generate(wrapper)
+
+    const reopened = mountView()
+    await reopened.vm.$nextTick()
+    expect(reopened.findAll('input[type="number"]').at(-1).element.value).toBe('0.99')
+  })
+
+  it('une semaine mémorisée avant ce changement le dit : son taux n’a pas été enregistré (Q6)', async () => {
+    useCookieStore().acceptedCookies = ['comfort']
+    // Ancien format : un simple tableau de mines, ni prix ni taux.
+    useCookieStore().setComfortData('economy_mines_data_2026-07-27', JSON.stringify([]))
+
+    const wrapper = mountView()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="rate-not-stored"]').exists()).toBe(true)
   })
 })

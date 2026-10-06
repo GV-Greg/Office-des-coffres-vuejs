@@ -6,6 +6,38 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [AAAA-MM-JJ — date de merge, à remplir au merge] — PR #82 (Bilan des mines : un bilan juste)
+
+Brief `admin/content/brief-bilan-mines.md`, fil `admin/echanges/bilan-mines`.
+
+### Fixed
+- **Décalage d'un jour** du relevé (`mineParser.js`) : pour le jour D, production[D], consommation[D]
+  et **heures[D+1]** ; un jour dont une moitié manque est écarté, une semaine n'est complète qu'avec
+  les heures du lundi suivant.
+- La synthèse par ressource, qui imputait tout le salaire à l'or et inversait la lecture (l'or
+  « gouffre », le fer « rente »), est **supprimée** : salaire = heures × taux, **par mine**.
+- Fusion de deux collages clavetée sur le **nœud** de la mine (`mineKey`), plus sur « Mine N » qui
+  glisse quand une mine ouvre ou ferme. `todayIso()` donne la date de Paris.
+
+### Changed
+- **Une table par mine** (production avec son unité, valeur, heures, salaire, entretien, solde) et
+  une ligne Total ; convention de valorisation écrite à l'écran.
+- Semaine proposée par défaut : la **dernière achevée** ; une semaine incomplète s'affiche
+  « Bilan provisoire » et **ne s'exporte pas**.
+- Prix et taux horaire **mémorisés avec chaque semaine** (confort, avec consentement).
+- BBcode du bilan refait avec Greg : un seul `[quote]`, une liste par mine, soldes et net signés en
+  vert/rouge, net en grand à gauche.
+- Termes anglais du jeu relevés par Greg : *Management of the mines*, *deterioration threshold*,
+  unités *tons* / *ounces* / *bars* (mêmes nombres, autre nom).
+
+### Added
+- **Alerte de seuil** à l'écran seulement (jamais dans un export) : atteint dès l'égalité, prévention
+  à 2 unités ou moins, datée du jour du collage.
+
+### Removed
+- `tests/fixtures/mines-2025-11-10.json` (semaine sans heures, incalculable ; ses tests figeaient le
+  défaut) — dans l'historique, commit `b220edb`.
+
 ## [2026-10-05] — PR #81 (confirmer l'email depuis le site des joueurs)
 
 ### Changed

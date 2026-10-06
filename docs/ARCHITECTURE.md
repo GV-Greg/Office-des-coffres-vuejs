@@ -210,11 +210,16 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   pose problème en usage réel.
 - **`modules/economy/MainEconomy.vue`** — shell + lien vers `EconomyMines.vue`.
 - **`modules/economy/EconomyMines.vue`** — « Bilan des mines » (public, pas de compte requis) :
-  colle un relevé de mines exporté du jeu, calcule le bilan par ressource sur une semaine
-  sélectionnable, génère du BBcode. Sélecteur de semaine calé sur `modules/gameCalendar.js`
-  (dates réelles en interne, année de jeu 2026→1474 seulement à l'affichage). `HelpModal.vue`
-  pour l'aide contextuelle. Futur pendant privé (backend, compte requis) : « Registre des
-  mines », pas encore développé.
+  colle un relevé de mines exporté du jeu, calcule le bilan d'une semaine sélectionnable en
+  **une table par mine** (production, valeur, heures, salaire = heures × taux horaire, entretien
+  pierre/fer et en écus, solde) avec une ligne Total, génère du BBcode. Sélecteur de semaine calé
+  sur `modules/gameCalendar.js` (dates réelles en interne, année de jeu 2026→1474 seulement à
+  l'affichage) ; **semaine proposée par défaut : la dernière achevée**. Une semaine incomplète
+  s'affiche marquée « Bilan provisoire » mais **ne s'exporte pas**. Prix et taux horaire
+  **mémorisés avec chaque semaine** (confort). **Alerte de seuil à l'écran seulement** (jamais
+  dans un export), datée du jour du collage. Brief `admin/content/brief-bilan-mines.md`, fil
+  `admin/echanges/bilan-mines`. `HelpModal.vue` pour l'aide contextuelle. Futur pendant privé
+  (backend, compte requis) : « Registre des mines », pas encore développé.
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
   vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
   prévu.
@@ -333,8 +338,15 @@ inline (requis/min/max/email/confirmation).
 ## Modules transverses (`src/modules/`) et autres
 
 - **`mineParser.js`** — logique pure (testée isolément, sans DOM) : parsing du relevé de mines
-  collé depuis le jeu, calcul du bilan par ressource, filtrage/complétude par semaine. Consommé
-  par `EconomyMines.vue`.
+  collé depuis le jeu, calcul du bilan par mine, filtrage/complétude par semaine, alerte de seuil
+  (`thresholdAlert` : atteint dès l'égalité, prévention à 2 unités ou moins). Consommé par
+  `EconomyMines.vue`. 🔴 **Décalage d'un jour** : pour le jour D, production[D], consommation[D]
+  et **heures[D+1]** ; un jour dont une moitié manque est écarté, et une semaine n'est complète
+  qu'avec les heures du lundi suivant. La synthèse par ressource (salaire entier sur l'or) a été
+  supprimée le 05/10/2026 : elle inversait la lecture. **Fusion clavetée sur le nœud** de la mine (`mineKey`), jamais sur le
+  numéro « Mine N », qui glisse quand une mine ouvre ou ferme (le numéro ne reste qu'en repli ;
+  les semaines mémorisées sans nœud se rattachent une fois par leur numéro). `todayIso()` donne la
+  date **de Paris**. Le futur Registre héritera de cette clé.
 - **`gameCalendar.js`** — table d'ancrages année réelle ↔ année de jeu (2026 → 1474), transverse
   à tout module manipulant des dates de jeu (Économie aujourd'hui, futur Guet/Douane). ⚠️
   **Jumeau** de `app/Support/GameCalendar.php` (backend, emails) : `tests/common/gameCalendarTwin`
