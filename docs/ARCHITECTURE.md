@@ -347,6 +347,11 @@ inline (requis/min/max/email/confirmation).
   numéro « Mine N », qui glisse quand une mine ouvre ou ferme (le numéro ne reste qu'en repli ;
   les semaines mémorisées sans nœud se rattachent une fois par leur numéro). `todayIso()` donne la
   date **de Paris**. Le futur Registre héritera de cette clé.
+  **Bilingue** (07/10/2026, brief §5 bis) : lit l'écran français **ou anglais** (« Management of
+  the mines », libellés relevés par Greg dans `admin/jeu/mines.md` §7.12), selon la langue du
+  **texte collé**, jamais celle de l'interface. 🔴 **Aucune conversion d'unité** : *tons of stone* /
+  *ounces of iron* portent les mêmes nombres que les quintaux et les kilos ; un test jumeau FR/EN le
+  fige.
 - **`gameCalendar.js`** — table d'ancrages année réelle ↔ année de jeu (2026 → 1474), transverse
   à tout module manipulant des dates de jeu (Économie aujourd'hui, futur Guet/Douane). ⚠️
   **Jumeau** de `app/Support/GameCalendar.php` (backend, emails) : `tests/common/gameCalendarTwin`

@@ -9,10 +9,13 @@ const DATE_FR = String.raw`\d{1,2}[./]\d{1,2}[./]\d{2,4}`
 const DATE_ANY = `(?:${DATE_ISO}|${DATE_FR})`
 const NUM = String.raw`-?\d+(?:[.,]\d+)?`
 
+// Écran français OU anglais (brief Bilan §5 bis, Greg 07/10/2026) : la langue est celle du TEXTE
+// collé, jamais celle de l'interface — un joueur peut jouer en anglais et lire l'Office en français.
+// Libellés anglais relevés par Greg (admin/jeu/mines.md §7.12), jamais traduits par nous.
 const SECTION_MARKERS = [
-  { key: 'heures', re: /nombre d'heures travaill/i },
-  { key: 'production', re: /production des \d+ derniers jours/i },
-  { key: 'conso', re: /ressources consomm/i },
+  { key: 'heures', re: /nombre d'heures travaill|number of hours worked/i },
+  { key: 'production', re: /production des \d+ derniers jours|output of the past \w+ days/i },
+  { key: 'conso', re: /ressources consomm|resources consumed/i },
 ]
 
 const MINE_HEADER_RE = /Mine\s*(\d+)\s*:\s*([^-\d]+)/gi
@@ -80,11 +83,11 @@ function extractSeries(text, count) {
 
 export function detectResource(label) {
   const s = (label || '').toLowerCase()
-  if (s.includes('argile')) return 'ARGILE'
-  if (s.includes('pierre')) return 'PIERRE'
-  if (/\bsel\b/.test(s)) return 'SEL'
-  if (s.includes('fer')) return 'FER'
-  if (/\bor\b/.test(s)) return 'OR'
+  if (s.includes('argile') || /\bclay\b/.test(s)) return 'ARGILE'
+  if (s.includes('pierre') || /\b(stone|quarry)\b/.test(s)) return 'PIERRE'
+  if (/\b(sel|salt)\b/.test(s)) return 'SEL'
+  if (s.includes('fer') || /\biron\b/.test(s)) return 'FER'
+  if (/\b(or|gold)\b/.test(s)) return 'OR'
   return null
 }
 
@@ -385,12 +388,16 @@ export function lastCompletedWeek(todayIsoDate) {
   return shiftWeek(getWeekBounds(todayIsoDate).monday, -1)
 }
 
-/** « 12 qtx de pierre et 9 kg de fer » -> { pierre: 12, fer: 9 }, ou null si illisible. */
+/**
+ * « 12 qtx de pierre et 9 kg de fer » (ou « 12 tons of stone and 9 ounces of iron ») ->
+ * { pierre: 12, fer: 9 }, ou null si illisible. 🔴 AUCUNE conversion : l'écran anglais porte les
+ * MÊMES nombres sous d'autres noms (Greg, 07/10/2026) — tonne ↔ quintal serait un facteur 10 muet.
+ */
 function parseStoneIron(text) {
-  const pierre = text?.match(/(\d+(?:[.,]\d+)?)\s*qtx? de pierre/i)
-  const fer = text?.match(/(\d+(?:[.,]\d+)?)\s*kg de fer/i)
+  const pierre = text?.match(/(\d+(?:[.,]\d+)?)\s*(?:qtx?|quintaux) de pierre|(\d+(?:[.,]\d+)?)\s*tons? of stone/i)
+  const fer = text?.match(/(\d+(?:[.,]\d+)?)\s*kg de fer|(\d+(?:[.,]\d+)?)\s*ounces? of iron/i)
   if (!pierre || !fer) return null
-  return { pierre: parseNum(pierre[1]), fer: parseNum(fer[1]) }
+  return { pierre: parseNum(pierre[1] ?? pierre[2]), fer: parseNum(fer[1] ?? fer[2]) }
 }
 
 /** Marge de la prévention : 2 unités ou moins sous le seuil (Greg, 04/10/2026). */
@@ -419,7 +426,7 @@ export function thresholdAlert(state) {
   return null
 }
 
-const NOEUD_RE = /Noeud\s*(\d+)/i
+const NOEUD_RE = /(?:Noeud|Nœud|Node)\s*(\d+)/i
 
 function extractField(text, label) {
   const re = new RegExp(label + String.raw`\s*:\s*([^\n]+)`, 'i')
@@ -446,19 +453,19 @@ export function parseMineStates(text) {
   for (const chunk of splitMineChunks(text)) {
     // Le bloc "config" est celui qui contient "Niveau :" ; le bloc "données"
     // (juste avant les tableaux heures/production/conso) n'en a pas.
-    if (!/Niveau\s*:/i.test(chunk.text) || byNumber.has(chunk.number)) continue
+    if (!/(?:Niveau|Level)\s*:/i.test(chunk.text) || byNumber.has(chunk.number)) continue
     const noeudMatch = chunk.text.match(NOEUD_RE)
     byNumber.set(chunk.number, {
       number: chunk.number,
       label: chunk.label,
       resource: detectResource(chunk.label),
       noeud: noeudMatch ? noeudMatch[1] : null,
-      niveau: extractField(chunk.text, 'Niveau'),
-      rendement: extractField(chunk.text, 'Rendement'),
-      creneaux: extractField(chunk.text, String.raw`Cr[ée]neaux horaires`),
-      seuilRupture: extractField(chunk.text, 'Seuil de rupture'),
-      entretienNormal: extractParenAfterLabel(chunk.text, 'Entretien normal'),
-      entretienAmelioration: extractParenAfterLabel(chunk.text, String.raw`Entretien et am[ée]lioration`),
+      niveau: extractField(chunk.text, '(?:Niveau|Level)'),
+      rendement: extractField(chunk.text, '(?:Rendement|Output)'),
+      creneaux: extractField(chunk.text, String.raw`(?:Cr[ée]neaux horaires|Time slots)`),
+      seuilRupture: extractField(chunk.text, '(?:Seuil de rupture|Deterioration threshold)'),
+      entretienNormal: extractParenAfterLabel(chunk.text, '(?:Entretien normal|Normal maintenance)'),
+      entretienAmelioration: extractParenAfterLabel(chunk.text, String.raw`(?:Entretien et am[ée]lioration|Maintenance and improvement)`),
     })
   }
   return [...byNumber.values()].sort((a, b) => a.number - b.number)

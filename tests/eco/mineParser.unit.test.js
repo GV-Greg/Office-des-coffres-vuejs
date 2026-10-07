@@ -618,3 +618,186 @@ describe('thresholdAlert — en constat, jamais en prédiction', () => {
 // semaine réelle du 10/11/2025 (tests/fixtures/mines-2025-11-10.json — à retrouver dans le commit
 // b220edb —, sans heures, donc
 // incalculable avec le décalage d'un jour), figeaient précisément ce défaut : ils sont retirés.
+
+// Brief Bilan §5 bis (Greg, 07/10/2026) : le parseur lit l'écran ANGLAIS — l'aide anglaise envoie le
+// joueur sur « Management of the mines ». Libellés repris du collage réel de Greg (07/10, nœuds 236,
+// 228, 232 ; admin/jeu/mines.md §7.12). 🔴 AUCUNE conversion d'unité : « tons of stone » et « ounces
+// of iron » portent les MÊMES nombres que les quintaux et les kilos — une conversion introduirait un
+// facteur 10 silencieux. D'où le jumeau français aux mêmes chiffres : les deux doivent donner le même
+// relevé, le même état et le même bilan. Le point décimal anglais (139.97) est lu comme la virgule.
+describe('collage anglais (§5 bis) — même relevé que le français, aucune conversion', () => {
+  const english = `The maintenance cost increases as soon as a new miner enters the mine.
+
+Mine 1 : Gold mine - Node 236
+Level: 10
+Output : 50.4 pounds/22 hours ago
+Time slots : 172/1100
+Deterioration threshold: 24 tons of stone and 18 ounces of iron
+
+Normal maintenance
+(13 tons of stone and 10 ounces of iron)
+Maintenance and improvement
+(62 tons of stone and 47 ounces of iron)
+
+Reduce the level of the mine
+Close the mine
+
+Mine 3 : Stone quarry - Node 232
+Level: 17
+Output : 2.73 tons of stone/22 hours ago
+Time slots : 50/1100
+Deterioration threshold: 14 tons of stone and 10 ounces of iron
+
+Normal maintenance
+(14 tons of stone and 6 ounces of iron)
+Maintenance and improvement
+
+
+Reduce the level of the mine
+Close the mine
+
+Mine 1 : Gold mine - Node 236
+Number of hours worked in the past 7 days
+The values for each day were measured from midnight to midnight (Paris time).
+
+Date\tHours\t
+2026-10-01\t53
+2026-10-02\t58
+
+Output of the past seven days
+The values for each day were measured from midnight to midnight (Paris time).
+
+Date\tOutput
+2026-10-01\t139.97
+2026-10-02\t272.39
+
+Resources consumed by the mine in the past seven days
+The values for each day were measured from midnight to midnight (Paris time).
+
+Date\tTons of stone\tOunces of iron
+2026-10-02\t25\t19
+
+Mine 2 : Iron mine - Node 228
+Number of hours worked in the past 7 days
+The values for each day were measured from midnight to midnight (Paris time).
+
+Date\tHours\t
+2026-10-01\t186
+
+Output of the past seven days
+The values for each day were measured from midnight to midnight (Paris time).
+
+Date\tOutput
+2026-10-01\t16
+
+Resources consumed by the mine in the past seven days
+The values for each day were measured from midnight to midnight (Paris time).
+
+Date\tTons of stone\tOunces of iron
+2026-09-30\t9\t7
+
+Mine 5 : Clay mine - Node 320
+Number of hours worked in the past 7 days
+The values for each day were measured from midnight to midnight (Paris time).
+
+Date\tHours\t
+2026-10-01\t10
+`
+
+  const french = `Mine 1 : Mine d'or - Noeud 236
+Niveau : 10
+Rendement : 50,4 écus/22 heures
+Créneaux horaires : 172/1100
+Seuil de rupture : 24 qtx de pierre et 18 kg de fer
+
+Entretien normal
+(13 qtx de pierre et 10 kg de fer)
+Entretien et amélioration
+(62 qtx de pierre et 47 kg de fer)
+
+Mine 3 : Carrière de pierre - Noeud 232
+Niveau : 17
+Rendement : 2,73 qtx de pierre/22 heures
+Créneaux horaires : 50/1100
+Seuil de rupture : 14 qtx de pierre et 10 kg de fer
+
+Entretien normal
+(14 qtx de pierre et 6 kg de fer)
+Entretien et amélioration
+
+
+Mine 1 : Mine d'or - Noeud 236
+Nombre d'heures travaillées ces 7 derniers jours
+Date\tHeures
+2026-10-01\t53
+2026-10-02\t58
+
+Production des 7 derniers jours
+Date\tRendement
+2026-10-01\t139,97
+2026-10-02\t272,39
+
+Ressources consommées par la mine ces 7 derniers jours
+Date\tQx de pierre\tKg de fer
+2026-10-02\t25\t19
+
+Mine 2 : Mine de fer - Noeud 228
+Nombre d'heures travaillées ces 7 derniers jours
+Date\tHeures
+2026-10-01\t186
+
+Production des 7 derniers jours
+Date\tRendement
+2026-10-01\t16
+
+Ressources consommées par la mine ces 7 derniers jours
+Date\tQx de pierre\tKg de fer
+2026-09-30\t9\t7
+
+Mine 5 : Mine d'argile - Noeud 320
+Nombre d'heures travaillées ces 7 derniers jours
+Date\tHeures
+2026-10-01\t10
+`
+
+  // Le libellé reste celui du jeu, dans sa langue : seul ce qui est CALCULÉ doit coïncider.
+  // eslint-disable-next-line no-unused-vars -- on retire le libellé, on ne s'en sert pas
+  const withoutLabel = list => list.map(({ label, ...rest }) => rest)
+
+  it('lit les trois tableaux, nœud et ressource compris, sans rien convertir', () => {
+    const mines = parseMinesText(english)
+    // La carrière (3) n'a que son bloc d'état ici : mine connue, sans relevé — comme en français.
+    expect(mines.map(m => [m.number, m.noeud, m.resource])).toEqual([
+      [1, '236', 'OR'], [2, '228', 'FER'], [3, '232', 'PIERRE'], [5, '320', 'ARGILE'],
+    ])
+    expect(mines[2].days).toEqual({})
+    expect(mines[0].days).toEqual({
+      '2026-10-01': { heures: 53, production: 139.97 },
+      '2026-10-02': { heures: 58, production: 272.39, pierre: 25, fer: 19 },
+    })
+  })
+
+  it('donne exactement le même relevé que son jumeau français', () => {
+    expect(withoutLabel(parseMinesText(english))).toEqual(withoutLabel(parseMinesText(french)))
+  })
+
+  it("lit l'état des mines : seuil et entretien en tons/ounces, aux MÊMES nombres", () => {
+    const states = parseMineStates(english)
+    expect(states.map(s => [s.number, s.noeud, s.resource, s.niveau])).toEqual([
+      [1, '236', 'OR', '10'], [3, '232', 'PIERRE', '17'],
+    ])
+    expect(thresholdAlert(states[0])).toBeNull()
+    // Carrière : entretien 14 = seuil 14 → atteint, comme en français. Une conversion l'aurait masqué.
+    expect(thresholdAlert(states[1])).toEqual(thresholdAlert(parseMineStates(french)[1]))
+    expect(thresholdAlert(states[1])).toMatchObject({ level: 'reached', pierre: 14, seuilPierre: 14 })
+  })
+
+  it('le bloc « Maintenance and improvement » vide (niveau 17, plafond) reste vide', () => {
+    expect(parseMineStates(english)[1].entretienAmelioration).toBeNull()
+  })
+
+  it('reconnaît les ressources sous leur nom anglais', () => {
+    expect(['Gold mine', 'Iron mine', 'Stone quarry', 'Clay mine'].map(detectResource))
+      .toEqual(['OR', 'FER', 'PIERRE', 'ARGILE'])
+  })
+})
