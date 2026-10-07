@@ -81,15 +81,12 @@ npm run test:watch     # Mode watch — boucle de dev, ne repaie le démarrage q
 npm run test:auth      # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
-469 tests verts au 05/10/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
+491 tests verts au 07/10/2026, répartis par domaine dans `tests/{auth,cookies,eco,security,
 mandates,province,common,enforcement,legal,fixtures}` — structure, scripts et méthode ("quoi lancer, et quand")
 détaillés dans `docs/TESTS.md`.
 
 Fixtures réelles dans `tests/fixtures/` :
 - `Bug_ExportSorties.txt` — données anonymisées, non-régression du parsing des sorties (Guet)
-- `mines-2025-11-10.json` — relevé hebdomadaire réel (6 mines, jour par jour) : vérifie que
-  l'imputation entretien/salaires par ressource reproduit exactement les balances du classeur
-  Excel de référence
 
 Toute vue utilisant `useI18n()` doit recevoir un plugin `createI18n({ legacy: false, ... })`
 dans `global.plugins` du test.

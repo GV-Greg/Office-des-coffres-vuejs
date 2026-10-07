@@ -111,25 +111,42 @@ function splitMineChunks(text) {
     const m = matches[i]
     const start = m.index
     const end = i + 1 < matches.length ? matches[i + 1].index : text.length
+    const chunkText = text.slice(start, end)
     chunks.push({
       number: parseInt(m[1], 10),
       label: m[2].trim().replace(/[-–]\s*$/, '').trim(),
-      text: text.slice(start, end),
+      // Premier « Noeud N » du bloc : celui de son en-tête (un bloc s'arrête au « Mine N : » suivant).
+      noeud: chunkText.match(NOEUD_RE)?.[1] ?? null,
+      text: chunkText,
     })
   }
   return chunks
 }
 
+// Clé de fusion d'une mine (brief Bilan §6b). Le NŒUD est l'identifiant stable : le numéro « Mine N »
+// est une numérotation d'affichage qui glisse quand une mine ouvre ou ferme, et le nom n'est pas
+// unique (deux « Mine de fer » dans le même collage). Le numéro ne sert que de repli, pour un collage
+// qui ne porte aucun nœud. ⚠️ Le Registre héritera de cette clé.
+function mineKey(mine) {
+  return mine.noeud ? `noeud:${mine.noeud}` : `numero:${mine.number}`
+}
+
 /**
  * Parse le texte collé -> liste de mines avec leurs relevés journaliers.
- * [{ number, label, resource, days: { 'AAAA-MM-JJ': { heures, production, pierre, fer } } }]
+ * [{ number, noeud, label, resource, days: { 'AAAA-MM-JJ': { heures, production, pierre, fer } } }]
  */
 export function parseMinesText(text) {
   if (!text) return []
+  const chunks = splitMineChunks(text)
+  // Jointure au sein d'un même collage : un bloc dont l'en-tête ne porte pas le nœud prend celui du
+  // bloc de même numéro — dans un seul collage, le numéro désigne bien une seule mine.
+  const noeudByNumber = new Map(chunks.filter(c => c.noeud).map(c => [c.number, c.noeud]))
   const byMine = new Map()
 
-  for (const chunk of splitMineChunks(text)) {
-    const existing = byMine.get(chunk.number)
+  for (const chunk of chunks) {
+    const noeud = chunk.noeud ?? noeudByNumber.get(chunk.number) ?? null
+    const key = mineKey({ noeud, number: chunk.number })
+    const existing = byMine.get(key)
     const resource = existing?.resource ?? detectResource(chunk.label)
     const label = existing?.label ?? chunk.label
     const days = existing?.days ?? {}
@@ -151,7 +168,7 @@ export function parseMinesText(text) {
       }
     }
 
-    byMine.set(chunk.number, { number: chunk.number, label, resource, days })
+    byMine.set(key, { number: chunk.number, noeud, label, resource, days })
   }
 
   return [...byMine.values()].sort((a, b) => a.number - b.number)
@@ -160,13 +177,27 @@ export function parseMinesText(text) {
 /**
  * Fusionne un nouveau parsing sur des données existantes sans rien perdre
  * (une valeur déjà connue n'est jamais écrasée par une valeur absente).
+ * Clé : le nœud (voir mineKey).
  */
 export function mergeMinesData(existing, incoming) {
-  const byNumber = new Map((existing || []).map(m => [m.number, m]))
+  const byKey = new Map((existing || []).map(m => [mineKey(m), m]))
   for (const mine of incoming || []) {
-    const current = byNumber.get(mine.number)
+    let key = mineKey(mine)
+    let current = byKey.get(key)
+
+    // Données mémorisées avant le clavetage sur le nœud (fil bilan-mines, Q7) : une entrée SANS nœud
+    // se rattache une seule fois, par son numéro, à l'entrée nouvelle de même numéro, puis prend son
+    // nœud — ensuite la clé est le nœud, définitivement.
+    if (!current && mine.noeud) {
+      const legacyKey = `numero:${mine.number}`
+      if (byKey.has(legacyKey)) {
+        current = byKey.get(legacyKey)
+        byKey.delete(legacyKey)
+      }
+    }
+
     if (!current) {
-      byNumber.set(mine.number, mine)
+      byKey.set(key, mine)
       continue
     }
     const days = { ...current.days }
@@ -176,73 +207,83 @@ export function mergeMinesData(existing, incoming) {
       )
       days[d] = { ...(days[d] ?? {}), ...clean }
     }
-    byNumber.set(mine.number, {
+    byKey.set(key, {
       number: mine.number,
+      noeud: mine.noeud ?? current.noeud ?? null,
       label: mine.label || current.label,
       resource: mine.resource || current.resource,
       days,
     })
   }
-  return [...byNumber.values()].sort((a, b) => a.number - b.number)
+  return [...byKey.values()].sort((a, b) => a.number - b.number)
 }
 
-function sumDays(days) {
-  return Object.values(days).reduce(
-    (acc, day) => ({
-      heures: acc.heures + (day.heures ?? 0),
-      production: acc.production + (day.production ?? 0),
-      pierre: acc.pierre + (day.pierre ?? 0),
-      fer: acc.fer + (day.fer ?? 0),
-    }),
-    { heures: 0, production: 0, pierre: 0, fer: 0 }
-  )
+const isKnown = v => v !== undefined && v !== null && !Number.isNaN(v)
+
+/** Les 7 dates (AAAA-MM-JJ) de la semaine qui commence le lundi `monday`. */
+export function weekDates(monday) {
+  return Array.from({ length: 7 }, (_, i) => addDays(monday, i))
 }
 
 /**
- * Calcule le bilan de la semaine, en deux temps (comme le classeur Excel de
- * référence de la province) :
- * - `lines` : détail par mine, en quantités BRUTES (pas d'écus) — heures,
- *   production, pierre/fer consommés.
- * - `synthese` : une ligne par ressource réellement présente (OR/FER/PIERRE/
- *   ARGILE/SEL), qui monétise le résultat NET (production − entretien/
- *   salaires) au prix unitaire de cette ressource. L'entretien pierre/fer
- *   est imputé à la ressource concernée tous mines confondues (le stock de
- *   pierre de la province sert à l'entretien de n'importe quelle mine, pas
- *   seulement la carrière qui l'a extraite) ; pour l'or, "entretien" est en
- *   réalité le salaire des mineurs (déjà en écus, pas de prix à appliquer).
- * `prices` : { PIERRE, FER, ARGILE, SEL } (pas de prix "Or").
+ * Le jour D d'une mine, apparié (brief Bilan §2.1, tranché par Greg le 05/10/2026) :
+ * - règle A : production[D], consommation[D] et HEURES[D+1] — la ligne « heures travaillées » du
+ *   jeu est étiquetée un jour plus tard que le travail qu'elle mesure (dossier mines §2.11d, mesuré
+ *   sur trois jeux de données) ;
+ * - règle B : si l'une des deux moitiés manque (production de D, heures de D+1), le jour est ÉCARTÉ
+ *   tout entier — un salaire sans la production qui va avec, ou l'inverse, est le mensonge qu'on
+ *   corrige. ⚠️ Une production à ZÉRO n'est pas une production absente : le jour reste.
+ * Une consommation absente vaut 0 : le tableau du jeu ne liste que les jours d'entretien.
+ * Renvoie null pour un jour écarté.
  */
-export function computeBilan(mines, prices, salary = 0) {
-  const lines = (mines || []).map(mine => ({ ...mine, ...sumDays(mine.days) }))
+function pairedDay(mine, day) {
+  const production = mine.days[day]?.production
+  const heures = mine.days[addDays(day, 1)]?.heures
+  if (!isKnown(production) || !isKnown(heures)) return null
+  return { production, heures, pierre: mine.days[day]?.pierre ?? 0, fer: mine.days[day]?.fer ?? 0 }
+}
 
-  const pierreConsumedTotal = lines.reduce((sum, l) => sum + l.pierre, 0)
-  const ferConsumedTotal = lines.reduce((sum, l) => sum + l.fer, 0)
+/**
+ * Bilan d'une semaine (lundi `monday` → dimanche), UNE table par mine (brief §2.3, Greg 03-04/10) :
+ * production, valeur, heures, salaire, entretien pierre/fer, entretien en écus, solde — et une ligne
+ * Total. `mines` doit porter les heures du LUNDI SUIVANT (règle A).
+ *
+ * - Salaire = heures × `rate` : chaque mine porte ses propres heures, donc le salaire se répartit par
+ *   construction (§2.2). Le taux est un réglage du bailli, daté : jamais une constante (§3).
+ * - L'entretien d'une mine est SA PROPRE consommation (son tableau « Ressources consommées »), valorisé
+ *   au prix du marché — un coût d'opportunité, pas une dépense (§2.5). La mise en commun du stock de
+ *   pierre et de fer de la province ne vit que dans la ligne Total (§2.3, fil bilan-mines Q4).
+ * - L'or produit des écus : sa production est sa valeur, sans prix unitaire.
+ * - ⚠️ « Entretien normal » n'entre JAMAIS ici : c'est un cumul depuis le dernier entretien, le sommer
+ *   compterait plusieurs fois les mêmes quintaux (§6c, test qui le fige).
+ *
+ * La synthèse par ressource (salaire entier sur l'or) a été supprimée le 05/10/2026 : elle inversait
+ * la lecture (brief §1, défaut 2).
+ */
+export function computeBilan(mines, prices, rate, monday) {
+  const days = weekDates(monday)
+  const price = resource => Number(prices?.[resource]) || 0
 
-  const synthese = RESOURCES
-    .map(resource => {
-      const production = lines
-        .filter(l => l.resource === resource)
-        .reduce((sum, l) => sum + l.production, 0)
+  const lines = (mines || []).map(mine => {
+    const sums = { production: 0, heures: 0, pierre: 0, fer: 0 }
+    for (const day of days) {
+      const paired = pairedDay(mine, day)
+      if (!paired) continue
+      for (const field of Object.keys(sums)) sums[field] += paired[field]
+    }
+    const valeur = mine.resource === 'OR' ? sums.production : sums.production * price(mine.resource)
+    const salaire = sums.heures * (Number(rate) || 0)
+    const entretien = sums.pierre * price('PIERRE') + sums.fer * price('FER')
+    return {
+      number: mine.number, noeud: mine.noeud ?? null, label: mine.label, resource: mine.resource,
+      ...sums, valeur, salaire, entretien, solde: valeur - salaire - entretien,
+    }
+  })
 
-      const entretienSalaires = resource === 'OR'
-        ? -(salary || 0)
-        : resource === 'PIERRE'
-          ? -pierreConsumedTotal
-          : resource === 'FER'
-            ? -ferConsumedTotal
-            : 0
+  const total = ['heures', 'pierre', 'fer', 'valeur', 'salaire', 'entretien', 'solde']
+    .reduce((acc, field) => ({ ...acc, [field]: lines.reduce((sum, l) => sum + l[field], 0) }), {})
 
-      const resultatQuantite = production + entretienSalaires
-      const prixUnitaire = resource === 'OR' ? null : (prices?.[resource] ?? 0)
-      const resultatValeur = resource === 'OR' ? resultatQuantite : resultatQuantite * prixUnitaire
-
-      return { resource, prixUnitaire, production, entretienSalaires, resultatQuantite, resultatValeur }
-    })
-    .filter(s => s.production !== 0 || s.entretienSalaires !== 0)
-
-  const net = synthese.reduce((sum, s) => sum + s.resultatValeur, 0)
-
-  return { lines, synthese, salary: salary || 0, net }
+  return { lines, total, net: total.solde, rate: Number(rate) || 0 }
 }
 
 /** Date (AAAA-MM-JJ) la plus récente présente dans les relevés, ou null. */
@@ -284,9 +325,20 @@ export function shiftWeek(mondayIso, n) {
   return addDays(mondayIso, n * 7)
 }
 
-/** Date du jour (AAAA-MM-JJ) — isolée pour être simulable dans les tests. */
+/**
+ * Date du jour (AAAA-MM-JJ) À PARIS — isolée pour être simulable dans les tests.
+ * Les dates du collage sont parisiennes (« de minuit à minuit, heure de Paris, France ») : en UTC,
+ * entre minuit et 2 h du matin l'été, la semaine présélectionnée était la précédente (brief Bilan
+ * §6a). ⚠️ addDays, getWeekBounds et shiftWeek restent en UTC, et c'est voulu : ils manipulent des
+ * chaînes AAAA-MM-JJ sans heure.
+ */
 export function todayIso() {
-  return new Date().toISOString().slice(0, 10)
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' })
+      .formatToParts(new Date())
+      .map(({ type, value }) => [type, value])
+  )
+  return `${parts.year}-${parts.month}-${parts.day}`
 }
 
 function addDays(dateIso, n) {
@@ -306,24 +358,65 @@ export function getWeekBounds(dateIso) {
 }
 
 /**
- * Vérifie si la semaine (lundi->dimanche) contenant la date la plus récente
- * est entièrement couverte par au moins une mine chaque jour. Ne bloque rien
- * (juste informatif) : le bilan reste calculable sur une semaine incomplète.
+ * La semaine du lundi `monday` est-elle complète (brief Bilan §2.1, §2.4) ? Un jour D est couvert
+ * quand au moins une mine en a les DEUX moitiés — production[D] et heures[D+1] — et qu'aucune mine
+ * n'en a qu'une seule. Le dimanche exige donc les heures du LUNDI SUIVANT : la semaine n'est complète
+ * que le lundi. Une mine sans aucune donnée un jour donné (fermée) ne compte pas ce jour-là.
+ * ⚠️ Avant le 05/10/2026, il ne vérifiait que la présence d'une date, pas des deux séries : il déclarait
+ * complète une semaine qui ne l'était pas. Une semaine incomplète s'affiche, mais ne s'exporte pas
+ * en bilan hebdomadaire (Greg, fil bilan-mines Q10).
  */
-export function checkWeekCompleteness(mines) {
-  const allDates = new Set()
-  for (const m of mines || []) {
-    for (const d of Object.keys(m.days)) allDates.add(d)
-  }
-  if (allDates.size === 0) {
-    return { complete: false, monday: null, sunday: null, missingDates: [] }
-  }
-  const { monday, sunday } = getWeekBounds([...allDates].sort().at(-1))
-  const missingDates = []
-  for (let d = monday; d <= sunday; d = addDays(d, 1)) {
-    if (!allDates.has(d)) missingDates.push(d)
-  }
+export function checkWeekCompleteness(mines, monday) {
+  const sunday = addDays(monday, 6)
+  const missingDates = weekDates(monday).filter(day => {
+    const halves = (mines || []).map(mine => [
+      isKnown(mine.days[day]?.production),
+      isKnown(mine.days[addDays(day, 1)]?.heures),
+    ])
+    const paired = halves.some(([production, heures]) => production && heures)
+    const lopsided = halves.some(([production, heures]) => production !== heures)
+    return !paired || lopsided
+  })
   return { complete: missingDates.length === 0, monday, sunday, missingDates }
+}
+
+/** Lundi de la dernière semaine ACHEVÉE — la semaine proposée par défaut (brief §2.4). */
+export function lastCompletedWeek(todayIsoDate) {
+  return shiftWeek(getWeekBounds(todayIsoDate).monday, -1)
+}
+
+/** « 12 qtx de pierre et 9 kg de fer » -> { pierre: 12, fer: 9 }, ou null si illisible. */
+function parseStoneIron(text) {
+  const pierre = text?.match(/(\d+(?:[.,]\d+)?)\s*qtx? de pierre/i)
+  const fer = text?.match(/(\d+(?:[.,]\d+)?)\s*kg de fer/i)
+  if (!pierre || !fer) return null
+  return { pierre: parseNum(pierre[1]), fer: parseNum(fer[1]) }
+}
+
+/** Marge de la prévention : 2 unités ou moins sous le seuil (Greg, 04/10/2026). */
+export const THRESHOLD_NEAR_MARGIN = 2
+
+/**
+ * Alerte de seuil d'une mine, en CONSTAT, jamais en prédiction (brief Bilan §4 ; fil bilan-mines,
+ * Q8 et Q8 bis) — lue dans l'état collé, comparée, jamais recalculée :
+ * - 'reached' dès que l'entretien normal (cumul depuis le dernier entretien) ÉGALE ou dépasse le
+ *   seuil de rupture, sur la pierre OU le fer ;
+ * - 'near' s'il en est à THRESHOLD_NEAR_MARGIN unités ou moins, quelle que soit l'heure du collage :
+ *   il PEUT l'atteindre avant le passage de jour de 4 h.
+ * La règle de rupture n'a jamais été vue déclencher, et l'entretien automatique ducal peut la rendre
+ * sans objet : d'où le constat daté, jamais « la mine va tomber ».
+ */
+export function thresholdAlert(state) {
+  const entretien = parseStoneIron(state?.entretienNormal)
+  const seuil = parseStoneIron(state?.seuilRupture)
+  if (!entretien || !seuil) return null
+
+  const values = { pierre: entretien.pierre, fer: entretien.fer, seuilPierre: seuil.pierre, seuilFer: seuil.fer }
+  if (entretien.pierre >= seuil.pierre || entretien.fer >= seuil.fer) return { level: 'reached', ...values }
+  if (seuil.pierre - entretien.pierre <= THRESHOLD_NEAR_MARGIN || seuil.fer - entretien.fer <= THRESHOLD_NEAR_MARGIN) {
+    return { level: 'near', ...values }
+  }
+  return null
 }
 
 const NOEUD_RE = /Noeud\s*(\d+)/i
