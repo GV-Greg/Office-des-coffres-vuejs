@@ -513,6 +513,69 @@
       },
       "LastUpdated": "Last updated: {date}"
     },
+    "Data": {
+      "PageTitle": "Your data, tool by tool",
+      "Intro": "For each tool of the Office: what it is for, what you put into it, what is stored, for how long, who sees it, and what happens if you delete your account. The rules that apply to the whole Office (legal bases, rights, security, hosting) are in the {privacyLink}.",
+      "PrivacyLink": "privacy policy",
+      "TocTitle": "Contents",
+      "Upcoming": "Upcoming: this tool is not open yet. What follows describes what it will store as soon as it opens.",
+      "Questions": {
+        "Purpose": "What the tool is for",
+        "Input": "What you put into it",
+        "Stored": "What is stored",
+        "Duration": "For how long",
+        "Audience": "Who sees it",
+        "Deletion": "If you delete your account"
+      },
+      "AccessTitle": "Who can use what.",
+      "Access": "Most of the Office's tools work without an account: everything happens in your browser, and the Office keeps nothing. An account becomes necessary as soon as you want the Office to keep what you produce. Finally, a few tools act on behalf of an office in your province: to use the Mine Registry you must hold the Mines Superintendent's or the Sheriff's office and have had it validated in the Office — this is not optional, it is the condition of access.",
+      "Badges": {
+        "none": "No account needed",
+        "account": "Account required",
+        "office": "Validated office required"
+      },
+      "LastUpdated": "Last updated: {date}",
+      "SeePolicy": "What is stored, for how long, who can access it and what happens if you delete your account: see the {privacyLink} (§3 to §6).",
+      "Account": {
+        "Title": "Account and characters",
+        "Text": "Your account (email address, password) and your characters (name, town of residence, validation status): what is stored, why, on which legal basis and for how long is described in the {privacyLink} (§3 to §5). This page does not repeat it."
+      },
+      "Offices": {
+        "Title": "Declared offices and My province",
+        "Purpose": "Have the office your character holds recognised (mayor, or county councillor and their title), so that the tools know who may write on behalf of a function, and keep your province's office history (\"My province\" page). An account is needed.",
+        "InputLead": "Declaring an office is optional — except for the tools that require one.",
+        "Input": "You can use the Office without declaring any function. However, a tool that acts on behalf of a province function, such as the Mine Registry, only opens to a declared and validated office.",
+        "InputDetail": "You then provide the office (mayor, or county councillor and their title), the city or province, the dates of the term and the link to the public announcement."
+      },
+      "MinesReport": {
+        "Title": "Mines report",
+        "Purpose": "Format the report from the \"Management of the mines\" tab and compute your mines' weekly report, to share on the game forum. No account is needed.",
+        "Input": "The text you copy from the \"Management of the mines\" tab: each mine's state, its hours worked, its output and the resources consumed. It contains no player name.",
+        "Stored": "Nothing is stored on our servers: the calculation happens in your browser. If you have accepted preference cookies, your browser keeps, for each week, the merged pasted reports, along with the prices and hourly rate you entered, so you find them again at your next paste. Without that consent, nothing is kept.",
+        "Duration": "In your browser, until you clear the site's data or withdraw your consent to preference cookies, which erases them immediately.",
+        "Audience": "No one but you: this data does not leave your browser, except what you choose to publish on the game forum.",
+        "Deletion": "No effect: the Mines report is not tied to any account."
+      },
+      "MineRegistry": {
+        "Title": "Mine Registry",
+        "Purpose": "Keep a province's mine management record, handed from one office-holder to the next: the Mines Superintendent and the Sheriff save their reports to it, and the province's leader (count, duke…) may read them. You must hold one of these offices in the province, and have had it validated in the Office. Without that, the tool is not available.",
+        "Input": "The same text as for the Mines report: the contents of the \"Management of the mines\" tab, copied from the game."
+      },
+      "Watch": {
+        "Title": "Watch",
+        "Purpose": "Compare two lists of your town's villagers copied from the game, to see who came in and who left, and prepare the forum message. No account is needed.",
+        "Input": "Two lists of villagers copied from the game: they contain other players' character names.",
+        "Stored": "Nothing is stored on our servers: the comparison happens in your browser. If you have accepted preference cookies, your browser keeps the last list you pasted, to offer it as \"yesterday's list\" on your next visit. Without that consent, nothing is kept.",
+        "Duration": "In your browser, until you clear the site's data or withdraw your consent to preference cookies, which erases them immediately.",
+        "Audience": "No one but you: this data does not leave your browser, except what you choose to publish on the game forum.",
+        "Deletion": "No effect: the Watch is not tied to any account."
+      },
+      "Map": {
+        "Title": "Kingdoms map",
+        "Purpose": "Pick a town from the game's reference list of kingdoms, provinces and towns, for instance when creating a character, changing residence or requesting an office. No account is needed.",
+        "Stored": "No personal data: the map is the same for everyone, and it knows nothing about you."
+      }
+    },
     "Privacy": {
       "PageTitle": "Privacy Policy",
       "Preamble": "This page describes how the officedescoffres.creacube.be site processes the personal data associated with your user account. It complements the {cookiesLink}, which covers local storage in your browser.",
@@ -575,7 +638,8 @@
             "Label": "Province and office",
             "Text": "the province where you hold your office — not your town of residence —, the office used (Mines Superintendent or Sheriff), and the character who saved the report."
           }
-        ]
+        ],
+        "ToolsIntro": "What each tool is for, who can use it, what you put into it and what it does or does not store is explained tool by tool on the {dataLink} page:"
       },
       "Section4": {
         "Title": "4. What we do with your data",
@@ -642,6 +706,7 @@
         "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
         "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province."
       },
+      "DataPageLink": "Your data, tool by tool",
       "Section7": {
         "Title": "7. Your GDPR rights",
         "Intro": "In accordance with articles 15 to 22 of the GDPR, you have the following rights over your personal data at any time:",

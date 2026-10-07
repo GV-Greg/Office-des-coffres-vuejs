@@ -4,6 +4,7 @@
   import { useI18n } from 'vue-i18n'
   import SelectorMenu from '@/components/SelectorMenu.vue'
   import { goBackOrWelcome } from '@/modules/goBackOrWelcome'
+  import { DATA_PAGE_SECTIONS } from '@/modules/dataPageSections'
 
   const { t, tm, rt, locale } = useI18n()
   const router = useRouter()
@@ -14,8 +15,9 @@
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
   // à chaque modification substantielle (voir Legal.Privacy.Section10 / draft
   // admin/content/policy-privacy-draft.md).
-  // ⚠️ 08/10/2026 = rédaction de la PR politique du Registre des mines : à passer à la date de MISE EN
-  // LIGNE au merge (une date d'avant la mise en ligne mentirait autant qu'une date figée).
+  // ⚠️ Date de MISE EN LIGNE de la page « Vos données » (fil pages-donnees-joueur) : à fixer au merge,
+  // en même temps que celle de DataPageView.vue
+  // (une date d'avant la mise en ligne mentirait autant qu'une date figée).
   const LAST_UPDATED = '2026-10-08'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
@@ -106,6 +108,25 @@
             <ul class="list-disc list-inside space-y-1" data-testid="privacy-mine-registry">
               <li v-for="(field, index) in mineRegistryFields" :key="`mine-registry-${index}`">
                 <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
+
+            <!-- Une ligne par outil, avec son lien. AJOUT seulement : les énumérations de la politique
+                 (§4, §5, §6) ne perdent jamais une ligne, la page porte l'usage et le contenu de
+                 chaque outil et renvoie ici pour la durée et les destinataires (fil
+                 pages-donnees-joueur, 06 et 07, version B choisie par Greg le 06/10/2026). -->
+            <p class="mt-4">
+              <i18n-t keypath="Legal.Privacy.Section3.ToolsIntro" scope="global">
+                <template #dataLink>
+                  <RouterLink :to="{ name: 'legal-data' }" class="underline text-blue-600 dark:text-blue-400">{{ t('Legal.Privacy.DataPageLink') }}</RouterLink>
+                </template>
+              </i18n-t>
+            </p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-tools-links">
+              <li v-for="section in DATA_PAGE_SECTIONS" :key="section.id">
+                <RouterLink :to="{ name: 'legal-data', hash: `#${section.id}` }" class="underline text-blue-600 dark:text-blue-400">
+                  {{ t(`Legal.Data.${section.key}.Title`) }}
+                </RouterLink>
               </li>
             </ul>
           </section>

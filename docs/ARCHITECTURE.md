@@ -22,6 +22,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/legal/cookies` | `legal-cookies` | — (`meta.public`) |
 | `/legal/privacy` | `legal-privacy` | — (`meta.public`) |
 | `/legal/mentions` | `legal-mentions` | — (`meta.public`) |
+| `/legal/data` | `legal-data` | — (`meta.public`) — « Vos données, outil par outil », une ancre par outil |
 | `/app/` | `home` | — |
 | `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre |
 | `/app/secu` (enfant `/guet` → `security-guet`) | `security` | — |
@@ -141,6 +142,22 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   conservé, §5 la durée et la coupure du lien, §6 qui y accède — avant « Personne d'autre »),
   **avant** l'ouverture de l'écriture. Texte validé par Greg le 06/10
   (`admin/content/policy-registre-mines-draft.md`), garde-fou `tests/legal/privacyMineRegistry`.
+- **`legal/DataPageView.vue`** (route `/legal/data`, 06/10/2026) — « Vos données, outil par
+  outil » : bloc « Qui peut utiliser quoi », sommaire, une section par outil (compte, postes
+  déclarés et Ma province, Bilan des mines, Registre des mines, Guet, carte) avec un
+  **badge d'accès** à côté du titre (sans compte / compte requis / poste validé requis — pas au
+  sommaire), mêmes questions dans le même ordre partout (`Legal.Data`), date de dernière
+  modification propre. 🔴 **Version B (Greg, 06/10/2026)** : les énumérations de la politique (§4
+  bases légales, §5 durées, §6 destinataires) **ne perdent jamais une ligne**, chaque module y
+  ajoute la sienne ; la page porte l'usage, l'accès, le contenu et ce qui n'est **pas** enregistré,
+  et **renvoie** à la politique pour la durée et les destinataires d'un outil qui conserve chez nous
+  (postes, Registre). La politique gagne seulement une ligne par outil avec son lien (§3).
+  `modules/dataPageSections.js` = liste des outils, niveau d'accès **et** couleurs des badges
+  (`BADGE_CLASSES`), lus par le sommaire, les badges et les liens de la politique. Garde-fous
+  `tests/legal/dataPageSingleSource.unit.test.js` (aucune phrase des deux côtés, aucune ligne
+  retirée de la politique) et `badgeContrast.unit.test.js` (texte ≥ 4,5:1, deux thèmes). Brief
+  `admin/content/brief-pages-donnees-joueur.md`, fil `admin/echanges/pages-donnees-joueur`. Le
+  routeur porte un `scrollBehavior` limité aux ancres.
 - **`auth/LoginView.vue`** — connexion par **email** (jamais par pseudo). Structure (27/09/2026) :
   une colonne `max-w-md` — logo horizontal en `<h1>`, « Entrez sans compte » vers `/app/`
   (`odc-btn--soft` au dégradé orange-rouge `.enter-free`, 20 px gras : grand texte, seuil 3:1),

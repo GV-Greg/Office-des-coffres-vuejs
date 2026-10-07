@@ -513,6 +513,69 @@
       },
       "LastUpdated": "Dernière modification : {date}"
     },
+    "Data": {
+      "PageTitle": "Vos données, outil par outil",
+      "Intro": "Pour chaque outil de l'Office : à quoi il sert, ce que vous y mettez, ce qui est enregistré, combien de temps, qui le voit, et ce qui arrive si vous supprimez votre compte. Les règles qui valent pour tout l'Office (bases légales, droits, sécurité, hébergement) sont dans la {privacyLink}.",
+      "PrivacyLink": "politique de confidentialité",
+      "TocTitle": "Sommaire",
+      "Upcoming": "À venir : cet outil n'est pas encore ouvert. Ce qui suit décrit ce qu'il conservera dès son ouverture.",
+      "Questions": {
+        "Purpose": "À quoi sert l'outil",
+        "Input": "Ce que vous y mettez",
+        "Stored": "Ce qui est enregistré",
+        "Duration": "Combien de temps",
+        "Audience": "Qui le voit",
+        "Deletion": "Si vous supprimez votre compte"
+      },
+      "AccessTitle": "Qui peut utiliser quoi.",
+      "Access": "La plupart des outils de l'Office s'utilisent sans compte : tout se passe dans votre navigateur, et l'Office ne conserve rien. Un compte devient nécessaire dès que vous voulez que l'Office conserve ce que vous produisez. Enfin, quelques outils engagent une fonction de votre province : pour le Registre des mines, il faut être commissaire aux mines ou bailli et avoir fait valider ce poste dans l'Office — ce n'est pas facultatif, c'est la condition d'accès.",
+      "Badges": {
+        "none": "Sans compte",
+        "account": "Compte requis",
+        "office": "Poste validé requis"
+      },
+      "LastUpdated": "Dernière modification : {date}",
+      "SeePolicy": "Ce qui est conservé, combien de temps, qui y accède et ce qui arrive si vous supprimez votre compte : voir la {privacyLink} (§3 à §6).",
+      "Account": {
+        "Title": "Compte et personnages",
+        "Text": "Votre compte (adresse email, mot de passe) et vos personnages (pseudo, ville de résidence, statut de validation) : ce qui est conservé, pourquoi, sur quelle base légale et combien de temps est décrit dans la {privacyLink} (§3 à §5). Cette page ne le répète pas."
+      },
+      "Offices": {
+        "Title": "Postes déclarés et Ma province",
+        "Purpose": "Faire reconnaître le poste que tient votre personnage (maire, ou conseiller comtal et son titre), pour que les outils sachent qui peut écrire au titre d'une fonction, et tenir l'historique des postes de votre province (page « Ma province »). Un compte est nécessaire.",
+        "InputLead": "Déclarer un poste est facultatif — sauf pour les outils qui en exigent un.",
+        "Input": "Vous pouvez utiliser l'Office sans déclarer aucune fonction. En revanche, un outil qui engage une fonction de la province, comme le Registre des mines, ne s'ouvre qu'à un poste déclaré et validé.",
+        "InputDetail": "Vous fournissez alors le poste (maire, ou conseiller comtal et son titre), la ville ou la province, les dates du mandat et le lien vers l'annonce publique."
+      },
+      "MinesReport": {
+        "Title": "Bilan des mines",
+        "Purpose": "Mettre en forme le relevé de l'onglet « Gestion des mines » et calculer le bilan de la semaine de vos mines, à partager sur le forum du jeu. Aucun compte n'est nécessaire.",
+        "Input": "Le texte que vous copiez depuis l'onglet « Gestion des mines » : l'état de chaque mine, ses heures travaillées, sa production et les ressources consommées. Il ne contient aucun nom de joueur.",
+        "Stored": "Rien n'est enregistré sur nos serveurs : le calcul se fait dans votre navigateur. Si vous avez accepté les cookies de préférences, votre navigateur garde, pour chaque semaine, les relevés collés et fusionnés, ainsi que les prix et le taux horaire que vous avez saisis, pour les retrouver au collage suivant. Sans ce consentement, rien n'est gardé.",
+        "Duration": "Dans votre navigateur, jusqu'à ce que vous effaciez les données du site ou retiriez votre consentement aux cookies de préférences, ce qui les efface aussitôt.",
+        "Audience": "Personne d'autre que vous : ces données ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu.",
+        "Deletion": "Sans effet : le Bilan des mines n'est lié à aucun compte."
+      },
+      "MineRegistry": {
+        "Title": "Registre des mines",
+        "Purpose": "Garder la mémoire de gestion des mines d'une province, transmise d'un titulaire à l'autre : le commissaire aux mines et le bailli y enregistrent leurs relevés, le dirigeant de la province (comte, duc…) peut les consulter. Il faut tenir l'un de ces postes dans la province, et l'avoir fait valider dans l'Office. Sans cela, l'outil n'est pas accessible.",
+        "Input": "Le même texte que pour le Bilan des mines : celui de l'onglet « Gestion des mines », copié depuis le jeu."
+      },
+      "Watch": {
+        "Title": "Le Guet",
+        "Purpose": "Comparer deux listes des villageois de votre ville copiées depuis le jeu, pour voir qui est entré et qui est sorti, et préparer le message du forum. Aucun compte n'est nécessaire.",
+        "Input": "Deux listes de villageois copiées depuis le jeu : elles contiennent des noms de personnages d'autres joueurs.",
+        "Stored": "Rien n'est enregistré sur nos serveurs : la comparaison se fait dans votre navigateur. Si vous avez accepté les cookies de préférences, votre navigateur garde la dernière liste collée, pour vous la proposer comme « liste d'hier » à votre prochaine visite. Sans ce consentement, rien n'est gardé.",
+        "Duration": "Dans votre navigateur, jusqu'à ce que vous effaciez les données du site ou retiriez votre consentement aux cookies de préférences, ce qui les efface aussitôt.",
+        "Audience": "Personne d'autre que vous : ces données ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu.",
+        "Deletion": "Sans effet : le Guet n'est lié à aucun compte."
+      },
+      "Map": {
+        "Title": "Carte des royaumes",
+        "Purpose": "Choisir une ville dans le référentiel des royaumes, provinces et villes du jeu, par exemple à la création d'un personnage, au changement de résidence ou à une demande de poste. Aucun compte n'est nécessaire.",
+        "Stored": "Aucune donnée personnelle : la carte est la même pour tout le monde, et elle ne sait rien de vous."
+      }
+    },
     "Privacy": {
       "PageTitle": "Politique de confidentialité",
       "Preamble": "Cette page décrit comment le site officedescoffres.creacube.be traite les données personnelles associées à votre compte utilisateur. Elle complète la {cookiesLink}, qui traite du stockage local dans votre navigateur.",
@@ -575,7 +638,8 @@
             "Label": "La province et le poste",
             "Text": "la province où vous tenez votre poste — et non votre ville de résidence —, le poste utilisé (commissaire aux mines ou bailli), et le personnage qui a enregistré le relevé."
           }
-        ]
+        ],
+        "ToolsIntro": "À quoi sert chaque outil, qui peut l'utiliser, ce que vous y mettez et ce qu'il enregistre ou non est expliqué outil par outil sur la page {dataLink} :"
       },
       "Section4": {
         "Title": "4. Ce que nous faisons de vos données",
@@ -642,6 +706,7 @@
         "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration.",
         "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, qui tiennent le Registre des mines de cette province, et son dirigeant (comte, duc…), qui peut le consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais les autres conseillers, jamais un joueur d'une autre province."
       },
+      "DataPageLink": "Vos données, outil par outil",
       "Section7": {
         "Title": "7. Vos droits RGPD",
         "Intro": "Conformément aux articles 15 à 22 du RGPD, vous disposez à tout moment des droits suivants sur vos données personnelles :",
