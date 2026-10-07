@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-07] — PR #83 (le Bilan lit l'écran anglais)
+
+Brief `admin/content/brief-bilan-mines.md` §5 bis, fil `admin/echanges/bilan-mines/08`.
+
+### Fixed
+- L'aide anglaise (front #82) envoyait le joueur sur « Management of the mines », mais
+  `mineParser.js` ne lisait que l'écran français : un collage anglais était refusé. Le parseur
+  reconnaît désormais les deux (titres de section, « Node », ressources, *Level*, *Deterioration
+  threshold*, *Normal maintenance*…), d'après le collage réel de Greg. **Aucune conversion
+  d'unité** ; point décimal lu comme la virgule. Test jumeau FR/EN, écrit rouge avant le correctif.
+
 ## [2026-10-07] — PR #82 (Bilan des mines : un bilan juste)
 
 Brief `admin/content/brief-bilan-mines.md`, fil `admin/echanges/bilan-mines`.
