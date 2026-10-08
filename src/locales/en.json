@@ -318,6 +318,17 @@
     "PriceSalt": "Salt (bushel)",
     "RateLabel": "Miners' wage/hour",
     "Currency": "écus",
+    "Registry": {
+      "Title": "Mine Registry",
+      "Province": "The Office knows you as an office-holder in the province of {province}: this report can be saved to its registry, in the name of {character}.",
+      "Save": "Save to the {province} registry",
+      "Saved": "Report saved to the {province} registry.",
+      "Replaced": "It replaces the one by {pseudo}, which stays visible in the history.",
+      "RecordedBy": "Current report: saved by {pseudo} ({office}).",
+      "DeletedCharacter": "a deleted character",
+      "Confirm": "Replace",
+      "Cancel": "Cancel"
+    },
     "RateNotStored": "No miners' wage/hour stored for this week: the value in the field is used.",
     "GenerateButton": "Generate the weekly report",
     "ExportButton": "Copy as BBcode",

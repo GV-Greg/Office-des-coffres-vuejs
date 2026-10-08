@@ -12,6 +12,7 @@
   } from '@/modules/mineParser'
   import { toGameDateIso } from '@/modules/gameCalendar'
   import { push } from 'notivue'
+  import MineRegistrySave from '@/components/mines/MineRegistrySave.vue'
 
   const { t } = useI18n()
 
@@ -367,6 +368,10 @@
              { date: pastedOnLabel, pierre: alert.seuilPierre, fer: alert.seuilFer }) }}
       </li>
     </ul>
+
+    <!-- Registre des mines : même collage, seconde destination — visible pour le seul commissaire
+         aux mines ou bailli connu de l'Office (brief Registre §6). -->
+    <MineRegistrySave :text="pastedText" :prices="prices" :rate="rate" />
 
     <!-- Champs courts, unité à droite : un prix ou un taux tient en quelques chiffres. -->
     <div class="mt-4 flex flex-wrap gap-x-6 gap-y-3">

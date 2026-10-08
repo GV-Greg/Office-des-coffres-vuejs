@@ -318,6 +318,17 @@
     "PriceSalt": "Sel (boisseau)",
     "RateLabel": "Salaire/heure des mineurs",
     "Currency": "écus",
+    "Registry": {
+      "Title": "Registre des mines",
+      "Province": "L'Office vous connaît comme titulaire d'un poste dans la province de {province} : ce relevé peut être enregistré dans son registre, au nom de {character}.",
+      "Save": "Enregistrer dans le registre de {province}",
+      "Saved": "Relevé enregistré dans le registre de {province}.",
+      "Replaced": "Il remplace celui de {pseudo}, qui reste visible dans l'historique.",
+      "RecordedBy": "Relevé en place : enregistré par {pseudo} ({office}).",
+      "DeletedCharacter": "un personnage supprimé",
+      "Confirm": "Remplacer",
+      "Cancel": "Annuler"
+    },
     "RateNotStored": "Salaire/heure des mineurs non mémorisé pour cette semaine : la valeur du champ est utilisée.",
     "GenerateButton": "Générer le bilan hebdomadaire",
     "ExportButton": "Copier en BBcode",

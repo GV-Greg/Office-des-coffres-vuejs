@@ -221,7 +221,12 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   l'affichage) ; **semaine proposée par défaut : la dernière achevée**. Une semaine incomplète
   s'affiche marquée « Bilan provisoire » mais **ne s'exporte pas**. Prix et taux horaire
   **mémorisés avec chaque semaine** (confort). **Alerte de seuil à l'écran seulement** (jamais
-  dans un export), datée du jour du collage. Brief `admin/content/brief-bilan-mines.md`, fil
+  dans un export), datée du jour du collage. **Registre des mines** (08/10/2026) : sous le collage,
+  `components/mines/MineRegistrySave.vue` propose « enregistrer dans le registre de {province} » au seul
+  personnage que l'API dit commissaire aux mines ou bailli (`GET characters/{id}/mine-registry`) — la
+  province du **poste** est affichée **avant** l'envoi ; un 409 ouvre une confirmation qui nomme
+  l'auteur remplacé (« remplacé, pas effacé ») ; aucun refus n'est traduit côté site (`apiMessage`).
+  Brief `admin/content/brief-bilan-mines.md`, fil
   `admin/echanges/bilan-mines`. `HelpModal.vue` pour l'aide contextuelle. Futur pendant privé
   (backend, compte requis) : « Registre des mines », pas encore développé.
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes

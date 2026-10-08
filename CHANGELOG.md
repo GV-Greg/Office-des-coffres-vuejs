@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [AAAA-MM-JJ — date de merge, à remplir au merge] — PR #86 (Registre des mines, PR 2 : l'écran)
+
+Brief `admin/content/brief-registre-mines.md` §2, §6 ; fil `admin/echanges/registre-mines` (R3).
+⛔ Après back #58 (route d'accès, `route:cache` en SSH).
+
+### Added
+- `components/mines/MineRegistrySave.vue`, sous le collage du Bilan : « un collage, deux destinations ».
+  Visible seulement pour le personnage actif que l'API dit commissaire aux mines ou bailli ; dit la
+  province du **poste** et le personnage **avant** l'envoi ; 409 → confirmation qui nomme l'auteur en
+  place, remplacement seulement sur « Remplacer » ; refus affichés tels que l'API les donne (FR/EN).
+  Aucune règle recalculée côté site. 7 tests, contrôle positif fait.
+
 ## [2026-10-08] — PR #85 (politique : le dirigeant consulte le Registre)
 
 ### Changed
