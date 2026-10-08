@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-08] — PR #84 (politique : le Registre des mines)
+
+Fil `admin/echanges/registre-mines` (07, ordre des PR) ; texte validé par Greg le 06/10
+(`admin/content/policy-registre-mines-draft.md`).
+
+### Added
+- **`/legal/privacy`** : trois insertions pour le Registre des mines, FR + EN — §3 ce qui est conservé
+  (texte collé tel quel, relevé analysé, prix et taux, province du poste), §5 « sans limite de
+  durée », « le lien avec votre compte est supprimé », « aucun relevé ne peut être effacé », §6 le
+  commissaire aux mines et le bailli, jamais le comte (placé avant « Personne d'autre »).
+  Termes anglais du jeu relevés par Greg (*Management of the mines*, *deterioration threshold*,
+  *Mines Superintendent*, *Sheriff*). Garde-fou `privacyMineRegistry` (contrôle positif fait).
+- ⚠️ **Modification substantielle** : `LAST_UPDATED` à la date de mise en ligne au merge, puis entrée
+  de journal backend + `policy:notify`. L'écriture du Registre (PR 1b) n'ouvre qu'après.
+
 ## [2026-10-07] — PR #83 (le Bilan lit l'écran anglais)
 
 Brief `admin/content/brief-bilan-mines.md` §5 bis, fil `admin/echanges/bilan-mines/08`.

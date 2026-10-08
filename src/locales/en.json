@@ -491,6 +491,25 @@
             "Label": "Declared offices (optional)",
             "Text": "the office (mayor, or county councillor and their title), the city or province, the dates of the term and the link to the public announcement, which you provide to have your authority validated in the modules, as well as the history of your council offices."
           }
+        ],
+        "MineRegistryIntro": "If you are the Mines Superintendent or the Sheriff of a province and you save a report to the Mine Registry, the Office stores:",
+        "MineRegistryFields": [
+          {
+            "Label": "The text you paste",
+            "Text": "the contents of the game's \"Management of the mines\" tab as you copy it. It is kept verbatim, so that a later correction to the parsing also applies to reports already saved."
+          },
+          {
+            "Label": "The parsed report",
+            "Text": "per mine: level, output, hours worked, resources consumed, deterioration threshold, and the date of the report."
+          },
+          {
+            "Label": "Prices and hourly rate",
+            "Text": "the values you entered at the time of the report, kept with it because they change over time."
+          },
+          {
+            "Label": "Province and office",
+            "Text": "the province where you hold your office — not your town of residence —, the office used (Mines Superintendent or Sheriff), and the character who saved the report."
+          }
         ]
       },
       "Section4": {
@@ -546,7 +565,8 @@
         "UnverifiedAccount": "Unverified account: if the email address is not confirmed, the account is deleted after 30 days, and no sooner than one week after a reminder sent to that address.",
         "DeletedAccount": "Deleted account: immediate and definitive deletion of the associated personal data (email, hashed password, linked characters).",
         "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased.",
-        "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account)."
+        "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account).",
+        "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible."
       },
       "Section6": {
         "Title": "6. Who can access your data",
@@ -554,7 +574,8 @@
         "Editor": "The site editor (see §2), for technical administration, user support and checking your office requests — access limited to the strict minimum.",
         "NoOneElse": "No one else beyond the above. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
         "Hosting": "Data is hosted on servers located in the European Union (host: o2switch, France).",
-        "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes."
+        "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
+        "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, for that province's Mine Registry reports — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the count, never the other councillors, never a player from another province. The count is informed by whatever the office-holder chooses to publish on the game's forum."
       },
       "Section7": {
         "Title": "7. Your GDPR rights",
