@@ -6,6 +6,15 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-08] — PR #85 (politique : le dirigeant consulte le Registre)
+
+### Changed
+- **`/legal/privacy` §6, Registre des mines** : le dirigeant de la province (comte, duc…) **consulte** le
+  registre de sa province — décision de Greg du 08/10/2026 (« c'est le chef de la province »), qui
+  remplace le « jamais le comte » du brief. L'écriture reste au commissaire aux mines et au bailli ;
+  les autres conseillers, jamais. Corrigé **avant** l'envoi de la notification : un seul email couvre
+  le texte final. `LAST_UPDATED` inchangé (08/10, même jour).
+
 ## [2026-10-08] — PR #84 (politique : le Registre des mines)
 
 Fil `admin/echanges/registre-mines` (07, ordre des PR) ; texte validé par Greg le 06/10

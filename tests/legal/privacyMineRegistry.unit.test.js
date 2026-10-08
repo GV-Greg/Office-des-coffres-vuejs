@@ -41,9 +41,15 @@ describe('Politique — Registre des mines', () => {
     expect(Section5.MineRegistry).toContain('no time limit')
   })
 
-  it('le comte n’y accède jamais, dans les deux langues', () => {
-    expect(privacy('fr').Section6.MineRegistryHolders).toContain('Jamais le comte')
-    expect(privacy('en').Section6.MineRegistryHolders).toContain('Never the count')
+  // Greg, 08/10/2026 : le dirigeant (comte, duc…) CONSULTE le registre de sa province — il en est le
+  // chef ; l'écriture reste au commissaire aux mines et au bailli. Les autres conseillers, jamais.
+  it('le dirigeant consulte, les autres conseillers jamais, dans les deux langues', () => {
+    expect(privacy('fr').Section6.MineRegistryHolders).toContain('son dirigeant (comte, duc…), qui peut le consulter')
+    expect(privacy('fr').Section6.MineRegistryHolders).toContain('Jamais les autres conseillers')
+    expect(privacy('fr').Section6.MineRegistryHolders).not.toContain('Jamais le comte')
+    expect(privacy('en').Section6.MineRegistryHolders).toContain('its leader (count, duke…), who may read it')
+    expect(privacy('en').Section6.MineRegistryHolders).toContain('Never the other councillors')
+    expect(privacy('en').Section6.MineRegistryHolders).not.toContain('Never the count')
   })
 
   it('EN : termes du jeu relevés par Greg, jamais inventés', () => {
