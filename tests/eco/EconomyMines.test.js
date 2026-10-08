@@ -127,7 +127,8 @@ beforeEach(() => {
   // la semaine proposée par défaut est la dernière ACHEVÉE (brief §2.4), celle du 27/07 au 02/08,
   // sans dépendre du jour où les tests s'exécutent.
   vi.useFakeTimers()
-  vi.setSystemTime(new Date('2026-08-04T12:00:00Z'))
+  // Lundi 03/08/2026 : la page s'ouvre sur la semaine passée (27/07 → 02/08), celle de ces données.
+  vi.setSystemTime(new Date('2026-08-03T12:00:00Z'))
 })
 
 afterEach(() => {
@@ -148,8 +149,13 @@ async function generate(wrapper, text = weekText()) {
 const exportButton = wrapper => wrapper.findAll('button').find(b => b.text() === 'Copier en BBcode')
 
 describe('EconomyMines — calcul du bilan', () => {
-  it('propose par défaut la dernière semaine achevée (§2.4)', () => {
+  it('le lundi, propose la semaine passée, pour compléter les heures du dimanche (Greg, 08/10)', () => {
     expect(mountView().text()).toContain('Semaine du 27 juillet 1474 au 2 août 1474')
+  })
+
+  it('du mardi au dimanche, propose la semaine en cours (Greg, 08/10)', () => {
+    vi.setSystemTime(new Date('2026-08-04T12:00:00Z')) // mardi
+    expect(mountView().text()).toContain('Semaine du 3 août 1474 au 9 août 1474')
   })
 
   it('affiche UNE table par mine, avec sa ligne Total et la convention (§2.3, §2.5)', async () => {
@@ -259,13 +265,13 @@ Entretien normal
 
     const alerts = wrapper.find('[data-testid="threshold-alerts"]')
     expect(alerts.text()).toContain('#4 Mine de fer')
-    expect(alerts.text()).toContain('Au 04/08, seuil atteint (9 qtx de pierre / 7 kg de fer).')
+    expect(alerts.text()).toContain('Au 03/08, seuil atteint (9 qtx de pierre / 7 kg de fer).')
   })
 
   it('prévient à 2 unités ou moins du seuil', async () => {
     const wrapper = mountView()
     await wrapper.find('textarea').setValue(withState('8 qtx de pierre et 3 kg de fer', '10 qtx de pierre et 8 kg de fer'))
-    expect(wrapper.find('[data-testid="threshold-alerts"]').text()).toContain('Au 04/08, à 2 unités ou moins du seuil.')
+    expect(wrapper.find('[data-testid="threshold-alerts"]').text()).toContain('Au 03/08, à 2 unités ou moins du seuil.')
   })
 
   it("ne part jamais dans l'export du bilan (Q9 bis)", async () => {

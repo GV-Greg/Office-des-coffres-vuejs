@@ -5,7 +5,7 @@ import {
   detectResource, parseMinesText, mergeMinesData, computeBilan,
   mostRecentDate, filterToDate, getWeekBounds, checkWeekCompleteness,
   parseMineStates, formatDateFr, filterToWeek, shiftWeek, todayIso,
-  lastCompletedWeek, thresholdAlert,
+  defaultWeek, thresholdAlert,
 } from '../../src/modules/mineParser'
 
 describe('detectResource', () => {
@@ -571,11 +571,19 @@ describe('checkWeekCompleteness — les deux séries, et les heures du lundi sui
   })
 })
 
-describe('lastCompletedWeek — la semaine proposée par défaut (§2.4)', () => {
-  it('est la semaine précédente, quel que soit le jour', () => {
-    expect(lastCompletedWeek('2026-10-07')).toBe('2026-09-28') // mercredi
-    expect(lastCompletedWeek('2026-10-05')).toBe('2026-09-28') // lundi
-    expect(lastCompletedWeek('2026-10-04')).toBe('2026-09-21') // dimanche
+// Greg, 08/10/2026 : on colle la semaine EN COURS ; le lundi seulement, on reste sur la semaine passée
+// pour compléter les heures du dimanche (elles n'arrivent que dans le collage du lundi). Remplace la
+// « dernière semaine achevée » du brief §2.4.
+describe('defaultWeek — la semaine proposée à l\'arrivée', () => {
+  it('du mardi au dimanche : la semaine en cours', () => {
+    expect(defaultWeek('2026-10-06')).toBe('2026-10-05') // mardi
+    expect(defaultWeek('2026-10-08')).toBe('2026-10-05') // jeudi
+    expect(defaultWeek('2026-10-11')).toBe('2026-10-05') // dimanche
+  })
+
+  it('le lundi : la semaine passée, pour compléter les heures du dimanche', () => {
+    expect(defaultWeek('2026-10-05')).toBe('2026-09-28')
+    expect(defaultWeek('2026-10-12')).toBe('2026-10-05')
   })
 })
 

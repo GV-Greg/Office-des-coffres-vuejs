@@ -8,7 +8,7 @@
   import {
     parseMinesText, mergeMinesData, computeBilan, checkWeekCompleteness,
     mostRecentDate, parseMineStates, formatDateFr, thresholdAlert,
-    getWeekBounds, filterToWeek, shiftWeek, todayIso, lastCompletedWeek,
+    getWeekBounds, filterToWeek, shiftWeek, todayIso, defaultWeek,
   } from '@/modules/mineParser'
   import { toGameDateIso } from '@/modules/gameCalendar'
   import { push } from 'notivue'
@@ -55,7 +55,7 @@
   // (plusieurs collages successifs, chacun filtré à cette semaine avant fusion)
   // sans mélanger les jours avec la semaine en cours ou une autre semaine passée.
   // Par défaut, la dernière semaine ACHEVÉE : une semaine n'est complète que le lundi suivant (§2.4).
-  const selectedMonday = ref(lastCompletedWeek(todayIso()))
+  const selectedMonday = ref(defaultWeek(todayIso()))
   const selectedSunday = computed(() => getWeekBounds(selectedMonday.value).sunday)
   // Les heures du lundi suivant mesurent le dimanche de la semaine (décalage d'un jour, §2.1).
   const nextMonday = computed(() => shiftWeek(selectedMonday.value, 1))

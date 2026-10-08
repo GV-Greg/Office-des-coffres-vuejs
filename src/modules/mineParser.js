@@ -383,10 +383,17 @@ export function checkWeekCompleteness(mines, monday) {
   return { complete: missingDates.length === 0, monday, sunday, missingDates }
 }
 
-/** Lundi de la dernière semaine ACHEVÉE — la semaine proposée par défaut (brief §2.4). */
-export function lastCompletedWeek(todayIsoDate) {
-  return shiftWeek(getWeekBounds(todayIsoDate).monday, -1)
+/**
+ * Lundi de la semaine proposée à l'arrivée sur la page (Greg, 08/10/2026 — remplace la « dernière
+ * semaine achevée » du brief §2.4) : la semaine EN COURS, sauf le lundi, où l'on reste sur la semaine
+ * passée pour compléter les heures du dimanche, qui n'arrivent que dans le collage du lundi.
+ * `todayIsoDate` : la date de Paris (todayIso()).
+ */
+export function defaultWeek(todayIsoDate) {
+  const { monday } = getWeekBounds(todayIsoDate)
+  return todayIsoDate === monday ? shiftWeek(monday, -1) : monday
 }
+
 
 /**
  * « 12 qtx de pierre et 9 kg de fer » (ou « 12 tons of stone and 9 ounces of iron ») ->

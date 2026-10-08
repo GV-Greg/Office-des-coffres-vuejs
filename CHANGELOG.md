@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-08] — PR #87 (Bilan : la semaine en cours à l'arrivée, sauf le lundi)
+
+### Changed
+- La page du Bilan s'ouvre sur la **semaine en cours** — on y colle le relevé du jour —, sauf le **lundi**,
+  où elle reste sur la semaine passée pour compléter les heures du dimanche (elles n'arrivent que dans
+  le collage du lundi). `defaultWeek` remplace `lastCompletedWeek` et la règle « dernière semaine
+  achevée » du brief §2.4 (Greg, 08/10/2026). La semaine en cours reste un bilan provisoire, non exportable.
+
 ## [2026-10-08] — PR #86 (Registre des mines, PR 2 : l'écran)
 
 Brief `admin/content/brief-registre-mines.md` §2, §6 ; fil `admin/echanges/registre-mines` (R3).
