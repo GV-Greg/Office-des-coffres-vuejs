@@ -137,6 +137,10 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   namespace `Legal` (clés de contact partagées dans `Legal.Common.Contact.*`). ⚠️ Les listes y
   sont rendues avec `tm()` **+ `rt()`** : `tm()` seul renvoie des AST compilés, affichés tels
   quels à l'écran mais invisibles en test (les mocks ne sont pas précompilés).
+  **Registre des mines** (08/10/2026) : la politique porte ses trois insertions (§3 ce qui est
+  conservé, §5 la durée et la coupure du lien, §6 qui y accède — avant « Personne d'autre »),
+  **avant** l'ouverture de l'écriture. Texte validé par Greg le 06/10
+  (`admin/content/policy-registre-mines-draft.md`), garde-fou `tests/legal/privacyMineRegistry`.
 - **`auth/LoginView.vue`** — connexion par **email** (jamais par pseudo). Structure (27/09/2026) :
   une colonne `max-w-md` — logo horizontal en `<h1>`, « Entrez sans compte » vers `/app/`
   (`odc-btn--soft` au dégradé orange-rouge `.enter-free`, 20 px gras : grand texte, seuil 3:1),

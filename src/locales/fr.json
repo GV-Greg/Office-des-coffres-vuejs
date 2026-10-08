@@ -491,6 +491,25 @@
             "Label": "Postes déclarés (facultatif)",
             "Text": "le poste (maire, ou conseiller comtal et son titre), la ville ou la province, les dates du mandat et le lien vers l'annonce publique, que vous fournissez pour faire valider votre autorité dans les modules, ainsi que l'historique de vos postes au conseil."
           }
+        ],
+        "MineRegistryIntro": "Si vous êtes commissaire aux mines ou bailli d'une province et que vous enregistrez un relevé dans le Registre des mines, l'Office conserve :",
+        "MineRegistryFields": [
+          {
+            "Label": "Le texte que vous collez",
+            "Text": "le contenu de l'onglet « Gestion des mines » tel que vous le copiez depuis le jeu. Il est conservé tel quel, afin qu'une correction ultérieure de l'analyse s'applique aussi aux relevés déjà enregistrés."
+          },
+          {
+            "Label": "Le relevé analysé",
+            "Text": "par mine : niveau, production, heures travaillées, ressources consommées, seuil de rupture, et la date du relevé."
+          },
+          {
+            "Label": "Les prix et le taux horaire",
+            "Text": "les valeurs que vous avez renseignées au moment du relevé, conservées avec lui parce qu'elles changent au fil du temps."
+          },
+          {
+            "Label": "La province et le poste",
+            "Text": "la province où vous tenez votre poste — et non votre ville de résidence —, le poste utilisé (commissaire aux mines ou bailli), et le personnage qui a enregistré le relevé."
+          }
         ]
       },
       "Section4": {
@@ -546,7 +565,8 @@
         "UnverifiedAccount": "Compte non confirmé : si l'adresse email n'est pas confirmée, le compte est supprimé au bout de 30 jours, et au plus tôt une semaine après un rappel envoyé à cette adresse.",
         "DeletedAccount": "Compte supprimé : suppression immédiate et définitive des données personnelles associées (adresse email, mot de passe haché, personnages liés).",
         "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés.",
-        "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte)."
+        "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte).",
+        "MineRegistry": "Registre des mines : les relevés que vous enregistrez sont conservés sans limite de durée, parce qu'ils forment la mémoire de gestion d'une province, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, le relevé reste, mais le lien avec votre compte est supprimé : il garde sa date, sa province et le poste utilisé, et ne désigne plus aucun personnage. Nous écrivons « le lien est supprimé » et non « le relevé est anonymisé » : l'historique des postes de la province reste consultable, et il peut permettre de rapprocher une date et un poste d'un nom de personnage. Enfin, aucun relevé ne peut être effacé, pas même par celui qui l'a écrit : un relevé erroné est remplacé, et le remplacement reste visible."
       },
       "Section6": {
         "Title": "6. À qui vos données sont accessibles",
@@ -554,7 +574,8 @@
         "Editor": "L'éditeur du site (voir §2), pour l'administration technique, le support utilisateur et la vérification de vos demandes de poste — accès limité au strict nécessaire.",
         "NoOneElse": "Personne d'autre en dehors de ce qui précède. Aucun partage, aucune revente, aucune transmission à des tiers, y compris à Celsius Online (éditeur du jeu Renaissance Kingdoms), sauf réquisition judiciaire dûment notifiée.",
         "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : o2switch, France).",
-        "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration."
+        "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration.",
+        "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, pour les relevés du Registre des mines de cette province — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais le comte, jamais les autres conseillers, jamais un joueur d'une autre province. Le comte est informé par ce que le titulaire choisit de publier sur le forum du jeu."
       },
       "Section7": {
         "Title": "7. Vos droits RGPD",

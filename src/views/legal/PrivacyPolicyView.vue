@@ -14,7 +14,9 @@
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
   // à chaque modification substantielle (voir Legal.Privacy.Section10 / draft
   // admin/content/policy-privacy-draft.md).
-  const LAST_UPDATED = '2026-10-04'
+  // ⚠️ 08/10/2026 = rédaction de la PR politique du Registre des mines : à passer à la date de MISE EN
+  // LIGNE au merge (une date d'avant la mise en ligne mentirait autant qu'une date figée).
+  const LAST_UPDATED = '2026-10-08'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
@@ -23,6 +25,7 @@
   const accountFields = computed(() => tm('Legal.Privacy.Section3.AccountFields'))
   const characterFields = computed(() => tm('Legal.Privacy.Section3.CharacterFields'))
   const dataRows = computed(() => tm('Legal.Privacy.Section4.Rows'))
+  const mineRegistryFields = computed(() => tm('Legal.Privacy.Section3.MineRegistryFields'))
   const rights = computed(() => tm('Legal.Privacy.Section7.Rights'))
   const measures = computed(() => tm('Legal.Privacy.Section8.Measures'))
 </script>
@@ -95,6 +98,16 @@
                 <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
               </li>
             </ul>
+
+            <!-- Registre des mines (texte validé par Greg le 06/10/2026,
+                 admin/content/policy-registre-mines-draft.md) : posé AVANT l'ouverture de
+                 l'écriture — une règle ne s'applique qu'après que le texte la dit. -->
+            <p class="mt-4">{{ t('Legal.Privacy.Section3.MineRegistryIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-mine-registry">
+              <li v-for="(field, index) in mineRegistryFields" :key="`mine-registry-${index}`">
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
           </section>
 
           <section>
@@ -132,6 +145,7 @@
               <li>{{ t('Legal.Privacy.Section5.UnverifiedAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.DeletedAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Mandates') }}</li>
+              <li>{{ t('Legal.Privacy.Section5.MineRegistry') }}</li>
               <li>{{ t('Legal.Privacy.Section5.TechnicalLogs') }}</li>
             </ul>
           </section>
@@ -142,6 +156,8 @@
               <li>{{ t('Legal.Privacy.Section6.Yourself') }}</li>
               <li>{{ t('Legal.Privacy.Section6.Editor') }}</li>
               <li>{{ t('Legal.Privacy.Section6.ProvincePlayers') }}</li>
+              <!-- Avant « Personne d'autre en dehors de ce qui précède », qui clôt l'énumération. -->
+              <li>{{ t('Legal.Privacy.Section6.MineRegistryHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.NoOneElse') }}</li>
             </ul>
             <p class="mt-4">{{ t('Legal.Privacy.Section6.Hosting') }}</p>

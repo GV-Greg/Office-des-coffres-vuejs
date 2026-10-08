@@ -57,6 +57,11 @@ const messages = {
             { Label: 'Ville', Text: 'du référentiel.' },
             { Label: 'Statut', Text: 'validé ou non.' },
           ],
+          MineRegistryIntro: 'Si vous tenez le registre, l’Office conserve :',
+          MineRegistryFields: [
+            { Label: 'Le texte collé', Text: 'tel quel.' },
+            { Label: 'La province et le poste', Text: 'du poste, pas de la résidence.' },
+          ],
         },
         Section4: {
           Title: '4. Ce que nous faisons',
@@ -73,12 +78,15 @@ const messages = {
           InactiveAccount: 'Compte inactif : après [À REMPLIR PAR GREG : durée] sans connexion.',
           UnverifiedAccount: 'Compte non confirmé : supprimé après un rappel.',
           DeletedAccount: 'Compte supprimé : effacé.',
+          Mandates: 'Postes : sauf l’historique.',
+          MineRegistry: 'Registre : sans limite.',
           TechnicalLogs: 'Logs : 12 mois.',
         },
         Section6: {
           Title: '6. Accessibilité',
           Yourself: 'Vous-même.',
           Editor: "L'éditeur.",
+          MineRegistryHolders: 'Le commissaire et le bailli.',
           NoOneElse: 'Personne d\'autre.',
           Hosting: 'Hébergeur : [À REMPLIR PAR GREG : hébergeur].',
         },
@@ -219,6 +227,18 @@ describe('PrivacyPolicyView', () => {
     expect(link.attributes('rel')).toBe('noopener noreferrer')
   })
 
+
+  // Registre des mines (texte validé le 06/10/2026) : posé AVANT l'ouverture de l'écriture.
+  it('rend ce que conserve le Registre des mines (§3)', () => {
+    const items = mountView().findAll('[data-testid="privacy-mine-registry"] li').map(li => li.text())
+    expect(items).toEqual(['Le texte collé — tel quel.', 'La province et le poste — du poste, pas de la résidence.'])
+  })
+
+  it('place la durée du Registre juste après les postes déclarés (§5), et ses destinataires avant « Personne d’autre » (§6)', () => {
+    const items = mountView().findAll('li').map(li => li.text())
+    expect(items.indexOf('Registre : sans limite.')).toBe(items.indexOf('Postes : sauf l’historique.') + 1)
+    expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf("Personne d'autre.") - 1)
+  })
   it('affiche une date de dernière modification', () => {
     const wrapper = mountView()
     expect(wrapper.text()).toContain('Dernière modification :')
