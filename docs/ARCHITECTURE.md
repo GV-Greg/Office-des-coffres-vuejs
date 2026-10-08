@@ -218,7 +218,8 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   **une table par mine** (production, valeur, heures, salaire = heures × taux horaire, entretien
   pierre/fer et en écus, solde) avec une ligne Total, génère du BBcode. Sélecteur de semaine calé
   sur `modules/gameCalendar.js` (dates réelles en interne, année de jeu 2026→1474 seulement à
-  l'affichage) ; **semaine proposée par défaut : la dernière achevée**. Une semaine incomplète
+  l'affichage) ; **semaine proposée à l'arrivée : la semaine en cours, sauf le lundi** (semaine passée, pour
+  compléter les heures du dimanche — Greg, 08/10/2026, `defaultWeek`). Une semaine incomplète
   s'affiche marquée « Bilan provisoire » mais **ne s'exporte pas**. Prix et taux horaire
   **mémorisés avec chaque semaine** (confort). **Alerte de seuil à l'écran seulement** (jamais
   dans un export), datée du jour du collage. **Registre des mines** (08/10/2026) : sous le collage,
