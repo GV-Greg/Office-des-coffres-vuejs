@@ -356,6 +356,8 @@
                 class="textarea-autoresize col-span-3 w-full rounded-xl p-2"></textarea>
       <div v-if="pastedText.trim()" class="flex flex-col items-center justify-start mt-7">
         <button @click="formatDayForForum" class="odc-btn odc-btn--soft odc--slate">{{ t('EconomyMines.DayExportButton') }}</button>
+        <!-- Registre des mines : même collage, seconde destination, action du jour (brief Registre §6). -->
+        <MineRegistrySave :text="pastedText" :prices="prices" :rate="rate" />
       </div>
     </div>
 
@@ -369,9 +371,6 @@
       </li>
     </ul>
 
-    <!-- Registre des mines : même collage, seconde destination — visible pour le seul commissaire
-         aux mines ou bailli connu de l'Office (brief Registre §6). -->
-    <MineRegistrySave :text="pastedText" :prices="prices" :rate="rate" />
 
     <!-- Champs courts, unité à droite : un prix ou un taux tient en quelques chiffres. -->
     <div class="mt-4 flex flex-wrap gap-x-6 gap-y-3">

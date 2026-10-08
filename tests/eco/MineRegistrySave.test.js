@@ -36,7 +36,7 @@ async function mountSave({ locale = 'fr', access = writer, text = TEXT } = {}) {
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
   const wrapper = mount(MineRegistrySave, {
     props: { text, prices: { OR: 1, PIERRE: 20 }, rate: 0.7 },
-    global: { plugins: [i18n] },
+    global: { plugins: [i18n], stubs: { 'v-icon': true } },
   })
   await flushPromises()
   return wrapper
@@ -53,13 +53,24 @@ beforeEach(() => {
 })
 
 describe('MineRegistrySave', () => {
-  it('dit la province du POSTE avant tout envoi, et le personnage au nom duquel il écrit', async () => {
+  it('dit la province du POSTE avant tout envoi', async () => {
     const wrapper = await mountSave()
 
     expect(http.get).toHaveBeenCalledWith('characters/7/mine-registry', { headers: { Authorization: 'Bearer jeton' } })
-    expect(wrapper.find('[data-testid="mine-registry-province"]').text()).toContain('province de Artois')
-    expect(wrapper.find('[data-testid="mine-registry-province"]').text()).toContain('Artifice')
-    expect(wrapper.find('button').text()).toBe('Enregistrer dans le registre de Artois')
+    // Titre en deux lignes, mais lu d'un seul tenant : un espace les sépare (lecteur d'écran).
+    expect(wrapper.find('h3').text().replace(/\s+/g, ' ')).toBe('Registre des mines Artois')
+    expect(wrapper.find('[data-testid="mine-registry"] button.odc-btn').text()).toBe('Inscrire au registre')
+    expect(http.post).not.toHaveBeenCalled()
+  })
+
+  it('l\'icône d\'aide, nommée pour les lecteurs d\'écran, ouvre la modale qui explique l\'inscription', async () => {
+    const wrapper = await mountSave()
+    const help = wrapper.find('[data-testid="mine-registry-help"]')
+    expect(help.attributes('aria-label')).toBe('Comment fonctionne le registre ?')
+
+    await help.trigger('click')
+    expect(wrapper.text()).toContain('Inscrire au registre')
+    expect(wrapper.findAll('ol li')).toHaveLength(4)
     expect(http.post).not.toHaveBeenCalled()
   })
 
@@ -78,7 +89,7 @@ describe('MineRegistrySave', () => {
   it('envoie le texte collé, le relevé analysé, les prix et le taux, sans confirmation au premier essai', async () => {
     http.post.mockResolvedValue({ data: { success: true, report: { province_name: 'Artois' }, replaced: null } })
     const wrapper = await mountSave()
-    await wrapper.find('button').trigger('click')
+    await wrapper.find('[data-testid="mine-registry"] button.odc-btn').trigger('click')
     await flushPromises()
 
     const [url, body] = http.post.mock.calls[0]
@@ -86,13 +97,13 @@ describe('MineRegistrySave', () => {
     expect(body.raw).toBe(TEXT.trim())
     expect(body.report.mines[0]).toMatchObject({ number: 1, noeud: '236', days: { '2026-05-08': { heures: 53 } } })
     expect(body).toMatchObject({ prices: { OR: 1, PIERRE: 20 }, rate: 0.7, confirm_replace: false })
-    expect(push.success).toHaveBeenCalledWith('Relevé enregistré dans le registre de Artois.')
+    expect(push.success).toHaveBeenCalledWith('Relevé du jour inscrit au registre de Artois.')
   })
 
   it('409 : affiche le message de l\'API et l\'auteur en place, puis remplace SEULEMENT sur confirmation', async () => {
     http.post.mockRejectedValueOnce(conflict({ pseudo: 'Brunehaut', office_label: { fr: 'Bailli', en: 'Sheriff' } }))
     const wrapper = await mountSave()
-    await wrapper.find('button').trigger('click')
+    await wrapper.find('[data-testid="mine-registry"] button.odc-btn').trigger('click')
     await flushPromises()
 
     const box = wrapper.find('[data-testid="mine-registry-confirm"]')
@@ -113,7 +124,7 @@ describe('MineRegistrySave', () => {
   it('Annuler ferme la confirmation sans rien envoyer', async () => {
     http.post.mockRejectedValueOnce(conflict({ pseudo: null, office_label: { fr: 'Commissaire aux mines', en: 'Mines Superintendent' } }))
     const wrapper = await mountSave({ locale: 'en' })
-    await wrapper.find('button').trigger('click')
+    await wrapper.find('[data-testid="mine-registry"] button.odc-btn').trigger('click')
     await flushPromises()
 
     expect(wrapper.find('[data-testid="mine-registry-confirm"]').text()).toContain('saved by a deleted character (Mines Superintendent)')
@@ -128,7 +139,7 @@ describe('MineRegistrySave', () => {
       messages: { report: { fr: 'Ce relevé est déjà enregistré.', en: 'This report is already saved.' } },
     } } }))
     const wrapper = await mountSave({ locale: 'en' })
-    await wrapper.find('button').trigger('click')
+    await wrapper.find('[data-testid="mine-registry"] button.odc-btn').trigger('click')
     await flushPromises()
 
     expect(push.error).toHaveBeenCalledWith('This report is already saved.')
