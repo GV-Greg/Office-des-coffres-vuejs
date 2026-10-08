@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [AAAA-MM-JJ — date de merge, à remplir au merge] — PR #84 (politique : le Registre des mines)
+## [2026-10-08] — PR #84 (politique : le Registre des mines)
 
 Fil `admin/echanges/registre-mines` (07, ordre des PR) ; texte validé par Greg le 06/10
 (`admin/content/policy-registre-mines-draft.md`).
