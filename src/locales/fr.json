@@ -290,8 +290,7 @@
   "Economy": {
     "Title": "Coffres Économie",
     "MinesLink": "Bilan des mines",
-    "MineRegistryLink": "Registre des mines",
-    "ComingSoon": "Bientôt disponible"
+    "MineRegistryLink": "Registre des mines"
   },
   "EconomyMines": {
     "Title": "Bilan des mines",
@@ -318,6 +317,34 @@
     "PriceSalt": "Sel (boisseau)",
     "RateLabel": "Salaire/heure des mineurs",
     "Currency": "écus",
+    "RegistryPage": {
+      "Title": "Registre de {province}",
+      "Loading": "Ouverture du registre…",
+      "NoCharacter": "Choisissez un personnage dans la barre du haut.",
+      "LastReport": "Dernier relevé : {age}, le {date}.",
+      "Today": "aujourd'hui",
+      "Yesterday": "hier",
+      "DaysAgo": "il y a {n} jours",
+      "NoReport": "Aucun relevé inscrit pour l'instant. Le premier s'inscrit depuis le",
+      "ToBilan": "Bilan des mines.",
+      "ParkTitle": "État du parc au {date}",
+      "Mine": "Mine",
+      "Level": "Niveau",
+      "Threshold": "Seuil de rupture",
+      "Upkeep": "Entretien en cours",
+      "Finding": "Constat",
+      "Reached": "seuil atteint",
+      "Near": "à 2 unités ou moins du seuil",
+      "GapsTitle": "Jours sans relevé depuis votre entrée en fonction",
+      "GapsNone": "Aucun : un relevé chaque jour depuis le {date}.",
+      "GapsSome": "Un jour sans relevé depuis le {date} : | {count} jours sans relevé depuis le {date} :",
+      "PredecessorTitle": "Avant votre entrée en fonction",
+      "PredecessorLine": "Un relevé de {author}, le {first}. | {count} relevés de {author}, du {first} au {last}.",
+      "PredecessorNone": "Aucun relevé d'un autre personnage dans les 30 jours avant votre entrée en fonction.",
+      "PredecessorNote": "Le registre sait qui a écrit, pas qui occupait le poste.",
+      "HistoryTitle": "Relevés inscrits",
+      "Replaced": "remplacé"
+    },
     "Registry": {
       "HelpButton": "Comment fonctionne le registre ?",
       "HelpTitle": "Inscrire au registre",

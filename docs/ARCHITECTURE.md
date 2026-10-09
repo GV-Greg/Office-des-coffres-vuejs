@@ -23,7 +23,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/legal/privacy` | `legal-privacy` | — (`meta.public`) |
 | `/legal/mentions` | `legal-mentions` | — (`meta.public`) |
 | `/app/` | `home` | — |
-| `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) |
+| `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre |
 | `/app/secu` (enfant `/guet` → `security-guet`) | `security` | — |
 | `/app/company` | `company` | — |
 | `/app/anim` | `animation` | — |
@@ -230,6 +230,14 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   Brief `admin/content/brief-bilan-mines.md`, fil
   `admin/echanges/bilan-mines`. `HelpModal.vue` pour l'aide contextuelle. Futur pendant privé
   (backend, compte requis) : « Registre des mines », pas encore développé.
+- **`modules/economy/EconomyRegistry.vue`** (route `economy-registry`, 09/10/2026) — page de **lecture** du
+  Registre des mines, pour le commissaire aux mines, le bailli et le dirigeant
+  (`GET characters/{id}/mine-registry/reports`). Le serveur sert les faits ; la page affiche l'**âge du
+  dernier relevé**, l'**état du parc** au dernier relevé en vigueur (`thresholdAlert`), les **jours sans
+  relevé** depuis l'entrée en fonction du lecteur (jusqu'à hier), le **prédécesseur** comme un fait
+  (« relevés de X, du … au … » — jamais « votre prédécesseur était »), et l'**historique** remplacements
+  compris. Le lien du menu d'Économie n'apparaît qu'à qui peut lire (`MainEconomy`, via
+  `GET …/mine-registry`). Reste à venir (PR 4c) : historique des niveaux, bilans de mi-mandat et de fin de mandat.
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
   vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
   prévu.

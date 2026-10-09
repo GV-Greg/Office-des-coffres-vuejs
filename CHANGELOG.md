@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [AAAA-MM-JJ — date de merge, à remplir au merge] — PR #88 (Registre des mines, PR 4b : la page de lecture)
+
+Brief `admin/content/brief-registre-mines.md` §7 ; fil `admin/echanges/registre-mines` (R4). ⛔ Après back #60.
+
+### Added
+- **`/app/eco/registre`** (`EconomyRegistry`) : âge du dernier relevé, état du parc au dernier relevé en
+  vigueur avec le constat de seuil, jours sans relevé depuis l'entrée en fonction du lecteur, relevés du
+  prédécesseur dits comme des faits, historique remplacements compris. FR + EN. 7 tests, contrôle positif.
+
+### Changed
+- Menu d'Économie : le repère « Registre des mines — à venir » devient un **lien**, affiché seulement à qui
+  peut lire le registre (commissaire aux mines, bailli, dirigeant). Clé `Economy.ComingSoon` retirée.
+
 ## [2026-10-08] — PR #87 (Bilan : la semaine en cours à l'arrivée, sauf le lundi)
 
 ### Changed

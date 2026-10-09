@@ -290,8 +290,7 @@
   "Economy": {
     "Title": "Economy Chest",
     "MinesLink": "Mines report",
-    "MineRegistryLink": "Mine Registry",
-    "ComingSoon": "Coming soon"
+    "MineRegistryLink": "Mine Registry"
   },
   "EconomyMines": {
     "Title": "Mines report",
@@ -318,6 +317,34 @@
     "PriceSalt": "Salt (bushel)",
     "RateLabel": "Miners' wage/hour",
     "Currency": "écus",
+    "RegistryPage": {
+      "Title": "Registry of {province}",
+      "Loading": "Opening the registry…",
+      "NoCharacter": "Choose a character in the top bar.",
+      "LastReport": "Last report: {age}, on {date}.",
+      "Today": "today",
+      "Yesterday": "yesterday",
+      "DaysAgo": "{n} days ago",
+      "NoReport": "No report recorded yet. The first one is recorded from the",
+      "ToBilan": "Mines report.",
+      "ParkTitle": "State of the mines on {date}",
+      "Mine": "Mine",
+      "Level": "Level",
+      "Threshold": "Deterioration threshold",
+      "Upkeep": "Current upkeep",
+      "Finding": "Finding",
+      "Reached": "threshold reached",
+      "Near": "within 2 units of the threshold",
+      "GapsTitle": "Days without a report since you took office",
+      "GapsNone": "None: a report every day since {date}.",
+      "GapsSome": "One day without a report since {date}: | {count} days without a report since {date}:",
+      "PredecessorTitle": "Before you took office",
+      "PredecessorLine": "One report by {author}, on {first}. | {count} reports by {author}, from {first} to {last}.",
+      "PredecessorNone": "No report by another character in the 30 days before you took office.",
+      "PredecessorNote": "The registry knows who wrote, not who held the office.",
+      "HistoryTitle": "Recorded reports",
+      "Replaced": "replaced"
+    },
     "Registry": {
       "HelpButton": "How does the registry work?",
       "HelpTitle": "Record in the registry",
