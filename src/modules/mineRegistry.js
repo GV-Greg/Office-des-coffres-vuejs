@@ -3,7 +3,7 @@
 // testée sans DOM. Le serveur sert les faits ; ces lectures les interprètent avec le parseur qui les a
 // produits — jamais une règle de mandat (dates, autorisations) : celles-là arrivent de l'API.
 
-import { thresholdAlert, mergeMinesData, computePeriodBilan, periodDates } from './mineParser'
+import { thresholdAlert, mergeMinesData, computePeriodBilan, periodDates, detectResource } from './mineParser'
 
 /** Clé d'une mine — même règle que mineKey du parseur : le nœud, le numéro en repli. */
 const keyOf = mine => (mine?.noeud ? `noeud:${mine.noeud}` : `numero:${mine?.number}`)
@@ -81,3 +81,73 @@ export function mandateBilans(registry) {
     }
   })
 }
+
+/**
+ * Jours SANS DONNÉES depuis l'entrée en fonction du lecteur, jusqu'à hier (Greg, 09/10/2026) : un
+ * collage porte les 7 derniers jours du jeu, donc un jour sans collage n'est pas forcément perdu. Un
+ * jour est couvert dès qu'un relevé en vigueur contient une donnée de ce jour, pour une mine au moins
+ * (production, heures ou consommation). C'est ce qui est réellement perdu — pas l'assiduité.
+ *
+ * @returns {string[]|null} null sans mandat connu
+ */
+export function daysWithoutData(registry) {
+  const start = registry?.mandate?.in_office_from
+  if (!start) return null
+  const covered = new Set()
+  for (const r of activeAscending(registry.reports)) {
+    for (const mine of r.report?.mines ?? []) {
+      for (const [day, values] of Object.entries(mine.days ?? {})) {
+        if (Object.values(values ?? {}).some(v => v !== null && v !== undefined)) covered.add(day)
+      }
+    }
+  }
+  return periodDates(start, registry.today).filter(day => !covered.has(day))
+}
+
+/**
+ * Mines de tous les relevés en vigueur, fusionnées du plus ancien au plus récent (clé : le nœud).
+ * Libellé et ressource manquants (relevés inscrits avant back #58, où Laravel les retirait) : repris
+ * de l'ÉTAT de la mine dans les relevés (même nœud), qui les a toujours gardés — sinon la valeur
+ * tomberait à 0 faute de savoir ce que la mine produit.
+ */
+function mergedMines(registry) {
+  const reports = activeAscending(registry.reports)
+  const labels = new Map(reports.flatMap(r => (r.report?.states ?? []).map(s => [keyOf(s), s.label])).filter(([, l]) => l))
+  return reports
+    .reduce((acc, r) => mergeMinesData(acc, r.report?.mines ?? []), [])
+    .map((m) => {
+      const label = m.label ?? labels.get(keyOf(m)) ?? null
+      return { ...m, label, resource: m.resource ?? detectResource(label) }
+    })
+}
+/**
+ * Bilan EN COURS du mois de mandat (Greg, 09/10/2026 — remplace l'état des seuils en tête du registre) :
+ * 1er mois = de l'entrée en fonction à hier ; 2e mois = de la mi-mandat à hier. PROVISOIRE par nature :
+ * l'écran le titre « en cours » et dit sa couverture — jamais « bilan de mi-mandat » avant la date (R4).
+ * Prix et taux : ceux du dernier relevé en vigueur. Niveau : celui du dernier relevé, par mine.
+ *
+ * @returns {{ month: 1|2, from: string, to: string, bilan, levels: Map<string, string> }|null}
+ *   null sans mandat, avant le premier jour complet, ou une fois le mandat terminé
+ */
+export function currentPeriodBilan(registry) {
+  const mandate = registry?.mandate
+  if (!mandate?.in_office_from || registry.today >= mandate.end_at) return null
+  const month = registry.today < mandate.mid_at ? 1 : 2
+  const from = month === 1 ? mandate.in_office_from : mandate.mid_at
+  const days = periodDates(from, registry.today)
+  if (days.length === 0) return null
+
+  const reports = activeAscending(registry.reports)
+  const latest = reports[reports.length - 1] ?? null
+  const levels = new Map((latest?.report?.states ?? []).map(s => [keyOf(s), s.niveau]))
+
+  return {
+    month, from, to: days[days.length - 1],
+    prices: latest?.prices ?? null, rate: latest?.rate ?? null,
+    bilan: computePeriodBilan(mergedMines(registry), latest?.prices ?? {}, latest?.rate ?? 0, days),
+    levels,
+  }
+}
+
+/** Clé d'une ligne de bilan, pour retrouver son niveau. */
+export const lineKey = keyOf

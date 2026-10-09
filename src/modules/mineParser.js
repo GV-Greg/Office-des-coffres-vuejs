@@ -418,7 +418,7 @@ export function defaultWeek(todayIsoDate) {
  * { pierre: 12, fer: 9 }, ou null si illisible. 🔴 AUCUNE conversion : l'écran anglais porte les
  * MÊMES nombres sous d'autres noms (Greg, 07/10/2026) — tonne ↔ quintal serait un facteur 10 muet.
  */
-function parseStoneIron(text) {
+export function parseStoneIron(text) {
   const pierre = text?.match(/(\d+(?:[.,]\d+)?)\s*(?:qtx?|quintaux) de pierre|(\d+(?:[.,]\d+)?)\s*tons? of stone/i)
   const fer = text?.match(/(\d+(?:[.,]\d+)?)\s*kg de fer|(\d+(?:[.,]\d+)?)\s*ounces? of iron/i)
   if (!pierre || !fer) return null

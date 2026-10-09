@@ -230,17 +230,21 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   Brief `admin/content/brief-bilan-mines.md`, fil
   `admin/echanges/bilan-mines`. `HelpModal.vue` pour l'aide contextuelle. Futur pendant privé
   (backend, compte requis) : « Registre des mines », pas encore développé.
-- **`modules/economy/EconomyRegistry.vue`** (route `economy-registry`, 09/10/2026) — page de **lecture** du
+- **`modules/economy/EconomyRegistry.vue`** (route `economy-registry`, 09-10/10/2026) — page de **lecture** du
   Registre des mines, pour le commissaire aux mines, le bailli et le dirigeant
-  (`GET characters/{id}/mine-registry/reports`). Le serveur sert les faits ; la page affiche l'**âge du
-  dernier relevé**, l'**état du parc** au dernier relevé en vigueur (`thresholdAlert`), les **jours sans
-  relevé** depuis l'entrée en fonction du lecteur (jusqu'à hier), le **prédécesseur** comme un fait
-  (« relevés de X, du … au … » — jamais « votre prédécesseur était »), et l'**historique** remplacements
-  compris. Le lien du menu d'Économie n'apparaît qu'à qui peut lire (`MainEconomy`, via
-  `GET …/mine-registry`). **Historique des niveaux** (+1 amélioration ; −1 sans entretien relevé après un seuil
-  atteint = échec **constaté** ; autre −1 = choix assumé) et **bilans de mi-mandat et de fin de mandat**
-  (avant la date : « dans N jours », jamais un bilan partiel) : `modules/mineRegistry.js`, logique pure,
-  sur `computePeriodBilan` (le bilan hebdomadaire n'en est que le cas « 7 jours »).
+  (`GET characters/{id}/mine-registry/reports`). Le serveur sert les faits ; les lectures se calculent dans
+  `modules/mineRegistry.js` (logique pure, sur `computePeriodBilan` — le bilan hebdomadaire n'en est que le
+  cas « 7 jours »). Mise en page arrêtée avec Greg :
+  - en tête, le titre et l'**âge du dernier relevé** (à droite, en italique, orange dès deux jours) ;
+  - le **bilan en cours du mois de mandat** (1er mois depuis l'entrée en fonction, 2e depuis la mi-mandat,
+    jusqu'à hier), titré « provisoire », couverture dite — il remplace l'état des seuils, retiré du registre ;
+  - colonne « mandat » : **bilans de mi-mandat et de fin de mandat** (avant la date : « dans N jours »,
+    jamais un bilan partiel), **jours sans données** (un collage couvre 7 jours ; périodes « du … au … »),
+    relevés écrits par d'autres avant l'entrée en fonction, dits comme des faits ;
+  - colonne « mémoire » : **historique des niveaux** (+1 amélioration ; −1 sans entretien relevé après un
+    seuil atteint = échec **constaté** ; autre −1 = choix assumé) et **relevés inscrits**, remplacements compris.
+  Relevés inscrits avant back #58 : libellé et ressource repris de l'état de la mine. Le lien du menu
+  d'Économie (et son aide `HelpModal`) n'apparaît qu'à qui peut lire (`MainEconomy`, via `GET …/mine-registry`).
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
   vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
   prévu.

@@ -40,6 +40,9 @@ const registry = (overrides = {}) => ({
   ...overrides,
 })
 
+// Un relevé porte des données pour les jours donnés (une mine, des heures).
+const withDays = (r, days) => ({ ...r, report: { ...r.report, mines: [{ number: 1, noeud: '236', days: Object.fromEntries(days.map(d => [d, { heures: 5 }])) }] } })
+
 async function mountPage({ locale = 'fr', data = registry(), reject = null } = {}) {
   reject ? http.get.mockRejectedValue(reject) : http.get.mockResolvedValue({ data })
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
@@ -61,22 +64,41 @@ describe('EconomyRegistry', () => {
     expect(wrapper.find('[data-testid="registry-age"]').text()).toBe('Dernier relevé : hier, le 09/05.')
   })
 
-  it('l\'état du parc vient du dernier relevé EN VIGUEUR, avec le constat de seuil', async () => {
-    const rows = (await mountPage()).findAll('[data-testid="registry-park"] tbody tr').map(tr => tr.text())
-    expect(rows[0]).toContain('#1 Mine d\'or')
-    expect(rows[0]).toContain('—')
-    expect(rows[1]).toContain('seuil atteint') // 9 / 9 de pierre : atteint dès l'égalité
+  it('en tête : le bilan EN COURS du mois de mandat, provisoire, niveau compris (Greg, 09/10)', async () => {
+    const days = { '2026-05-07': { production: 10, pierre: 1 }, '2026-05-08': { heures: 50 } }
+    const withBilan = report({
+      prices: { FER: 20, PIERRE: 15 }, rate: 0.5,
+      report: { mines: [{ number: 4, noeud: '226', label: 'Mine de fer', resource: 'FER', days }], states: [{ number: 4, noeud: '226', label: 'Mine de fer', niveau: '9' }] },
+    })
+    const wrapper = await mountPage({ data: registry({ reports: [withBilan] }) })
+    const section = wrapper.find('[data-testid="registry-current"]')
+
+    expect(section.find('h3').text()).toBe('Bilan en cours — 1er mois de votre mandat, du 07/05 au 09/05 (provisoire)')
+    const cells = section.findAll('tbody tr')[0].findAll('td').map(td => td.text())
+    expect(cells).toEqual(['#4 Mine de fer', '9', '10 kg', '200', '50', '25', '15', '160'])
+    expect(section.find('[data-testid="registry-current-total"]').text()).toContain('+160 écus')
+    expect(section.text()).toContain('Un jour couvert sur 3')
   })
 
-  it('compte les jours sans relevé depuis l\'entrée en fonction, jusqu\'à hier', async () => {
-    // Entrée le 07/05, aujourd'hui le 10/05 : 07, 08, 09 attendus ; seul le 09 est couvert.
-    expect((await mountPage()).find('[data-testid="registry-gaps"]').text()).toContain('2 jours sans relevé depuis le 07/05 : 07/05, 08/05')
+
+  it('compte les jours SANS DONNÉES depuis l\'entrée en fonction, jusqu\'à hier', async () => {
+    // Entrée le 07/05, aujourd'hui le 10/05 : 07, 08, 09 attendus ; les relevés par défaut ne portent aucune donnée de jour.
+    // Jours qui se suivent : une période « du … au … » (Greg, 09/10).
+    expect((await mountPage()).find('[data-testid="registry-gaps"]').text()).toContain('3 jours sans données depuis le 07/05 : du 07/05 au 09/05')
+  })
+
+  it('un jour isolé reste seul, une suite de jours devient une période', async () => {
+    // Entrée le 01/05, aujourd'hui le 10/05 ; relevés les 04/05 et 09/05 → 01–03, 05–08 sans relevé.
+    const wrapper = await mountPage({ data: registry({
+      mandate: { in_office_from: '2026-05-01', mid_at: '2026-05-31', end_at: '2026-06-30' },
+      reports: [withDays(report(), ['2026-05-09']), withDays(report({ id: 7, reported_at: '2026-05-04' }), ['2026-05-04']), withDays(report({ id: 8, reported_at: '2026-05-06' }), ['2026-05-06'])],
+    }) })
+    expect(wrapper.find('[data-testid="registry-gaps"]').text()).toContain('du 01/05 au 03/05, 05/05, du 07/05 au 08/05')
   })
 
   it('le prédécesseur se dit comme un fait : qui a écrit, quand — jamais « votre prédécesseur était »', async () => {
     const text = (await mountPage()).find('[data-testid="registry-predecessor"]').text()
     expect(text).toContain('3 relevés de Brunehaut (Bailli), du 20/04 au 02/05.')
-    expect(text).toContain('Le registre sait qui a écrit, pas qui occupait le poste.')
     expect(text).not.toMatch(/prédécesseur était/i)
   })
 

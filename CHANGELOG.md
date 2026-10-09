@@ -18,6 +18,12 @@ Brief `admin/content/brief-registre-mines.md` §7 ; fil `admin/echanges/registre
   échec constaté, en gras ; autre −1 = choix assumé) et bilans de mi-mandat / fin de mandat calés sur le
   mandat du lecteur (« dans N jours » avant la date ; couverture affichée). `modules/mineRegistry.js` ;
   `computePeriodBilan` généralise le bilan hebdomadaire. 10 tests de plus, contrôle positif.
+- **Mise en page arrêtée avec Greg (09-10/10)** : âge du dernier relevé à droite du titre, en italique,
+  orange dès deux jours ; en tête, le **bilan en cours du mois de mandat** (provisoire, couverture dite),
+  qui **remplace l'état des seuils** (jauges retirées du registre) ; deux colonnes mandat / mémoire ;
+  **jours sans données** au lieu de jours sans relevé (un collage couvre 7 jours), en périodes « du … au … » ;
+  aide « i » du registre dans le menu d'Économie ; `HelpModal` élargie (aussi pour le Bilan). Relevés
+  inscrits avant back #58 : libellé et ressource repris de l'état de la mine (la valeur n'est plus nulle).
 
 ### Changed
 - Menu d'Économie : le repère « Registre des mines — à venir » devient un **lien**, affiché seulement à qui
