@@ -237,7 +237,10 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   relevé** depuis l'entrée en fonction du lecteur (jusqu'à hier), le **prédécesseur** comme un fait
   (« relevés de X, du … au … » — jamais « votre prédécesseur était »), et l'**historique** remplacements
   compris. Le lien du menu d'Économie n'apparaît qu'à qui peut lire (`MainEconomy`, via
-  `GET …/mine-registry`). Reste à venir (PR 4c) : historique des niveaux, bilans de mi-mandat et de fin de mandat.
+  `GET …/mine-registry`). **Historique des niveaux** (+1 amélioration ; −1 sans entretien relevé après un seuil
+  atteint = échec **constaté** ; autre −1 = choix assumé) et **bilans de mi-mandat et de fin de mandat**
+  (avant la date : « dans N jours », jamais un bilan partiel) : `modules/mineRegistry.js`, logique pure,
+  sur `computePeriodBilan` (le bilan hebdomadaire n'en est que le cas « 7 jours »).
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
   vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
   prévu.

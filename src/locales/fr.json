@@ -343,7 +343,21 @@
       "PredecessorNone": "Aucun relevé d'un autre personnage dans les 30 jours avant votre entrée en fonction.",
       "PredecessorNote": "Le registre sait qui a écrit, pas qui occupait le poste.",
       "HistoryTitle": "Relevés inscrits",
-      "Replaced": "remplacé"
+      "Replaced": "remplacé",
+      "BilansTitle": "Bilans de votre mandat",
+      "BilanMid": "Bilan de mi-mandat",
+      "BilanEnd": "Bilan de fin de mandat",
+      "BilanPending": "{label} : disponible le {date}, demain. | {label} : disponible le {date}, dans {n} jours.",
+      "BilanPeriod": "{label}, du {from} au {to}",
+      "BilanFigures": "Valeur produite {valeur} ; salaires {salaire} ; entretien {entretien}. Net : {net} écus.",
+      "BilanCoverage": "{covered} jours couverts sur {days} : le bilan ne compte que les jours où le registre a un relevé.",
+      "BilanPrices": "Prix et salaire/heure du dernier relevé de la période.",
+      "LevelsTitle": "Historique des niveaux",
+      "LevelsSince": "niveau {level} depuis le {date}",
+      "LevelsNone": "aucun changement de niveau relevé",
+      "LevelUp": "Le {date} : niveau {from} → {to}, amélioration.",
+      "LevelDown": "Le {date} : niveau {from} → {to}, baisse de niveau (choix assumé).",
+      "LevelFailure": "Le {date} : niveau {from} → {to}. Aucun entretien relevé depuis le {previous}, alors que le seuil était atteint ce jour-là."
     },
     "Registry": {
       "HelpButton": "Comment fonctionne le registre ?",

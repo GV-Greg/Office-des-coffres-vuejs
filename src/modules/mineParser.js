@@ -264,7 +264,23 @@ function pairedDay(mine, day) {
  * la lecture (brief §1, défaut 2).
  */
 export function computeBilan(mines, prices, rate, monday) {
-  const days = weekDates(monday)
+  return computePeriodBilan(mines, prices, rate, weekDates(monday))
+}
+
+/** Jours AAAA-MM-JJ de `from` inclus à `toExclusive` exclu. */
+export function periodDates(from, toExclusive) {
+  const out = []
+  for (let d = from; d < toExclusive; d = addDays(d, 1)) out.push(d)
+  return out
+}
+
+/**
+ * Même bilan que computeBilan, sur une période quelconque (Registre des mines : bilans de mi-mandat et
+ * de fin de mandat, brief Registre §7, calculés sur les relevés inscrits au lieu de redemander huit
+ * collages). `covered` = jours où au moins une mine est appariée (règle A) : une période mal couverte
+ * se voit au lieu de passer pour un bilan complet.
+ */
+export function computePeriodBilan(mines, prices, rate, days) {
   const price = resource => Number(prices?.[resource]) || 0
 
   const lines = (mines || []).map(mine => {
@@ -286,7 +302,9 @@ export function computeBilan(mines, prices, rate, monday) {
   const total = ['heures', 'pierre', 'fer', 'valeur', 'salaire', 'entretien', 'solde']
     .reduce((acc, field) => ({ ...acc, [field]: lines.reduce((sum, l) => sum + l[field], 0) }), {})
 
-  return { lines, total, net: total.solde, rate: Number(rate) || 0 }
+  const covered = days.filter(day => (mines || []).some(mine => pairedDay(mine, day))).length
+
+  return { lines, total, net: total.solde, rate: Number(rate) || 0, covered, days: days.length }
 }
 
 /** Date (AAAA-MM-JJ) la plus récente présente dans les relevés, ou null. */

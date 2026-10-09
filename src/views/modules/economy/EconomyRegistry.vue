@@ -6,6 +6,7 @@
   import { useAuthStore } from '@/stores/authStore'
   import { apiMessage } from '@/stores/mandateStore'
   import { thresholdAlert } from '@/modules/mineParser'
+  import { levelHistory, mandateBilans } from '@/modules/mineRegistry'
 
   /*
     Registre des mines — lecture (PR 4b ; brief admin/content/brief-registre-mines.md §7 ; fil
@@ -73,6 +74,17 @@
     }
     return out
   })
+
+  /** Historique des niveaux (+1 crédité, −1 constaté) et bilans du mandat — modules/mineRegistry.js. */
+  const levels = computed(() => levelHistory(registry.value?.reports))
+  const bilans = computed(() => mandateBilans(registry.value))
+  const num = n => Number(n || 0).toLocaleString(locale.value === 'fr' ? 'fr-FR' : 'en-GB', { maximumFractionDigits: 1 })
+  const dayBefore = iso => new Date(Date.parse(`${iso}T00:00:00Z`) - 86400000).toISOString().slice(0, 10)
+  const bilanLabel = kind => t(kind === 'mid' ? 'EconomyMines.RegistryPage.BilanMid' : 'EconomyMines.RegistryPage.BilanEnd')
+  const levelEvent = (e) => {
+    const params = { date: dayMonth(e.date), from: e.from, to: e.to, previous: dayMonth(e.previous) }
+    return t({ up: 'EconomyMines.RegistryPage.LevelUp', down: 'EconomyMines.RegistryPage.LevelDown', failure: 'EconomyMines.RegistryPage.LevelFailure' }[e.type], params)
+  }
 </script>
 
 <template>
@@ -142,6 +154,44 @@
         </ul>
         <p v-else class="text-sm text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.PredecessorNone') }}</p>
         <p class="mt-1 text-xs italic text-slate-600 dark:text-slate-600">{{ t('EconomyMines.RegistryPage.PredecessorNote') }}</p>
+      </section>
+
+      <!-- Bilans de mi-mandat et de fin de mandat (R4) : calés sur le mandat du lecteur ; avant la date,
+           « dans N jours », jamais un bilan partiel sous ce titre. -->
+      <section v-if="bilans.length" class="mt-6" data-testid="registry-bilans">
+        <h3 class="font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.BilansTitle') }}</h3>
+        <div v-for="b in bilans" :key="b.kind" class="mt-2 text-sm text-slate-700 dark:text-slate-700" :data-testid="`registry-bilan-${b.kind}`">
+          <p v-if="b.status === 'pending'">
+            {{ t('EconomyMines.RegistryPage.BilanPending', { label: bilanLabel(b.kind), date: dayMonth(b.at), n: b.inDays }, b.inDays) }}
+          </p>
+          <template v-else>
+            <p class="font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.BilanPeriod', { label: bilanLabel(b.kind), from: dayMonth(b.from), to: dayMonth(dayBefore(b.at)) }) }}</p>
+            <p>{{ t('EconomyMines.RegistryPage.BilanFigures', {
+              valeur: num(b.bilan.total.valeur), salaire: num(b.bilan.total.salaire),
+              entretien: num(b.bilan.total.entretien), net: num(b.bilan.net),
+            }) }}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-600">
+              {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: b.bilan.covered, days: b.bilan.days }) }}
+              {{ t('EconomyMines.RegistryPage.BilanPrices') }}
+            </p>
+          </template>
+        </div>
+      </section>
+
+      <!-- Historique des niveaux (brief §7) : le registre crédite les améliorations et CONSTATE le reste. -->
+      <section v-if="levels.length" class="mt-6" data-testid="registry-levels">
+        <h3 class="font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.LevelsTitle') }}</h3>
+        <ul class="mt-1 space-y-2 text-sm text-slate-700 dark:text-slate-700">
+          <li v-for="m in levels" :key="m.key">
+            <span class="font-bold">#{{ m.number }} {{ m.label }}</span> —
+            {{ m.events.length ? t('EconomyMines.RegistryPage.LevelsSince', { level: m.level, date: dayMonth(m.since) }) : t('EconomyMines.RegistryPage.LevelsNone') }}
+            <ul v-if="m.events.length" class="ml-4 list-disc list-inside">
+              <li v-for="e in m.events" :key="e.date" :class="e.type === 'failure' ? 'font-bold text-red-700 dark:text-red-700' : ''" :data-testid="`level-${e.type}`">
+                {{ levelEvent(e) }}
+              </li>
+            </ul>
+          </li>
+        </ul>
       </section>
 
       <!-- Tout ce qui est inscrit, remplacements compris : rien ne s'efface (brief §3). -->

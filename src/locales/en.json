@@ -343,7 +343,21 @@
       "PredecessorNone": "No report by another character in the 30 days before you took office.",
       "PredecessorNote": "The registry knows who wrote, not who held the office.",
       "HistoryTitle": "Recorded reports",
-      "Replaced": "replaced"
+      "Replaced": "replaced",
+      "BilansTitle": "Reports for your term",
+      "BilanMid": "Mid-term report",
+      "BilanEnd": "End-of-term report",
+      "BilanPending": "{label}: available on {date}, tomorrow. | {label}: available on {date}, in {n} days.",
+      "BilanPeriod": "{label}, from {from} to {to}",
+      "BilanFigures": "Value produced {valeur}; wages {salaire}; upkeep {entretien}. Net: {net} écus.",
+      "BilanCoverage": "{covered} days covered out of {days}: the report only counts days on which the registry has a report.",
+      "BilanPrices": "Prices and wage/hour from the last report of the period.",
+      "LevelsTitle": "Level history",
+      "LevelsSince": "level {level} since {date}",
+      "LevelsNone": "no level change recorded",
+      "LevelUp": "On {date}: level {from} → {to}, improvement.",
+      "LevelDown": "On {date}: level {from} → {to}, level lowered (deliberate choice).",
+      "LevelFailure": "On {date}: level {from} → {to}. No upkeep recorded since {previous}, although the threshold had been reached that day."
     },
     "Registry": {
       "HelpButton": "How does the registry work?",

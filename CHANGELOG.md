@@ -14,6 +14,10 @@ Brief `admin/content/brief-registre-mines.md` §7 ; fil `admin/echanges/registre
 - **`/app/eco/registre`** (`EconomyRegistry`) : âge du dernier relevé, état du parc au dernier relevé en
   vigueur avec le constat de seuil, jours sans relevé depuis l'entrée en fonction du lecteur, relevés du
   prédécesseur dits comme des faits, historique remplacements compris. FR + EN. 7 tests, contrôle positif.
+- **PR 4c, même PR** : historique des niveaux (+1 crédité ; −1 sans entretien après un seuil atteint =
+  échec constaté, en gras ; autre −1 = choix assumé) et bilans de mi-mandat / fin de mandat calés sur le
+  mandat du lecteur (« dans N jours » avant la date ; couverture affichée). `modules/mineRegistry.js` ;
+  `computePeriodBilan` généralise le bilan hebdomadaire. 10 tests de plus, contrôle positif.
 
 ### Changed
 - Menu d'Économie : le repère « Registre des mines — à venir » devient un **lien**, affiché seulement à qui

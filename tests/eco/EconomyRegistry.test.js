@@ -91,6 +91,21 @@ describe('EconomyRegistry', () => {
     expect(wrapper.find('[data-testid="registry-park"]').exists()).toBe(false)
   })
 
+  it('avant la mi-mandat, le bilan dit « dans N jours » — jamais un bilan partiel', async () => {
+    const wrapper = await mountPage()
+    expect(wrapper.find('[data-testid="registry-bilan-mid"]').text()).toBe('Bilan de mi-mandat : disponible le 06/06, dans 27 jours.')
+    expect(wrapper.find('[data-testid="registry-bilan-end"]').text()).toContain('dans 57 jours')
+  })
+
+  it('un −1 sans entretien après un seuil atteint s\'écrit comme un constat daté', async () => {
+    const earlier = report({ id: 3, reported_at: '2026-05-07', report: { mines: [], states: [
+      { number: 4, label: 'Mine de fer', noeud: '226', niveau: '10', seuilRupture: '9 qtx de pierre et 7 kg de fer', entretienNormal: '9 qtx de pierre et 3 kg de fer' },
+    ] } })
+    const wrapper = await mountPage({ data: registry({ reports: [report(), earlier] }) })
+    expect(wrapper.find('[data-testid="level-failure"]').text())
+      .toBe('Le 09/05 : niveau 10 → 9. Aucun entretien relevé depuis le 07/05, alors que le seuil était atteint ce jour-là.')
+  })
+
   it('un refus de l\'API (pas de poste de lecture) s\'affiche tel quel, dans la langue de l\'interface', async () => {
     const wrapper = await mountPage({ locale: 'en', reject: Object.assign(new Error('403'), { response: { status: 403, data: {
       code: 'mine_not_reader', messages: { fr: 'Seuls le commissaire…', en: 'Only the province\'s Mines Superintendent…' },
