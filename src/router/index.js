@@ -118,6 +118,13 @@ const router = createRouter({
           name: 'economy-mines',
           component: () => import('@/views/modules/economy/EconomyMines.vue'),
         },
+        {
+          // Registre des mines : lecture (PR 4) — commissaire aux mines, bailli, dirigeant.
+          path: 'registre',
+          name: 'economy-registry',
+          component: () => import('@/views/modules/economy/EconomyRegistry.vue'),
+          beforeEnter: redirectToHomeIfNotLoggedIn,
+        },
       ],
     },
     {
@@ -191,7 +198,7 @@ const router = createRouter({
 // Modules "Coffres X" (voir la charte de titres Economy/Security/Animation) — le reste de la
 // navigation (Accueil, compte, pages publiques) reste dans le contexte "office".
 const CHEST_MODULE_ROUTE_NAMES = new Set([
-  'economy', 'economy-mines',
+  'economy', 'economy-mines', 'economy-registry',
   'security', 'security-guet',
   'animation',
 ])

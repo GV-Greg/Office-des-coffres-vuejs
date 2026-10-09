@@ -1,21 +1,42 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, watch } from 'vue'
   import { RouterLink, RouterView } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import NavMenu from '../../../components/NavMenu.vue'
   import HelpModal from '@/components/HelpModal.vue'
   import { useAuthStore } from '@/stores/authStore'
+  import { http } from '@/api.js'
 
   const { t } = useI18n()
   const authStore = useAuthStore()
 
   const showHelp = ref(false)
+  const showRegistryHelp = ref(false)
+  const registryHelpSteps = computed(() => [1, 2, 3, 4, 5, 6].map(n => t(`EconomyMines.RegistryPage.HelpStep${n}`)))
   const helpSteps = computed(() => [
     t('EconomyMines.HelpStep1'),
     t('EconomyMines.HelpStep2'),
     t('EconomyMines.HelpStep3'),
     t('EconomyMines.HelpStep4'),
   ])
+
+  // Registre des mines : le lien n'apparaît qu'à qui peut le consulter (commissaire aux mines, bailli,
+  // dirigeant) — la règle vient de l'API (GET characters/{id}/mine-registry), jamais recalculée ici.
+  const canReadRegistry = ref(false)
+  watch(
+    () => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null),
+    async (id) => {
+      canReadRegistry.value = false
+      if (!id) return
+      try {
+        const { data } = await http.get(`characters/${id}/mine-registry`, { headers: { Authorization: `Bearer ${authStore.getToken}` } })
+        canReadRegistry.value = !!data?.read
+      } catch {
+        canReadRegistry.value = false
+      }
+    },
+    { immediate: true },
+  )
 </script>
 
 <template>
@@ -39,10 +60,22 @@
           </button>
         </div>
 
-        <div v-if="authStore.isLoggedIn" class="inline-flex items-center gap-1.5 mt-2 opacity-70" :title="t('Economy.ComingSoon')">
-          <v-icon name="gi-chest" scale="2" class="mr-1"/>
-          <span class="font-bold">{{ t('Economy.MineRegistryLink') }}</span>
-          <v-icon name="fa-hard-hat" scale="0.9" class="text-yellow-600" />
+        <div v-if="canReadRegistry" class="inline-flex items-center gap-1.5 mt-2">
+          <RouterLink :to="{ name: 'economy-registry' }" class="inline-flex items-center font-bold" data-testid="registry-link">
+            <v-icon name="gi-chest" scale="2" class="mr-1"/>
+            {{ t('Economy.MineRegistryLink') }}
+          </RouterLink>
+          <!-- Même icône d'aide que le Bilan des mines, juste au-dessus. -->
+          <button
+            type="button"
+            @click="showRegistryHelp = true"
+            class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
+            :aria-label="t('EconomyMines.RegistryPage.HelpButton')"
+            :title="t('EconomyMines.RegistryPage.HelpButton')"
+            data-testid="registry-help"
+          >
+            <v-icon name="fa-info-circle" scale="0.9" />
+          </button>
         </div>
       </div>
       <div class="w-5/6 ml-2 p-1">
@@ -58,6 +91,15 @@
       :overview="t('EconomyMines.HelpOverview')"
       :steps="helpSteps"
       @close="showHelp = false"
+    />
+
+    <HelpModal
+      :show="showRegistryHelp"
+      :title="t('EconomyMines.RegistryPage.HelpTitle')"
+      :purpose="t('EconomyMines.RegistryPage.HelpPurpose')"
+      :overview="t('EconomyMines.RegistryPage.HelpOverview')"
+      :steps="registryHelpSteps"
+      @close="showRegistryHelp = false"
     />
   </div>
 </template>

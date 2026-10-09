@@ -16,7 +16,7 @@
 <template>
   <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" @click="$emit('close')"></div>
-    <div class="relative w-full max-w-lg max-h-[85vh] flex flex-col bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="relative w-full max-w-2xl laptop:max-w-3xl max-h-[90vh] flex flex-col bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
       <div class="h-1.5 bg-gradient-to-r from-orange-400 to-red-600 shrink-0"></div>
       <div class="p-6 overflow-y-auto">
         <div class="flex items-start justify-between gap-4 mb-5">
