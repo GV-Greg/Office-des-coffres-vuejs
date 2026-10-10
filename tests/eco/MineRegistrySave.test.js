@@ -59,6 +59,8 @@ describe('MineRegistrySave', () => {
     expect(http.get).toHaveBeenCalledWith('characters/7/mine-registry', { headers: { Authorization: 'Bearer jeton' } })
     // Titre en deux lignes, mais lu d'un seul tenant : un espace les sépare (lecteur d'écran).
     expect(wrapper.find('h3').text().replace(/\s+/g, ' ')).toBe('Registre des mines Artois')
+    // La date inscrite est le dernier jour du collage (même règle que le serveur), pas la date du jour.
+    expect(wrapper.find('[data-testid="mine-registry-date"]').text()).toMatch(/^Relevé du \d{2}\/\d{2}$/)
     expect(wrapper.find('[data-testid="mine-registry"] button.odc-btn').text()).toBe('Inscrire au registre')
     expect(http.post).not.toHaveBeenCalled()
   })
@@ -87,7 +89,7 @@ describe('MineRegistrySave', () => {
   })
 
   it('envoie le texte collé, le relevé analysé, les prix et le taux, sans confirmation au premier essai', async () => {
-    http.post.mockResolvedValue({ data: { success: true, report: { province_name: 'Artois' }, replaced: null } })
+    http.post.mockResolvedValue({ data: { success: true, report: { province_name: 'Artois', reported_at: '2026-05-08' }, replaced: null } })
     const wrapper = await mountSave()
     await wrapper.find('[data-testid="mine-registry"] button.odc-btn').trigger('click')
     await flushPromises()
@@ -97,7 +99,7 @@ describe('MineRegistrySave', () => {
     expect(body.raw).toBe(TEXT.trim())
     expect(body.report.mines[0]).toMatchObject({ number: 1, noeud: '236', days: { '2026-05-08': { heures: 53 } } })
     expect(body).toMatchObject({ prices: { OR: 1, PIERRE: 20 }, rate: 0.7, confirm_replace: false })
-    expect(push.success).toHaveBeenCalledWith('Relevé du jour inscrit au registre de Artois.')
+    expect(push.success).toHaveBeenCalledWith('Relevé du 08/05 inscrit au registre de Artois.')
   })
 
   it('409 : affiche le message de l\'API et l\'auteur en place, puis remplace SEULEMENT sur confirmation', async () => {
@@ -112,7 +114,7 @@ describe('MineRegistrySave', () => {
     expect(box.text()).toContain('enregistré par Brunehaut (Bailli)')
     expect(http.post).toHaveBeenCalledTimes(1)
 
-    http.post.mockResolvedValueOnce({ data: { success: true, report: { province_name: 'Artois' }, replaced: { pseudo: 'Brunehaut' } } })
+    http.post.mockResolvedValueOnce({ data: { success: true, report: { province_name: 'Artois', reported_at: '2026-05-08' }, replaced: { pseudo: 'Brunehaut' } } })
     await box.findAll('button')[0].trigger('click')
     await flushPromises()
 

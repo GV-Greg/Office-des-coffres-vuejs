@@ -225,7 +225,8 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   dans un export), datée du jour du collage. **Registre des mines** (08/10/2026) : sous le collage,
   `components/mines/MineRegistrySave.vue` propose « enregistrer dans le registre de {province} » au seul
   personnage que l'API dit commissaire aux mines ou bailli (`GET characters/{id}/mine-registry`) — la
-  province du **poste** est affichée **avant** l'envoi ; un 409 ouvre une confirmation qui nomme
+  province du **poste** est affichée **avant** l'envoi, avec la **date qui sera inscrite** (dernier jour du collage, règle du
+  serveur depuis le 10/10/2026 : un ancien collage rattrape un jour) ; un 409 ouvre une confirmation qui nomme
   l'auteur remplacé (« remplacé, pas effacé ») ; aucun refus n'est traduit côté site (`apiMessage`).
   Brief `admin/content/brief-bilan-mines.md`, fil
   `admin/echanges/bilan-mines`. `HelpModal.vue` pour l'aide contextuelle. Futur pendant privé

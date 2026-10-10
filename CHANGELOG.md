@@ -6,6 +6,13 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-11] — PR #89 (Registre : la plaque dit la date du relevé)
+
+### Fixed
+- Plaque d'inscription au registre : affiche « Relevé du JJ/MM », le **dernier jour présent dans le
+  collage** — la date que le serveur inscrit désormais (back #61). Un ancien collage rattrape un jour
+  manquant au lieu de remplacer le relevé du jour. Confirmation et aide alignées (FR/EN).
+
 ## [2026-10-10] — PR #88 (Registre des mines, PR 4b : la page de lecture)
 
 Brief `admin/content/brief-registre-mines.md` §7 ; fil `admin/echanges/registre-mines` (R4). ⛔ Après back #60.
