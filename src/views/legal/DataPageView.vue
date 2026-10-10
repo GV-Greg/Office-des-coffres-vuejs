@@ -22,9 +22,8 @@
   const { t, te, locale } = useI18n()
   const router = useRouter()
 
-  // Date de dernière modification de CETTE page (fil 05-corrections, C4). ⚠️ 06/10/2026 = date de
-  // rédaction : à remplacer par la date de MISE EN LIGNE au merge, comme celle de la politique.
-  const LAST_UPDATED = '2026-10-06'
+  // Date de dernière modification de CETTE page (fil 05-corrections, C4) = date de MISE EN LIGNE (front #90).
+  const LAST_UPDATED = '2026-10-11'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }

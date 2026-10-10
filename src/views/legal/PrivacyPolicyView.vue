@@ -15,10 +15,9 @@
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
   // à chaque modification substantielle (voir Legal.Privacy.Section10 / draft
   // admin/content/policy-privacy-draft.md).
-  // ⚠️ Date de MISE EN LIGNE de la page « Vos données » (fil pages-donnees-joueur) : à fixer au merge,
-  // en même temps que celle de DataPageView.vue
-  // (une date d'avant la mise en ligne mentirait autant qu'une date figée).
-  const LAST_UPDATED = '2026-10-08'
+  // Date de MISE EN LIGNE de la dernière modification : la page « Vos données » (front #90), qui lui
+  // ajoute une ligne par outil (§3) — même date que DataPageView.vue.
+  const LAST_UPDATED = '2026-10-11'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
