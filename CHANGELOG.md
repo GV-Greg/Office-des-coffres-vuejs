@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-10-11 — date de merge, à revoir au merge] — PR #90 (page « Vos données, outil par outil »)
+## [2026-10-11] — PR #90 (page « Vos données, outil par outil »)
 
 ### Added
 - `/legal/data` (publique) : « Qui peut utiliser quoi », sommaire, une section par outil (compte,
