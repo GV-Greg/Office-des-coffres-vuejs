@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [AAAA-MM-JJ — date de merge, à remplir au merge] — PR #89 (Registre : la plaque dit la date du relevé)
+## [2026-10-11] — PR #89 (Registre : la plaque dit la date du relevé)
 
 ### Fixed
 - Plaque d'inscription au registre : affiche « Relevé du JJ/MM », le **dernier jour présent dans le
