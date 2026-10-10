@@ -37,6 +37,14 @@ const messages = {
           Email: '[À REMPLIR PAR GREG : email]',
         },
       },
+      Data: {
+        Account: { Title: 'Compte et personnages' },
+        Offices: { Title: 'Postes déclarés et Ma province' },
+        MinesReport: { Title: 'Bilan des mines' },
+        MineRegistry: { Title: 'Registre des mines' },
+        Watch: { Title: 'Le Guet' },
+        Map: { Title: 'Carte des royaumes' },
+      },
       Privacy: {
         PageTitle: 'Politique de confidentialité',
         Preamble: 'Préambule avec un lien vers {cookiesLink}.',
@@ -62,7 +70,9 @@ const messages = {
             { Label: 'Le texte collé', Text: 'tel quel.' },
             { Label: 'La province et le poste', Text: 'du poste, pas de la résidence.' },
           ],
+          ToolsIntro: 'Outil par outil sur la page {dataLink} :',
         },
+        DataPageLink: 'Vos données',
         Section4: {
           Title: '4. Ce que nous faisons',
           Headers: { Data: 'Donnée', Purpose: 'Finalité', LegalBasis: 'Base légale' },
@@ -78,7 +88,7 @@ const messages = {
           InactiveAccount: 'Compte inactif : après [À REMPLIR PAR GREG : durée] sans connexion.',
           UnverifiedAccount: 'Compte non confirmé : supprimé après un rappel.',
           DeletedAccount: 'Compte supprimé : effacé.',
-          Mandates: 'Postes : sauf l’historique.',
+          Mandates: 'Postes : tout est effacé SAUF l’historique.',
           MineRegistry: 'Registre : sans limite.',
           TechnicalLogs: 'Logs : 12 mois.',
         },
@@ -87,6 +97,7 @@ const messages = {
           Yourself: 'Vous-même.',
           Editor: "L'éditeur.",
           MineRegistryHolders: 'Le commissaire et le bailli.',
+          ProvincePlayers: 'Les joueurs de la province.',
           NoOneElse: 'Personne d\'autre.',
           Hosting: 'Hébergeur : [À REMPLIR PAR GREG : hébergeur].',
         },
@@ -236,9 +247,27 @@ describe('PrivacyPolicyView', () => {
 
   it('place la durée du Registre juste après les postes déclarés (§5), et ses destinataires avant « Personne d’autre » (§6)', () => {
     const items = mountView().findAll('li').map(li => li.text())
-    expect(items.indexOf('Registre : sans limite.')).toBe(items.indexOf('Postes : sauf l’historique.') + 1)
+    expect(items.indexOf('Registre : sans limite.')).toBe(items.indexOf('Postes : tout est effacé SAUF l’historique.') + 1)
     expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf("Personne d'autre.") - 1)
   })
+  // Brief pages-donnees-joueur §3 : la politique porte « une ligne par outil, avec son lien ».
+  it("porte une ligne par outil, chacune liée à sa section de la page « Vos données »", () => {
+    const links = mountView().findAll('[data-testid="privacy-tools-links"] a')
+    expect(links.map(a => a.text())).toEqual([
+      'Compte et personnages', 'Postes déclarés et Ma province', 'Bilan des mines',
+      'Registre des mines', 'Le Guet', 'Carte des royaumes',
+    ])
+    expect(links[2].attributes('href')).toBe(JSON.stringify({ name: 'legal-data', hash: '#bilan-des-mines' }))
+  })
+
+  // Version B (fil pages-donnees-joueur, 06 et 07) : l'exception suit l'absolu qu'elle corrige, et
+  // les joueurs de la province précèdent « Personne d'autre en dehors de ce qui précède ».
+  it('garde l’exception des postes juste après le compte supprimé (§5), et les joueurs de la province avant les tenants du registre et « Personne d’autre » (§6)', () => {
+    const items = mountView().findAll('li').map(li => li.text())
+    expect(items.indexOf('Postes : tout est effacé SAUF l’historique.')).toBe(items.indexOf('Compte supprimé : effacé.') + 1)
+    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 2)
+  })
+
   it('affiche une date de dernière modification', () => {
     const wrapper = mountView()
     expect(wrapper.text()).toContain('Dernière modification :')

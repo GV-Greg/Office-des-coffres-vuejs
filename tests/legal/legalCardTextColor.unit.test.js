@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url'
 */
 
 const viewsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/views/legal')
-const VIEWS = ['CookiesPolicyView.vue', 'PrivacyPolicyView.vue', 'MentionsLegalesView.vue']
+const VIEWS = ['CookiesPolicyView.vue', 'PrivacyPolicyView.vue', 'MentionsLegalesView.vue', 'DataPageView.vue']
 
 describe('Pages légales — couleur de texte explicite sur la carte de contenu', () => {
   it.each(VIEWS)('%s', (file) => {

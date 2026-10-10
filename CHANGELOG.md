@@ -6,6 +6,22 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-11] — PR #90 (page « Vos données, outil par outil »)
+
+### Added
+- `/legal/data` (publique) : « Qui peut utiliser quoi », sommaire, une section par outil (compte,
+  postes déclarés et Ma province, Bilan des mines, Registre des mines, Guet, carte) avec un badge
+  d'accès au titre, les mêmes questions dans le même ordre, et sa date de dernière modification.
+- Politique de confidentialité (§3) : une ligne par outil, liée à sa section. Version B (Greg,
+  06/10/2026) : la politique ne perd aucune ligne ; Postes et Registre renvoient à elle pour la durée
+  et les destinataires.
+- Garde-fous : `dataPageSingleSource`, `badgeContrast`, `DataPageView`, route `/legal/data`.
+
+### Changed
+- Registre des mines : plus marqué « à venir » (ouvert le 08/10) ; son texte d'accès nomme le
+  dirigeant, qui consulte (comme le §6 de la politique depuis front #85).
+- Dates de dernière modification de la politique et de la page : 11/10/2026.
+
 ## [2026-10-11] — PR #89 (Registre : la plaque dit la date du relevé)
 
 ### Fixed

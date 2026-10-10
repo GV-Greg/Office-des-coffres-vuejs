@@ -51,6 +51,11 @@ const Nav = () => import('@/components/NavBar.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  // Ancres seulement (ex. /legal/data#guet, liens de la politique vers chaque outil) : toute autre
+  // navigation garde le comportement d'avant, sans défilement imposé.
+  scrollBehavior(to) {
+    if (to.hash) return { el: to.hash }
+  },
   routes: [
     {
       path: '/',
@@ -88,6 +93,14 @@ const router = createRouter({
       path: '/legal/privacy',
       name: 'legal-privacy',
       component: () => import('@/views/legal/PrivacyPolicyView.vue'),
+      meta: { public: true },
+    },
+    {
+      // « Vos données, outil par outil » : le détail propre à chaque outil, dont la politique renvoie
+      // ici (brief admin/content/brief-pages-donnees-joueur.md).
+      path: '/legal/data',
+      name: 'legal-data',
+      component: () => import('@/views/legal/DataPageView.vue'),
       meta: { public: true },
     },
     {
