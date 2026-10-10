@@ -5,7 +5,7 @@
   import { http } from '@/api.js'
   import { useAuthStore } from '@/stores/authStore'
   import { apiMessage } from '@/stores/mandateStore'
-  import { parseMinesText, parseMineStates } from '@/modules/mineParser'
+  import { parseMinesText, parseMineStates, mostRecentDate } from '@/modules/mineParser'
   import HelpModal from '@/components/HelpModal.vue'
 
   /*
@@ -52,6 +52,10 @@
 
   const mines = computed(() => parseMinesText(props.text))
   const province = computed(() => access.value?.write?.name ?? null)
+  // Date qui sera inscrite : le dernier jour présent dans le collage (même règle que le serveur,
+  // MineRegistry::reportDate) — un ancien collage rattrape un jour, il ne prend pas la date du jour.
+  const dayMonth = iso => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}` : '')
+  const reportDate = computed(() => mostRecentDate(mines.value))
   const visible = computed(() => !!province.value && mines.value.length > 0)
 
   async function save(confirmReplace = false) {
@@ -66,7 +70,7 @@
         confirm_replace: confirmReplace,
       }, auth())
       pending.value = null
-      const saved = t('EconomyMines.Registry.Saved', { province: data.report.province_name })
+      const saved = t('EconomyMines.Registry.Saved', { province: data.report.province_name, date: dayMonth(data.report.reported_at) })
       push.success(data.replaced
         ? `${saved} ${t('EconomyMines.Registry.Replaced', { pseudo: data.replaced.pseudo ?? t('EconomyMines.Registry.DeletedCharacter') })}`
         : saved)
@@ -105,6 +109,7 @@
         <span class="plate-kicker block text-sm font-normal">{{ t('EconomyMines.Registry.Title') }}</span>{{ ' ' }}
         <span class="plate-title block break-words text-xl font-bold">{{ province }}</span>
       </h3>
+    <p v-if="reportDate" class="plate-note mt-2 text-sm italic" data-testid="mine-registry-date">{{ t('EconomyMines.Registry.ReportOf', { date: dayMonth(reportDate) }) }}</p>
     </div>
 
     <div v-if="pending" role="alert" class="plate-rule mt-3 space-y-2 pt-3" data-testid="mine-registry-confirm">
