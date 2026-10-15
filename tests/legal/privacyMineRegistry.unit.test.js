@@ -42,12 +42,13 @@ describe('Politique — Registre des mines', () => {
   })
 
   // Greg, 08/10/2026 : le dirigeant (comte, duc…) CONSULTE le registre de sa province — il en est le
-  // chef ; l'écriture reste au commissaire aux mines et au bailli. Les autres conseillers, jamais.
-  it('le dirigeant consulte, les autres conseillers jamais, dans les deux langues', () => {
-    expect(privacy('fr').Section6.MineRegistryHolders).toContain('son dirigeant (comte, duc…), qui peut le consulter')
+  // chef ; l'écriture reste au commissaire aux mines et au bailli. Greg, 15/10/2026 : le commissaire au
+  // commerce le CONSULTE aussi. Les autres conseillers, jamais.
+  it('le commissaire au commerce et le dirigeant consultent, les autres conseillers jamais, dans les deux langues', () => {
+    expect(privacy('fr').Section6.MineRegistryHolders).toContain('son commissaire au commerce et son dirigeant (comte, duc…), qui peuvent le consulter')
     expect(privacy('fr').Section6.MineRegistryHolders).toContain('Jamais les autres conseillers')
     expect(privacy('fr').Section6.MineRegistryHolders).not.toContain('Jamais le comte')
-    expect(privacy('en').Section6.MineRegistryHolders).toContain('its leader (count, duke…), who may read it')
+    expect(privacy('en').Section6.MineRegistryHolders).toContain('its Trade Minister and its leader (count, duke…), who may read it')
     expect(privacy('en').Section6.MineRegistryHolders).toContain('Never the other councillors')
     expect(privacy('en').Section6.MineRegistryHolders).not.toContain('Never the count')
   })

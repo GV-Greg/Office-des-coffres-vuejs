@@ -23,7 +23,7 @@
   const router = useRouter()
 
   // Date de dernière modification de CETTE page (fil 05-corrections, C4) = date de MISE EN LIGNE (front #90).
-  const LAST_UPDATED = '2026-10-11'
+  const LAST_UPDATED = '2026-10-15'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }

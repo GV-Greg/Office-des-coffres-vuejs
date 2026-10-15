@@ -320,7 +320,7 @@
     "RegistryPage": {
       "HelpButton": "How to read the registry?",
       "HelpTitle": "The province's registry",
-      "HelpPurpose": "The registry keeps the record of the province's mines, from one office-holder to the next. The Mines Superintendent, the Sheriff and the province's leader read it; only the first two record reports in it, from the Mines report.",
+      "HelpPurpose": "The registry keeps the record of the province's mines, from one office-holder to the next. The Mines Superintendent, the Sheriff, the Trade Minister and the province's leader read it; only the first two record reports in it, from the Mines report.",
       "HelpOverview": "The page reads from top to bottom: the state of the mines first, then your term, then the registry's memory. Nothing is deleted: a replaced report stays visible in the history.",
       "HelpStep1": "Last report, top right: it turns orange if it is two days old or more.",
       "HelpStep2": "Current report: output, value, wages, upkeep and balance of each mine since the start of your term's month (1st month from when you took office, 2nd month from mid-term), up to yesterday. It stays provisional until the month ends.",
@@ -367,7 +367,7 @@
     "Registry": {
       "HelpButton": "How does the registry work?",
       "HelpTitle": "Record in the registry",
-      "HelpPurpose": "The registry keeps the record of the province's mines, handed from one office-holder to the next. The Mines Superintendent and the Sheriff record reports in it; the province's leader can read them.",
+      "HelpPurpose": "The registry keeps the record of the province's mines, handed from one office-holder to the next. The Mines Superintendent and the Sheriff record reports in it; the Trade Minister and the province's leader can read them.",
       "HelpOverview": "Each entry keeps the pasted text, the parsed report, and the prices and miners' wage/hour at the time, signed by your character and its office. A report is never deleted: an incorrect report is replaced, and the old one stays visible in the history.",
       "HelpStep1": "Paste the contents of the \"Management of the mines\" tab, as for the report, and check the prices and the miners' wage/hour.",
       "HelpStep2": "Check the province shown: it is the province of your office, not of your residence.",
@@ -558,7 +558,7 @@
       },
       "MineRegistry": {
         "Title": "Mine Registry",
-        "Purpose": "Keep a province's mine management record, handed from one office-holder to the next: the Mines Superintendent and the Sheriff save their reports to it, and the province's leader (count, duke…) may read them. You must hold one of these offices in the province, and have had it validated in the Office. Without that, the tool is not available.",
+        "Purpose": "Keep a province's mine management record, handed from one office-holder to the next: the Mines Superintendent and the Sheriff save their reports to it, and the Trade Minister and the province's leader (count, duke…) may read them. You must hold one of these offices in the province, and have had it validated in the Office. Without that, the tool is not available.",
         "Input": "The same text as for the Mines report: the contents of the \"Management of the mines\" tab, copied from the game."
       },
       "Watch": {
@@ -704,7 +704,7 @@
         "NoOneElse": "No one else beyond the above. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
         "Hosting": "Data is hosted on servers located in the European Union (host: o2switch, France).",
         "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
-        "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province."
+        "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province."
       },
       "DataPageLink": "Your data, tool by tool",
       "Section7": {
