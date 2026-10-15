@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-15] — PR #92 (politique : le commissaire au commerce consulte le Registre des mines)
+
+### Changed
+- Politique de confidentialité §6, page « Vos données » et aides du registre : le commissaire au
+  commerce rejoint le dirigeant parmi ceux qui **consultent** le Registre des mines (lecture seule ;
+  l'écriture reste au commissaire aux mines et au bailli). Décision de Greg, 15/10/2026.
+- Dates de dernière modification de la politique et de la page : 15/10/2026.
+- ⚠️ À déployer **avant** back #64 (le texte précède la règle), puis entrée de journal substantielle
+  et `php artisan policy:notify` par Greg.
+
 ## [2026-10-11] — PR #90 (page « Vos données, outil par outil »)
 
 ### Added
