@@ -302,6 +302,29 @@ describe('enregistrement au registre : les prix ne se saisissent plus', () => {
   })
 })
 
+describe('enregistrement au registre : rappel des prix en vigueur', () => {
+  const TEXT = "Mine 1 : Mine d'or - Noeud 236\nNombre d'heures travaillées ces 7 derniers jours\nDate\tHeures\n2026-05-08\t53\n"
+  async function mountSave(prices) {
+    api({ access: { success: true, write: province, read: province, prices: { write: province, read: province } }, prices })
+    const w = mount(MineRegistrySave, { props: { text: TEXT }, global: { plugins: [i18nFor()], stubs } })
+    await flushPromises()
+    return w
+  }
+
+  it('affiche, sans rien demander de saisir, les prix du jeu en vigueur à la date du relevé', async () => {
+    const w = await mountSave([set(2, '2026-05-10', { prices: { OR: 1, FER: 99, PIERRE: 5, ARGILE: 3, SEL: 4 } }), set(1, '2026-05-01', { prices: { OR: 1, FER: 11, PIERRE: 5, ARGILE: 3, SEL: 4 } })])
+    const box = w.find('[data-testid="mine-registry-prices"]')
+    expect(box.text()).toContain('11') // le jeu du 01/05, pas celui du 10/05 (postérieur au relevé du 08/05)
+    expect(box.text()).not.toContain('99')
+    expect(w.find('input').exists()).toBe(false)
+  })
+
+  it('sans prix pour cette date, le dit et mène à la page des prix', async () => {
+    const w = await mountSave([set(1, '2026-05-10')])
+    expect(w.find('[data-testid="mine-registry-no-prices"]').text()).toContain('sans prix')
+  })
+})
+
 describe('Bilan public : prix en lecture seule pour qui gère le registre', () => {
   async function mountBilan({ writer, prices = [] }) {
     setActivePinia(createPinia())

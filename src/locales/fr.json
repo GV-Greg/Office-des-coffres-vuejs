@@ -422,7 +422,10 @@
       "RecordedBy": "Relevé en place : enregistré par {pseudo} ({office}).",
       "DeletedCharacter": "un personnage supprimé",
       "Confirm": "Remplacer",
-      "Cancel": "Annuler"
+      "Cancel": "Annuler",
+      "PricesReminder": "Prix en vigueur à la date du relevé, inscrits avec lui :",
+      "NoPrices": "Aucun prix enregistré pour cette date : le relevé partira sans prix.",
+      "NoPricesLink": "Enregistrer les prix"
     },
     "RateNotStored": "Salaire/heure des mineurs non mémorisé pour cette semaine : la valeur du champ est utilisée.",
     "GenerateButton": "Générer le bilan hebdomadaire",

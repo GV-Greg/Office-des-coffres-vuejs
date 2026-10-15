@@ -422,7 +422,10 @@
       "RecordedBy": "Current report: saved by {pseudo} ({office}).",
       "DeletedCharacter": "a deleted character",
       "Confirm": "Replace",
-      "Cancel": "Cancel"
+      "Cancel": "Cancel",
+      "PricesReminder": "Prices in force on the report date, recorded with it:",
+      "NoPrices": "No prices recorded for this date: the report will be saved without prices.",
+      "NoPricesLink": "Record prices"
     },
     "RateNotStored": "No miners' wage/hour stored for this week: the value in the field is used.",
     "GenerateButton": "Generate the weekly report",
