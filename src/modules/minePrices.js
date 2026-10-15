@@ -7,6 +7,11 @@ import { weekDates, shiftWeek, getWeekBounds } from './mineParser'
 
 export const RESOURCES = ['OR', 'FER', 'PIERRE', 'ARGILE', 'SEL']
 
+// L'or n'a pas de prix : sa production EST sa valeur en écus (Greg, 15/10/2026 : « l'or ne sert à rien dans
+// la grille »). Il n'apparaît donc ni au formulaire ni dans la liste ; l'API exige encore la colonne, on y envoie 1.
+export const PRICED_RESOURCES = RESOURCES.filter(r => r !== 'OR')
+export const GOLD_PRICE = 1
+
 /** Jeu de prix tel que l'attend computePeriodBilan : `{ prices, rate }`. */
 export const asPriceSet = set => ({ prices: { ...set.prices }, rate: set.hourly_rate })
 
@@ -76,7 +81,7 @@ export function uncoveredWeeks(priceSets, from, today) {
 export function formFromSet(set, date) {
   return {
     effective_from: date,
-    prices: Object.fromEntries(RESOURCES.map(r => [r, set ? String(set.prices[r]) : ''])),
+    prices: Object.fromEntries(PRICED_RESOURCES.map(r => [r, set ? String(set.prices[r]) : ''])),
     hourly_rate: set ? String(set.hourly_rate) : '',
   }
 }
@@ -86,7 +91,7 @@ export function bodyFromForm(form) {
   const num = v => Number(String(v).replace(',', '.'))
   return {
     effective_from: form.effective_from,
-    prices: Object.fromEntries(RESOURCES.map(r => [r, num(form.prices[r])])),
+    prices: { OR: GOLD_PRICE, ...Object.fromEntries(PRICED_RESOURCES.map(r => [r, num(form.prices[r])])) },
     hourly_rate: num(form.hourly_rate),
   }
 }
@@ -95,11 +100,32 @@ export function bodyFromForm(form) {
 export function isDirty(form, original) {
   if (form.effective_from !== original.effective_from) return true
   if (String(form.hourly_rate) !== String(original.hourly_rate)) return true
-  return RESOURCES.some(r => String(form.prices[r]) !== String(original.prices[r]))
+  return PRICED_RESOURCES.some(r => String(form.prices[r]) !== String(original.prices[r]))
 }
 
 /** Tous les champs sont remplis par des nombres ≥ 0 à deux décimales au plus. */
 export function isComplete(form) {
   const ok = v => /^\d+([.,]\d{1,2})?$/.test(String(v).trim())
-  return RESOURCES.every(r => ok(form.prices[r])) && ok(form.hourly_rate) && !!form.effective_from
+  return PRICED_RESOURCES.every(r => ok(form.prices[r])) && ok(form.hourly_rate) && !!form.effective_from
+}
+
+/**
+ * Derniers prix saisis dans le Bilan public (confort : `economy_mines_settings`, `{ prices, rate }`), sous la
+ * forme d'un jeu de départ pour le formulaire — seulement quand la province n'a AUCUN jeu en base. L'or ne
+ * s'y trouve jamais (voir GOLD_PRICE). Null si
+ * le confort est absent, illisible ou incomplet : le formulaire reste alors vide.
+ */
+export function setFromComfort(raw) {
+  let saved
+  try { saved = typeof raw === 'string' ? JSON.parse(raw) : raw } catch { return null }
+  const prices = saved?.prices
+  const rate = Number(saved?.rate)
+  if (!prices || !Number.isFinite(rate)) return null
+  const known = ['FER', 'PIERRE', 'ARGILE', 'SEL'].every(r => Number.isFinite(Number(prices[r])))
+  if (!known) return null
+  return {
+    effective_from: null,
+    prices: { OR: GOLD_PRICE, FER: Number(prices.FER), PIERRE: Number(prices.PIERRE), ARGILE: Number(prices.ARGILE), SEL: Number(prices.SEL) },
+    hourly_rate: rate,
+  }
 }

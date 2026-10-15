@@ -392,7 +392,8 @@
         "CreatedBy": "Created by {name} on {date}",
         "ModifiedBy": "Modified by {name} on {date}",
         "NoPricesWarning": "Some weeks of the mandate are not covered by a price record.",
-        "Unpriced": "No known price for {count} day: it is counted as zero. | No known price for {count} days: they are counted as zero."
+        "Unpriced": "No known price for {count} day: it is counted as zero. | No known price for {count} days: they are counted as zero.",
+        "FromCookies": "Prices taken from your last Mines report (stored on this device): check them before saving."
       },
       "Navigation": {
         "Title": "Weekly balance sheets",

@@ -392,7 +392,8 @@
         "CreatedBy": "Créé par {name} le {date}",
         "ModifiedBy": "Modifié par {name} le {date}",
         "NoPricesWarning": "Des semaines du mandat ne sont pas couvertes par un enregistrement de prix.",
-        "Unpriced": "Aucun prix connu pour {count} jour : il est compté à zéro. | Aucun prix connu pour {count} jours : ils sont comptés à zéro."
+        "Unpriced": "Aucun prix connu pour {count} jour : il est compté à zéro. | Aucun prix connu pour {count} jours : ils sont comptés à zéro.",
+        "FromCookies": "Prix repris de votre dernier Bilan des mines (mémorisés sur cet appareil) : vérifiez-les avant d'enregistrer."
       },
       "Navigation": {
         "Title": "Bilans hebdomadaires",

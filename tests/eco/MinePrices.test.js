@@ -13,6 +13,7 @@ import EconomyMines from '../../src/views/modules/economy/EconomyMines.vue'
 import { http } from '../../src/api.js'
 import { push } from 'notivue'
 import { createPinia, setActivePinia } from 'pinia'
+import { useCookieStore } from '../../src/stores/cookieStore'
 
 // Prix des mines par période — écrans (lot 2 ; brief admin/content/brief-prix-registre.md). L'écran n'a
 // aucune règle : qui peut ajouter ou corriger vient de l'API (`access.prices`, `editable`).
@@ -50,6 +51,7 @@ function api({ access = accessOf(), prices = [], registry = null, post = null, p
 
 beforeEach(() => {
   vi.clearAllMocks()
+  setActivePinia(createPinia())
   auth.activeCharacter = { id: 7, pseudo: 'Artifice' }
 })
 
@@ -103,13 +105,13 @@ describe('page de l\'historique des prix', () => {
   it('« Ajouter un prix » envoie un POST puis recharge la liste', async () => {
     const w = await mountPage({ prices: [set(1, '2026-05-01')] })
     await w.find('[data-testid="prices-add"]').trigger('click')
-    for (const r of ['OR', 'FER', 'PIERRE', 'ARGILE', 'SEL', 'RATE']) await w.find(`[data-testid="price-${r}"]`).setValue('2')
+    for (const r of ['FER', 'PIERRE', 'ARGILE', 'SEL', 'RATE']) await w.find(`[data-testid="price-${r}"]`).setValue('2')
     await w.find('[data-testid="price-form"]').trigger('submit')
     await flushPromises()
 
     expect(http.post).toHaveBeenCalledTimes(1)
     expect(http.post.mock.calls[0][0]).toBe('provinces/1/mine-prices')
-    expect(http.post.mock.calls[0][1].prices).toEqual({ OR: 2, FER: 2, PIERRE: 2, ARGILE: 2, SEL: 2 })
+    expect(http.post.mock.calls[0][1].prices).toEqual({ OR: 1, FER: 2, PIERRE: 2, ARGILE: 2, SEL: 2 }) // l'or part à 1, jamais saisi
     expect(push.success).toHaveBeenCalled()
   })
 
@@ -129,7 +131,7 @@ describe('page de l\'historique des prix', () => {
     const w = await mountPage({ prices: [] })
     http.post.mockRejectedValue(Object.assign(new Error('422'), { response: { status: 422, data: { messages: { effective_from: { fr: 'Un jeu existe déjà.', en: 'A set already exists.' } }, errors: { effective_from: ['Un jeu existe déjà.'] } } } }))
     await w.find('[data-testid="prices-add"]').trigger('click')
-    for (const r of ['OR', 'FER', 'PIERRE', 'ARGILE', 'SEL', 'RATE']) await w.find(`[data-testid="price-${r}"]`).setValue('2')
+    for (const r of ['FER', 'PIERRE', 'ARGILE', 'SEL', 'RATE']) await w.find(`[data-testid="price-${r}"]`).setValue('2')
     await w.find('[data-testid="price-form"]').trigger('submit')
     await flushPromises()
 
@@ -190,6 +192,63 @@ describe('modale rapide « Prix en vigueur »', () => {
     expect(w.find('[data-testid="price-history-link"]').exists()).toBe(true)
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     expect(w.emitted('close')).toBeTruthy()
+  })
+})
+
+describe('aucun jeu en base : repli sur les prix du Bilan mémorisés (cookies)', () => {
+  const remember = () => useCookieStore().setComfortData('economy_mines_settings', JSON.stringify({ prices: { PIERRE: 14.5, FER: 19.5, ARGILE: 4.5, SEL: 4.5 }, rate: 0.7 }))
+  const mountModal = (prices = []) => {
+    api({ prices })
+    return mount(MinePricesModal, { props: { show: true, provinceId: 1, prices }, global: { plugins: [i18nFor()], stubs } })
+  }
+
+  it('la modale reprend les derniers prix du Bilan, l\'or à 1 écu, et propose d\'enregistrer sans rien modifier', async () => {
+    remember()
+    const w = mountModal()
+    await flushPromises()
+    expect(w.find('[data-testid="price-FER"]').element.value).toBe('19.5')
+    expect(w.find('[data-testid="price-OR"]').exists()).toBe(false) // l'or n'a pas de prix
+    expect(w.find('[data-testid="price-RATE"]').element.value).toBe('0.7')
+    expect(w.find('[data-testid="price-note"]').text()).toContain('dernier Bilan')
+
+    await w.find('[data-testid="price-form"]').trigger('submit')
+    await flushPromises()
+    expect(http.post).toHaveBeenCalledTimes(1)
+    expect(http.post.mock.calls[0][1].prices).toEqual({ OR: 1, FER: 19.5, PIERRE: 14.5, ARGILE: 4.5, SEL: 4.5 })
+  })
+
+  it('sans cookies, le formulaire reste vide et sans note', async () => {
+    const w = mountModal()
+    await flushPromises()
+    expect(w.find('[data-testid="price-FER"]').element.value).toBe('')
+    expect(w.find('[data-testid="price-note"]').exists()).toBe(false)
+    expect(w.find('[data-testid="price-submit"]').exists()).toBe(false)
+  })
+
+  it('un jeu en base l\'emporte sur les cookies', async () => {
+    remember()
+    const w = mountModal([set(1, '2026-05-01', { prices: { OR: 1, FER: 11, PIERRE: 5, ARGILE: 3, SEL: 4 } })])
+    await flushPromises()
+    expect(w.find('[data-testid="price-FER"]').element.value).toBe('11')
+    expect(w.find('[data-testid="price-note"]').exists()).toBe(false)
+  })
+
+  it('la page des prix prérempli aussi « Ajouter un prix » quand la province n\'a rien', async () => {
+    remember()
+    api({ prices: [] })
+    const w = mount(EconomyPrices, { global: { plugins: [i18nFor()], stubs } })
+    await flushPromises()
+    await w.find('[data-testid="prices-add"]').trigger('click')
+    expect(w.find('[data-testid="price-FER"]').element.value).toBe('19.5')
+  })
+
+  it('« Ajouter un prix » avec des jeux existants part du plus récent, à la date du jour', async () => {
+    api({ prices: [set(1, '2026-05-01', { prices: { OR: 1, FER: 11, PIERRE: 5, ARGILE: 3, SEL: 4 } })] })
+    const w = mount(EconomyPrices, { global: { plugins: [i18nFor()], stubs } })
+    await flushPromises()
+    await w.find('[data-testid="prices-add"]').trigger('click')
+    expect(w.find('[data-testid="price-FER"]').element.value).toBe('11')
+    expect(w.find('[data-testid="price-date"]').element.value).not.toBe('2026-05-01')
   })
 })
 

@@ -143,6 +143,7 @@ describe('formulaire de prix', () => {
   it('complet : tous les champs en nombres à deux décimales au plus', () => {
     const form = formFromSet(set('2026-05-01'), '2026-05-10')
     expect(isComplete(form)).toBe(true)
+    expect(form.prices).not.toHaveProperty('OR') // pas de prix d'or
     form.prices.SEL = '4,5'
     expect(isComplete(form)).toBe(true)
     form.prices.SEL = '4,555'

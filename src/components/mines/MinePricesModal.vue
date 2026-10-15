@@ -4,7 +4,8 @@
   import { RouterLink } from 'vue-router'
   import { push } from 'notivue'
   import { apiMessage } from '@/stores/mandateStore'
-  import { setForDay } from '@/modules/minePrices'
+  import { setForDay, setFromComfort } from '@/modules/minePrices'
+  import { useCookieStore } from '@/stores/cookieStore'
   import { todayIso } from '@/modules/mineParser'
   import useDialogFocus from '@/use/useDialogFocus'
   import useNavigationLoading from '@/use/useNavigationLoading'
@@ -26,6 +27,7 @@
 
   const { t, locale } = useI18n()
   const api = useMinePrices()
+  const cookieStore = useCookieStore()
   const { trackApiCall } = useNavigationLoading()
 
   const panel = ref(null)
@@ -37,7 +39,10 @@
   watch(() => props.show, (open) => { if (open) { error.value = ''; submitting.value = false } })
 
   // Prix de départ : celui en vigueur aujourd'hui, à défaut le plus récent (rien n'est inventé).
-  const initial = computed(() => setForDay(props.prices, todayIso()) ?? props.prices[0] ?? null)
+  const saved = computed(() => setForDay(props.prices, todayIso()) ?? props.prices[0] ?? null)
+  // Aucun jeu en base : les derniers prix saisis dans le Bilan (confort), s'il y en a — un jeu à créer.
+  const fromCookies = computed(() => (saved.value || !props.show ? null : setFromComfort(cookieStore.getComfortData('economy_mines_settings'))))
+  const initial = computed(() => saved.value ?? fromCookies.value)
 
   const submit = (body) => {
     submitting.value = true
@@ -66,6 +71,8 @@
         <h3 id="price-modal-title" class="text-lg font-bold text-slate-800 dark:text-slate-100">{{ t('EconomyMines.RegistryPage.Prices.ModalTitle') }}</h3>
         <MinePriceForm
           :initial="initial"
+          :is-new="!!fromCookies"
+          :note="fromCookies ? t('EconomyMines.RegistryPage.Prices.FromCookies') : ''"
           :date="todayIso()"
           :submit-label="t('EconomyMines.RegistryPage.Prices.Update')"
           :submitting="submitting"

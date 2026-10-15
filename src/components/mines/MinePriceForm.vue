@@ -1,7 +1,7 @@
 <script setup>
   import { reactive, computed, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
-  import { RESOURCES, formFromSet, isDirty, isComplete, bodyFromForm } from '@/modules/minePrices'
+  import { PRICED_RESOURCES, formFromSet, isDirty, isComplete, bodyFromForm } from '@/modules/minePrices'
   import { todayIso } from '@/modules/mineParser'
 
   /*
@@ -18,6 +18,10 @@
     date: { type: String, default: null },    // date d'effet proposée (aujourd'hui par défaut)
     dateLocked: { type: Boolean, default: false },
     submitLabel: { type: String, required: true },
+    // Un NOUVEAU jeu (valeurs de départ reprises ailleurs : cookies, jeu précédent) : « Enregistrer » dès que
+    // le formulaire est complet, sans exiger de modification par rapport au départ.
+    isNew: { type: Boolean, default: false },
+    note: { type: String, default: '' },
     submitting: { type: Boolean, default: false },
     error: { type: String, default: '' },
     idPrefix: { type: String, default: 'price' },
@@ -33,7 +37,7 @@
   watch(() => [props.initial, props.date], () => Object.assign(form, formFromSet(props.initial, startDate())))
 
   // Sans jeu de départ, tout champ rempli est « modifié » : on exige seulement un formulaire complet.
-  const canSubmit = computed(() => isComplete(form) && (!props.initial || isDirty(form, original.value)))
+  const canSubmit = computed(() => isComplete(form) && (props.isNew || !props.initial || isDirty(form, original.value)))
   const submit = () => { if (canSubmit.value && !props.submitting) emit('submit', bodyFromForm(form)) }
 </script>
 
@@ -46,7 +50,7 @@
     </div>
 
     <div class="grid grid-cols-2 gap-x-4 gap-y-3">
-      <div v-for="resource in [...RESOURCES, 'RATE']" :key="resource">
+      <div v-for="resource in [...PRICED_RESOURCES, 'RATE']" :key="resource">
         <label :for="`${idPrefix}-${resource}`" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
           {{ resource === 'RATE' ? t('EconomyMines.RegistryPage.Prices.HourlyRate') : t(`EconomyMines.RegistryPage.Prices.Resource.${resource}`) }}
         </label>
@@ -60,10 +64,12 @@
       </div>
     </div>
 
+    <p v-if="note" class="text-xs italic text-slate-600 dark:text-slate-300" data-testid="price-note">{{ note }}</p>
+
     <p v-if="error" role="alert" class="text-sm font-semibold text-red-600 dark:text-red-400" data-testid="price-error">{{ error }}</p>
 
     <div class="flex flex-wrap items-center justify-end gap-3">
-      <button type="button" class="odc-btn odc-btn--quiet odc-btn--sm odc--slate" @click="emit('cancel')">{{ t('EconomyMines.RegistryPage.Prices.Cancel') }}</button>
+      <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--red" data-testid="price-cancel" @click="emit('cancel')">{{ t('EconomyMines.RegistryPage.Prices.Cancel') }}</button>
       <button v-if="canSubmit" type="submit" class="odc-btn odc-btn--soft odc--gold" :disabled="submitting" data-testid="price-submit">{{ submitLabel }}</button>
     </div>
   </form>

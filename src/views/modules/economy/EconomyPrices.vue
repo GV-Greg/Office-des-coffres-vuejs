@@ -5,8 +5,10 @@
   import { push } from 'notivue'
   import { useAuthStore } from '@/stores/authStore'
   import { apiMessage } from '@/stores/mandateStore'
-  import { RESOURCES, uncoveredWeeks } from '@/modules/minePrices'
+  import { PRICED_RESOURCES, uncoveredWeeks, setFromComfort } from '@/modules/minePrices'
+  import { useCookieStore } from '@/stores/cookieStore'
   import { formatFieldDate } from '@/modules/playerDates'
+  import { todayIso } from '@/modules/mineParser'
   import useMinePrices from '@/use/useMinePrices'
   import useNavigationLoading from '@/use/useNavigationLoading'
   import { http } from '@/api.js'
@@ -22,6 +24,7 @@
   const { t, locale } = useI18n()
   const authStore = useAuthStore()
   const api = useMinePrices()
+  const cookieStore = useCookieStore()
   const { trackApiCall } = useNavigationLoading()
 
   const character = computed(() => (authStore.isLoggedIn ? authStore.activeCharacter : null))
@@ -65,6 +68,11 @@
     }
   }
   watch(() => character.value?.id, load, { immediate: true })
+
+  // Valeurs de départ d'un nouveau jeu : le plus récent de la province, à défaut les derniers prix du Bilan
+  // (confort). Le formulaire reste vide quand on n'a ni l'un ni l'autre.
+  const addInitial = computed(() => prices.value[0] ?? setFromComfort(cookieStore.getComfortData('economy_mines_settings')))
+  const addNote = computed(() => (!prices.value.length && addInitial.value ? t('EconomyMines.RegistryPage.Prices.FromCookies') : ''))
 
   const missing = computed(() => (registry.value?.mandate?.in_office_from
     ? uncoveredWeeks(prices.value, registry.value.mandate.in_office_from, registry.value.today)
@@ -117,7 +125,7 @@
       </p>
 
       <section v-if="adding" class="mt-4 max-w-md" data-testid="prices-add-form">
-        <MinePriceForm :submit-label="t('EconomyMines.RegistryPage.Prices.Save')" :submitting="submitting" :error="formError" id-prefix="add"
+        <MinePriceForm :initial="addInitial" :date="todayIso()" is-new :note="addNote" :submit-label="t('EconomyMines.RegistryPage.Prices.Save')" :submitting="submitting" :error="formError" id-prefix="add"
                        @submit="body => save(body, null)" @cancel="adding = false" />
       </section>
 
@@ -140,7 +148,7 @@
               <span v-else-if="canWrite" class="text-xs italic text-slate-600 dark:text-slate-600" :data-testid="`price-locked-${set.id}`">{{ t('EconomyMines.RegistryPage.Prices.Locked') }}</span>
             </div>
             <dl class="mt-1 flex flex-wrap gap-x-6 gap-y-1 text-sm tabular-nums">
-              <div v-for="resource in RESOURCES" :key="resource" class="flex gap-1">
+              <div v-for="resource in PRICED_RESOURCES" :key="resource" class="flex gap-1">
                 <dt class="text-slate-700 dark:text-slate-700">{{ t(`EconomyMines.RegistryPage.Prices.Resource.${resource}`) }}</dt>
                 <dd class="font-bold">{{ num(set.prices[resource]) }}</dd>
               </div>
