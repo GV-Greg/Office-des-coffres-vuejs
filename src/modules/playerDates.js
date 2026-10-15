@@ -25,6 +25,11 @@ export const DATE_FIELDS = Object.freeze({
   // Historique des postes d'une province (« Ma province » — API characters/{id}/province)
   history_started_at: 'game',
   history_ended_at: 'game',
+  // Prix des mines par période (API provinces/{id}/mine-prices) : toutes les dates se lisent en année du
+  // JEU (Greg, 15/10/2026), la saisie et la correction comprises.
+  price_effective_from: 'game',
+  price_created_at: 'game',
+  price_updated_at: 'game',
   // Gestes de l'Office
   processed_at: 'real',
   revoked_at: 'real',

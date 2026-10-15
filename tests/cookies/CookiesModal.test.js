@@ -120,7 +120,8 @@ describe('CookiesModal', () => {
   })
 
   it('should emit close event when cancelling', async () => {
-    const cancelButton = wrapper.findAll('button').find((b) => b.text().includes('Annuler'))
+    // La croix de la modale (ModalCloseButton) annule : plus de bouton « Annuler » (charte §6.7).
+    const cancelButton = wrapper.find('[data-testid="modal-close"]')
     await cancelButton.trigger('click')
 
     expect(wrapper.emitted('close')).toBeTruthy()

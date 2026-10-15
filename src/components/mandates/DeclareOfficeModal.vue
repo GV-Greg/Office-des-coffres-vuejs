@@ -5,6 +5,7 @@
   import { useMandateStore, apiMessage } from '@/stores/mandateStore'
   import useDialogFocus from '@/use/useDialogFocus'
   import useNavigationLoading from '@/use/useNavigationLoading'
+  import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
 
   /*
     « Déclarer mon poste » sur un mandat de conseiller EN FONCTION (fil mandats-lot2, Q3). La PERTE
@@ -76,9 +77,12 @@
       <div class="h-1.5 bg-gradient-to-r from-orange-400 to-red-600 shrink-0"></div>
 
       <form class="p-6 space-y-4" @submit.prevent="submit">
-        <h3 id="declare-office-title" class="text-lg font-bold text-slate-800 dark:text-slate-100">
-          {{ currentKey ? t('Profil.Mandates.Declare.ChangeTitle') : t('Profil.Mandates.Declare.Title') }}
-        </h3>
+        <div class="flex items-start justify-between gap-4">
+          <h3 id="declare-office-title" class="text-lg font-bold text-slate-800 dark:text-slate-100">
+            {{ currentKey ? t('Profil.Mandates.Declare.ChangeTitle') : t('Profil.Mandates.Declare.Title') }}
+          </h3>
+          <ModalCloseButton @click="close" />
+        </div>
 
         <div>
           <label for="declare-office" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ t('Profil.Mandates.Declare.Label') }}</label>
@@ -98,7 +102,6 @@
         <p v-if="error" class="text-sm font-semibold text-red-600 dark:text-red-400" data-testid="declare-error">{{ error }}</p>
 
         <div class="flex flex-wrap items-center justify-end gap-3">
-          <button type="button" class="odc-btn odc-btn--quiet odc-btn--sm odc--slate" @click="close">{{ t('Profil.Mandates.Cancel') }}</button>
           <button type="submit" class="odc-btn odc-btn--soft odc--orange" :disabled="!choice || submitting" data-testid="declare-submit">
             {{ t('Profil.Mandates.Declare.Submit') }}
           </button>

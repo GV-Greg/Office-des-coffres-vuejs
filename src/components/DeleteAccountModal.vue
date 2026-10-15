@@ -1,4 +1,5 @@
 <script setup>
+import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
   import { ref, computed, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
 
@@ -68,10 +69,13 @@
       <div class="p-6 overflow-y-auto">
         <!-- Étape 1 — ce qui va disparaître -->
         <template v-if="step === 1">
-          <h3 class="flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">
-            <v-icon name="fa-times" scale="1.1" class="text-red-500 shrink-0" />
-            {{ t('Profil.DeleteAccount.Step1Title') }}
-          </h3>
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <h3 class="flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-100">
+              <v-icon name="fa-times" scale="1.1" class="text-red-500 shrink-0" />
+              {{ t('Profil.DeleteAccount.Step1Title') }}
+            </h3>
+            <ModalCloseButton @click="close" />
+          </div>
 
           <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
             {{ t('Profil.DeleteAccount.Step1Text') }}
@@ -86,9 +90,6 @@
           </ul>
 
           <div class="flex flex-wrap items-center justify-end gap-3">
-            <button type="button" class="btn btn-grad-slate" @click="close">
-              {{ t('Profil.DeleteAccount.Step1Cancel') }}
-            </button>
             <button
               type="button"
               class="btn btn-grad-red"
@@ -102,10 +103,13 @@
 
         <!-- Étape 2 — preuve que c'est bien le titulaire -->
         <template v-else>
-          <h3 class="flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">
-            <v-icon name="ri-lock-password-fill" scale="1.1" class="text-red-500 shrink-0" />
-            {{ t('Profil.DeleteAccount.Step2Title') }}
-          </h3>
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <h3 class="flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-100">
+              <v-icon name="ri-lock-password-fill" scale="1.1" class="text-red-500 shrink-0" />
+              {{ t('Profil.DeleteAccount.Step2Title') }}
+            </h3>
+            <ModalCloseButton @click="close" />
+          </div>
 
           <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
             {{ t('Profil.DeleteAccount.Step2Text') }}
@@ -129,9 +133,6 @@
             </p>
 
             <div class="mt-5 flex flex-wrap items-center justify-end gap-3">
-              <button type="button" class="btn btn-grad-slate" @click="close">
-                {{ t('Profil.DeleteAccount.Step1Cancel') }}
-              </button>
               <button
                 type="submit"
                 class="btn btn-grad-red"

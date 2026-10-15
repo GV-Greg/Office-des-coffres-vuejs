@@ -7,6 +7,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import EconomyRegistry from '../../src/views/modules/economy/EconomyRegistry.vue'
 import { http } from '../../src/api.js'
+import { createPinia, setActivePinia } from 'pinia'
 
 // Registre des mines — page de lecture (PR 4b ; brief §7 ; fil registre-mines R4). Le serveur sert les
 // faits ; la page les affiche et les lit avec le parseur. Le prédécesseur se dit comme un fait.
@@ -53,6 +54,7 @@ async function mountPage({ locale = 'fr', data = registry(), reject = null } = {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  setActivePinia(createPinia())
   auth.activeCharacter = { id: 7, pseudo: 'Artifice' }
 })
 

@@ -6,15 +6,39 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-10-15] — PR #92 (politique : le commissaire au commerce consulte le Registre des mines)
+## [2026-10-16] — PR #91 (politique : le commissaire au commerce consulte le Registre des mines)
 
 ### Changed
 - Politique de confidentialité §6, page « Vos données » et aides du registre : le commissaire au
   commerce rejoint le dirigeant parmi ceux qui **consultent** le Registre des mines (lecture seule ;
   l'écriture reste au commissaire aux mines et au bailli). Décision de Greg, 15/10/2026.
-- Dates de dernière modification de la politique et de la page : 15/10/2026.
-- ⚠️ À déployer **avant** back #64 (le texte précède la règle), puis entrée de journal substantielle
+- Dates de dernière modification de la politique et de la page : 16/10/2026.
+- ⚠️ Aurait dû être déployé **avant** back #64 (le texte précède la règle) : l'ordre a été inversé par erreur
+  le 15/10 (back #64 déployé à 21:57 UTC, ce texte seulement après). Ensuite : entrée de journal substantielle
   et `php artisan policy:notify` par Greg.
+
+## [2026-10-15] — PR #92 (Registre des mines : prix par période, bilans hebdomadaires, export BBCode)
+
+Brief `admin/content/brief-prix-registre.md`, décisions de Greg des 14 et 15/10/2026. Dépend de back #63.
+⚠️ Déployé (21:53 UTC) **avant** back #63 (22:29 UTC) : pendant cette demi-heure, un relevé enregistré par un gérant
+du registre est parti **sans prix** (le site n'en envoie plus, le serveur ne les figeait pas encore).
+
+### Added
+- Page `/app/eco/registre/prix` : historique en **frise de plaques** (jeu en vigueur aujourd'hui repéré, unités par
+  minerai, écart avec le jeu précédent). Ajout et modification par la **même modale**, préremplie (à défaut, avec les
+  derniers prix du Bilan en cookies). Accès par le bouton « Historique des prix » du registre, sans lien de menu.
+- Registre : bilans **jour par jour** avec le jeu de prix en vigueur ce jour-là (repli sur les relevés), **un seul tableau**
+  de bilan (mois ou semaine) avec ◀ ▶ pour parcourir les semaines du mandat, export BBCode « Confier au scribe »
+  d'une semaine complète (gabarit `mineBBcode.js` partagé avec le Bilan), mise en page en deux colonnes sans défilement,
+  historique des niveaux en accordéon.
+- `ModalCloseButton` : la même croix ronde rouge ferme **toutes** les modales ; plus de bouton « Annuler » en modale
+  (aide, prix, mandats, cookies, suppression de compte).
+- Rappel des prix en vigueur sur la plaque d'enregistrement d'un relevé.
+
+### Changed
+- Bilan public : un gérant du registre voit les prix de sa province **sans pouvoir les modifier** ; les autres saisissent
+  les leurs (cookies). L'enregistrement d'un relevé n'envoie plus de prix à un gérant : le serveur fige ceux de la table.
+- Dates des prix en **année du jeu** (1474), champ date compris.
 
 ## [2026-10-11] — PR #90 (page « Vos données, outil par outil »)
 

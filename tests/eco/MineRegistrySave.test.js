@@ -36,7 +36,7 @@ async function mountSave({ locale = 'fr', access = writer, text = TEXT } = {}) {
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
   const wrapper = mount(MineRegistrySave, {
     props: { text, prices: { OR: 1, PIERRE: 20 }, rate: 0.7 },
-    global: { plugins: [i18n], stubs: { 'v-icon': true } },
+    global: { plugins: [i18n], stubs: { 'v-icon': true, RouterLink: { template: '<a><slot /></a>' } } },
   })
   await flushPromises()
   return wrapper

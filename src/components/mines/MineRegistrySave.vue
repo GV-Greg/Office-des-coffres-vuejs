@@ -6,6 +6,9 @@
   import { useAuthStore } from '@/stores/authStore'
   import { apiMessage } from '@/stores/mandateStore'
   import { parseMinesText, parseMineStates, mostRecentDate } from '@/modules/mineParser'
+  import { setForDay } from '@/modules/minePrices'
+  import useMinePrices from '@/use/useMinePrices'
+  import { RouterLink } from 'vue-router'
   import HelpModal from '@/components/HelpModal.vue'
 
   /*
@@ -21,7 +24,8 @@
 
   const props = defineProps({
     text: { type: String, required: true },
-    prices: { type: Object, required: true },
+    // Absents pour qui gère le registre : le serveur fige les prix de la table en vigueur à la date du relevé.
+    prices: { type: Object, default: null },
     rate: { type: [Number, String], default: null },
   })
 
@@ -30,6 +34,8 @@
 
   const character = computed(() => (authStore.isLoggedIn ? authStore.activeCharacter : null))
   const access = ref(null)
+  const minePrices = useMinePrices()
+  const priceSets = ref([])
   const pending = ref(null) // 409 : remplacement à confirmer { message, existing }
   const sending = ref(false)
   const showHelp = ref(false)
@@ -46,6 +52,14 @@
       access.value = data
     } catch {
       access.value = null // pas d'accès connu : le bloc reste caché, le Bilan public fonctionne
+      return
+    }
+    // Rappel des prix en vigueur (lot 2) : simple lecture, une erreur ici ne bloque jamais l'enregistrement.
+    try {
+      const sets = access.value?.write?.id ? await minePrices.list(access.value.write.id) : []
+      priceSets.value = Array.isArray(sets) ? sets : []
+    } catch {
+      priceSets.value = []
     }
   }
   watch(() => character.value?.id, loadAccess, { immediate: true })
@@ -57,6 +71,12 @@
   const dayMonth = iso => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}` : '')
   const reportDate = computed(() => mostRecentDate(mines.value))
   const visible = computed(() => !!province.value && mines.value.length > 0)
+  // Prix qui seront figés dans le relevé : le jeu en vigueur à SA date (le serveur les fige, rien à saisir).
+  const priceSet = computed(() => (reportDate.value ? setForDay(priceSets.value, reportDate.value) : null))
+  const priceRows = computed(() => (priceSet.value
+    ? [...['FER', 'PIERRE', 'ARGILE', 'SEL'].map(r => [t(`EconomyMines.RegistryPage.Prices.Resource.${r}`), priceSet.value.prices[r]]),
+      [t('EconomyMines.RegistryPage.Prices.HourlyRate'), priceSet.value.hourly_rate]]
+    : []))
 
   async function save(confirmReplace = false) {
     if (sending.value) return
@@ -65,8 +85,7 @@
       const { data } = await http.post(`characters/${character.value.id}/mine-reports`, {
         raw: props.text.trim(),
         report: { mines: mines.value, states: parseMineStates(props.text) },
-        prices: { ...props.prices },
-        rate: props.rate,
+        ...(props.prices ? { prices: { ...props.prices }, rate: props.rate } : {}),
         confirm_replace: confirmReplace,
       }, auth())
       pending.value = null
@@ -112,6 +131,20 @@
     <p v-if="reportDate" class="plate-note mt-2 text-sm italic" data-testid="mine-registry-date">{{ t('EconomyMines.Registry.ReportOf', { date: dayMonth(reportDate) }) }}</p>
     </div>
 
+    <!-- Rappel des prix (lecture seule) : ceux du jeu en vigueur à la date du relevé, figés par le serveur. -->
+    <div class="plate-rule mt-3 pt-3 text-left" data-testid="mine-registry-prices">
+      <template v-if="priceSet">
+        <p class="plate-note text-xs">{{ t('EconomyMines.Registry.PricesReminder') }}</p>
+        <ul class="plate-title mt-1 grid grid-cols-2 gap-x-3 text-xs tabular-nums">
+          <li v-for="[label, value] in priceRows" :key="label" class="flex justify-between gap-1"><span>{{ label }}</span><span class="font-bold">{{ value }}</span></li>
+        </ul>
+      </template>
+      <p v-else class="plate-note text-xs" data-testid="mine-registry-no-prices">
+        {{ t('EconomyMines.Registry.NoPrices') }}
+        <RouterLink :to="{ name: 'economy-prices' }" class="plate-link underline">{{ t('EconomyMines.Registry.NoPricesLink') }}</RouterLink>
+      </p>
+    </div>
+
     <div v-if="pending" role="alert" class="plate-rule mt-3 space-y-2 pt-3" data-testid="mine-registry-confirm">
       <p class="plate-title text-sm font-bold">{{ pending.message }}</p>
       <p v-if="pending.existing" class="plate-note text-sm">
@@ -121,15 +154,15 @@
         }) }}
       </p>
       <div class="flex flex-wrap justify-center gap-2 pt-1">
-        <button type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" :disabled="sending" @click="save(true)">
+        <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :disabled="sending" @click="save(true)">
           {{ t('EconomyMines.Registry.Confirm') }}
         </button>
-        <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" @click="pending = null">
+        <button type="button" class="odc-btn odc-btn--soft odc--red odc-btn--sm" @click="pending = null">
           {{ t('EconomyMines.Registry.Cancel') }}
         </button>
       </div>
     </div>
-    <button v-else type="button" class="mt-4 w-full odc-btn odc-btn--soft odc--gold" :disabled="sending" @click="save(false)">
+    <button v-else type="button" class="mt-4 w-full odc-btn odc-btn--soft odc--green" :disabled="sending" @click="save(false)">
       {{ t('EconomyMines.Registry.Save') }}
     </button>
   </section>
@@ -156,6 +189,7 @@
   .plate-title { color: #fef3c7; }
   .plate-note { color: #cbd5e1; }
   .plate-rule { border-top: 1px solid rgb(180 83 9 / 0.6); }
+  .plate-link { color: #fde68a; }
   /* Icône d'aide : disque jaune (Greg, 08/10 — jaune 300, 11,1:1 sur l'ardoise), jaune 200 au survol. */
   .plate-help { color: #fde047; line-height: 0; }
   .plate-help:hover { color: #fef08a; }
