@@ -168,7 +168,7 @@
       <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
         <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Title', { province: registry.province.name }) }}</h2>
         <div class="flex flex-wrap items-center gap-3">
-          <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--soft odc-btn--sm odc--blue" data-testid="prices-history-link">
+          <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="prices-history-link">
             <v-icon name="fa-history" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}
           </RouterLink>
           <button v-if="canManagePrices" type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="manage-prices" @click="showPrices = true">
@@ -230,7 +230,7 @@
           <p v-if="week.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="week-unpriced">
             {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: week.bilan.unpricedDays.length }, week.bilan.unpricedDays.length) }}
           </p>
-          <button v-if="week.complete" type="button" class="mt-2 odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="week-export" @click="exportWeek">
+          <button v-if="week.complete" type="button" class="mt-2 odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="week-export" @click="exportWeek">
             {{ t('EconomyMines.RegistryPage.Export.Button') }}
           </button>
         </div>

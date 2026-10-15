@@ -154,7 +154,7 @@
         }) }}
       </p>
       <div class="flex flex-wrap justify-center gap-2 pt-1">
-        <button type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" :disabled="sending" @click="save(true)">
+        <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :disabled="sending" @click="save(true)">
           {{ t('EconomyMines.Registry.Confirm') }}
         </button>
         <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" @click="pending = null">

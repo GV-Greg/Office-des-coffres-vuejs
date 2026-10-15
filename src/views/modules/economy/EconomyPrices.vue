@@ -5,14 +5,13 @@
   import { push } from 'notivue'
   import { useAuthStore } from '@/stores/authStore'
   import { apiMessage } from '@/stores/mandateStore'
-  import { PRICED_RESOURCES, uncoveredWeeks, setFromComfort } from '@/modules/minePrices'
-  import { useCookieStore } from '@/stores/cookieStore'
+  import { PRICED_RESOURCES, uncoveredWeeks } from '@/modules/minePrices'
   import { formatFieldDate } from '@/modules/playerDates'
-  import { todayIso } from '@/modules/mineParser'
   import useMinePrices from '@/use/useMinePrices'
   import useNavigationLoading from '@/use/useNavigationLoading'
   import { http } from '@/api.js'
   import MinePriceForm from '@/components/mines/MinePriceForm.vue'
+  import MinePricesModal from '@/components/mines/MinePricesModal.vue'
 
   /*
     Historique des prix des mines (lot 2 des prix du Registre ; brief admin/content/brief-prix-registre.md).
@@ -24,7 +23,6 @@
   const { t, locale } = useI18n()
   const authStore = useAuthStore()
   const api = useMinePrices()
-  const cookieStore = useCookieStore()
   const { trackApiCall } = useNavigationLoading()
 
   const character = computed(() => (authStore.isLoggedIn ? authStore.activeCharacter : null))
@@ -35,7 +33,7 @@
   const loading = ref(false)
   const error = ref('')
 
-  const adding = ref(false)
+  const showAdd = ref(false) // « Ajouter un prix » ouvre la même modale que « Gérer les prix » du registre
   const editingId = ref(null)
   const submitting = ref(false)
   const formError = ref('')
@@ -46,7 +44,7 @@
     canWrite.value = false
     registry.value = null
     error.value = ''
-    adding.value = false
+    showAdd.value = false
     editingId.value = null
     if (!character.value) return
     loading.value = true
@@ -69,11 +67,6 @@
   }
   watch(() => character.value?.id, load, { immediate: true })
 
-  // Valeurs de départ d'un nouveau jeu : le plus récent de la province, à défaut les derniers prix du Bilan
-  // (confort). Le formulaire reste vide quand on n'a ni l'un ni l'autre.
-  const addInitial = computed(() => prices.value[0] ?? setFromComfort(cookieStore.getComfortData('economy_mines_settings')))
-  const addNote = computed(() => (!prices.value.length && addInitial.value ? t('EconomyMines.RegistryPage.Prices.FromCookies') : ''))
-
   const missing = computed(() => (registry.value?.mandate?.in_office_from
     ? uncoveredWeeks(prices.value, registry.value.mandate.in_office_from, registry.value.today)
     : []))
@@ -84,22 +77,22 @@
     ? t('EconomyMines.RegistryPage.Prices.ModifiedBy', { name: set.updated_by, date: date('price_updated_at', set.updated_at) })
     : t('EconomyMines.RegistryPage.Prices.CreatedBy', { name: set.created_by ?? t('EconomyMines.Registry.DeletedCharacter'), date: date('price_created_at', set.created_at) }))
 
+  // Correction d'un jeu existant, en place. L'ajout passe par la modale (onAdded).
   function save(body, existing) {
     submitting.value = true
     formError.value = ''
-    const call = existing ? api.update(province.value.id, existing.id, body) : api.create(province.value.id, body)
-    trackApiCall(call)
+    trackApiCall(api.update(province.value.id, existing.id, body))
       .then(async () => {
         push.success(t('EconomyMines.RegistryPage.Prices.Saved'))
-        adding.value = false
         editingId.value = null
         prices.value = await api.list(province.value.id)
       })
       .catch((e) => { formError.value = apiMessage(e, locale.value, t('Auth.Errors.NetworkError')) })
       .finally(() => { submitting.value = false })
   }
-  const startAdd = () => { adding.value = true; editingId.value = null; formError.value = '' }
-  const startEdit = (set) => { editingId.value = set.id; adding.value = false; formError.value = '' }
+  const onAdded = async () => { prices.value = await api.list(province.value.id) }
+  const startAdd = () => { showAdd.value = true; editingId.value = null; formError.value = '' }
+  const startEdit = (set) => { editingId.value = set.id; showAdd.value = false; formError.value = '' }
 </script>
 
 <template>
@@ -126,11 +119,6 @@
       <p v-if="missing.length" role="note" class="mt-3 text-sm font-semibold text-orange-800 dark:text-orange-800" data-testid="prices-uncovered">
         {{ t('EconomyMines.RegistryPage.Prices.NoPricesWarning') }}
       </p>
-
-      <section v-if="adding" class="mt-4 max-w-md" data-testid="prices-add-form">
-        <MinePriceForm :initial="addInitial" :date="todayIso()" is-new :note="addNote" :submit-label="t('EconomyMines.RegistryPage.Prices.Save')" :submitting="submitting" :error="formError" id-prefix="add"
-                       @submit="body => save(body, null)" @cancel="adding = false" />
-      </section>
 
       <p v-if="!prices.length" class="mt-4 text-sm text-slate-700 dark:text-slate-700" data-testid="prices-empty">{{ t('EconomyMines.RegistryPage.Prices.Empty') }}</p>
 
@@ -165,5 +153,6 @@
         </li>
       </ul>
     </template>
+    <MinePricesModal :show="showAdd" :province-id="province?.id ?? null" :prices="prices" :show-history-link="false" @close="showAdd = false" @saved="onAdded" />
   </div>
 </template>

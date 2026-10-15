@@ -108,6 +108,15 @@ describe('page de l\'historique des prix', () => {
     expect(w.find('[data-testid="prices-uncovered"]').exists()).toBe(false)
   })
 
+  it('« Ajouter un prix » ouvre la modale (pas de formulaire en ligne), sans lien vers l\'historique', async () => {
+    const w = await mountPage({ prices: [set(1, '2026-05-01')] })
+    expect(w.find('[role="dialog"]').exists()).toBe(false)
+    await w.find('[data-testid="prices-add"]').trigger('click')
+    expect(w.find('[role="dialog"]').exists()).toBe(true)
+    expect(w.find('[data-testid="prices-add-form"]').exists()).toBe(false)
+    expect(w.find('[data-testid="price-history-link"]').exists()).toBe(false)
+  })
+
   it('« Ajouter un prix » envoie un POST puis recharge la liste', async () => {
     const w = await mountPage({ prices: [set(1, '2026-05-01')] })
     await w.find('[data-testid="prices-add"]').trigger('click')
@@ -142,7 +151,7 @@ describe('page de l\'historique des prix', () => {
     await flushPromises()
 
     expect(w.find('[data-testid="price-error"]').text()).toContain('Un jeu existe déjà')
-    expect(w.find('[data-testid="prices-add-form"]').exists()).toBe(true)
+    expect(w.find('[role="dialog"]').exists()).toBe(true) // la modale reste ouverte
   })
 })
 

@@ -22,6 +22,8 @@
     show: { type: Boolean, required: true },
     provinceId: { type: Number, default: null },
     prices: { type: Array, default: () => [] }, // jeux déjà chargés par la page
+    // Le lien « Voir l'historique » n'a pas de sens sur la page de l'historique elle-même.
+    showHistoryLink: { type: Boolean, default: true },
   })
   const emit = defineEmits(['close', 'saved'])
 
@@ -81,7 +83,7 @@
           @submit="submit"
           @cancel="close"
         />
-        <RouterLink :to="{ name: 'economy-prices' }" class="block text-sm underline text-slate-700 dark:text-slate-300" data-testid="price-history-link" @click="close">
+        <RouterLink v-if="showHistoryLink" :to="{ name: 'economy-prices' }" class="block text-sm underline text-slate-700 dark:text-slate-300" data-testid="price-history-link" @click="close">
           {{ t('EconomyMines.RegistryPage.Prices.ViewHistory') }}
         </RouterLink>
       </div>

@@ -70,7 +70,7 @@
 
     <div class="flex flex-wrap items-center justify-end gap-3">
       <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--red" data-testid="price-cancel" @click="emit('cancel')">{{ t('EconomyMines.RegistryPage.Prices.Cancel') }}</button>
-      <button v-if="canSubmit" type="submit" class="odc-btn odc-btn--soft odc--gold" :disabled="submitting" data-testid="price-submit">{{ submitLabel }}</button>
+      <button v-if="canSubmit" type="submit" class="odc-btn odc-btn--soft odc--green" :disabled="submitting" data-testid="price-submit">{{ submitLabel }}</button>
     </div>
   </form>
 </template>
