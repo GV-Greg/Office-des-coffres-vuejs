@@ -321,7 +321,7 @@
     "RegistryPage": {
       "HelpButton": "Comment lire le registre ?",
       "HelpTitle": "Le registre de la province",
-      "HelpPurpose": "Le registre garde la mémoire des mines de la province, d'un titulaire au suivant. Le commissaire aux mines, le bailli et le dirigeant de la province le consultent ; seuls les deux premiers y inscrivent des relevés, depuis le Bilan des mines.",
+      "HelpPurpose": "Le registre garde la mémoire des mines de la province, d'un titulaire au suivant. Le commissaire aux mines, le bailli, le commissaire au commerce et le dirigeant de la province le consultent ; seuls les deux premiers y inscrivent des relevés, depuis le Bilan des mines.",
       "HelpOverview": "La page se lit de haut en bas : l'état du parc d'abord, puis votre mandat, puis la mémoire du registre. Rien ne s'efface : un relevé remplacé reste visible dans l'historique.",
       "HelpStep1": "Dernier relevé, en haut à droite : il passe en orange s'il date de deux jours ou plus.",
       "HelpStep2": "Bilan en cours : production, valeur, salaires, entretien et solde de chaque mine depuis le début du mois de votre mandat (1er mois depuis votre entrée en fonction, 2e mois depuis la mi-mandat), jusqu'à hier. Il reste provisoire jusqu'à la fin du mois.",
@@ -421,7 +421,7 @@
     "Registry": {
       "HelpButton": "Comment fonctionne le registre ?",
       "HelpTitle": "Inscrire au registre",
-      "HelpPurpose": "Le registre garde la mémoire des mines de la province, transmise d'un titulaire au suivant. Le commissaire aux mines et le bailli y inscrivent les relevés ; le dirigeant de la province peut les consulter.",
+      "HelpPurpose": "Le registre garde la mémoire des mines de la province, transmise d'un titulaire au suivant. Le commissaire aux mines et le bailli y inscrivent les relevés ; le commissaire au commerce et le dirigeant de la province peuvent les consulter.",
       "HelpOverview": "Chaque inscription conserve le texte collé, le relevé analysé, les prix et le salaire/heure du moment, signés par votre personnage et son poste. Un relevé ne s'efface jamais : un relevé erroné se remplace, et l'ancien reste visible dans l'historique.",
       "HelpStep1": "Collez le contenu de l'onglet « Gestion des mines », comme pour le bilan, et vérifiez les prix et le salaire/heure des mineurs.",
       "HelpStep2": "Vérifiez la province affichée : c'est celle de votre poste, pas celle de votre résidence.",
@@ -621,7 +621,7 @@
       },
       "MineRegistry": {
         "Title": "Registre des mines",
-        "Purpose": "Garder la mémoire de gestion des mines d'une province, transmise d'un titulaire à l'autre : le commissaire aux mines et le bailli y enregistrent leurs relevés, le dirigeant de la province (comte, duc…) peut les consulter. Il faut tenir l'un de ces postes dans la province, et l'avoir fait valider dans l'Office. Sans cela, l'outil n'est pas accessible.",
+        "Purpose": "Garder la mémoire de gestion des mines d'une province, transmise d'un titulaire à l'autre : le commissaire aux mines et le bailli y enregistrent leurs relevés, le commissaire au commerce et le dirigeant de la province (comte, duc…) peuvent les consulter. Il faut tenir l'un de ces postes dans la province, et l'avoir fait valider dans l'Office. Sans cela, l'outil n'est pas accessible.",
         "Input": "Le même texte que pour le Bilan des mines : celui de l'onglet « Gestion des mines », copié depuis le jeu."
       },
       "Watch": {
@@ -767,7 +767,7 @@
         "NoOneElse": "Personne d'autre en dehors de ce qui précède. Aucun partage, aucune revente, aucune transmission à des tiers, y compris à Celsius Online (éditeur du jeu Renaissance Kingdoms), sauf réquisition judiciaire dûment notifiée.",
         "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : o2switch, France).",
         "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration.",
-        "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, qui tiennent le Registre des mines de cette province, et son dirigeant (comte, duc…), qui peut le consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais les autres conseillers, jamais un joueur d'une autre province."
+        "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, qui tiennent le Registre des mines de cette province, ainsi que son commissaire au commerce et son dirigeant (comte, duc…), qui peuvent le consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais les autres conseillers, jamais un joueur d'une autre province."
       },
       "DataPageLink": "Vos données, outil par outil",
       "Section7": {
