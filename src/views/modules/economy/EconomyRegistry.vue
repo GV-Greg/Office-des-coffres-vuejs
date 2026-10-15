@@ -6,7 +6,14 @@
   import { useAuthStore } from '@/stores/authStore'
   import { apiMessage } from '@/stores/mandateStore'
 
-  import { levelHistory, mandateBilans, daysWithoutData, currentPeriodBilan, lineKey } from '@/modules/mineRegistry'
+  import { push } from 'notivue'
+  import { levelHistory, mandateBilans, daysWithoutData, currentPeriodBilan, weekRange, weeklyBilan, shiftWeek } from '@/modules/mineRegistry'
+  import { bilanToBBcode } from '@/modules/mineBBcode'
+  import { formatDateFr } from '@/modules/mineParser'
+  import { toGameDateIso } from '@/modules/gameCalendar'
+  import useMinePrices from '@/use/useMinePrices'
+  import BilanTable from '@/components/mines/BilanTable.vue'
+  import MinePricesModal from '@/components/mines/MinePricesModal.vue'
 
   /*
     Registre des mines — lecture (PR 4b ; brief admin/content/brief-registre-mines.md §7 ; fil
@@ -26,6 +33,13 @@
   const registry = ref(null)
   const error = ref(null)
   const loading = ref(false)
+  // Prix par période (lot 2) : les jeux de la province, et si le personnage peut en écrire. Une lecture
+  // qui échoue n'empêche pas le registre : les bilans retombent alors sur les prix des relevés.
+  const minePrices = useMinePrices()
+  const priceSets = ref([])
+  const canManagePrices = ref(false)
+  const showPrices = ref(false)
+  const selectedMonday = ref(null) // null = le bilan en cours du mois de mandat (affichage par défaut)
 
   const auth = () => ({ headers: { Authorization: `Bearer ${authStore.getToken}` } })
 
@@ -37,10 +51,24 @@
     try {
       const { data } = await http.get(`characters/${character.value.id}/mine-registry/reports`, auth())
       registry.value = data
+      selectedMonday.value = null
+      await loadPrices()
     } catch (e) {
       error.value = apiMessage(e, locale.value, t('Auth.Errors.NetworkError'))
     } finally {
       loading.value = false
+    }
+  }
+  async function loadPrices() {
+    priceSets.value = []
+    canManagePrices.value = false
+    try {
+      const access = await minePrices.access(character.value.id)
+      canManagePrices.value = !!access?.prices?.write
+      const sets = await minePrices.list(registry.value.province.id)
+      priceSets.value = Array.isArray(sets) ? sets : []
+    } catch {
+      priceSets.value = []
     }
   }
   watch(() => character.value?.id, load, { immediate: true })
@@ -60,15 +88,14 @@
   })
 
   /** Bilan en cours du mois de mandat (Greg, 09/10) — remplace l'état des seuils ; modules/mineRegistry.js. */
-  const current = computed(() => currentPeriodBilan(registry.value))
-  const unit = resource => (resource ? t(`EconomyMines.Units.${resource}`) : '')
+  const current = computed(() => currentPeriodBilan(registry.value, priceSets.value))
 
   /** Jours SANS DONNÉES depuis l'entrée en fonction du lecteur (Greg, 09/10) — modules/mineRegistry.js. */
   const gaps = computed(() => daysWithoutData(registry.value))
 
   /** Historique des niveaux (+1 crédité, −1 constaté) et bilans du mandat — modules/mineRegistry.js. */
   const levels = computed(() => levelHistory(registry.value?.reports))
-  const bilans = computed(() => mandateBilans(registry.value))
+  const bilans = computed(() => mandateBilans(registry.value, priceSets.value))
   const num = n => Number(n || 0).toLocaleString(locale.value === 'fr' ? 'fr-FR' : 'en-GB', { maximumFractionDigits: 1 })
   const dayBefore = iso => new Date(Date.parse(`${iso}T00:00:00Z`) - 86400000).toISOString().slice(0, 10)
   const bilanLabel = kind => t(kind === 'mid' ? 'EconomyMines.RegistryPage.BilanMid' : 'EconomyMines.RegistryPage.BilanEnd')
@@ -81,6 +108,39 @@
   const stale = computed(() => !!latest.value && daysBetween(latest.value.reported_at, registry.value.today) >= 2)
   /** Net signé, comme dans le Bilan : +501 / −13,6. */
   const signed = n => `${n >= 0 ? '+' : '−'}${num(Math.abs(n))} ${t('EconomyMines.Currency')}`
+
+  /*
+    Navigation des bilans hebdomadaires (lot 2) : semaine par semaine dans le mandat du lecteur, chaque
+    bilan recalculé jour par jour avec les prix en vigueur ce jour-là. « Période en cours » (le bilan du
+    mois) reste l'affichage par défaut.
+  */
+  const range = computed(() => weekRange(registry.value))
+  const week = computed(() => (selectedMonday.value && registry.value ? weeklyBilan(registry.value, priceSets.value, selectedMonday.value) : null))
+  const canGoPrevious = computed(() => !!range.value && (selectedMonday.value ? selectedMonday.value > range.value.first : true))
+  const canGoNext = computed(() => !!selectedMonday.value)
+  function previousWeek() {
+    if (!range.value) return
+    selectedMonday.value = selectedMonday.value ? shiftWeek(selectedMonday.value, -1) : range.value.last
+  }
+  function nextWeek() {
+    if (!selectedMonday.value) return
+    const next = shiftWeek(selectedMonday.value, 1)
+    selectedMonday.value = next > range.value.last ? null : next
+  }
+  const gameDate = iso => formatDateFr(toGameDateIso(iso))
+  const weekLabel = computed(() => (week.value
+    ? t('EconomyMines.WeekLabel', { monday: gameDate(week.value.monday), sunday: gameDate(week.value.sunday) })
+    : ''))
+
+  /** Seule une semaine complète s'exporte, comme dans le Bilan public (§2.4). */
+  function exportWeek() {
+    if (!week.value?.complete) return
+    const text = bilanToBBcode(week.value.bilan, { title: t('EconomyMines.Title'), week: weekLabel.value, t })
+    navigator.clipboard.writeText(text)
+      .then(() => push.success(t('EconomyMines.RegistryPage.Export.Copied')))
+      .catch(() => push.error(t('EconomyMines.CopyError')))
+  }
+  const onPricesSaved = async () => { await loadPrices() }
 
   /** Jours consécutifs regroupés en plages : « du 23/09 au 07/10 », un jour isolé reste seul. */
   const ranges = (days) => {
@@ -107,6 +167,12 @@
     <template v-else-if="registry">
       <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
         <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Title', { province: registry.province.name }) }}</h2>
+        <div class="flex flex-wrap items-center gap-3">
+          <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--quiet odc-btn--sm odc--slate" data-testid="prices-history-link">{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}</RouterLink>
+          <button v-if="canManagePrices" type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="manage-prices" @click="showPrices = true">
+            {{ t('EconomyMines.RegistryPage.Prices.ManageButton') }}
+          </button>
+        </div>
         <!-- Âge du dernier relevé, toujours visible (brief §7) ; orange dès deux jours : on travaille à l'aveugle. -->
         <p class="text-sm italic" :class="stale ? 'font-bold text-orange-800 dark:text-orange-800' : 'text-slate-700 dark:text-slate-700'" data-testid="registry-age">
           <template v-if="latest">{{ t('EconomyMines.RegistryPage.LastReport', { age: lastAge, date: dayMonth(latest.reported_at) }) }}</template>
@@ -122,48 +188,50 @@
         <h3 class="text-lg font-bold text-slate-800 dark:text-slate-800">
           {{ t('EconomyMines.RegistryPage.CurrentTitle', { month: current.month, from: dayMonth(current.from), to: dayMonth(current.to) }, current.month) }}
         </h3>
-        <div class="overflow-x-auto">
-          <table class="mt-2 w-full text-sm">
-            <thead>
-              <tr>
-                <th class="text-left">{{ t('EconomyMines.RegistryPage.Mine') }}</th>
-                <th class="text-right">{{ t('EconomyMines.RegistryPage.Level') }}</th>
-                <th class="text-right">{{ t('EconomyMines.ColumnProduction') }}</th>
-                <th class="text-right">{{ t('EconomyMines.ColumnValue') }}</th>
-                <th class="text-right">{{ t('EconomyMines.ColumnHours') }}</th>
-                <th class="text-right">{{ t('EconomyMines.ColumnSalary') }}</th>
-                <th class="text-right">{{ t('EconomyMines.ColumnMaintenanceValue') }}</th>
-                <th class="text-right">{{ t('EconomyMines.ColumnBalance') }}</th>
-              </tr>
-            </thead>
-            <tbody class="tabular-nums">
-              <tr v-for="line in current.bilan.lines" :key="lineKey(line)" class="border-b border-slate-300">
-                <td class="py-2 pr-3 font-bold whitespace-nowrap">#{{ line.number }} {{ line.label }}</td>
-                <td class="py-2 text-right">{{ current.levels.get(lineKey(line)) ?? '—' }}</td>
-                <td class="py-2 text-right whitespace-nowrap">{{ num(line.production) }} {{ unit(line.resource) }}</td>
-                <td class="py-2 text-right">{{ num(line.valeur) }}</td>
-                <td class="py-2 text-right">{{ num(line.heures) }}</td>
-                <td class="py-2 text-right">{{ num(line.salaire) }}</td>
-                <td class="py-2 text-right">{{ num(line.entretien) }}</td>
-                <td :class="['py-2 text-right font-bold', line.solde >= 0 ? 'text-green-800' : 'text-red-700']">{{ num(line.solde) }}</td>
-              </tr>
-              <tr class="font-bold" data-testid="registry-current-total">
-                <td class="py-2">{{ t('EconomyMines.TotalLabel') }}</td>
-                <td></td>
-                <td></td>
-                <td class="py-2 text-right">{{ num(current.bilan.total.valeur) }}</td>
-                <td class="py-2 text-right">{{ num(current.bilan.total.heures) }}</td>
-                <td class="py-2 text-right">{{ num(current.bilan.total.salaire) }}</td>
-                <td class="py-2 text-right">{{ num(current.bilan.total.entretien) }}</td>
-                <td :class="['py-2 text-right', current.bilan.net >= 0 ? 'text-green-800' : 'text-red-700']">{{ signed(current.bilan.net) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <BilanTable :bilan="current.bilan" :levels="current.levels" total-testid="registry-current-total" />
         <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
           {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: current.bilan.covered, days: current.bilan.days }, current.bilan.covered) }}
           {{ t('EconomyMines.RegistryPage.CurrentPrices') }}
         </p>
+        <p v-if="current.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="registry-unpriced">
+          {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: current.bilan.unpricedDays.length }, current.bilan.unpricedDays.length) }}
+        </p>
+      </section>
+
+      <!-- Bilans hebdomadaires (lot 2) : ◀ ▶ dans le mandat, recalculés jour par jour avec les prix en
+           vigueur ce jour-là. Le bilan en cours du mois reste l'affichage par défaut. -->
+      <section v-if="range" class="mt-6" data-testid="registry-weeks" aria-labelledby="registry-weeks-title">
+        <h3 id="registry-weeks-title" class="sr-only">{{ t('EconomyMines.RegistryPage.Navigation.Title') }}</h3>
+        <div class="flex flex-wrap items-center gap-3">
+          <button type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoPrevious"
+                  :aria-label="t('EconomyMines.RegistryPage.Navigation.Previous')" data-testid="week-previous" @click="previousWeek">
+            <v-icon name="fa-chevron-left" scale="0.9" />
+          </button>
+          <span class="font-bold text-slate-800 dark:text-slate-800" data-testid="week-label">
+            {{ week ? weekLabel : t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}
+          </span>
+          <button type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoNext"
+                  :aria-label="t('EconomyMines.RegistryPage.Navigation.Next')" data-testid="week-next" @click="nextWeek">
+            <v-icon name="fa-chevron-right" scale="0.9" />
+          </button>
+          <button v-if="week" type="button" class="text-sm underline text-slate-700 dark:text-slate-700" data-testid="week-reset" @click="selectedMonday = null">
+            {{ t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}
+          </button>
+        </div>
+
+        <div v-if="week" class="mt-2" data-testid="registry-week">
+          <p v-if="!week.complete" class="text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="week-incomplete">{{ t('EconomyMines.IncompleteWeekTitle') }}</p>
+          <BilanTable :bilan="week.bilan" total-testid="registry-week-total" />
+          <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
+            {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: week.bilan.covered, days: week.bilan.days }, week.bilan.covered) }}
+          </p>
+          <p v-if="week.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="week-unpriced">
+            {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: week.bilan.unpricedDays.length }, week.bilan.unpricedDays.length) }}
+          </p>
+          <button v-if="week.complete" type="button" class="mt-2 odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="week-export" @click="exportWeek">
+            {{ t('EconomyMines.RegistryPage.Export.Button') }}
+          </button>
+        </div>
       </section>
 
       <div class="mt-6 grid gap-x-10 gap-y-6 laptop:grid-cols-2">
@@ -241,6 +309,7 @@
         </div>
       </div>
     </template>
+    <MinePricesModal :show="showPrices" :province-id="registry?.province?.id ?? null" :prices="priceSets" @close="showPrices = false" @saved="onPricesSaved" />
   </div>
 </template>
 

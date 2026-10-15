@@ -340,7 +340,7 @@
       "Mine": "Mine",
       "Level": "Level",
       "CurrentTitle": "Current report — 1st month of your term, from {from} to {to} (provisional) | Current report — 2nd month of your term, from {from} to {to} (provisional)",
-      "CurrentPrices": "Prices and wage/hour from the last recorded report.",
+      "CurrentPrices": "Prices and wage/hour in force each day (otherwise those of the last report).",
       "GapsTitle": "Days without data since you took office",
       "GapsNone": "None: data for every day since {date}.",
       "GapsSome": "One day without data since {date}: | {count} days without data since {date}:",
@@ -357,12 +357,53 @@
       "BilanPeriod": "{label}, from {from} to {to}",
       "BilanFigures": "Value produced {valeur}; wages {salaire}; upkeep {entretien}. Net:",
       "BilanCoverage": "No day covered out of {days}: the report only counts days on which the registry has data. | One day covered out of {days}: the report only counts days on which the registry has data. | {covered} days covered out of {days}: the report only counts days on which the registry has data.",
-      "BilanPrices": "Prices and wage/hour from the last report of the period.",
+      "BilanPrices": "Prices and wage/hour in force each day (otherwise those of the last report).",
       "LevelsTitle": "Level history",
       "LevelsNone": "no level change recorded",
       "LevelUp": "On {date}: level {from} → {to}, improvement.",
       "LevelDown": "On {date}: level {from} → {to}, level lowered (deliberate choice).",
-      "LevelFailure": "On {date}: level {from} → {to}. No upkeep recorded since {previous}, although the threshold had been reached that day."
+      "LevelFailure": "On {date}: level {from} → {to}. No upkeep recorded since {previous}, although the threshold had been reached that day.",
+      "Prices": {
+        "EffectiveFrom": "Effective from",
+        "HourlyRate": "Hourly rate",
+        "Resource": {
+          "OR": "Gold",
+          "FER": "Iron",
+          "PIERRE": "Stone",
+          "ARGILE": "Clay",
+          "SEL": "Salt"
+        },
+        "Cancel": "Cancel",
+        "Update": "Update",
+        "Save": "Save",
+        "Saved": "Prices saved.",
+        "ModalTitle": "Current prices",
+        "ViewHistory": "View history",
+        "ManageButton": "Manage prices",
+        "PageTitle": "Price history of {province}",
+        "PageTitleShort": "Price history",
+        "BackToRegistry": "Back to the registry",
+        "AddPrice": "Add a price",
+        "Edit": "Edit",
+        "Locked": "This price can no longer be edited (mandate ended).",
+        "NotAllowed": "Only the province's Trade Minister, Mines Superintendent, Sheriff and leader can view its prices.",
+        "Empty": "No prices are recorded for this province.",
+        "InForceFrom": "Effective from {date}",
+        "CreatedBy": "Created by {name} on {date}",
+        "ModifiedBy": "Modified by {name} on {date}",
+        "NoPricesWarning": "Some weeks of the mandate are not covered by a price record.",
+        "Unpriced": "No known price for {count} day: it is counted as zero. | No known price for {count} days: they are counted as zero."
+      },
+      "Navigation": {
+        "Title": "Weekly balance sheets",
+        "Previous": "Previous week",
+        "Next": "Next week",
+        "CurrentPeriod": "Current period"
+      },
+      "Export": {
+        "Button": "Export as BBCode",
+        "Copied": "BBCode copied to clipboard."
+      }
     },
     "Registry": {
       "HelpButton": "How does the registry work?",
@@ -421,7 +462,13 @@
     "NetLabel": "Net",
     "NoDataError": "No data recognized. Check that you pasted the game's text correctly.",
     "CopiedSuccess": "Copied to clipboard.",
-    "CopyError": "Could not copy to clipboard (permission denied by the browser?)."
+    "CopyError": "Could not copy to clipboard (permission denied by the browser?).",
+    "ManagedPrices": {
+      "Title": "Province prices (effective {date})",
+      "Help": "These prices come from the registry: each day of the balance sheet is valued at the price set in force that day. They cannot be edited here.",
+      "Manage": "Manage prices",
+      "None": "No prices are recorded yet for your province: enter them here for now, or record them in the registry."
+    }
   },
   "Animation": {
     "Title": "Animation Chest"

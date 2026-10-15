@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 03/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 15/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -24,7 +24,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/legal/mentions` | `legal-mentions` | — (`meta.public`) |
 | `/legal/data` | `legal-data` | — (`meta.public`) — « Vos données, outil par outil », une ancre par outil |
 | `/app/` | `home` | — |
-| `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre |
+| `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre ; enfant `registre/prix` → `economy-prices` (même garde), **sans lien de menu** : on y va par le bouton « Historique des prix » du registre |
 | `/app/secu` (enfant `/guet` → `security-guet`) | `security` | — |
 | `/app/company` | `company` | — |
 | `/app/anim` | `animation` | — |
@@ -263,6 +263,26 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
     seuil atteint = échec **constaté** ; autre −1 = choix assumé) et **relevés inscrits**, remplacements compris.
   Relevés inscrits avant back #58 : libellé et ressource repris de l'état de la mine. Le lien du menu
   d'Économie (et son aide `HelpModal`) n'apparaît qu'à qui peut lire (`MainEconomy`, via `GET …/mine-registry`).
+- **Prix des mines par période** (lot 2, 15/10/2026 ; brief `admin/content/brief-prix-registre.md`, backend
+  `province_mine_prices`). Le serveur sert les jeux de prix (`GET provinces/{id}/mine-prices`, via
+  `use/useMinePrices.js`) ; `modules/minePrices.js` (logique pure) en tire le jeu **en vigueur ce jour-là**
+  (`setForDay`, `priceResolver`). `computePeriodBilan` accepte désormais une **fonction de prix**
+  `jour => {prices, rate}` (en plus de l'objet unique du Bilan public) : chaque jour de travail se valorise au
+  jeu de SON jour ; un jour sans prix compte zéro et se dit (`unpricedDays`), `rate` vaut `null` si le taux a
+  varié. **Repli** quand aucun jeu n'est en base : les prix du dernier relevé (bilans du mois et de mandat,
+  comme avant) ou du relevé le plus proche (bilan d'une semaine). Écrans : `EconomyPrices.vue`
+  (`/app/eco/registre/prix` : historique, ajout, correction en place, alerte des semaines non couvertes),
+  `MinePricesModal.vue` (« Gérer les prix » dans le registre, jeu du jour pré-rempli, bouton « Mettre à jour »
+  seulement si un champ a changé ; un jeu déjà daté d'aujourd'hui est corrigé, pas doublé) et
+  `MinePriceForm.vue`. Dans le registre, ◀ ▶ parcourent les **semaines du mandat** (`weekRange`,
+  `weeklyBilan`), « Période en cours » ramène au bilan du mois ; **« Exporter en BBCode »** (semaine complète
+  seulement, comme le Bilan public) passe par `modules/mineBBcode.js`, gabarit **partagé** avec `EconomyMines`.
+  ⚠️ Aucune règle côté site : `access.prices.{write,read}` dit où l'on gère/lit, `editable` dit quel jeu se
+  corrige. **Bilan public** : un personnage qui gère le registre voit les prix de sa province **sans pouvoir les
+  modifier** (sans aucun jeu en base, la saisie reste en repli, avec un avertissement) ; les autres saisissent
+  les leurs, gardés en confort. `MineRegistrySave` n'envoie plus de prix à un gérant : le serveur fige ceux de
+  la table dans le relevé. Textes sous `EconomyMines.RegistryPage.{Prices,Navigation,Export}` et
+  `EconomyMines.ManagedPrices` (le brief proposait `Eco.MineRegistry.*`, qui n'existe pas).
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
   vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
   prévu.

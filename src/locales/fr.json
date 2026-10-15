@@ -340,7 +340,7 @@
       "Mine": "Mine",
       "Level": "Niveau",
       "CurrentTitle": "Bilan en cours — 1er mois de votre mandat, du {from} au {to} (provisoire) | Bilan en cours — 2e mois de votre mandat, du {from} au {to} (provisoire)",
-      "CurrentPrices": "Prix et salaire/heure du dernier relevé inscrit.",
+      "CurrentPrices": "Prix et salaire/heure en vigueur chaque jour (à défaut, ceux du dernier relevé).",
       "GapsTitle": "Jours sans données depuis votre entrée en fonction",
       "GapsNone": "Aucun : des données pour chaque jour depuis le {date}.",
       "GapsSome": "Un jour sans données depuis le {date} : | {count} jours sans données depuis le {date} :",
@@ -357,12 +357,53 @@
       "BilanPeriod": "{label}, du {from} au {to}",
       "BilanFigures": "Valeur produite {valeur} ; salaires {salaire} ; entretien {entretien}. Net :",
       "BilanCoverage": "Aucun jour couvert sur {days} : le bilan ne compte que les jours où le registre a des données. | Un jour couvert sur {days} : le bilan ne compte que les jours où le registre a des données. | {covered} jours couverts sur {days} : le bilan ne compte que les jours où le registre a des données.",
-      "BilanPrices": "Prix et salaire/heure du dernier relevé de la période.",
+      "BilanPrices": "Prix et salaire/heure en vigueur chaque jour (à défaut, ceux du dernier relevé).",
       "LevelsTitle": "Historique des niveaux",
       "LevelsNone": "aucun changement de niveau relevé",
       "LevelUp": "Le {date} : niveau {from} → {to}, amélioration.",
       "LevelDown": "Le {date} : niveau {from} → {to}, baisse de niveau (choix assumé).",
-      "LevelFailure": "Le {date} : niveau {from} → {to}. Aucun entretien relevé depuis le {previous}, alors que le seuil était atteint ce jour-là."
+      "LevelFailure": "Le {date} : niveau {from} → {to}. Aucun entretien relevé depuis le {previous}, alors que le seuil était atteint ce jour-là.",
+      "Prices": {
+        "EffectiveFrom": "En vigueur à partir du",
+        "HourlyRate": "Taux horaire",
+        "Resource": {
+          "OR": "Or",
+          "FER": "Fer",
+          "PIERRE": "Pierre",
+          "ARGILE": "Argile",
+          "SEL": "Sel"
+        },
+        "Cancel": "Annuler",
+        "Update": "Mettre à jour",
+        "Save": "Enregistrer",
+        "Saved": "Prix enregistrés.",
+        "ModalTitle": "Prix en vigueur",
+        "ViewHistory": "Voir l'historique",
+        "ManageButton": "Gérer les prix",
+        "PageTitle": "Historique des prix de {province}",
+        "PageTitleShort": "Historique des prix",
+        "BackToRegistry": "Retour au registre",
+        "AddPrice": "Ajouter un prix",
+        "Edit": "Modifier",
+        "Locked": "Ce prix ne peut plus être modifié (mandat terminé).",
+        "NotAllowed": "Seuls le commissaire au commerce, le commissaire aux mines, le bailli et le dirigeant de la province consultent ses prix.",
+        "Empty": "Aucun prix n'est enregistré pour cette province.",
+        "InForceFrom": "En vigueur à partir du {date}",
+        "CreatedBy": "Créé par {name} le {date}",
+        "ModifiedBy": "Modifié par {name} le {date}",
+        "NoPricesWarning": "Des semaines du mandat ne sont pas couvertes par un enregistrement de prix.",
+        "Unpriced": "Aucun prix connu pour {count} jour : il est compté à zéro. | Aucun prix connu pour {count} jours : ils sont comptés à zéro."
+      },
+      "Navigation": {
+        "Title": "Bilans hebdomadaires",
+        "Previous": "Semaine précédente",
+        "Next": "Semaine suivante",
+        "CurrentPeriod": "Période en cours"
+      },
+      "Export": {
+        "Button": "Exporter en BBCode",
+        "Copied": "BBCode copié dans le presse-papiers."
+      }
     },
     "Registry": {
       "HelpButton": "Comment fonctionne le registre ?",
@@ -421,7 +462,13 @@
     "NetLabel": "Net",
     "NoDataError": "Aucune donnée reconnue. Vérifie que tu as bien collé le texte du jeu.",
     "CopiedSuccess": "Copié dans le presse-papier.",
-    "CopyError": "Impossible de copier dans le presse-papier (autorisation refusée par le navigateur ?)."
+    "CopyError": "Impossible de copier dans le presse-papier (autorisation refusée par le navigateur ?).",
+    "ManagedPrices": {
+      "Title": "Prix de la province (en vigueur le {date})",
+      "Help": "Ces prix viennent du registre : chaque jour du bilan se valorise au jeu de prix en vigueur ce jour-là. Ils ne se modifient pas ici.",
+      "Manage": "Gérer les prix",
+      "None": "Aucun prix n'est encore enregistré pour votre province : saisissez-les ici en attendant, ou enregistrez-les dans le registre."
+    }
   },
   "Animation": {
     "Title": "Coffres Animation"

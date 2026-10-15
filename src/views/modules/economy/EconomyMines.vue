@@ -11,10 +11,16 @@
     getWeekBounds, filterToWeek, shiftWeek, todayIso, defaultWeek,
   } from '@/modules/mineParser'
   import { toGameDateIso } from '@/modules/gameCalendar'
+  import { bilanToBBcode, formatNum, productionWithUnit as unitedProduction, RESOURCE_COLOR } from '@/modules/mineBBcode'
+  import { priceResolver, setForDay } from '@/modules/minePrices'
   import { push } from 'notivue'
+  import { RouterLink } from 'vue-router'
+  import { useAuthStore } from '@/stores/authStore'
+  import useMinePrices from '@/use/useMinePrices'
   import MineRegistrySave from '@/components/mines/MineRegistrySave.vue'
 
   const { t } = useI18n()
+  const productionWithUnit = line => unitedProduction(line, t)
 
   // Toute date montrée à un joueur (interface ou export forum) porte l'année du jeu ;
   // les dates réelles ne servent qu'en interne (bornes de semaine, clés de cache).
@@ -51,6 +57,38 @@
   const bilan = ref(null)
   const weekCheck = ref(null)
 
+  // Prix du registre (lot 2, Greg 15/10/2026) : un personnage qui gère le registre ne SAISIT plus les
+  // prix — ils viennent de la table de sa province, affichés sans pouvoir les modifier ; les autres
+  // saisissent les leurs (gardés en confort, par semaine). Qui gère vient de l'API, jamais d'ici.
+  const authStore = useAuthStore()
+  const minePrices = useMinePrices()
+  const priceSets = ref([])
+  const manages = ref(false)
+  const canManagePrices = ref(false)
+  // Gérant SANS aucun jeu en base : repli sur la saisie (rien à afficher), et l'écran le dit.
+  const usesTable = computed(() => manages.value && priceSets.value.length > 0)
+  const todayPrices = computed(() => setForDay(priceSets.value, todayIso()) ?? priceSets.value[priceSets.value.length - 1] ?? null)
+  watch(
+    () => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null),
+    async (id) => {
+      manages.value = false
+      canManagePrices.value = false
+      priceSets.value = []
+      if (!id) return
+      try {
+        const access = await minePrices.access(id)
+        canManagePrices.value = !!access?.prices?.write
+        const provinceId = access?.write?.id ?? access?.prices?.write?.id
+        if (!provinceId) return
+        manages.value = true
+        priceSets.value = await minePrices.list(provinceId)
+      } catch {
+        manages.value = false // pas d'accès connu : le Bilan public reste ce qu'il était
+      }
+    },
+    { immediate: true },
+  )
+
   // Semaine ciblée par le bilan — permet de reconstruire une semaine passée
   // (plusieurs collages successifs, chacun filtré à cette semaine avant fusion)
   // sans mélanger les jours avec la semaine en cours ou une autre semaine passée.
@@ -68,19 +106,6 @@
     .map(state => ({ state, alert: thresholdAlert(state) }))
     .filter(({ alert }) => alert))
   const pastedOnLabel = computed(() => pastedOn.value.slice(8, 10) + '/' + pastedOn.value.slice(5, 7))
-
-  // Couleurs des titres de mine dans les exports BBcode, choisies sur deux critères :
-  // évoquer la matière première, et rester lisibles sur le fond beige des [quote] du
-  // forum du jeu (#d5bc84, relevé sur une capture réelle). Les teintes précédentes
-  // (darkgoldenrod, seagreen, darkgray...) plafonnaient entre 1,27:1 et 2,3:1 de
-  // contraste, soit illisibles ; celles-ci sont toutes au-dessus de 4,5:1 (WCAG AA).
-  const RESOURCE_COLOR = {
-    OR: '#574000',      // or brun foncé      — 5,31:1
-    PIERRE: '#4a4a4a',  // gris ardoise       — 4,79:1
-    FER: '#26414c',     // acier bleuté       — 5,84:1
-    ARGILE: '#7d3309',  // terre cuite        — 4,83:1
-    SEL: '#14507d',     // bleu marin         — 4,59:1
-  }
 
 /*
   navigation semaine
@@ -155,81 +180,21 @@
     rateNotStored.value = false
 
     weekCheck.value = checkWeekCompleteness(merged, selectedMonday.value)
-    bilan.value = computeBilan(merged, prices, settings.rate, selectedMonday.value)
+    bilan.value = computeBilan(merged, usesTable.value ? priceResolver(priceSets.value) : prices, settings.rate, selectedMonday.value)
   }
 
 /*
   export BBcode
 */
-  function formatNum(n) {
-    return Number(n.toFixed(2)).toLocaleString('fr-FR')
-  }
-
-  // La production n'a pas d'unité commune (écus d'or, kg de fer, qx de pierre…) : l'unité suit le
-  // nombre, dans chaque case.
-  function productionWithUnit(line) {
-    const unit = line.resource ? t(`EconomyMines.Units.${line.resource}`) : ''
-    return `${formatNum(line.production)} ${unit}`.trim()
-  }
-
-  function bilanToBBcode(b, title) {
-    // Les dates de la semaine couverte suivent le titre : un bilan repartagé sur le forum
-    // doit pouvoir être daté sans dépendre du message qui l'accompagne. Même libellé que
-    // le sélecteur de semaine de l'UI, pour qu'un lecteur retrouve la période à l'identique.
-    const week = t('EconomyMines.WeekLabel', {
-      monday: formatGameDateFr(selectedMonday.value),
-      sunday: formatGameDateFr(selectedSunday.value),
-    })
-    // Une copie de ce que le titulaire a vu : la table par mine, la ligne Total et la convention
-    // (fil bilan-mines, Q11). Jamais l'alerte de seuil (Q9 bis), jamais une semaine incomplète (Q10).
-    // Mise en page : UN seul [quote] (un cadre par mine alourdissait le forum — Greg, 05/10/2026),
-    // l'unité dite une fois en tête, quatre lignes par mine, le solde en évidence et coloré, puis le
-    // Total et le net en grand.
-    const bbt = (key, params) => t(`EconomyMines.Bb.${key}`, params ?? {})
-    const upkeep = (pierre, fer) => `${formatNum(pierre)} ${t('EconomyMines.Units.PIERRE')} / ${formatNum(fer)} ${t('EconomyMines.Units.FER')}`
-
-    // Couleurs du titre et de la semaine choisies par Greg (06/10/2026) : darkblue 12,5:1 et
-    // darkgreen 6,1:1 sur le fond clair du [quote] (#f0e8d0).
-    let bb = `[quote][center][b][size=20][color=darkblue]${title}[/color][/size][/b]\n[i][color=darkgreen]${week}[/color][/i]\n`
-    bb += `[size=10]${bbt('Amounts', { rate: formatNum(b.rate) })}[/size][/center]\n`
-    // Forme donnée par Greg (06/10/2026) : « [list][*] » collés, sans retour à la ligne entre les deux
-    // — c'est ce retour, rendu en ligne vide par le forum, qui creusait un blanc sous chaque titre.
-    const list = items => `[list][*]${items.join('\n[*]')}\n[/list]\n`
-    for (const line of b.lines) {
-      const color = RESOURCE_COLOR[line.resource] || 'black'
-      bb += `[color=${color}][b][size=14]${line.label}[/size][/b][/color] [size=10](#${line.number}${line.noeud ? ' - Noeud ' + line.noeud : ''})[/size]\n`
-      bb += list([
-        // L'or produit des écus : sa production EST sa valeur, inutile de la répéter.
-        `${bbt('Production')} : ${productionWithUnit(line)}${line.resource === 'OR' ? '' : ` — ${bbt('Value')} ${formatNum(line.valeur)}`}`,
-        `${bbt('Wages')} : ${formatNum(line.salaire)} (${formatNum(line.heures)} h)`,
-        `${bbt('Upkeep')} : ${formatNum(line.entretien)} (${upkeep(line.pierre, line.fer)})`,
-        `[b]${bbt('Balance')} : ${signed(line.solde)}[/b]`,
-      ])
-    }
-    // Le Total suit la forme d'une mine ; le net, à gauche, le conclut en grand.
-    bb += `[b][size=14]${bbt('TotalTitle')}[/size][/b]\n`
-    bb += list([
-      `${bbt('ValueProduced')} : ${formatNum(b.total.valeur)}`,
-      `${bbt('Wages')} : ${formatNum(b.total.salaire)} (${formatNum(b.total.heures)} h × ${formatNum(b.rate)})`,
-      `${bbt('Upkeep')} : ${formatNum(b.total.entretien)} (${upkeep(b.total.pierre, b.total.fer)})`,
-    ])
-    bb += `[size=18][b]${t('EconomyMines.NetLabel')} : ${signed(b.net)} ${t('EconomyMines.Currency')}[/b][/size]\n`
-    bb += `[size=9][i]${t('EconomyMines.Convention')}[/i][/size][/quote]`
-    return bb
-  }
-
-  // Solde et net signés et colorés pour le forum : green / red, choix de Greg (06/10/2026).
-  // ⚠️ Contraste sous 4,5:1 sur le fond clair du [quote] (#f0e8d0) : green 4,20:1, red 3,27:1 — le
-  // texte est en gras, et le signe (+/−) porte l'information sans la couleur. Variantes foncées
-  // mesurées si besoin : #14451a 9,05:1, #7a1010 8,99:1.
-  function signed(n) {
-    const color = n < 0 ? 'red' : 'green'
-    return `[color=${color}]${n > 0 ? '+' : ''}${formatNum(n)}[/color]`
-  }
-
   function toExport() {
     if (!bilan.value || !weekCheck.value?.complete) return
-    copyToClipboard(bilanToBBcode(bilan.value, t('EconomyMines.Title')))
+    copyToClipboard(bilanToBBcode(bilan.value, {
+      title: t('EconomyMines.Title'),
+      // Les dates de la semaine couverte suivent le titre : un bilan repartagé sur le forum doit pouvoir
+      // être daté sans dépendre du message qui l'accompagne (même libellé que le sélecteur de semaine).
+      week: t('EconomyMines.WeekLabel', { monday: formatGameDateFr(selectedMonday.value), sunday: formatGameDateFr(selectedSunday.value) }),
+      t,
+    }))
   }
 
   // navigator.clipboard.writeText() ne donne aucun signal visuel par défaut :
@@ -357,7 +322,7 @@
       <div v-if="pastedText.trim()" class="flex flex-col items-center justify-start mt-7">
         <button @click="formatDayForForum" class="odc-btn odc-btn--soft odc--slate">{{ t('EconomyMines.DayExportButton') }}</button>
         <!-- Registre des mines : même collage, seconde destination, action du jour (brief Registre §6). -->
-        <MineRegistrySave :text="pastedText" :prices="prices" :rate="rate" />
+        <MineRegistrySave :text="pastedText" :prices="usesTable ? null : prices" :rate="usesTable ? null : rate" />
       </div>
     </div>
 
@@ -372,24 +337,49 @@
     </ul>
 
 
-    <!-- Champs courts, unité à droite : un prix ou un taux tient en quelques chiffres. -->
-    <div class="mt-4 flex flex-wrap gap-x-6 gap-y-3">
-      <div v-for="field in PRICE_FIELDS" :key="field.resource" class="form-group">
-        <label :for="`price-${field.resource}`" class="form-label">{{ t(`EconomyMines.${field.label}`) }}</label>
-        <div class="flex items-center gap-1">
-          <input :id="`price-${field.resource}`" v-model.number="prices[field.resource]" type="number" step="0.1" min="0" class="form-field w-24" />
-          <span class="text-sm">{{ t('EconomyMines.Currency') }}</span>
+    <!-- Gérant du registre : les prix de la province, en lecture seule (Greg, 15/10/2026). Ils se gèrent
+         dans le registre ; chaque jour du bilan se valorise au jeu en vigueur CE jour-là. -->
+    <section v-if="usesTable" class="mt-4" data-testid="managed-prices" aria-labelledby="managed-prices-title">
+      <h4 id="managed-prices-title" class="font-bold">{{ t('EconomyMines.ManagedPrices.Title', { date: todayPrices ? formatGameDateFr(todayPrices.effective_from) : '' }) }}</h4>
+      <dl v-if="todayPrices" class="mt-1 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+        <div v-for="field in PRICE_FIELDS" :key="field.resource" class="flex gap-1">
+          <dt class="text-slate-700 dark:text-slate-700">{{ t(`EconomyMines.${field.label}`) }}</dt>
+          <dd class="font-bold tabular-nums">{{ todayPrices.prices[field.resource] }} {{ t('EconomyMines.Currency') }}</dd>
+        </div>
+        <div class="flex gap-1">
+          <dt class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RateLabel') }}</dt>
+          <dd class="font-bold tabular-nums">{{ todayPrices.hourly_rate }} {{ t('EconomyMines.Currency') }}</dd>
+        </div>
+      </dl>
+      <p class="mt-1 text-xs text-slate-700 dark:text-slate-700">
+        {{ t('EconomyMines.ManagedPrices.Help') }}
+        <RouterLink v-if="canManagePrices" :to="{ name: 'economy-prices' }" class="underline" data-testid="managed-prices-link">{{ t('EconomyMines.ManagedPrices.Manage') }}</RouterLink>
+      </p>
+    </section>
+    <template v-else>
+      <p v-if="manages" class="mt-4 text-sm text-orange-800 dark:text-orange-800" data-testid="no-price-set">
+        {{ t('EconomyMines.ManagedPrices.None') }}
+        <RouterLink v-if="canManagePrices" :to="{ name: 'economy-prices' }" class="underline">{{ t('EconomyMines.ManagedPrices.Manage') }}</RouterLink>
+      </p>
+      <!-- Champs courts, unité à droite : un prix ou un taux tient en quelques chiffres. -->
+      <div class="mt-4 flex flex-wrap gap-x-6 gap-y-3">
+        <div v-for="field in PRICE_FIELDS" :key="field.resource" class="form-group">
+          <label :for="`price-${field.resource}`" class="form-label">{{ t(`EconomyMines.${field.label}`) }}</label>
+          <div class="flex items-center gap-1">
+            <input :id="`price-${field.resource}`" v-model.number="prices[field.resource]" type="number" step="0.1" min="0" class="form-field w-24" />
+            <span class="text-sm">{{ t('EconomyMines.Currency') }}</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="mines-rate" class="form-label">{{ t('EconomyMines.RateLabel') }}</label>
+          <div class="flex items-center gap-1">
+            <input id="mines-rate" v-model.number="rate" type="number" step="0.01" min="0" class="form-field w-24" />
+            <span class="text-sm">{{ t('EconomyMines.Currency') }}</span>
+          </div>
         </div>
       </div>
-      <div class="form-group">
-        <label for="mines-rate" class="form-label">{{ t('EconomyMines.RateLabel') }}</label>
-        <div class="flex items-center gap-1">
-          <input id="mines-rate" v-model.number="rate" type="number" step="0.01" min="0" class="form-field w-24" />
-          <span class="text-sm">{{ t('EconomyMines.Currency') }}</span>
-        </div>
-      </div>
-    </div>
-    <p v-if="rateNotStored" class="mt-1 text-sm text-orange-800 dark:text-orange-800" data-testid="rate-not-stored">
+    </template>
+    <p v-if="rateNotStored && !usesTable" class="mt-1 text-sm text-orange-800 dark:text-orange-800" data-testid="rate-not-stored">
       {{ t('EconomyMines.RateNotStored') }}
     </p>
 

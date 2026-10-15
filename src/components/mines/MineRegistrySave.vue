@@ -21,7 +21,8 @@
 
   const props = defineProps({
     text: { type: String, required: true },
-    prices: { type: Object, required: true },
+    // Absents pour qui gère le registre : le serveur fige les prix de la table en vigueur à la date du relevé.
+    prices: { type: Object, default: null },
     rate: { type: [Number, String], default: null },
   })
 
@@ -65,8 +66,7 @@
       const { data } = await http.post(`characters/${character.value.id}/mine-reports`, {
         raw: props.text.trim(),
         report: { mines: mines.value, states: parseMineStates(props.text) },
-        prices: { ...props.prices },
-        rate: props.rate,
+        ...(props.prices ? { prices: { ...props.prices }, rate: props.rate } : {}),
         confirm_replace: confirmReplace,
       }, auth())
       pending.value = null
