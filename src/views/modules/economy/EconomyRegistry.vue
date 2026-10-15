@@ -168,9 +168,11 @@
       <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
         <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Title', { province: registry.province.name }) }}</h2>
         <div class="flex flex-wrap items-center gap-3">
-          <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--quiet odc-btn--sm odc--slate" data-testid="prices-history-link">{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}</RouterLink>
+          <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--quiet odc-btn--sm odc--slate" data-testid="prices-history-link">
+            <v-icon name="fa-clock" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}
+          </RouterLink>
           <button v-if="canManagePrices" type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="manage-prices" @click="showPrices = true">
-            {{ t('EconomyMines.RegistryPage.Prices.ManageButton') }}
+            <v-icon name="gi-crown-coin" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.ManageButton') }}
           </button>
         </div>
         <!-- Âge du dernier relevé, toujours visible (brief §7) ; orange dès deux jours : on travaille à l'aveugle. -->
