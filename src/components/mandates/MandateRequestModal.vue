@@ -5,6 +5,7 @@
   import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
   import { useMandateStore, apiFieldErrors, apiMessage } from '@/stores/mandateStore'
   import useDialogFocus from '@/use/useDialogFocus'
+import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
   import useNavigationLoading from '@/use/useNavigationLoading'
   import { toGameDateIso, toRealDateIso } from '@/modules/gameCalendar'
 
@@ -138,9 +139,12 @@
       <div class="h-1.5 bg-gradient-to-r from-orange-400 to-red-600 shrink-0"></div>
 
       <form class="p-6 overflow-y-auto space-y-4" novalidate @submit.prevent="submit">
-        <h3 id="mandate-request-title" class="text-lg font-bold text-slate-800 dark:text-slate-100">
-          {{ isRenewal ? t('Profil.Mandates.Form.RenewTitle', { pseudo: character.pseudo }) : t('Profil.Mandates.Form.Title', { pseudo: character.pseudo }) }}
-        </h3>
+        <div class="flex items-start justify-between gap-4">
+          <h3 id="mandate-request-title" class="text-lg font-bold text-slate-800 dark:text-slate-100">
+            {{ isRenewal ? t('Profil.Mandates.Form.RenewTitle', { pseudo: character.pseudo }) : t('Profil.Mandates.Form.Title', { pseudo: character.pseudo }) }}
+          </h3>
+          <ModalCloseButton @click="close" />
+        </div>
 
         <!-- Deux colonnes à partir de laptop (pas de défilement sur ordinateur) : niveau et lieu à
              gauche, titre, date et lien à droite. Empilé en dessous. -->
@@ -206,7 +210,6 @@
         <p v-if="generalError" class="text-sm font-semibold text-red-600 dark:text-red-400" data-testid="error-general">{{ generalError }}</p>
 
         <div class="flex flex-wrap items-center justify-end gap-3">
-          <button type="button" class="odc-btn odc-btn--quiet odc-btn--sm odc--slate" @click="close">{{ t('Profil.Mandates.Cancel') }}</button>
           <button type="submit" class="odc-btn odc-btn--soft odc--orange" :disabled="submitting" data-testid="submit-request">
             {{ t('Profil.Mandates.Form.Submit') }}
           </button>

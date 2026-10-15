@@ -59,7 +59,11 @@ import {
   FaTrashAlt,
   FaHardHat,
   FaStar,
-  FaSlidersH
+  FaSlidersH,
+  FaTag,
+  FaHistory,
+  FaPlus,
+  FaCopy
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -104,7 +108,11 @@ addIcons(
   FaTrashAlt,
   FaHardHat,
   FaStar,
-  FaSlidersH
+  FaSlidersH,
+  FaTag,
+  FaHistory,
+  FaPlus,
+  FaCopy
 )
 
 // Configuration de Notivue

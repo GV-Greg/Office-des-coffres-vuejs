@@ -193,8 +193,8 @@ describe('ProfilView — confirmation en deux étapes', () => {
     await goToStep2(wrapper)
     await wrapper.find('[data-testid="delete-account-password"]').setValue('password123')
 
-    // Fermeture par le vrai chemin : le bouton « Annuler » de l'étape 2.
-    const cancel = wrapper.findAll('button').find((b) => b.text() === 'Annuler')
+    // Fermeture par le vrai chemin : la croix de la modale (plus de bouton « Annuler », charte §6.7).
+    const cancel = wrapper.find('[data-testid="modal-close"]')
     await cancel.trigger('click')
     expect(wrapper.find('[data-testid="delete-account-password"]').exists()).toBe(false)
 

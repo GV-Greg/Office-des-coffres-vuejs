@@ -42,7 +42,7 @@
 <template>
   <div class="page-card">
     <div class="w-full flex flex-grow mb-2">
-      <div class="w-1/6 flex flex-col justify-start text-yellow-600">
+      <div class="w-1/6 laptop:w-52 laptop:shrink-0 flex flex-col justify-start text-yellow-600">
         <h3 class="text-center">{{ t('Economy.Title') }}</h3>
         <div class="inline-flex items-center gap-1.5">
           <RouterLink :to="{ name: 'economy-mines' }" class="inline-flex items-center font-bold">
@@ -78,7 +78,7 @@
           </button>
         </div>
       </div>
-      <div class="w-5/6 ml-2 p-1">
+      <div class="w-5/6 laptop:w-auto laptop:flex-1 laptop:min-w-0 ml-2 p-1">
         <RouterView />
       </div>
     </div>

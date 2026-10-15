@@ -1,4 +1,5 @@
 <script setup>
+import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
   import { useI18n } from 'vue-i18n'
 
   defineProps({
@@ -24,14 +25,7 @@
             <v-icon name="gi-scroll-unfurled" scale="1.2" class="text-orange-500 shrink-0" />
             {{ title }}
           </h3>
-          <button
-            type="button"
-            @click="$emit('close')"
-            class="btn-grad-slate shrink-0 p-2 rounded-full"
-            :aria-label="t('Common.HelpModal.Close')"
-          >
-            <v-icon name="fa-times" scale="0.9" />
-          </button>
+          <ModalCloseButton @click="$emit('close')" />
         </div>
 
         <div v-if="purpose" class="mb-4">

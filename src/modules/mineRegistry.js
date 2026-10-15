@@ -3,7 +3,8 @@
 // testée sans DOM. Le serveur sert les faits ; ces lectures les interprètent avec le parseur qui les a
 // produits — jamais une règle de mandat (dates, autorisations) : celles-là arrivent de l'API.
 
-import { thresholdAlert, mergeMinesData, computePeriodBilan, periodDates, detectResource } from './mineParser'
+import { thresholdAlert, mergeMinesData, computePeriodBilan, periodDates, detectResource, weekDates, getWeekBounds, shiftWeek } from './mineParser'
+import { priceResolver, reportPriceSet, nearestReportPrices } from './minePrices'
 
 /** Clé d'une mine — même règle que mineKey du parseur : le nœud, le numéro en repli. */
 const keyOf = mine => (mine?.noeud ? `noeud:${mine.noeud}` : `numero:${mine?.number}`)
@@ -59,11 +60,11 @@ export function levelHistory(reports) {
 
 /**
  * Bilans de mi-mandat et de fin de mandat (fil R4) : du jour d'entrée en fonction DU LECTEUR à
- * `mid_at` / `end_at` exclus, sur les relevés inscrits fusionnés. Avant la date : 'pending' — l'écran
+ * `mid_at` / `end_at` exclus, sur les relevés inscrits fusionnés, jour par jour au jeu de prix en vigueur ce jour-là. Avant la date : 'pending' — l'écran
  * dit « dans N jours », il n'affiche JAMAIS un bilan partiel sous ce titre (même règle que le §2.4 du
- * Bilan public). Prix et taux : ceux du dernier relevé inscrit dans la période — des valeurs datées.
+ * Bilan public).
  */
-export function mandateBilans(registry) {
+export function mandateBilans(registry, priceSets = []) {
   const mandate = registry?.mandate
   if (!mandate?.in_office_from) return []
   const reports = activeAscending(registry.reports)
@@ -77,7 +78,7 @@ export function mandateBilans(registry) {
     return {
       kind, status: 'ready', from: mandate.in_office_from, at,
       prices: reference?.prices ?? null, rate: reference?.rate ?? null,
-      bilan: computePeriodBilan(merged, reference?.prices ?? {}, reference?.rate ?? 0, periodDates(mandate.in_office_from, at)),
+      bilan: computePeriodBilan(merged, priceResolver(priceSets, reportPriceSet(reference)), 0, periodDates(mandate.in_office_from, at)),
     }
   })
 }
@@ -124,12 +125,13 @@ function mergedMines(registry) {
  * Bilan EN COURS du mois de mandat (Greg, 09/10/2026 — remplace l'état des seuils en tête du registre) :
  * 1er mois = de l'entrée en fonction à hier ; 2e mois = de la mi-mandat à hier. PROVISOIRE par nature :
  * l'écran le titre « en cours » et dit sa couverture — jamais « bilan de mi-mandat » avant la date (R4).
- * Prix et taux : ceux du dernier relevé en vigueur. Niveau : celui du dernier relevé, par mine.
+ * Prix et taux : ceux de la table des prix en vigueur CHAQUE jour, à défaut ceux du dernier relevé
+ * (modules/minePrices.js, lot 2 ; à défaut, ceux du dernier relevé). Niveau : celui du dernier relevé, par mine.
  *
  * @returns {{ month: 1|2, from: string, to: string, bilan, levels: Map<string, string> }|null}
  *   null sans mandat, avant le premier jour complet, ou une fois le mandat terminé
  */
-export function currentPeriodBilan(registry) {
+export function currentPeriodBilan(registry, priceSets = []) {
   const mandate = registry?.mandate
   if (!mandate?.in_office_from || registry.today >= mandate.end_at) return null
   const month = registry.today < mandate.mid_at ? 1 : 2
@@ -144,10 +146,38 @@ export function currentPeriodBilan(registry) {
   return {
     month, from, to: days[days.length - 1],
     prices: latest?.prices ?? null, rate: latest?.rate ?? null,
-    bilan: computePeriodBilan(mergedMines(registry), latest?.prices ?? {}, latest?.rate ?? 0, days),
+    bilan: computePeriodBilan(mergedMines(registry), priceResolver(priceSets, reportPriceSet(latest)), 0, days),
     levels,
   }
 }
 
 /** Clé d'une ligne de bilan, pour retrouver son niveau. */
 export const lineKey = keyOf
+
+/**
+ * Semaines que l'on peut parcourir (lot 2) : de la semaine de l'entrée en fonction du lecteur à la semaine
+ * en cours. Lundis AAAA-MM-JJ, ou null sans mandat connu.
+ */
+export function weekRange(registry) {
+  const start = registry?.mandate?.in_office_from
+  if (!start || !registry?.today) return null
+  return { first: getWeekBounds(start).monday, last: getWeekBounds(registry.today).monday }
+}
+
+/**
+ * Bilan d'UNE semaine du mandat (lundi → dimanche), recalculé jour par jour avec les prix en vigueur ce
+ * jour-là (table des prix, à défaut le relevé inscrit le plus proche). Les jours avant l'entrée en fonction et à
+ * partir d'aujourd'hui sont écartés : ils ne sont pas (encore) dans le registre du lecteur.
+ * `complete` : les 7 jours sont appariés — seule une semaine complète s'exporte (règle du Bilan public, §2.4).
+ */
+export function weeklyBilan(registry, priceSets, monday) {
+  const start = registry?.mandate?.in_office_from
+  const days = weekDates(monday).filter(day => (!start || day >= start) && day < registry.today)
+  const bilan = computePeriodBilan(mergedMines(registry), priceResolver(priceSets, day => nearestReportPrices(registry.reports, day)), 0, days)
+  return {
+    monday, sunday: getWeekBounds(monday).sunday, bilan,
+    complete: days.length === 7 && bilan.covered === 7,
+  }
+}
+
+export { shiftWeek }

@@ -279,20 +279,38 @@ export function periodDates(from, toExclusive) {
  * de fin de mandat, brief Registre §7, calculés sur les relevés inscrits au lieu de redemander huit
  * collages). `covered` = jours où au moins une mine est appariée (règle A) : une période mal couverte
  * se voit au lieu de passer pour un bilan complet.
+ *
+ * `prices` est soit un objet de prix unique + `rate` (le Bilan public, un réglage pour la semaine),
+ * soit une FONCTION `jour => { prices, rate } | null` (prix par période du Registre, lot 2 : les prix
+ * changent en cours de semaine, chaque jour de travail se valorise au jeu en vigueur CE jour-là — le jour
+ * D de la règle A, pas celui des heures). Un jour apparié que la fonction ne sait pas valoriser compte
+ * pour zéro et se dit : `unpricedDays`. `rate` rendu : le taux commun à la période, ou null s'il a varié.
  */
 export function computePeriodBilan(mines, prices, rate, days) {
-  const price = resource => Number(prices?.[resource]) || 0
+  const resolve = typeof prices === 'function'
+    ? prices
+    : () => ({ prices, rate })
+  const priceOf = (set, resource) => Number(set?.prices?.[resource]) || 0
+
+  const unpriced = new Set()
+  const rates = new Set()
 
   const lines = (mines || []).map(mine => {
     const sums = { production: 0, heures: 0, pierre: 0, fer: 0 }
+    let valeur = 0
+    let salaire = 0
+    let entretien = 0
     for (const day of days) {
       const paired = pairedDay(mine, day)
       if (!paired) continue
+      const set = resolve(day)
+      if (!set) unpriced.add(day)
+      else rates.add(Number(set.rate) || 0)
       for (const field of Object.keys(sums)) sums[field] += paired[field]
+      valeur += mine.resource === 'OR' ? paired.production : paired.production * priceOf(set, mine.resource)
+      salaire += paired.heures * (Number(set?.rate) || 0)
+      entretien += paired.pierre * priceOf(set, 'PIERRE') + paired.fer * priceOf(set, 'FER')
     }
-    const valeur = mine.resource === 'OR' ? sums.production : sums.production * price(mine.resource)
-    const salaire = sums.heures * (Number(rate) || 0)
-    const entretien = sums.pierre * price('PIERRE') + sums.fer * price('FER')
     return {
       number: mine.number, noeud: mine.noeud ?? null, label: mine.label, resource: mine.resource,
       ...sums, valeur, salaire, entretien, solde: valeur - salaire - entretien,
@@ -304,7 +322,12 @@ export function computePeriodBilan(mines, prices, rate, days) {
 
   const covered = days.filter(day => (mines || []).some(mine => pairedDay(mine, day))).length
 
-  return { lines, total, net: total.solde, rate: Number(rate) || 0, covered, days: days.length }
+  // Taux commun : celui du réglage unique, ou celui de tous les jours valorisés ; null s'il a varié.
+  const commonRate = typeof prices === 'function'
+    ? (rates.size === 1 ? [...rates][0] : (rates.size === 0 ? 0 : null))
+    : (Number(rate) || 0)
+
+  return { lines, total, net: total.solde, rate: commonRate, covered, days: days.length, unpricedDays: [...unpriced].sort() }
 }
 
 /** Date (AAAA-MM-JJ) la plus récente présente dans les relevés, ou null. */
