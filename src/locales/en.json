@@ -52,7 +52,8 @@
       "Overview": "How it works",
       "Steps": "Steps to follow",
       "Close": "Close"
-    }
+    },
+    "CloseModal": "Close"
   },
   "Profil": {
     "Title": "My profile",
@@ -393,7 +394,18 @@
         "ModifiedBy": "Modified by {name} on {date}",
         "NoPricesWarning": "Some weeks of the mandate are not covered by a price record.",
         "Unpriced": "No known price for {count} day: it is counted as zero. | No known price for {count} days: they are counted as zero.",
-        "FromCookies": "Prices taken from your last Mines report (stored on this device): check them before saving."
+        "FromCookies": "Prices taken from your last Mines report (stored on this device): check them before saving.",
+        "EditTitle": "Edit the prices of {date}",
+        "ColumnAuthor": "Entered by",
+        "ColumnActions": "Actions",
+        "InForceNow": "in force today",
+        "PerUnit": {
+          "FER": "écus / ounce",
+          "PIERRE": "écus / ton",
+          "ARGILE": "écus / bar",
+          "SEL": "écus / bushel",
+          "RATE": "écus / hour"
+        }
       },
       "Navigation": {
         "Title": "Weekly balance sheets",
@@ -402,7 +414,7 @@
         "CurrentPeriod": "Current period"
       },
       "Export": {
-        "Button": "Export as BBCode",
+        "Button": "Entrust it to the scribe",
         "Copied": "BBCode copied to clipboard."
       }
     },
@@ -430,7 +442,7 @@
     },
     "RateNotStored": "No miners' wage/hour stored for this week: the value in the field is used.",
     "GenerateButton": "Generate the weekly report",
-    "ExportButton": "Copy as BBcode",
+    "ExportButton": "Entrust it to the scribe",
     "DayExportButton": "Format today's report",
     "WeekIncompleteWarning": "Incomplete week: {count}/7 days covered ({monday} to {sunday}).",
     "ColumnMine": "Mine",

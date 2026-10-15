@@ -15,6 +15,7 @@ const props = defineProps({
   }
 });
 
+import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue';
 const emit = defineEmits(['save', 'close']);
 
 const { t } = useI18n();
@@ -85,10 +86,12 @@ const handleCancel = () => {
       <div class="flex min-h-full max-w-6xl items-center justify-center p-4 text-center tablet:p-0">
         <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 text-left shadow-xl transition-all tablet:my-8 tablet:w-full tablet:max-w-lg">
           <!-- Header -->
-          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3">
+          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3 flex items-center justify-between gap-4">
             <h3 class="text-lg font-medium leading-6 text-slate-900 dark:text-slate-100">
               {{ t('Cookies.Modal.Title') }}
             </h3>
+            <!-- La même croix que toutes les modales : elle annule sans enregistrer (handleCancel). -->
+            <ModalCloseButton @click="handleCancel" />
           </div>
 
           <!-- Content -->
@@ -131,10 +134,7 @@ const handleCancel = () => {
           <!-- Footer -->
           <!-- Boutons odc-* (27/09/2026) : « Annuler » en discret, « Enregistrer » en standard
                vert (valider). L'ancien « Annuler » rouge « danger » n'avait rien de dangereux. -->
-          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3 flex justify-between gap-3">
-            <button type="button" class="odc-btn odc-btn--quiet odc--slate" @click="handleCancel">
-              {{ t('Cookies.Button.Cancel') }}
-            </button>
+          <div class="bg-slate-50 dark:bg-slate-700 px-4 py-3 flex justify-end gap-3">
             <button type="button" class="odc-btn odc-btn--soft odc--green" @click="handleSave">
               {{ t('Cookies.Button.Save') }}
             </button>

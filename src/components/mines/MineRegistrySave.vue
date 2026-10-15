@@ -157,7 +157,7 @@
         <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :disabled="sending" @click="save(true)">
           {{ t('EconomyMines.Registry.Confirm') }}
         </button>
-        <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" @click="pending = null">
+        <button type="button" class="odc-btn odc-btn--soft odc--red odc-btn--sm" @click="pending = null">
           {{ t('EconomyMines.Registry.Cancel') }}
         </button>
       </div>

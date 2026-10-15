@@ -159,7 +159,7 @@
        va-t-il bien (pleine largeur, le point fort), le registre est-il à jour (en tête, à droite), où en
        est mon mandat (colonne gauche) — puis la mémoire (colonne droite). Pas de cartes : des sections
        séparées par un filet. Couleurs de texte posées sur CHAQUE élément (règle globale `.dark p`). -->
-  <div class="w-full max-w-5xl text-slate-800 dark:text-slate-800">
+  <div class="w-full text-slate-800 dark:text-slate-800">
     <p v-if="!character" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.NoCharacter') }}</p>
     <p v-else-if="loading" role="status" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.Loading') }}</p>
     <p v-else-if="error" role="alert" class="text-slate-700 dark:text-slate-700" data-testid="registry-error">{{ error }}</p>
@@ -185,11 +185,18 @@
         </p>
       </header>
 
+      <!-- Page pensée pour tenir SANS défilement sur ordinateur (Greg, 15/10) et prendre toute la largeur :
+           à gauche tout ce qui sert à décider — le bilan (le point fort, avec son sélecteur de période), les
+           bilans de mandat, les jours sans données, le prédécesseur ; à droite la mémoire — l'historique des
+           niveaux (accordéon par mine) et les relevés inscrits, repliés (Greg, 15/10).
+           Sous `laptop`, une seule colonne dans le même ordre. -->
+      <div class="mt-5 grid gap-x-8 gap-y-5 laptop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div class="space-y-5">
       <!-- UN seul tableau de bilan, un seul sélecteur (Greg, 15/10 : combiner le bilan du mois et les semaines
            pour gagner de la place). Par défaut : le bilan EN COURS du mois de mandat (Greg, 09/10), PROVISOIRE,
            titré comme tel, couverture dite. ◀ ▶ le remplacent par une semaine du mandat, recalculée jour par jour
            avec les prix en vigueur ce jour-là ; « Période en cours » revient au mois. -->
-      <section v-if="current || range" class="mt-5" data-testid="registry-current">
+      <section v-if="current || range" data-testid="registry-current">
         <div class="flex flex-wrap items-center gap-3">
           <button v-if="range" type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoPrevious"
                   :aria-label="t('EconomyMines.RegistryPage.Navigation.Previous')" data-testid="week-previous" @click="previousWeek">
@@ -207,6 +214,9 @@
           <button v-if="week" type="button" class="text-sm underline text-slate-700 dark:text-slate-700" data-testid="week-reset" @click="selectedMonday = null">
             {{ t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}
           </button>
+          <button v-if="week?.complete" type="button" class="ml-auto odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="week-export" @click="exportWeek">
+            <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Export.Button') }}
+          </button>
         </div>
 
         <div v-if="week" data-testid="registry-week">
@@ -218,9 +228,6 @@
           <p v-if="week.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="week-unpriced">
             {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: week.bilan.unpricedDays.length }, week.bilan.unpricedDays.length) }}
           </p>
-          <button v-if="week.complete" type="button" class="mt-2 odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="week-export" @click="exportWeek">
-            <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Export.Button') }}
-          </button>
         </div>
         <template v-else-if="current">
           <BilanTable :bilan="current.bilan" :levels="current.levels" total-testid="registry-current-total" />
@@ -234,9 +241,8 @@
         </template>
       </section>
 
-      <div class="mt-6 grid gap-x-10 gap-y-6 laptop:grid-cols-2">
-        <!-- Colonne « mon mandat » -->
-        <div class="space-y-6">
+          <!-- Sous le tableau : trois lectures courtes côte à côte (auto-fit), pour tenir sans défilement. -->
+          <div class="grid gap-x-8 gap-y-4 grid-cols-[repeat(auto-fit,minmax(15rem,1fr))]">
           <!-- Bilans (R4) : calés sur le mandat du lecteur ; avant la date, « dans N jours », jamais un bilan partiel. -->
           <section v-if="bilans.length" class="registry-section" data-testid="registry-bilans">
             <h3 class="registry-heading">{{ t('EconomyMines.RegistryPage.BilansTitle') }}</h3>
@@ -268,44 +274,59 @@
           </section>
 
           <!-- Prédécesseur : des estampilles écrites, jamais « qui occupait le poste » (R4). -->
-          <section v-if="registry.mandate" class="registry-section" data-testid="registry-predecessor">
+          <section v-if="registry.mandate && registry.predecessor.length" class="registry-section" data-testid="registry-predecessor">
             <h3 class="registry-heading">{{ t('EconomyMines.RegistryPage.PredecessorTitle') }}</h3>
-            <ul v-if="registry.predecessor.length" class="mt-1 list-disc list-inside text-sm text-slate-700 dark:text-slate-700">
+            <ul class="mt-1 list-disc list-inside text-sm text-slate-700 dark:text-slate-700">
               <li v-for="p in registry.predecessor" :key="`${p.pseudo}-${p.office_key}`">
                 {{ t('EconomyMines.RegistryPage.PredecessorLine', { author: author(p), first: dayMonth(p.first), last: dayMonth(p.last), count: p.count }, p.count) }}
               </li>
             </ul>
-            <p v-else class="mt-1 text-sm text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.PredecessorNone') }}</p>
           </section>
+          </div>
         </div>
 
-        <!-- Colonne « la mémoire » -->
-        <div class="space-y-6">
-          <!-- Historique des niveaux (brief §7) : le registre crédite les améliorations et CONSTATE le reste. -->
-          <section v-if="levels.length" class="registry-section" data-testid="registry-levels">
+        <!-- Rail de droite descendu de la ligne des flèches (2,75 rem ≈ bouton 36 px + marge du tableau) : « Historique »
+             commence au niveau des titres de colonne du tableau (Greg, 15/10). -->
+        <div class="space-y-5 laptop:pt-11">
+          <!-- Historique des niveaux (brief §7) : le registre crédite les améliorations et CONSTATE le reste.
+               Une mine qui a plus d'un événement se replie en accordéon (Greg, 15/10) : son dernier événement
+               reste lisible sur la ligne, l'historique complet s'ouvre au clic. -->
+          <section v-if="levels.length" class="registry-section registry-section--first" data-testid="registry-levels">
             <h3 class="registry-heading">{{ t('EconomyMines.RegistryPage.LevelsTitle') }}</h3>
             <ul class="mt-1 space-y-1 text-sm text-slate-700 dark:text-slate-700">
               <li v-for="m in levels" :key="m.key">
-                <span class="font-bold">#{{ m.number }} {{ m.label }}</span><template v-if="!m.events.length"> — {{ t('EconomyMines.RegistryPage.LevelsNone') }}</template>
-                <ul v-if="m.events.length" class="ml-4 list-disc list-inside">
-                  <li v-for="e in m.events" :key="e.date" :class="e.type === 'failure' ? 'font-bold text-red-700 dark:text-red-700' : ''" :data-testid="`level-${e.type}`">
-                    {{ levelEvent(e) }}
-                  </li>
-                </ul>
+                <details v-if="m.events.length > 1" :data-testid="`level-accordion-${m.number}`">
+                  <summary class="cursor-pointer">
+                    <span class="font-bold">#{{ m.number }} {{ m.label }}</span> — {{ levelEvent(m.events[m.events.length - 1]) }}
+                  </summary>
+                  <ul class="ml-4 mt-1 list-disc list-inside">
+                    <li v-for="e in m.events" :key="e.date" :class="e.type === 'failure' ? 'font-bold text-red-700 dark:text-red-700' : ''" :data-testid="`level-${e.type}`">
+                      {{ levelEvent(e) }}
+                    </li>
+                  </ul>
+                </details>
+                <template v-else>
+                  <span class="font-bold">#{{ m.number }} {{ m.label }}</span><template v-if="!m.events.length"> — {{ t('EconomyMines.RegistryPage.LevelsNone') }}</template>
+                  <ul v-if="m.events.length" class="ml-4 list-disc list-inside">
+                    <li v-for="e in m.events" :key="e.date" :class="e.type === 'failure' ? 'font-bold text-red-700 dark:text-red-700' : ''" :data-testid="`level-${e.type}`">
+                      {{ levelEvent(e) }}
+                    </li>
+                  </ul>
+                </template>
               </li>
             </ul>
           </section>
 
           <!-- Tout ce qui est inscrit, remplacements compris : rien ne s'efface (brief §3). -->
-          <section v-if="registry.reports.length" class="registry-section" data-testid="registry-history">
-            <h3 class="registry-heading">{{ t('EconomyMines.RegistryPage.HistoryTitle') }}</h3>
+          <details v-if="registry.reports.length" class="registry-section" data-testid="registry-history">
+            <summary class="registry-heading cursor-pointer">{{ t('EconomyMines.RegistryPage.HistoryTitle') }} ({{ registry.reports.length }})</summary>
             <ul class="mt-1 text-sm text-slate-700 dark:text-slate-700">
               <li v-for="r in registry.reports" :key="r.id" :class="r.active ? '' : 'text-slate-600 dark:text-slate-600'">
                 <span class="tabular-nums">{{ dayMonth(r.reported_at) }}</span> — {{ author(r.author) }}
                 <span v-if="!r.active" class="ml-1 italic">{{ t('EconomyMines.RegistryPage.Replaced') }}</span>
               </li>
             </ul>
-          </section>
+          </details>
         </div>
       </div>
     </template>
@@ -316,5 +337,7 @@
 <style scoped>
   /* Sections : un filet fin au-dessus, pas de carte — la structure porte l'information, pas le décor. */
   .registry-section { border-top: 1px solid #cbd5e1; padding-top: 0.75rem; }
-  .registry-heading { font-weight: 700; color: #1e293b; margin-bottom: 0; }
+  /* Première section d'une colonne : rien au-dessus, donc pas de filet (Greg, 15/10). */
+  .registry-section--first { border-top: 0; padding-top: 0; }
+  .registry-heading { font-weight: 700; font-size: 1rem; line-height: 1.4; color: #1e293b; margin-bottom: 0; }
 </style>

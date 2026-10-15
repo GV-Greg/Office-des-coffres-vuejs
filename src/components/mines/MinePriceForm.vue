@@ -11,8 +11,8 @@
     l'historique (ajout et correction). Aucune règle : le serveur décide (autorisation, date couverte,
     doublon) et ses refus s'affichent tels quels, dans la langue de l'interface (`error`).
 
-    « Mettre à jour » n'apparaît que si un champ a changé par rapport à ce qui est affiché (brief). Un
-    formulaire neuf, sans jeu de départ, la propose dès qu'il est complet.
+    « Mettre à jour » est actif seulement si un champ a changé par rapport à ce qui est affiché (brief) ; il reste
+    visible, grisé, sinon. Un formulaire neuf, sans jeu de départ, l'active dès qu'il est complet.
   */
   const props = defineProps({
     initial: { type: Object, default: null }, // jeu de départ (prix actuels, ou jeu à corriger)
@@ -23,6 +23,8 @@
     // le formulaire est complet, sans exiger de modification par rapport au départ.
     isNew: { type: Boolean, default: false },
     note: { type: String, default: '' },
+    // Une modale se ferme par sa croix (ModalCloseButton) : plus de bouton « Annuler » dans ce cas.
+    showCancel: { type: Boolean, default: true },
     submitting: { type: Boolean, default: false },
     error: { type: String, default: '' },
     idPrefix: { type: String, default: 'price' },
@@ -68,7 +70,7 @@
                  class="w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 px-3 py-2 tabular-nums" data-testid="price-RATE" />
           <input :id="`${idPrefix}-${resource}`" v-else v-model="form.prices[resource]" inputmode="decimal"
                  class="w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 px-3 py-2 tabular-nums" :data-testid="`price-${resource}`" />
-          <span class="text-sm text-slate-700 dark:text-slate-300">{{ t('EconomyMines.Currency') }}</span>
+          <span class="text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ t(`EconomyMines.RegistryPage.Prices.PerUnit.${resource}`) }}</span>
         </div>
       </div>
     </div>
@@ -77,9 +79,10 @@
 
     <p v-if="error" role="alert" class="text-sm font-semibold text-red-600 dark:text-red-400" data-testid="price-error">{{ error }}</p>
 
-    <div class="flex flex-wrap items-center justify-end gap-3">
-      <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--red" data-testid="price-cancel" @click="emit('cancel')">{{ t('EconomyMines.RegistryPage.Prices.Cancel') }}</button>
-      <button v-if="canSubmit" type="submit" class="odc-btn odc-btn--soft odc--green" :disabled="submitting" data-testid="price-submit">{{ submitLabel }}</button>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <button v-if="showCancel" type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--red" data-testid="price-cancel" @click="emit('cancel')">{{ t('EconomyMines.RegistryPage.Prices.Cancel') }}</button>
+      <!-- Toujours visible, grisé tant qu'il n'y a rien à enregistrer (Greg, 15/10 : le bouton « avait disparu »). -->
+      <button type="submit" class="ml-auto odc-btn odc-btn--soft odc--green" :disabled="submitting || !canSubmit" data-testid="price-submit">{{ submitLabel }}</button>
     </div>
   </form>
 </template>

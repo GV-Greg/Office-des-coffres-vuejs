@@ -131,6 +131,18 @@ describe('page de l\'historique des prix', () => {
     expect(push.success).toHaveBeenCalled()
   })
 
+  it('« Modifier » est vert, porte une icône et ouvre la modale (pas de formulaire en ligne)', async () => {
+    const w = await mountPage({ prices: [set(5, '2026-05-09', { editable: true })] })
+    const button = w.find('[data-testid="price-edit-5"]')
+    expect(button.classes()).toContain('odc--green')
+    expect(button.html()).toContain('v-icon')
+    await button.trigger('click')
+    expect(w.find('[role="dialog"]').exists()).toBe(true)
+    expect(w.find('#price-modal-title').text()).toContain('Modifier les prix du')
+    expect(w.find('[data-testid="price-FER"]').element.value).toBe('10')
+    expect(w.find('[data-testid="price-history-link"]').exists()).toBe(false)
+  })
+
   it('« Modifier » envoie un PUT sur le jeu choisi', async () => {
     const w = await mountPage({ prices: [set(5, '2026-05-09', { editable: true })] })
     await w.find('[data-testid="price-edit-5"]').trigger('click')
@@ -138,6 +150,7 @@ describe('page de l\'historique des prix', () => {
     await w.find('[data-testid="price-form"]').trigger('submit')
     await flushPromises()
 
+    expect(http.post).not.toHaveBeenCalled()
     expect(http.put).toHaveBeenCalledTimes(1)
     expect(http.put.mock.calls[0][0]).toBe('provinces/1/mine-prices/5')
     expect(http.put.mock.calls[0][1].prices.FER).toBe(12)
@@ -181,12 +194,21 @@ describe('modale rapide « Prix en vigueur »', () => {
     expect(w.find('[data-testid="price-date"]').element.value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 
-  it('« Mettre à jour » n\'apparaît que si un champ a changé', async () => {
+  it('« Mettre à jour » reste visible mais grisé tant qu\'aucun champ n\'a changé, puis s\'active', async () => {
     const w = mountModal([set(1, '2026-05-01')])
     await flushPromises()
-    expect(w.find('[data-testid="price-submit"]').exists()).toBe(false)
+    expect(w.find('[data-testid="price-submit"]').attributes('disabled')).toBeDefined()
     await w.find('[data-testid="price-SEL"]').setValue('5')
-    expect(w.find('[data-testid="price-submit"]').exists()).toBe(true)
+    expect(w.find('[data-testid="price-submit"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('la modale se ferme par la croix ronde rouge, sans bouton « Annuler »', async () => {
+    const w = mountModal([set(1, '2026-05-01')])
+    await flushPromises()
+    expect(w.find('[data-testid="price-cancel"]').exists()).toBe(false)
+    await w.find('[data-testid="modal-close"]').trigger('click')
+    expect(w.emitted('close')).toBeTruthy()
+    expect(w.find('[data-testid="modal-close"]').classes()).toContain('odc--red')
   })
 
   it('l\'envoi appelle POST, prévient la page et se ferme', async () => {
@@ -250,7 +272,7 @@ describe('aucun jeu en base : repli sur les prix du Bilan mémorisés (cookies)'
     await flushPromises()
     expect(w.find('[data-testid="price-FER"]').element.value).toBe('')
     expect(w.find('[data-testid="price-note"]').exists()).toBe(false)
-    expect(w.find('[data-testid="price-submit"]').exists()).toBe(false)
+    expect(w.find('[data-testid="price-submit"]').attributes('disabled')).toBeDefined() // rien à enregistrer : grisé
   })
 
   it('un jeu en base l\'emporte sur les cookies', async () => {
@@ -364,6 +386,33 @@ describe('registre : prix, navigation des semaines et export', () => {
     expect(writeText.mock.calls[0][0]).toMatch(/^\[quote\]\[center\]/)
     expect(writeText.mock.calls[0][0]).toContain('4 mai 1474')
     expect(push.success).toHaveBeenCalledWith('BBCode copié dans le presse-papiers.')
+  })
+
+  it('historique des niveaux : accordéon seulement pour une mine qui a plus d\'un événement', async () => {
+    const reg = registry()
+    const state = (niveau) => ({ number: 4, noeud: '226', label: 'Mine de fer', niveau: String(niveau) })
+    const rep = (id, date, niveau, active = true) => ({ ...reg.reports[0], id, reported_at: date, active, report: { mines: [], states: [state(niveau)] } })
+    reg.reports = [rep(1, '2026-05-08', 9), rep(2, '2026-05-10', 10), rep(3, '2026-05-12', 11)]
+    api({ registry: reg })
+    const many = mount(EconomyRegistry, { global: { plugins: [i18nFor()], stubs } })
+    await flushPromises()
+    expect(many.find('[data-testid="level-accordion-4"]').exists()).toBe(true) // 9 → 10 → 11 : deux événements
+
+    reg.reports = [rep(1, '2026-05-08', 9), rep(2, '2026-05-10', 10)]
+    api({ registry: reg })
+    const one = mount(EconomyRegistry, { global: { plugins: [i18nFor()], stubs } })
+    await flushPromises()
+    expect(one.find('[data-testid="level-accordion-4"]').exists()).toBe(false) // un seul événement : une ligne
+    expect(one.find('[data-testid="level-up"]').exists()).toBe(true)
+  })
+
+  it('l\'historique des niveaux est dans le rail de droite, avec les relevés inscrits repliés', async () => {
+    const w = await mountRegistry()
+    const grid = w.find('.grid')
+    const [left, right] = grid.element.children
+    expect(left.querySelector('[data-testid="registry-current"]')).not.toBeNull()
+    expect(right.querySelector('[data-testid="registry-levels"]')).not.toBeNull()
+    expect(right.querySelector('details[data-testid="registry-history"]')).not.toBeNull()
   })
 
   it('une semaine incomplète s\'affiche marquée et ne s\'exporte pas', async () => {

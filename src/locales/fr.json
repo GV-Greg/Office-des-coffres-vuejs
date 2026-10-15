@@ -52,7 +52,8 @@
       "Overview": "Fonctionnement",
       "Steps": "Étapes à suivre",
       "Close": "Fermer"
-    }
+    },
+    "CloseModal": "Fermer"
   },
   "Profil": {
     "Title": "Mon profil",
@@ -393,7 +394,18 @@
         "ModifiedBy": "Modifié par {name} le {date}",
         "NoPricesWarning": "Des semaines du mandat ne sont pas couvertes par un enregistrement de prix.",
         "Unpriced": "Aucun prix connu pour {count} jour : il est compté à zéro. | Aucun prix connu pour {count} jours : ils sont comptés à zéro.",
-        "FromCookies": "Prix repris de votre dernier Bilan des mines (mémorisés sur cet appareil) : vérifiez-les avant d'enregistrer."
+        "FromCookies": "Prix repris de votre dernier Bilan des mines (mémorisés sur cet appareil) : vérifiez-les avant d'enregistrer.",
+        "EditTitle": "Modifier les prix du {date}",
+        "ColumnAuthor": "Saisi par",
+        "ColumnActions": "Actions",
+        "InForceNow": "en vigueur aujourd'hui",
+        "PerUnit": {
+          "FER": "écus / kg",
+          "PIERRE": "écus / quintal",
+          "ARGILE": "écus / pain",
+          "SEL": "écus / boisseau",
+          "RATE": "écus / heure"
+        }
       },
       "Navigation": {
         "Title": "Bilans hebdomadaires",
@@ -402,7 +414,7 @@
         "CurrentPeriod": "Période en cours"
       },
       "Export": {
-        "Button": "Exporter en BBCode",
+        "Button": "Confier au scribe",
         "Copied": "BBCode copié dans le presse-papiers."
       }
     },
@@ -430,7 +442,7 @@
     },
     "RateNotStored": "Salaire/heure des mineurs non mémorisé pour cette semaine : la valeur du champ est utilisée.",
     "GenerateButton": "Générer le bilan hebdomadaire",
-    "ExportButton": "Copier en BBcode",
+    "ExportButton": "Confier au scribe",
     "DayExportButton": "Mise en forme du jour",
     "WeekIncompleteWarning": "Semaine incomplète : {count}/7 jours couverts (du {monday} au {sunday}).",
     "ColumnMine": "Mine",

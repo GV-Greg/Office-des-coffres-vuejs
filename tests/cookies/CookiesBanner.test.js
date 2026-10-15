@@ -145,8 +145,8 @@ describe('CookiesBanner', () => {
     })
     await wrapper.vm.$nextTick()
 
-    const cancelButton = wrapper.findComponent(CookiesModal).findAll('button')
-      .find((b) => b.text().includes('Annuler'))
+    // La modale se ferme par sa croix (ModalCloseButton), plus par un bouton « Annuler » (charte §6.7, 15/10/2026).
+    const cancelButton = wrapper.findComponent(CookiesModal).find('[data-testid="modal-close"]')
     await cancelButton.trigger('click')
 
     expect(wrapper.find('.fixed.bottom-0').exists()).toBe(false)
@@ -166,8 +166,8 @@ describe('CookiesBanner', () => {
     })
     await wrapper.vm.$nextTick()
 
-    const cancelButton = wrapper.findComponent(CookiesModal).findAll('button')
-      .find((b) => b.text().includes('Annuler'))
+    // La modale se ferme par sa croix (ModalCloseButton), plus par un bouton « Annuler » (charte §6.7, 15/10/2026).
+    const cancelButton = wrapper.findComponent(CookiesModal).find('[data-testid="modal-close"]')
     await cancelButton.trigger('click')
 
     expect(wrapper.find('.fixed.bottom-0').exists()).toBe(true)
