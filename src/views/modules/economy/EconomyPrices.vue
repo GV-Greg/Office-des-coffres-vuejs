@@ -109,14 +109,17 @@
     <p v-else-if="error" role="alert" class="text-slate-700 dark:text-slate-700" data-testid="prices-error">{{ error }}</p>
 
     <template v-else-if="province">
-      <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-slate-300 pb-2">
-        <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Prices.PageTitle', { province: province.name }) }}</h2>
-        <div class="flex flex-wrap items-center gap-3">
-          <RouterLink :to="{ name: 'economy-registry' }" class="text-sm underline text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.Prices.BackToRegistry') }}</RouterLink>
-          <button v-if="canWrite" type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="prices-add" @click="startAdd">
-            {{ t('EconomyMines.RegistryPage.Prices.AddPrice') }}
-          </button>
+      <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-slate-300 pb-2">
+        <!-- Retour à gauche, en bouton avec icône (Greg, 15/10/2026) ; le titre le suit, l'ajout est à droite. -->
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <RouterLink :to="{ name: 'economy-registry' }" class="odc-btn odc-btn--quiet odc-btn--sm odc--slate" data-testid="prices-back">
+            <v-icon name="fa-reply" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.BackToRegistry') }}
+          </RouterLink>
+          <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Prices.PageTitle', { province: province.name }) }}</h2>
         </div>
+        <button v-if="canWrite" type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="prices-add" @click="startAdd">
+          <v-icon name="fa-plus" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.AddPrice') }}
+        </button>
       </header>
 
       <!-- Outil de suivi du gestionnaire, jamais un blocage. -->

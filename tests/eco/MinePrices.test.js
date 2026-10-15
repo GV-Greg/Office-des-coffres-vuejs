@@ -85,6 +85,12 @@ describe('page de l\'historique des prix', () => {
     expect(w.find('[data-testid="price-locked-1"]').exists()).toBe(false)
   })
 
+  it('le retour au registre est un bouton à gauche de l\'en-tête, avant le titre', async () => {
+    const w = await mountPage({ prices: [] })
+    const header = w.find('header')
+    expect(header.element.firstElementChild.firstElementChild.getAttribute('data-testid')).toBe('prices-back')
+  })
+
   it('un personnage sans accès aux prix voit un refus, pas une page vide', async () => {
     const w = await mountPage({ access: accessOf({ prices: { write: null, read: null } }) })
     expect(w.find('[data-testid="prices-error"]').exists()).toBe(true)
