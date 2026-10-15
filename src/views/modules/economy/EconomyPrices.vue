@@ -105,7 +105,7 @@
       <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-slate-300 pb-2">
         <!-- Retour à gauche, en bouton avec icône (Greg, 15/10/2026) ; le titre le suit, l'ajout est à droite. -->
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <RouterLink :to="{ name: 'economy-registry' }" class="odc-btn odc-btn--soft odc-btn--sm odc--blue" data-testid="prices-back">
+          <RouterLink :to="{ name: 'economy-registry' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="prices-back">
             <v-icon name="fa-reply" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.BackToRegistry') }}
           </RouterLink>
           <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Prices.PageTitle', { province: province.name }) }}</h2>
@@ -133,7 +133,7 @@
           <template v-else>
             <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <h3 class="!mb-0 font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Prices.InForceFrom', { date: date('price_effective_from', set.effective_from) }) }}</h3>
-              <button v-if="set.editable" type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--teal" :data-testid="`price-edit-${set.id}`" @click="startEdit(set)">
+              <button v-if="set.editable" type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--blue" :data-testid="`price-edit-${set.id}`" @click="startEdit(set)">
                 {{ t('EconomyMines.RegistryPage.Prices.Edit') }}
               </button>
               <span v-else-if="canWrite" class="text-xs italic text-slate-600 dark:text-slate-600" :data-testid="`price-locked-${set.id}`">{{ t('EconomyMines.RegistryPage.Prices.Locked') }}</span>
