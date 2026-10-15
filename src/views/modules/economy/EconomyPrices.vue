@@ -110,7 +110,7 @@
           </RouterLink>
           <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Prices.PageTitle', { province: province.name }) }}</h2>
         </div>
-        <button v-if="canWrite" type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="prices-add" @click="startAdd">
+        <button v-if="canWrite" type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="prices-add" @click="startAdd">
           <v-icon name="fa-plus" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.AddPrice') }}
         </button>
       </header>

@@ -358,7 +358,7 @@ describe('enregistrement au registre : les prix ne se saisissent plus', () => {
     http.post.mockResolvedValue({ data: { report: { province_name: 'Artois', reported_at: '2026-05-08' }, replaced: null } })
     const w = mount(MineRegistrySave, { props: { text: TEXT, ...props }, global: { plugins: [i18nFor()], stubs } })
     await flushPromises()
-    await w.find('button.odc--gold:not(.odc-btn--sm):not(.plate-help)').trigger('click')
+    await w.find('button.odc--green:not(.odc-btn--sm):not(.plate-help)').trigger('click')
     await flushPromises()
     return http.post.mock.calls[0][1]
   }

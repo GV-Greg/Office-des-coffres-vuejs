@@ -162,7 +162,7 @@
         </button>
       </div>
     </div>
-    <button v-else type="button" class="mt-4 w-full odc-btn odc-btn--soft odc--gold" :disabled="sending" @click="save(false)">
+    <button v-else type="button" class="mt-4 w-full odc-btn odc-btn--soft odc--green" :disabled="sending" @click="save(false)">
       {{ t('EconomyMines.Registry.Save') }}
     </button>
   </section>
