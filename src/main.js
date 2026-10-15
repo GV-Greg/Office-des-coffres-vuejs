@@ -62,7 +62,8 @@ import {
   FaSlidersH,
   FaTag,
   FaHistory,
-  FaPlus
+  FaPlus,
+  FaCopy
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -110,7 +111,8 @@ addIcons(
   FaSlidersH,
   FaTag,
   FaHistory,
-  FaPlus
+  FaPlus,
+  FaCopy
 )
 
 // Configuration de Notivue

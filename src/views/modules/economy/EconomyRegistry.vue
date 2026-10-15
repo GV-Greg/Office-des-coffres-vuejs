@@ -185,34 +185,22 @@
         </p>
       </header>
 
-      <!-- Bilan en cours du mois de mandat (Greg, 09/10) : PROVISOIRE, titré comme tel, couverture dite. -->
-      <section v-if="current" class="mt-5" data-testid="registry-current">
-        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-800">
-          {{ t('EconomyMines.RegistryPage.CurrentTitle', { month: current.month, from: dayMonth(current.from), to: dayMonth(current.to) }, current.month) }}
-        </h3>
-        <BilanTable :bilan="current.bilan" :levels="current.levels" total-testid="registry-current-total" />
-        <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
-          {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: current.bilan.covered, days: current.bilan.days }, current.bilan.covered) }}
-          {{ t('EconomyMines.RegistryPage.CurrentPrices') }}
-        </p>
-        <p v-if="current.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="registry-unpriced">
-          {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: current.bilan.unpricedDays.length }, current.bilan.unpricedDays.length) }}
-        </p>
-      </section>
-
-      <!-- Bilans hebdomadaires (lot 2) : ◀ ▶ dans le mandat, recalculés jour par jour avec les prix en
-           vigueur ce jour-là. Le bilan en cours du mois reste l'affichage par défaut. -->
-      <section v-if="range" class="mt-6" data-testid="registry-weeks" aria-labelledby="registry-weeks-title">
-        <h3 id="registry-weeks-title" class="sr-only">{{ t('EconomyMines.RegistryPage.Navigation.Title') }}</h3>
+      <!-- UN seul tableau de bilan, un seul sélecteur (Greg, 15/10 : combiner le bilan du mois et les semaines
+           pour gagner de la place). Par défaut : le bilan EN COURS du mois de mandat (Greg, 09/10), PROVISOIRE,
+           titré comme tel, couverture dite. ◀ ▶ le remplacent par une semaine du mandat, recalculée jour par jour
+           avec les prix en vigueur ce jour-là ; « Période en cours » revient au mois. -->
+      <section v-if="current || range" class="mt-5" data-testid="registry-current">
         <div class="flex flex-wrap items-center gap-3">
-          <button type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoPrevious"
+          <button v-if="range" type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoPrevious"
                   :aria-label="t('EconomyMines.RegistryPage.Navigation.Previous')" data-testid="week-previous" @click="previousWeek">
             <v-icon name="fa-chevron-left" scale="0.9" />
           </button>
-          <span class="font-bold text-slate-800 dark:text-slate-800" data-testid="week-label">
-            {{ week ? weekLabel : t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}
-          </span>
-          <button type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoNext"
+          <h3 class="!mb-0 text-lg font-bold text-slate-800 dark:text-slate-800" data-testid="week-label">
+            <template v-if="week">{{ weekLabel }}</template>
+            <template v-else-if="current">{{ t('EconomyMines.RegistryPage.CurrentTitle', { month: current.month, from: dayMonth(current.from), to: dayMonth(current.to) }, current.month) }}</template>
+            <template v-else>{{ t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}</template>
+          </h3>
+          <button v-if="range" type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoNext"
                   :aria-label="t('EconomyMines.RegistryPage.Navigation.Next')" data-testid="week-next" @click="nextWeek">
             <v-icon name="fa-chevron-right" scale="0.9" />
           </button>
@@ -221,8 +209,8 @@
           </button>
         </div>
 
-        <div v-if="week" class="mt-2" data-testid="registry-week">
-          <p v-if="!week.complete" class="text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="week-incomplete">{{ t('EconomyMines.IncompleteWeekTitle') }}</p>
+        <div v-if="week" data-testid="registry-week">
+          <p v-if="!week.complete" class="mt-2 text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="week-incomplete">{{ t('EconomyMines.IncompleteWeekTitle') }}</p>
           <BilanTable :bilan="week.bilan" total-testid="registry-week-total" />
           <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
             {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: week.bilan.covered, days: week.bilan.days }, week.bilan.covered) }}
@@ -231,9 +219,19 @@
             {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: week.bilan.unpricedDays.length }, week.bilan.unpricedDays.length) }}
           </p>
           <button v-if="week.complete" type="button" class="mt-2 odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="week-export" @click="exportWeek">
-            {{ t('EconomyMines.RegistryPage.Export.Button') }}
+            <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Export.Button') }}
           </button>
         </div>
+        <template v-else-if="current">
+          <BilanTable :bilan="current.bilan" :levels="current.levels" total-testid="registry-current-total" />
+          <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
+            {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: current.bilan.covered, days: current.bilan.days }, current.bilan.covered) }}
+            {{ t('EconomyMines.RegistryPage.CurrentPrices') }}
+          </p>
+          <p v-if="current.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="registry-unpriced">
+            {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: current.bilan.unpricedDays.length }, current.bilan.unpricedDays.length) }}
+          </p>
+        </template>
       </section>
 
       <div class="mt-6 grid gap-x-10 gap-y-6 laptop:grid-cols-2">

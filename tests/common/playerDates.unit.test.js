@@ -9,7 +9,7 @@ describe('playerDates — un calendrier par champ', () => {
       declared_started_at: 'game', started_at: 'game', in_office_from: 'game', valid_until: 'game',
       holds_until: 'game', period_started_at: 'game', period_ended_at: 'game',
       history_started_at: 'game', history_ended_at: 'game',
-      price_effective_from: 'game', price_created_at: 'real', price_updated_at: 'real',
+      price_effective_from: 'game', price_created_at: 'game', price_updated_at: 'game',
       processed_at: 'real', revoked_at: 'real',
     })
   })

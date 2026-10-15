@@ -274,14 +274,16 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   (`/app/eco/registre/prix` : historique, ajout, correction en place, alerte des semaines non couvertes),
   `MinePricesModal.vue` (« Gérer les prix » dans le registre, jeu du jour pré-rempli, bouton « Mettre à jour »
   seulement si un champ a changé ; un jeu déjà daté d'aujourd'hui est corrigé, pas doublé) et
-  `MinePriceForm.vue`. Dans le registre, ◀ ▶ parcourent les **semaines du mandat** (`weekRange`,
-  `weeklyBilan`), « Période en cours » ramène au bilan du mois ; **« Exporter en BBCode »** (semaine complète
+  `MinePriceForm.vue`. Dans le registre, **un seul tableau de bilan** (Greg, 15/10) : par défaut le bilan en cours du mois de
+  mandat (« Période en cours »), que ◀ ▶ **remplacent** par une semaine du mandat (`weekRange`, `weeklyBilan`) dans le
+  même emplacement, sous le même sélecteur ; **« Exporter en BBCode »** (semaine complète
   seulement, comme le Bilan public) passe par `modules/mineBBcode.js`, gabarit **partagé** avec `EconomyMines`.
   ⚠️ Aucune règle côté site : `access.prices.{write,read}` dit où l'on gère/lit, `editable` dit quel jeu se
   corrige. **Bilan public** : un personnage qui gère le registre voit les prix de sa province **sans pouvoir les
   modifier** (sans aucun jeu en base, la saisie reste en repli, avec un avertissement) ; les autres saisissent
   les leurs, gardés en confort. `MineRegistrySave` n'envoie plus de prix à un gérant : le serveur fige ceux de
-  la table dans le relevé. Textes sous `EconomyMines.RegistryPage.{Prices,Navigation,Export}` et
+  la table dans le relevé. **Dates en année du jeu** (1474) partout, saisie du champ date comprise (`toGameDateIso` / `toRealDateIso`, comme la date
+  de début d'un mandat) ; boutons : voir `CHARTE-GRAPHIQUE.md` §6.7. Textes sous `EconomyMines.RegistryPage.{Prices,Navigation,Export}` et
   `EconomyMines.ManagedPrices` (le brief proposait `Eco.MineRegistry.*`, qui n'existe pas).
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
   vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est

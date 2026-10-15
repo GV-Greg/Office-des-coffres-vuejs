@@ -69,6 +69,7 @@ describe('page de l\'historique des prix', () => {
     expect(items).toHaveLength(2)
     expect(items[0].text()).toContain('Créé par Mineur')
     expect(items[0].text()).toContain('09/05/1474') // fait de jeu : année du jeu
+    expect(items[0].text()).toMatch(/Créé par Mineur le \d\d\/\d\d\/1474/) // la saisie aussi
   })
 
   it('« Modifier » seulement sur les jeux que le serveur dit modifiables ; les autres disent pourquoi', async () => {
@@ -160,6 +161,18 @@ describe('modale rapide « Prix en vigueur »', () => {
     api({ prices })
     return mount(MinePricesModal, { props: { show: true, provinceId: 1, prices }, global: { plugins: [i18nFor()], stubs } })
   }
+
+  it('la date se lit et se saisit en année du jeu, mais part à l\'API en année réelle', async () => {
+    const w = mountModal([set(1, '2026-05-01')])
+    await flushPromises()
+    const input = w.find('[data-testid="price-date"]')
+    expect(input.element.value).toMatch(/^1474-/) // jamais 2026 à l'écran
+    await input.setValue('1474-05-07')
+    await w.find('[data-testid="price-SEL"]').setValue('5')
+    await w.find('[data-testid="price-form"]').trigger('submit')
+    await flushPromises()
+    expect(http.post.mock.calls[0][1].effective_from).toBe('2026-05-07')
+  })
 
   it('affiche les prix actuels pré-remplis et la date du jour', async () => {
     const w = mountModal([set(1, '2026-05-01', { prices: { OR: 1, FER: 11, PIERRE: 5, ARGILE: 3, SEL: 4 } })])
@@ -300,7 +313,7 @@ describe('registre : prix, navigation des semaines et export', () => {
   it('les flèches changent la semaine, sans dépasser le début du mandat ni la semaine en cours', async () => {
     const w = await mountRegistry()
     const label = () => w.find('[data-testid="week-label"]').text()
-    expect(label()).toBe('Période en cours')
+    expect(label()).toContain('Bilan en cours') // par défaut : le bilan du mois, dans le même emplacement
     expect(w.find('[data-testid="week-next"]').attributes('disabled')).toBeDefined()
 
     await w.find('[data-testid="week-previous"]').trigger('click')
@@ -311,7 +324,17 @@ describe('registre : prix, navigation des semaines et export', () => {
     expect(w.find('[data-testid="week-previous"]').attributes('disabled')).toBeDefined() // pas avant le mandat
 
     await w.find('[data-testid="week-reset"]').trigger('click')
-    expect(label()).toBe('Période en cours')
+    expect(label()).toContain('Bilan en cours')
+  })
+
+  it('une semaine REMPLACE le bilan du mois dans le même emplacement : un seul tableau à la fois', async () => {
+    const w = await mountRegistry({ prices: [set(1, '2026-05-01')] })
+    expect(w.findAll('table')).toHaveLength(1)
+    expect(w.find('[data-testid="registry-current-total"]').exists()).toBe(true)
+    await w.find('[data-testid="week-previous"]').trigger('click')
+    expect(w.findAll('table')).toHaveLength(1)
+    expect(w.find('[data-testid="registry-current-total"]').exists()).toBe(false)
+    expect(w.find('[data-testid="registry-week-total"]').exists()).toBe(true)
   })
 
   it('le bilan d\'une semaine se recalcule avec les prix de la table (ou, à défaut, ceux du relevé)', async () => {

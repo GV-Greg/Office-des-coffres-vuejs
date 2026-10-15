@@ -3,6 +3,7 @@
   import { useI18n } from 'vue-i18n'
   import { PRICED_RESOURCES, formFromSet, isDirty, isComplete, bodyFromForm } from '@/modules/minePrices'
   import { todayIso } from '@/modules/mineParser'
+  import { toGameDateIso, toRealDateIso } from '@/modules/gameCalendar'
 
   /*
     Formulaire d'un jeu de prix (lot 2 des prix du Registre, brief admin/content/brief-prix-registre.md) :
@@ -33,6 +34,14 @@
   const original = computed(() => formFromSet(props.initial, startDate()))
   const form = reactive(formFromSet(props.initial, startDate()))
 
+  // Le champ date montre l'année du JEU (1474), comme tout ce qu'un joueur lit ; le formulaire et l'API
+  // gardent la date réelle (même schéma que la date de début d'un mandat, MandateRequestModal).
+  const gameDate = computed({
+    get: () => toGameDateIso(form.effective_from),
+    set: (value) => { form.effective_from = toRealDateIso(value) },
+  })
+  const maxGameDate = toGameDateIso(todayIso())
+
   // Un autre jeu de départ (rechargement des prix, autre ligne) repart de ses valeurs.
   watch(() => [props.initial, props.date], () => Object.assign(form, formFromSet(props.initial, startDate())))
 
@@ -45,7 +54,7 @@
   <form class="space-y-3" data-testid="price-form" @submit.prevent="submit">
     <div>
       <label :for="`${idPrefix}-date`" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ t('EconomyMines.RegistryPage.Prices.EffectiveFrom') }}</label>
-      <input :id="`${idPrefix}-date`" v-model="form.effective_from" type="date" :max="todayIso()" :disabled="dateLocked"
+      <input :id="`${idPrefix}-date`" v-model="gameDate" type="date" :max="maxGameDate" :disabled="dateLocked"
              class="w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 px-3 py-2" data-testid="price-date" />
     </div>
 
