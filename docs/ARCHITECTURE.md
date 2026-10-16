@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 15/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 16/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -285,6 +285,11 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   la table dans le relevé. **Dates en année du jeu** (1474) partout, saisie du champ date comprise (`toGameDateIso` / `toRealDateIso`, comme la date
   de début d'un mandat) ; boutons : voir `CHARTE-GRAPHIQUE.md` §6.7. Textes sous `EconomyMines.RegistryPage.{Prices,Navigation,Export}` et
   `EconomyMines.ManagedPrices` (le brief proposait `Eco.MineRegistry.*`, qui n'existe pas).
+  **Aides** (lot 3, 16/10/2026) : l'aide du registre (`MainEconomy`, `EconomyMines.RegistryPage.HelpStep1…9`) dit ce que le module permet de faire — bilan et
+  navigation par semaine, niveaux, relevés, **prix** (qui les fixe, « Gérer les prix », « Historique des prix », grâce de 7 jours), **export** ; l'aide de la
+  plaque d'enregistrement (`EconomyMines.Registry.Help*`) dit que les prix viennent de la province ; l'aide du Bilan public a une 5ᵉ étape (prix en lecture seule
+  d'un gérant). ⚠️ Une aide qui cite un bouton le cite **tel qu'il s'affiche** : `tests/eco/mineModuleTexts.unit.test.js` le garde (lecture des vraies locales).
+  Les textes **légaux** (politique, « Vos données ») ne sont pas dans ce lot.
 - **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
   vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
   prévu.

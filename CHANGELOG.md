@@ -6,6 +6,22 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-16] — PR #93 (Registre des mines : textes de présentation, lot 3 des prix)
+
+Lot 3 du brief `admin/content/brief-prix-registre.md` : les aides décrivent ce que le module permet de faire.
+
+### Changed
+- Aide du registre : neuf étapes — page en deux colonnes, bilan en cours remplaçable par une semaine (◀ ▶, prix jour par jour),
+  historique des niveaux dépliable, relevés inscrits, **prix** (qui les fixe, « Gérer les prix », « Historique des prix », grâce de
+  7 jours), **export** « Confier au scribe ».
+- Aide de la plaque d'enregistrement : les prix viennent de la table de la province, plus à vérifier à la saisie.
+- Aide du Bilan public : 5ᵉ étape, prix d'un gérant du registre en lecture seule.
+
+### Added
+- Garde-fou `mineModuleTexts` : une aide cite un bouton tel qu'il s'affiche ; `MainEconomy.test.js` pour les aides.
+
+Hors lot : les textes légaux (politique, « Vos données ») ne disent encore rien de la table des prix — à décider.
+
 ## [2026-10-16] — PR #91 (politique : le commissaire au commerce consulte le Registre des mines)
 
 ### Changed

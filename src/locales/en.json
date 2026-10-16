@@ -322,13 +322,13 @@
       "HelpButton": "How to read the registry?",
       "HelpTitle": "The province's registry",
       "HelpPurpose": "The registry keeps the record of the province's mines, from one office-holder to the next. The Mines Superintendent, the Sheriff, the Trade Minister and the province's leader read it; only the first two record reports in it, from the Mines report.",
-      "HelpOverview": "The page reads from top to bottom: the state of the mines first, then your term, then the registry's memory. Nothing is deleted: a replaced report stays visible in the history.",
+      "HelpOverview": "The page has two columns: on the left what helps you decide (the report, then your term), on the right the registry's memory (levels and recorded reports). Nothing is deleted: a replaced report stays visible in the history.",
       "HelpStep1": "Last report, top right: it turns orange if it is two days old or more.",
-      "HelpStep2": "Current report: output, value, wages, upkeep and balance of each mine since the start of your term's month (1st month from when you took office, 2nd month from mid-term), up to yesterday. It stays provisional until the month ends.",
+      "HelpStep2": "Current report: output, value, wages, upkeep and balance of each mine since the start of your term's month (1st month from when you took office, 2nd month from mid-term), up to yesterday. It stays provisional until the month ends. The arrows replace it with a week of your term, recomputed day by day with the prices in force that day; \"Current period\" brings back the month.",
       "HelpStep3": "Reports for your term: at mid-term and at the end of the term, computed from the reports recorded since you took office. Before the date, the page only says in how many days.",
       "HelpStep4": "Days without data: the days no report covers. A paste contains the game's last 7 days, so a day without a paste is not necessarily lost.",
-      "HelpStep5": "Before you took office: the reports recorded by other characters in the 30 days before.",
-      "HelpStep6": "Level history: a rise is an improvement; a drop with no upkeep recorded while the threshold had been reached is shown in red; any other drop is a deliberate choice.",
+      "HelpStep5": "Before you took office: the reports recorded by other characters in the 30 days before. This section only appears when there are some.",
+      "HelpStep6": "Level history: a rise is an improvement; a drop with no upkeep recorded while the threshold had been reached is shown in red; any other drop is a deliberate choice. A mine whose level changed several times unfolds.",
       "Title": "Registry of {province}",
       "Loading": "Opening the registry…",
       "NoCharacter": "Choose a character in the top bar.",
@@ -416,14 +416,17 @@
       "Export": {
         "Button": "Entrust it to the scribe",
         "Copied": "BBCode copied to clipboard."
-      }
+      },
+      "HelpStep7": "Recorded reports: everything that was saved, replacements included, folded under the level history.",
+      "HelpStep8": "Prices: the Trade Minister, the Mines Superintendent and the Sheriff set them by effective date — a price stays in force until the next one. \"Manage prices\" updates today's; \"Price history\" shows past sets and lets you correct those of your term, up to 7 days after it ends. The leader can read them.",
+      "HelpStep9": "Export: \"Entrust it to the scribe\" copies as BBCode, for the game forum, the report of a complete week, valued with each day's prices."
     },
     "Registry": {
       "HelpButton": "How does the registry work?",
       "HelpTitle": "Record in the registry",
       "HelpPurpose": "The registry keeps the record of the province's mines, handed from one office-holder to the next. The Mines Superintendent and the Sheriff record reports in it; the Trade Minister and the province's leader can read them.",
-      "HelpOverview": "Each entry keeps the pasted text, the parsed report, and the prices and miners' wage/hour at the time, signed by your character and its office. A report is never deleted: an incorrect report is replaced, and the old one stays visible in the history.",
-      "HelpStep1": "Paste the contents of the \"Management of the mines\" tab, as for the report, and check the prices and the miners' wage/hour.",
+      "HelpOverview": "Each entry keeps the pasted text, the parsed report, and the prices and miners' wage/hour in force on its date in the province, signed by your character and its office. A report is never deleted: an incorrect report is replaced, and the old one stays visible in the history.",
+      "HelpStep1": "Paste the contents of the \"Management of the mines\" tab, as for the report. Today's prices and wage/hour are shown as a reminder: they come from the province's price table and are managed from the registry page.",
       "HelpStep2": "Check the province shown: it is the province of your office, not of your residence.",
       "HelpStep3": "Click \"Record in the registry\". The report takes the date of the last day in its data: an older paste fills in a missing day without replacing today's.",
       "HelpStep4": "A report is already recorded today in the province? The Office tells you and names who recorded it. Yours only replaces it once you confirm, and only if it brings something new: an identical report, or one that says less, is refused.",
@@ -484,7 +487,8 @@
       "Help": "These prices come from the registry: each day of the balance sheet is valued at the price set in force that day. They cannot be edited here.",
       "Manage": "Manage prices",
       "None": "No prices are recorded yet for your province: enter them here for now, or record them in the registry."
-    }
+    },
+    "HelpStep5": "Prices and wage/hour: enter your own, they are kept with each week. If you are Trade Minister, Mines Superintendent or Sheriff, they are your province's, shown read-only: they are managed from the registry."
   },
   "Animation": {
     "Title": "Animation Chest"
