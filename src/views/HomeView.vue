@@ -37,7 +37,7 @@
         </template>
       </i18n-t>
       <div v-if="!authStore.isLoggedIn" class="flex justify-center mt-4">
-        <RouterLink to="/login" class="btn btn-primary">
+        <RouterLink to="/login" class="odc-btn odc-btn--soft odc--orange">
           <v-icon name="fa-unlock-alt" scale="1" />
           {{ t('Home.LoginButton') }}
         </RouterLink>

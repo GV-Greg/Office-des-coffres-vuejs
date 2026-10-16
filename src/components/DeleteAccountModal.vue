@@ -92,7 +92,7 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
           <div class="flex flex-wrap items-center justify-end gap-3">
             <button
               type="button"
-              class="btn btn-grad-red"
+              class="odc-btn odc-btn--soft odc--red"
               data-testid="delete-account-continue"
               @click="step = 2"
             >
@@ -135,7 +135,7 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
             <div class="mt-5 flex flex-wrap items-center justify-end gap-3">
               <button
                 type="submit"
-                class="btn btn-grad-red"
+                class="odc-btn odc-btn--soft odc--red"
                 data-testid="delete-account-confirm"
                 :disabled="!canConfirm"
               >
