@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-17] — PR #NN (charte : fin des anciens boutons `btn-*`)
+
+### Changed
+- Dernières vues migrées vers `odc-*` : flèches de semaine (Bilan, Registre : carrés ardoise), exports BBcode (Bilan, Guet : vert, `fa-copy`),
+  suppression de compte (rouge), « Se connecter » de l'accueil (orange), ajout de personnage (`DefaultSubmitButton` : vert, `fa-plus`).
+
+### Removed
+- `.btn`, `.btn-primary`, `.btn-grad-*` et les autres classes de boutons de `style.css` ; composants morts `PrimaryButton`, `DangerButton`,
+  `SuccessButton` ; test `btn-grad-contrast` (plus rien à mesurer). Garde-fou `no-quiet-button` étendu aux anciennes classes.
+
 ## [2026-10-17] — PR #95 (charte : fin des boutons blancs, « Retour » en ardoise)
 
 Passe de migration vers `CHARTE-GRAPHIQUE.md` §6.7, avec l'accord de Greg (17/10/2026).

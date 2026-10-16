@@ -433,14 +433,12 @@ inline (requis/min/max/email/confirmation).
   leur langue d'origine), alignée sur `lang/fr.json` côté backend.
 - **`data/whatsNew.json`** — entrées de la « Chronique de l'Office » (`HomeView.vue`), scope
   public/privé par entrée.
-- **`assets/style.css`** — styles globaux Tailwind (`@layer components`). Charte de boutons
-  dégradée `.btn-grad-{couleur}` pour les actions pas encore migrées. Les classes plates
+- **`assets/style.css`** — styles globaux Tailwind (`@layer components`). Plus aucune classe de
+  bouton (`.btn`, `.btn-primary`, `.btn-grad-*`… supprimées le 17/10/2026, toutes les vues sont en `odc-*`). Les classes plates
   `.btn-blue`/`.btn-yellow`/`.btn-rose`/`.btn-teal`/`.btn-slate`/`.btn-menu-rounded` ont été
   **supprimées** le 27/09/2026 : leur seul consommateur, `NavMenu.vue`, passe par des variables
   CSS.
-  ⚠️ **Contraste** : chaque dégradé à texte blanc part de l'arrêt le plus clair qui passe 4,5:1
-  (planchers commentés au-dessus de `.btn-grad-blue`), le survol ne fait qu'assombrir — gardé par
-  `tests/enforcement/btn-grad-contrast.unit.test.js`.
+  Garde-fou `tests/enforcement/no-quiet-button.unit.test.js` : aucune vue ne repose `odc-btn--quiet` ni une ancienne classe.
   **`.page-card`** = carte de contenu des pages `/app/*` (ex-sélecteur d'élément `main`). ⚠️ Ne
   jamais styler l'élément `main` : `App.vue` porte l'**unique** repère `<main>` de chaque page ;
   les vues n'en déclarent pas. **`.page-container`** ne déclare aucune couleur de texte (elle
@@ -455,8 +453,7 @@ inline (requis/min/max/email/confirmation).
   pastilles de la chronique, `ProfilView`, les pages publiques (connexion, inscription,
   vérification d'email, 404, bannière et modale cookies), et les boutons de génération d'`EconomyMines`
   (mise en forme du jour, bilan hebdomadaire) et de `SecurityGuet` (entrées/sorties) ;
-  `btn-primary`/`btn-grad-*` restent ailleurs (exports BBcode, flèches de semaine, formulaires)
-  jusqu'à leur migration. Pilules pour les actions de page (`--sm` dans les cartes), rectangles pour la
+  tout le reste est migré (17/10/2026). Pilules pour les actions de page (`--sm` dans les cartes), rectangles pour la
   barre de navigation et les formulaires.
   **Trois niveaux** (voir `logo/boutons/README.md`) : **signature** `odc-btn` seul (laiton
   complet, réservé au menu M1), **standard** `odc-btn--soft` (face colorée sans laiton : barre de

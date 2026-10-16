@@ -89,6 +89,8 @@ pour l'état inverse). Deux chartes coexistent le temps de la migration : `odc-*
 chronique, Profil) et `.btn-grad-*` (le reste). Tant que les deux existent, le contraste se garde
 des deux côtés (`btn-grad-contrast`, `odc-buttons-contrast`).
 
+**Clos le 17/10/2026** : `.btn-grad-*`, `.btn-primary` et `btn-grad-contrast` sont supprimés, plus aucune vue ne les emploie ; seul `odc-*` subsiste.
+
 ## Menu circulaire : mix M1 + D2 (variante X3) (27/09/2026)
 
 **Contexte** — Le menu M1, fusionné par #62, a été jugé à l'écran moins lumineux et moins lisible

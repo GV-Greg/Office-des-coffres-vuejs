@@ -198,7 +198,7 @@
            avec les prix en vigueur ce jour-là ; « Période en cours » revient au mois. -->
       <section v-if="current || range" data-testid="registry-current">
         <div class="flex flex-wrap items-center gap-3">
-          <button v-if="range" type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoPrevious"
+          <button v-if="range" type="button" class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate" :disabled="!canGoPrevious"
                   :aria-label="t('EconomyMines.RegistryPage.Navigation.Previous')" data-testid="week-previous" @click="previousWeek">
             <v-icon name="fa-chevron-left" scale="0.9" />
           </button>
@@ -207,7 +207,7 @@
             <template v-else-if="current">{{ t('EconomyMines.RegistryPage.CurrentTitle', { month: current.month, from: dayMonth(current.from), to: dayMonth(current.to) }, current.month) }}</template>
             <template v-else>{{ t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}</template>
           </h3>
-          <button v-if="range" type="button" class="btn-grad-slate p-2 rounded-md disabled:opacity-40" :disabled="!canGoNext"
+          <button v-if="range" type="button" class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate" :disabled="!canGoNext"
                   :aria-label="t('EconomyMines.RegistryPage.Navigation.Next')" data-testid="week-next" @click="nextWeek">
             <v-icon name="fa-chevron-right" scale="0.9" />
           </button>

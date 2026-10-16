@@ -291,7 +291,7 @@
       <button
         type="button"
         @click="previousWeek"
-        class="btn-grad-slate p-2 rounded-md"
+        class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate"
         :aria-label="t('EconomyMines.PreviousWeek')"
       >
         <v-icon name="fa-chevron-left" scale="0.9" />
@@ -302,7 +302,7 @@
       <button
         type="button"
         @click="nextWeek"
-        class="btn-grad-slate p-2 rounded-md"
+        class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate"
         :aria-label="t('EconomyMines.NextWeek')"
       >
         <v-icon name="fa-chevron-right" scale="0.9" />
@@ -445,7 +445,7 @@
       <!-- Convention de valorisation, écrite à l'écran plutôt que sous-entendue (§2.5). -->
       <p class="mt-1 text-xs italic text-slate-700 dark:text-slate-700" data-testid="convention">{{ t('EconomyMines.Convention') }}</p>
 
-      <button v-if="weekCheck.complete" @click="toExport" class="h-12 btn btn-primary mt-3 inline-flex items-center gap-2"><v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.ExportButton') }}</button>
+      <button v-if="weekCheck.complete" @click="toExport" class="odc-btn odc-btn--soft odc--green mt-3"><v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.ExportButton') }}</button>
     </div>
   </div>
 </template>

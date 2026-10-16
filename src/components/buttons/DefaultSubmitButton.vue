@@ -24,7 +24,7 @@
 
 <template>
   <div class="form-group mt-5">
-    <button class="btn-default py-2 uppercase" @click="handleButtonClick">{{ props.text }}</button>
+    <button type="submit" class="odc-btn odc-btn--soft odc--green" @click="handleButtonClick"><v-icon name="fa-plus" aria-hidden="true" />{{ props.text }}</button>
   </div>
 </template>
 
