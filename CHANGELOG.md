@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-10-16] — PR #NN (Politique : les prix des mines de la province)
+## [2026-10-16] — PR #94 (Politique : les prix des mines de la province)
 
 Texte validé par Greg le 16/10/2026 (`admin/content/policy-prix-registre-draft.md`), posé avant l'entrée de journal côté back.
 
