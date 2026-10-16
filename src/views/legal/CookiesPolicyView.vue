@@ -37,10 +37,11 @@
       <div class="max-w-3xl w-full space-y-6">
         <button
           type="button"
-          class="inline-block text-slate-300 hover:text-white dark:text-slate-400 dark:hover:text-slate-100 text-sm"
+          class="odc-btn odc-btn--soft odc-btn--sm odc--slate"
           @click="goBackOrWelcome(router)"
         >
-          &larr; {{ t('Common.SiteName') }}
+          <v-icon name="fa-reply" aria-hidden="true" />
+          {{ t('Common.SiteName') }}
         </button>
 
         <h1>{{ t('Legal.Cookies.PageTitle') }}</h1>

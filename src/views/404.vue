@@ -52,7 +52,7 @@
 
         <!-- Un seul bouton : retour à la page précédente, ou à homeRoute en arrivée directe. -->
         <div class="flex justify-center pt-2">
-          <button type="button" class="odc-btn odc-btn--soft odc--orange" @click="goBack">
+          <button type="button" class="odc-btn odc-btn--soft odc--slate" @click="goBack">
             <v-icon name="fa-reply" />
             {{ t('NotFound.BackHome') }}
           </button>
