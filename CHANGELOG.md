@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-16] — PR #NN (Politique : les prix des mines de la province)
+
+Texte validé par Greg le 16/10/2026 (`admin/content/policy-prix-registre-draft.md`), posé avant l'entrée de journal côté back.
+
+### Changed
+- §3 : la ligne « Les prix et le taux horaire » du Registre dit que les prix viennent de la table de la province, plus d'une saisie du joueur.
+- Page « Vos données », Registre des mines : les prix de la province (usage et contenu).
+
+### Added
+- §3 (ce que l'Office conserve pour les prix), §5 (sans limite de durée, correction jusqu'à 7 jours après la fin du mandat, une correction remplace la valeur,
+  lien avec le compte supprimé), §6 (trois postes + dirigeant, email quotidien qui nomme l'auteur). Tests `privacyMineRegistry`, `PrivacyPolicyView`.
+
 ## [2026-10-16] — PR #93 (Registre des mines : textes de présentation, lot 3 des prix)
 
 Lot 3 du brief `admin/content/brief-prix-registre.md` : les aides décrivent ce que le module permet de faire.

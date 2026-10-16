@@ -625,8 +625,8 @@
       },
       "MineRegistry": {
         "Title": "Mine Registry",
-        "Purpose": "Keep a province's mine management record, handed from one office-holder to the next: the Mines Superintendent and the Sheriff save their reports to it, and the Trade Minister and the province's leader (count, duke…) may read them. You must hold one of these offices in the province, and have had it validated in the Office. Without that, the tool is not available.",
-        "Input": "The same text as for the Mines report: the contents of the \"Management of the mines\" tab, copied from the game."
+        "Purpose": "Keep a province's mine management record, handed from one office-holder to the next: the Mines Superintendent and the Sheriff save their reports to it, and the Trade Minister and the province's leader (count, duke…) may read them. You must hold one of these offices in the province, and have had it validated in the Office. Without that, the tool is not available. It also holds the province's mine prices, set by the Trade Minister, the Mines Superintendent and the Sheriff.",
+        "Input": "The same text as for the Mines report: the contents of the \"Management of the mines\" tab, copied from the game. For prices: the price of each resource and the hourly wage, with the date they take effect."
       },
       "Watch": {
         "Title": "Watch",
@@ -699,11 +699,26 @@
           },
           {
             "Label": "Prices and hourly rate",
-            "Text": "the values you entered at the time of the report, kept with it because they change over time."
+            "Text": "the prices and wage/hour in force in your province on the report's date, kept with it because they change over time. They come from the province's price table (see below), not from anything you type."
           },
           {
             "Label": "Province and office",
             "Text": "the province where you hold your office — not your town of residence —, the office used (Mines Superintendent or Sheriff), and the character who saved the report."
+          }
+        ],
+        "MinePricesIntro": "If you are the Trade Minister, Mines Superintendent or Sheriff of a province and you record or correct that province's mine prices, the Office keeps:",
+        "MinePricesFields": [
+          {
+            "Label": "The prices",
+            "Text": "the price of each resource and the miners' hourly wage, with the date they take effect. A price stays in force until the next one."
+          },
+          {
+            "Label": "The province",
+            "Text": "your office's province, not your city of residence."
+          },
+          {
+            "Label": "Who recorded it",
+            "Text": "the character who recorded the price and the one who last corrected it, with the date and time."
           }
         ],
         "ToolsIntro": "What each tool is for, who can use it, what you put into it and what it does or does not store is explained tool by tool on the {dataLink} page:"
@@ -762,7 +777,8 @@
         "DeletedAccount": "Deleted account: immediate and definitive deletion of the associated personal data (email, hashed password, linked characters).",
         "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased.",
         "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account).",
-        "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible."
+        "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible.",
+        "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price while you hold the office, and up to 7 days after your term ends; after that it is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name."
       },
       "Section6": {
         "Title": "6. Who can access your data",
@@ -771,7 +787,8 @@
         "NoOneElse": "No one else beyond the above. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
         "Hosting": "Data is hosted on servers located in the European Union (host: o2switch, France).",
         "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
-        "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province."
+        "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province.",
+        "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province."
       },
       "DataPageLink": "Your data, tool by tool",
       "Section7": {
