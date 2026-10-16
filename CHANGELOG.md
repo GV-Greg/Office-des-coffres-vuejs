@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-10-17] — PR #NN (charte : fin des boutons blancs, « Retour » en ardoise)
+## [2026-10-17] — PR #95 (charte : fin des boutons blancs, « Retour » en ardoise)
 
 Passe de migration vers `CHARTE-GRAPHIQUE.md` §6.7, avec l'accord de Greg (17/10/2026).
 
