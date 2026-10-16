@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-10-17] — PR #NN (charte : fin des anciens boutons `btn-*`)
+## [2026-10-17] — PR #96 (charte : fin des anciens boutons `btn-*`)
 
 ### Changed
 - Dernières vues migrées vers `odc-*` : flèches de semaine (Bilan, Registre : carrés ardoise), exports BBcode (Bilan, Guet : vert, `fa-copy`),
