@@ -12,12 +12,13 @@
 
   const showHelp = ref(false)
   const showRegistryHelp = ref(false)
-  const registryHelpSteps = computed(() => [1, 2, 3, 4, 5, 6].map(n => t(`EconomyMines.RegistryPage.HelpStep${n}`)))
+  const registryHelpSteps = computed(() => [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => t(`EconomyMines.RegistryPage.HelpStep${n}`)))
   const helpSteps = computed(() => [
     t('EconomyMines.HelpStep1'),
     t('EconomyMines.HelpStep2'),
     t('EconomyMines.HelpStep3'),
     t('EconomyMines.HelpStep4'),
+    t('EconomyMines.HelpStep5'),
   ])
 
   // Registre des mines : le lien n'apparaît qu'à qui peut le consulter (commissaire aux mines, bailli,
