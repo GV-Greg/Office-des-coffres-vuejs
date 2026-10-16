@@ -70,6 +70,10 @@ const messages = {
             { Label: 'Le texte collé', Text: 'tel quel.' },
             { Label: 'La province et le poste', Text: 'du poste, pas de la résidence.' },
           ],
+          MinePricesIntro: 'Si vous gérez les prix, l’Office conserve :',
+          MinePricesFields: [
+            { Label: 'Les prix', Text: 'avec leur date.' },
+          ],
           ToolsIntro: 'Outil par outil sur la page {dataLink} :',
         },
         DataPageLink: 'Vos données',
@@ -90,6 +94,7 @@ const messages = {
           DeletedAccount: 'Compte supprimé : effacé.',
           Mandates: 'Postes : tout est effacé SAUF l’historique.',
           MineRegistry: 'Registre : sans limite.',
+          MinePrices: 'Prix : sans limite.',
           TechnicalLogs: 'Logs : 12 mois.',
         },
         Section6: {
@@ -97,6 +102,7 @@ const messages = {
           Yourself: 'Vous-même.',
           Editor: "L'éditeur.",
           MineRegistryHolders: 'Le commissaire et le bailli.',
+          MinePricesHolders: 'Les trois postes des prix.',
           ProvincePlayers: 'Les joueurs de la province.',
           NoOneElse: 'Personne d\'autre.',
           Hosting: 'Hébergeur : [À REMPLIR PAR GREG : hébergeur].',
@@ -248,7 +254,9 @@ describe('PrivacyPolicyView', () => {
   it('place la durée du Registre juste après les postes déclarés (§5), et ses destinataires avant « Personne d’autre » (§6)', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Registre : sans limite.')).toBe(items.indexOf('Postes : tout est effacé SAUF l’historique.') + 1)
-    expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf("Personne d'autre.") - 1)
+    expect(items.indexOf('Prix : sans limite.')).toBe(items.indexOf('Registre : sans limite.') + 1)
+    expect(items.indexOf('Les trois postes des prix.')).toBe(items.indexOf("Personne d'autre.") - 1)
+    expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf('Les trois postes des prix.') - 1)
   })
   // Brief pages-donnees-joueur §3 : la politique porte « une ligne par outil, avec son lien ».
   it("porte une ligne par outil, chacune liée à sa section de la page « Vos données »", () => {
@@ -265,7 +273,7 @@ describe('PrivacyPolicyView', () => {
   it('garde l’exception des postes juste après le compte supprimé (§5), et les joueurs de la province avant les tenants du registre et « Personne d’autre » (§6)', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Postes : tout est effacé SAUF l’historique.')).toBe(items.indexOf('Compte supprimé : effacé.') + 1)
-    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 2)
+    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 3)
   })
 
   it('affiche une date de dernière modification', () => {

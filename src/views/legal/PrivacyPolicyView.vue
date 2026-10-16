@@ -27,6 +27,7 @@
   const characterFields = computed(() => tm('Legal.Privacy.Section3.CharacterFields'))
   const dataRows = computed(() => tm('Legal.Privacy.Section4.Rows'))
   const mineRegistryFields = computed(() => tm('Legal.Privacy.Section3.MineRegistryFields'))
+  const minePricesFields = computed(() => tm('Legal.Privacy.Section3.MinePricesFields'))
   const rights = computed(() => tm('Legal.Privacy.Section7.Rights'))
   const measures = computed(() => tm('Legal.Privacy.Section8.Measures'))
 </script>
@@ -110,6 +111,15 @@
               </li>
             </ul>
 
+            <!-- Prix des mines de la province (texte validé par Greg le 16/10/2026,
+                 admin/content/policy-prix-registre-draft.md). -->
+            <p class="mt-4">{{ t('Legal.Privacy.Section3.MinePricesIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-mine-prices">
+              <li v-for="(field, index) in minePricesFields" :key="`mine-prices-${index}`">
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
+
             <!-- Une ligne par outil, avec son lien. AJOUT seulement : les énumérations de la politique
                  (§4, §5, §6) ne perdent jamais une ligne, la page porte l'usage et le contenu de
                  chaque outil et renvoie ici pour la durée et les destinataires (fil
@@ -166,6 +176,7 @@
               <li>{{ t('Legal.Privacy.Section5.DeletedAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Mandates') }}</li>
               <li>{{ t('Legal.Privacy.Section5.MineRegistry') }}</li>
+            <li>{{ t('Legal.Privacy.Section5.MinePrices') }}</li>
               <li>{{ t('Legal.Privacy.Section5.TechnicalLogs') }}</li>
             </ul>
           </section>
@@ -178,6 +189,7 @@
               <li>{{ t('Legal.Privacy.Section6.ProvincePlayers') }}</li>
               <!-- Avant « Personne d'autre en dehors de ce qui précède », qui clôt l'énumération. -->
               <li>{{ t('Legal.Privacy.Section6.MineRegistryHolders') }}</li>
+            <li>{{ t('Legal.Privacy.Section6.MinePricesHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.NoOneElse') }}</li>
             </ul>
             <p class="mt-4">{{ t('Legal.Privacy.Section6.Hosting') }}</p>

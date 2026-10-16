@@ -60,4 +60,32 @@ describe('Politique — Registre des mines', () => {
     expect(text).toContain('Mines Superintendent')
     expect(text).not.toMatch(/Mine management|breaking threshold|mines commissioner/i)
   })
+
+  // Greg, 16/10/2026 (admin/content/policy-prix-registre-draft.md) : les prix de la province.
+  it.each(['fr', 'en'])('%s : les insertions des prix existent (§3, §5, §6)', (lang) => {
+    const p = privacy(lang)
+    expect(p.Section3.MinePricesIntro).toBeTruthy()
+    expect(p.Section3.MinePricesFields).toHaveLength(3)
+    expect(p.Section5.MinePrices).toBeTruthy()
+    expect(p.Section6.MinePricesHolders).toBeTruthy()
+  })
+
+  it('les engagements sur les prix sont écrits tels quels, dans les deux langues', () => {
+    const fr = privacy('fr'), en = privacy('en')
+    expect(fr.Section5.MinePrices).toContain('sans limite de durée')
+    expect(fr.Section5.MinePrices).toContain('jusqu\'à 7 jours après la fin de votre mandat')
+    expect(fr.Section5.MinePrices).toContain('l\'ancienne valeur n\'est pas conservée')
+    expect(fr.Section5.MinePrices).toContain('le lien avec votre compte est supprimé')
+    expect(fr.Section6.MinePricesHolders).toContain('une fois par jour')
+    expect(en.Section5.MinePrices).toContain('no time limit')
+    expect(en.Section5.MinePrices).toContain('up to 7 days after your term ends')
+    expect(en.Section5.MinePrices).toContain('the previous value is not kept')
+    expect(en.Section5.MinePrices).toContain('their link to your account is removed')
+    expect(en.Section6.MinePricesHolders).toContain('once a day')
+  })
+
+  it('la ligne des prix du relevé ne dit plus que le joueur les renseigne', () => {
+    expect(privacy('fr').Section3.MineRegistryFields[2].Text).toContain('table des prix de la province')
+    expect(privacy('en').Section3.MineRegistryFields[2].Text).toContain("province's price table")
+  })
 })
