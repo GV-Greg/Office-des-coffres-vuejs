@@ -84,7 +84,7 @@ onMounted(() => {
                l'ancien rouge « danger » présentait le refus comme une faute. « Gérer mes
                préférences » en discret. -->
           <div class="flex flex-none flex-col tablet:flex-row justify-center gap-3">
-            <button type="button" class="odc-btn odc-btn--quiet odc--slate" @click="cookieStore.openPreferencesModal()">
+            <button type="button" class="odc-btn odc-btn--soft odc--slate" @click="cookieStore.openPreferencesModal()">
               <v-icon name="fa-sliders-h" />
               {{ t('Cookies.Button.Preferences') }}
             </button>

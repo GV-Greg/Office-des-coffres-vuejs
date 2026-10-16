@@ -128,7 +128,7 @@
           <button
             v-if="!resendSent"
             type="button"
-            class="mt-3 odc-btn odc-btn--quiet odc-btn--sm odc--red"
+            class="mt-3 odc-btn odc-btn--soft odc-btn--sm odc--slate"
             @click="resendVerification"
           >
             {{ t('Login.ResendButton') }}

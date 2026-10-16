@@ -197,20 +197,22 @@
 
                 <div v-else class="mt-3 pt-3 border-t border-gray-200">
                   <CityCascadeSelect v-model="editCityId" />
-                  <div class="flex items-center gap-2 mt-2">
+                  <div class="flex items-center justify-between gap-2 mt-2">
                     <button
                       type="button"
-                      class="odc-btn odc-btn--soft odc-btn--sm odc--orange"
-                      @click="saveResidence(character.id)"
+                      class="odc-btn odc-btn--soft odc-btn--sm odc--red"
+                      @click="cancelEditResidence"
                     >
-                      {{ t('Profil.SaveResidence') }}
+                      <v-icon name="fa-times" />
+                      {{ t('Profil.CancelEdit') }}
                     </button>
                     <button
                       type="button"
-                      class="odc-btn odc-btn--quiet odc-btn--sm odc--slate"
-                      @click="cancelEditResidence"
+                      class="odc-btn odc-btn--soft odc-btn--sm odc--green"
+                      @click="saveResidence(character.id)"
                     >
-                      {{ t('Profil.CancelEdit') }}
+                      <v-icon name="fa-save" />
+                      {{ t('Profil.SaveResidence') }}
                     </button>
                   </div>
                 </div>

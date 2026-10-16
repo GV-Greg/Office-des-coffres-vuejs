@@ -54,8 +54,8 @@
       <div class="w-full col-start-2 col-span-1">
         <!-- Bouton retour -->
         <div class="w-full flex justify-center mb-1">
-          <RouterLink to="/app/profil" class="btn btn-grad-slate">
-            <v-icon name="fa-arrow-alt-circle-left" scale="1" />
+          <RouterLink to="/app/profil" class="odc-btn odc-btn--soft odc-btn--sm odc--slate">
+            <v-icon name="fa-reply" aria-hidden="true" />
             {{ t('AddCharacter.BackLink') }}
           </RouterLink>
         </div>

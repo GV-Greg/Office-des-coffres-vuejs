@@ -139,16 +139,16 @@
               </p>
 
               <div v-if="mandate.status === 'pending' || mandate.renewable || isInOffice(mandate)" class="mt-2 flex flex-wrap gap-2">
-                <button v-if="isInOffice(mandate)" type="button" class="odc-btn odc-btn--quiet odc-btn--sm odc--blue" data-testid="declare-office" @click="declareFor = mandate">
+                <button v-if="isInOffice(mandate)" type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--green" data-testid="declare-office" @click="declareFor = mandate">
                   <!-- Avec un poste : le bouton sert à en CHANGER (réattribution par le dirigeant). -->
                   <v-icon :name="mandate.office_key ? 'fa-exchange-alt' : 'ri-user-star-fill'" />
                   {{ mandate.office_key ? t('Profil.Mandates.ChangeOffice') : t('Profil.Mandates.DeclareOffice') }}
                 </button>
-                <button v-if="mandate.renewable" type="button" class="odc-btn odc-btn--quiet odc-btn--sm odc--green" data-testid="renew" @click="openRenew(mandate)">
+                <button v-if="mandate.renewable" type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--green" data-testid="renew" @click="openRenew(mandate)">
                   <v-icon name="fa-sync-alt" />
                   {{ t('Profil.Mandates.Renew') }}
                 </button>
-                <button v-if="mandate.status === 'pending'" type="button" class="odc-btn odc-btn--quiet odc-btn--sm odc--red" data-testid="cancel-request" @click="cancelRequest(mandate)">
+                <button v-if="mandate.status === 'pending'" type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--red" data-testid="cancel-request" @click="cancelRequest(mandate)">
                   <v-icon name="fa-times" />
                   {{ t('Profil.Mandates.CancelRequest') }}
                 </button>

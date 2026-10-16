@@ -6,6 +6,20 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-17] — PR #NN (charte : fin des boutons blancs, « Retour » en ardoise)
+
+Passe de migration vers `CHARTE-GRAPHIQUE.md` §6.7, avec l'accord de Greg (17/10/2026).
+
+### Changed
+- Plus aucun `odc-btn--quiet` dans les vues : bannière cookies (« Gérer mes préférences » en standard ardoise), mandats du Profil (déclarer,
+  changer de poste, renouveler : vert ; annuler la demande : rouge), renvoi du lien de connexion (ardoise), résidence du Profil (Annuler rouge à
+  gauche, Enregistrer vert à droite, icône `fa-save`).
+- « Retour » en ardoise avec `fa-reply` sur les quatre pages légales, `404.vue` et l'ajout de personnage (ex-`btn-grad-slate`).
+- « Copier pour le forum » (Ma province) passe de `fa-reply` à `fa-copy` : `fa-reply` ne veut dire que « retour » (révision du bouton en roadmap).
+
+### Added
+- Garde-fou `tests/enforcement/no-quiet-button.unit.test.js`.
+
 ## [2026-10-16] — PR #94 (Politique : les prix des mines de la province)
 
 Texte validé par Greg le 16/10/2026 (`admin/content/policy-prix-registre-draft.md`), posé avant l'entrée de journal côté back.

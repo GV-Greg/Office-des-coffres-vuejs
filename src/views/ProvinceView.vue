@@ -98,7 +98,7 @@
         <template v-else-if="province">
           <div class="flex justify-end">
             <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="province-copy" @click="copyForForum">
-              <v-icon name="fa-reply" />
+              <v-icon name="fa-copy" />
               {{ t('Province.CopyForForum') }}
             </button>
           </div>
