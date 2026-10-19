@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 16/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 19/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -311,11 +311,23 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   Liens vers les trois pages légales ; « Gérer mes préférences » et la mention « outil non
   officiel » n'apparaissent que sur les routes `meta.public` (sur `/app/*`, le bouton préférences
   est déjà dans la `NavBar`).
-- **`LoadingOverlay.vue`** — overlay plein écran pendant la navigation, monté dans `App.vue` et
-  piloté par les hooks du router via `useNavigationLoading`. Icône et texte selon le contexte
-  (pavillon « Ouverture de l'office… » / coffre « Ouverture du coffre… » / pavillon « Le greffe
-  traite votre demande… » pendant un envoi à l'API), `role="status"` +
-  `aria-live`, `prefers-reduced-motion` respecté.
+- **`LoadingOverlay.vue`** — overlay GLOBAL plein écran (changement de page, envoi à l'API), monté dans `App.vue` et piloté
+  par les hooks du router via `useNavigationLoading`. Contextes `office`, `chest` (module « Coffres X ») et `api`, plus une
+  **couleur de module** (`navigationAccent`, posée par le router : or, rose, sarcelle). Navigation : **le portique aux torches**
+  (`loading/GateIllustration.vue`, `gi-dungeon-gate`, « Vous entrez dans la salle… ») ; envoi : **parchemin déroulé**
+  (`gi-scroll-unfurled`, dévoilés de haut en bas, « Le greffe traite votre demande… »). Mouvement fini, `role="status"` +
+  `aria-live`. ⚠️ Le coffre n'est plus l'image de l'overlay : il est réservé au chargement INTERNE d'une page (ci-dessous).
+- **`loading/ChestLoader.vue`** (19/10/2026) — chargement interne d'une page, **dans la carte** : il entoure le contenu
+  (`<ChestLoader :loading :error accent block-class @retry>`). Rien avant 150 ms ; le coffre du logo
+  (`loading/ChestIllustration.vue`, couvercle qui se retourne, lueur 2 pulsations puis fixe) s'ouvre, sans étapes ni changement
+  de texte ; prêt (et ouverture finie) → lueur, le coffre s'efface, **puis** le contenu apparaît. Échec ou > 10 s : coffre refermé, message, « Réessayer » (`retry`). `block-class` cale le coffre sur la zone qu'il
+  remplace (le Registre : la colonne du tableau, pas la page). Durées : `modules/chestTiming.js` (instantanées en test via
+  `tests/setup.js`, et en mouvement réduit). Utilisé par `EconomyRegistry`, `EconomyPrices` et `ProvinceView` (accent violet).
+- **`loading/AccessLoader.vue`** — attente EN LIGNE d'une zone qui dépend d'un droit (cadenas + squelette, place réservée).
+  Le Bilan des mines ne montre la saisie des prix ou les prix de la province qu'une fois l'accès connu.
+- **`use/useSharedResource.js`** (générique) + **`use/useMineAccess.js`** — une ressource chargée par clé avec `ready`
+  (succès ou échec) ; les appels simultanés partagent UNE requête, aucun cache dans la durée. `useMineAccess` = `GET
+  characters/{id}/mine-registry`, partagé par le menu d'Économie, le Bilan, la plaque d'enregistrement et les prix.
 - **`NavBar.vue`** — header `/app/*` (named view `Nav`, donc partagé par home, éco, sécu, company,
   anim, profil). Contient `SelectorMenu`, `SelectorCharacter`, le bouton de déconnexion, le bouton
   « Gérer mes préférences » (cookies) à côté d'Accueil, et le lien vers le panneau d'administration

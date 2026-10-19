@@ -17,6 +17,8 @@
   import { RouterLink } from 'vue-router'
   import { useAuthStore } from '@/stores/authStore'
   import useMinePrices from '@/use/useMinePrices'
+  import useMineAccess from '@/use/useMineAccess'
+  import AccessLoader from '@/components/loading/AccessLoader.vue'
   import MineRegistrySave from '@/components/mines/MineRegistrySave.vue'
 
   const { t } = useI18n()
@@ -68,22 +70,32 @@
   // Gérant SANS aucun jeu en base : repli sur la saisie (rien à afficher), et l'écran le dit.
   const usesTable = computed(() => manages.value && priceSets.value.length > 0)
   const todayPrices = computed(() => setForDay(priceSets.value, todayIso()) ?? priceSets.value[priceSets.value.length - 1] ?? null)
+  // La zone des prix n'est choisie qu'une fois le droit connu (et, pour qui gère, les prix chargés) : avant, un cadenas
+  // réserve la place — le formulaire de saisie n'apparaît plus pour être remplacé aussitôt par les prix de la province.
+  const { access: mineAccess, ready: accessReady } = useMineAccess(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null))
+  const pricesReady = ref(false)
+  const priceZoneReady = computed(() => accessReady.value && pricesReady.value)
+  let priceRun = 0
   watch(
-    () => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null),
-    async (id) => {
+    () => [accessReady.value, mineAccess.value],
+    async ([ready, access]) => {
+      const run = ++priceRun
       manages.value = false
       canManagePrices.value = false
       priceSets.value = []
-      if (!id) return
+      pricesReady.value = false
+      if (!ready) return
+      canManagePrices.value = !!access?.prices?.write
+      const provinceId = access?.write?.id ?? access?.prices?.write?.id
+      if (!provinceId) { pricesReady.value = true; return }
+      manages.value = true
       try {
-        const access = await minePrices.access(id)
-        canManagePrices.value = !!access?.prices?.write
-        const provinceId = access?.write?.id ?? access?.prices?.write?.id
-        if (!provinceId) return
-        manages.value = true
-        priceSets.value = await minePrices.list(provinceId)
+        const sets = await minePrices.list(provinceId)
+        if (run === priceRun) priceSets.value = sets
       } catch {
-        manages.value = false // pas d'accès connu : le Bilan public reste ce qu'il était
+        if (run === priceRun) manages.value = false // pas d'accès connu : le Bilan public reste ce qu'il était
+      } finally {
+        if (run === priceRun) pricesReady.value = true
       }
     },
     { immediate: true },
@@ -339,7 +351,8 @@
 
     <!-- Gérant du registre : les prix de la province, en lecture seule (Greg, 15/10/2026). Ils se gèrent
          dans le registre ; chaque jour du bilan se valorise au jeu en vigueur CE jour-là. -->
-    <section v-if="usesTable" class="mt-4" data-testid="managed-prices" aria-labelledby="managed-prices-title">
+    <AccessLoader v-if="!priceZoneReady" class="mt-4" />
+    <section v-else-if="usesTable" class="mt-4" data-testid="managed-prices" aria-labelledby="managed-prices-title">
       <h4 id="managed-prices-title" class="font-bold">{{ t('EconomyMines.ManagedPrices.Title', { date: todayPrices ? formatGameDateFr(todayPrices.effective_from) : '' }) }}</h4>
       <dl v-if="todayPrices" class="mt-1 flex flex-wrap gap-x-6 gap-y-1 text-sm">
         <div v-for="field in PRICE_FIELDS" :key="field.resource" class="flex gap-1">

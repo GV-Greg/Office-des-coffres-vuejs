@@ -223,10 +223,17 @@ const CHEST_MODULE_ROUTE_NAMES = new Set([
   'animation',
 ])
 
+// Couleur du module (charte §3.3) : la porte de l'overlay et le coffre de la page la reprennent.
+const MODULE_ACCENT_BY_ROUTE = {
+  economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold',
+  security: 'rose', 'security-guet': 'rose',
+  animation: 'teal',
+}
+
 const { startNavigationLoading, stopNavigationLoading } = useNavigationLoading()
 
 router.beforeEach((to, from, next) => {
-  startNavigationLoading(CHEST_MODULE_ROUTE_NAMES.has(to.name) ? 'chest' : 'office')
+  startNavigationLoading(CHEST_MODULE_ROUTE_NAMES.has(to.name) ? 'chest' : 'office', { accent: MODULE_ACCENT_BY_ROUTE[to.name] ?? 'office' })
   next()
 })
 

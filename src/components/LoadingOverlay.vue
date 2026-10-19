@@ -2,13 +2,21 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useNavigationLoading from '@/use/useNavigationLoading'
+import GateIllustration from '@/components/loading/GateIllustration.vue'
 
+/*
+  Overlay GLOBAL : un changement de page ou un envoi à l'API. Mise en scène (maquette validée,
+  admin/content/demo-animations-chargement.html) : on ENTRE dans la salle — le portique aux torches surgit dans une lueur à la
+  couleur du module (neutre hors module) ; le coffre est réservé au chargement INTERNE d'une page (ChestLoader).
+  Envoi : le parchemin et la plume du greffe apparaissent de haut en bas (une fois). Mouvement fini (charte §8) : le portique surgit, la lueur pulse deux fois puis reste fixe.
+*/
 const { t } = useI18n()
-const { isNavigationLoading, navigationContext } = useNavigationLoading()
+const { isNavigationLoading, navigationContext, navigationAccent } = useNavigationLoading()
 
-const iconName = computed(() => navigationContext.value === 'chest' ? 'gi-chest' : 'gi-medieval-pavilion')
-const LOADING_TEXT_KEYS = { chest: 'Common.LoadingChest', api: 'Common.LoadingApi' }
-const loadingText = computed(() => t(LOADING_TEXT_KEYS[navigationContext.value] ?? 'Common.LoadingOffice'))
+const isApi = computed(() => navigationContext.value === 'api')
+const accent = computed(() => (navigationContext.value === 'chest' ? navigationAccent.value : 'office'))
+const loadingText = computed(() => t(isApi.value ? 'Common.LoadingApi' : 'Common.LoadingRoom'))
+
 </script>
 
 <template>
@@ -19,16 +27,14 @@ const loadingText = computed(() => t(LOADING_TEXT_KEYS[navigationContext.value] 
       role="status"
       aria-live="polite"
     >
-      <div class="relative flex h-40 w-40 items-center justify-center">
-        <div
-          class="chest-glow absolute h-32 w-32 rounded-full blur-2xl bg-[radial-gradient(circle,rgba(251,191,36,0.55)_0%,rgba(234,88,12,0.35)_45%,transparent_70%)]"
-        />
-        <v-icon
-          :name="iconName"
-          scale="6"
-          class="chest-icon relative text-orange-500 dark:text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.5)]"
-        />
-      </div>
+      <v-icon
+        v-if="isApi"
+        name="gi-scroll-unfurled"
+        scale="6"
+        class="greffe-in text-orange-500 dark:text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.5)]"
+        aria-hidden="true"
+      />
+      <GateIllustration v-else :accent="accent" />
       <p class="text-slate-800 dark:text-slate-200 text-lg font-medium italic">
         {{ loadingText }}
       </p>
@@ -46,35 +52,10 @@ const loadingText = computed(() => t(LOADING_TEXT_KEYS[navigationContext.value] 
   opacity: 0;
 }
 
-.chest-icon {
-  animation: chest-bounce 1.1s infinite;
-}
-
-.chest-glow {
-  animation: chest-glow-pulse 2.4s ease-in-out infinite;
-  animation-delay: -0.6s;
-}
-
-@keyframes chest-bounce {
-  0%, 100% {
-    transform: translateY(-12%) scale(1.05);
-    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-  }
-  50% {
-    transform: translateY(0) scale(1);
-    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-  }
-}
-
-@keyframes chest-glow-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.9); }
-  50% { opacity: 0.8; transform: scale(1.15); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chest-icon,
-  .chest-glow {
-    animation: none;
-  }
+/* Le parchemin déroulé se dévoilent de haut en bas, une fois, puis restent. */
+.greffe-in { animation: greffe-in 1.1s ease-out 0.15s 1 both; }
+@keyframes greffe-in {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
 }
 </style>

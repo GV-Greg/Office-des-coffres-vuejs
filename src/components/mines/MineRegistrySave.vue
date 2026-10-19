@@ -8,6 +8,7 @@
   import { parseMinesText, parseMineStates, mostRecentDate } from '@/modules/mineParser'
   import { setForDay } from '@/modules/minePrices'
   import useMinePrices from '@/use/useMinePrices'
+  import useMineAccess from '@/use/useMineAccess'
   import { RouterLink } from 'vue-router'
   import HelpModal from '@/components/HelpModal.vue'
 
@@ -33,36 +34,35 @@
   const authStore = useAuthStore()
 
   const character = computed(() => (authStore.isLoggedIn ? authStore.activeCharacter : null))
-  const access = ref(null)
   const minePrices = useMinePrices()
   const priceSets = ref([])
   const pending = ref(null) // 409 : remplacement à confirmer { message, existing }
+  const sealed = ref(null)  // dernier relevé inscrit : { province, date } — « Parchemin scellé », jusqu'au prochain collage
   const sending = ref(false)
   const showHelp = ref(false)
   const helpSteps = computed(() => [1, 2, 3, 4].map(n => t(`EconomyMines.Registry.HelpStep${n}`)))
 
   const auth = () => ({ headers: { Authorization: `Bearer ${authStore.getToken}` } })
 
-  async function loadAccess() {
-    access.value = null
-    pending.value = null
-    if (!character.value) return
-    try {
-      const { data } = await http.get(`characters/${character.value.id}/mine-registry`, auth())
-      access.value = data
-    } catch {
-      access.value = null // pas d'accès connu : le bloc reste caché, le Bilan public fonctionne
-      return
-    }
-    // Rappel des prix en vigueur (lot 2) : simple lecture, une erreur ici ne bloque jamais l'enregistrement.
-    try {
-      const sets = access.value?.write?.id ? await minePrices.list(access.value.write.id) : []
-      priceSets.value = Array.isArray(sets) ? sets : []
-    } catch {
+  // L'accès vient d'une requête partagée avec le menu, le Bilan et les prix (useMineAccess).
+  const { access } = useMineAccess(() => character.value?.id ?? null)
+  // Rappel des prix en vigueur (lot 2) : simple lecture, une erreur ici ne bloque jamais l'enregistrement.
+  watch(
+    () => access.value?.write?.id ?? null,
+    async (provinceId) => {
       priceSets.value = []
-    }
-  }
-  watch(() => character.value?.id, loadAccess, { immediate: true })
+      if (!provinceId) return
+      try {
+        const sets = await minePrices.list(provinceId)
+        priceSets.value = Array.isArray(sets) ? sets : []
+      } catch {
+        priceSets.value = []
+      }
+    },
+    { immediate: true },
+  )
+  watch(() => character.value?.id, () => { pending.value = null; sealed.value = null })
+  watch(() => props.text, () => { sealed.value = null })
 
   const mines = computed(() => parseMinesText(props.text))
   const province = computed(() => access.value?.write?.name ?? null)
@@ -81,6 +81,7 @@
   async function save(confirmReplace = false) {
     if (sending.value) return
     sending.value = true
+    sealed.value = null
     try {
       const { data } = await http.post(`characters/${character.value.id}/mine-reports`, {
         raw: props.text.trim(),
@@ -89,6 +90,7 @@
         confirm_replace: confirmReplace,
       }, auth())
       pending.value = null
+      sealed.value = { province: data.report.province_name, date: dayMonth(data.report.reported_at) }
       const saved = t('EconomyMines.Registry.Saved', { province: data.report.province_name, date: dayMonth(data.report.reported_at) })
       push.success(data.replaced
         ? `${saved} ${t('EconomyMines.Registry.Replaced', { pseudo: data.replaced.pseudo ?? t('EconomyMines.Registry.DeletedCharacter') })}`
@@ -162,9 +164,19 @@
         </button>
       </div>
     </div>
-    <button v-else type="button" class="mt-4 w-full odc-btn odc-btn--soft odc--green" :disabled="sending" @click="save(false)">
-      {{ t('EconomyMines.Registry.Save') }}
+    <button v-else type="button" class="mt-4 w-full odc-btn odc-btn--soft odc--green" :disabled="sending" :aria-busy="sending" data-testid="mine-registry-save" @click="save(false)">
+      <v-icon v-if="sending" name="gi-tied-scroll" aria-hidden="true" />
+      {{ sending ? t('EconomyMines.Registry.Sealing') : t('EconomyMines.Registry.Save') }}
     </button>
+    <!-- Résultat : le parchemin noué se pose, la coche confirme. Annonce unique (role=status) ; le toast reste. -->
+    <div v-if="sealed" class="plate-rule mt-3 flex items-center justify-center gap-3 pt-3 text-left" role="status" data-testid="mine-registry-sealed">
+      <v-icon name="gi-tied-scroll" scale="2.2" class="sealed-in plate-kicker" aria-hidden="true" />
+      <p class="plate-title text-sm">
+        <span class="block font-bold">{{ t('EconomyMines.Registry.Sealed') }}</span>
+        <span class="plate-note block text-xs">{{ t('EconomyMines.Registry.Saved', { date: sealed.date, province: sealed.province }) }}</span>
+      </p>
+      <v-icon name="fa-check-circle" class="sealed-tick" aria-hidden="true" />
+    </div>
   </section>
   <HelpModal
     :show="showHelp"
@@ -189,6 +201,11 @@
   .plate-title { color: #fef3c7; }
   .plate-note { color: #cbd5e1; }
   .plate-rule { border-top: 1px solid rgb(180 83 9 / 0.6); }
+  /* Le parchemin se pose, puis la coche apparaît — une fois, jamais en boucle (charte §8). */
+  .sealed-in { animation: sealed-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) 1 both; }
+  .sealed-tick { color: #86efac; animation: sealed-tick 0.3s ease 0.5s 1 both; }
+  @keyframes sealed-in { from { transform: scale(1.6) rotate(-10deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes sealed-tick { from { opacity: 0; } to { opacity: 1; } }
   .plate-link { color: #fde68a; }
   /* Icône d'aide : disque jaune (Greg, 08/10 — jaune 300, 11,1:1 sur l'ardoise), jaune 200 au survol. */
   .plate-help { color: #fde047; line-height: 0; }

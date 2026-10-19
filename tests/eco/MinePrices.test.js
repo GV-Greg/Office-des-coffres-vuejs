@@ -518,3 +518,36 @@ describe('textes', () => {
     }
   })
 })
+
+describe('Bilan public : la zone des prix attend la réponse du serveur (cadenas)', () => {
+  it('ne montre ni la saisie ni les prix de la province tant que le droit est inconnu, puis le bon contenu', async () => {
+    setActivePinia(createPinia())
+    let answer
+    http.get.mockImplementation((url) => {
+      if (url.endsWith('/mine-registry')) return new Promise((resolve) => { answer = resolve })
+      if (url.endsWith('/mine-prices')) return Promise.resolve({ data: { success: true, prices: [set(1, '2026-05-01')] } })
+      return Promise.reject(new Error(`GET inattendu : ${url}`))
+    })
+    auth.isLoggedIn = true
+    const w = mount(EconomyMines, { global: { plugins: [i18nFor()], stubs } })
+    await flushPromises()
+    expect(w.find('[data-testid="access-loader"]').exists()).toBe(true)
+    expect(w.find('#price-FER').exists()).toBe(false)
+    expect(w.find('[data-testid="managed-prices"]').exists()).toBe(false)
+    answer({ data: { success: true, write: province, read: province, prices: { write: province, read: province } } })
+    await flushPromises()
+    expect(w.find('[data-testid="access-loader"]').exists()).toBe(false)
+    expect(w.find('[data-testid="managed-prices"]').exists()).toBe(true)
+    expect(w.find('#price-FER').exists()).toBe(false)
+  })
+
+  it('une demande d\'accès qui échoue rend la saisie, jamais un cadenas éternel', async () => {
+    setActivePinia(createPinia())
+    http.get.mockRejectedValue(new Error('hors ligne'))
+    auth.isLoggedIn = true
+    const w = mount(EconomyMines, { global: { plugins: [i18nFor()], stubs } })
+    await flushPromises()
+    expect(w.find('[data-testid="access-loader"]').exists()).toBe(false)
+    expect(w.find('#price-FER').exists()).toBe(true)
+  })
+})

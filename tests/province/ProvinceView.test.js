@@ -6,6 +6,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ProvinceView from '../../src/views/ProvinceView.vue'
+import NavMenu from '../../src/components/NavMenu.vue'
 import { provinceHistoryToBBcode } from '../../src/modules/provinceBBcode'
 import { http } from '../../src/api.js'
 
@@ -42,7 +43,7 @@ function mountView({ locale = 'fr' } = {}) {
   return mount(ProvinceView, {
     global: {
       plugins: [i18n, createTestingPinia({ createSpy: vi.fn, initialState: {} , stubActions: false })],
-      stubs: { 'v-icon': true, RouterLink: { template: '<a><slot /></a>' } },
+      stubs: { 'v-icon': true, NavMenu: true, RouterLink: { template: '<a><slot /></a>' } },
     },
   })
 }
@@ -59,6 +60,13 @@ async function mountWithStore(options = {}, response = HISTORY) {
 }
 
 beforeEach(() => vi.clearAllMocks())
+
+  it('porte le menu circulaire en bas de page, comme toutes les pages /app/* (Ma province en est le 6e bouton)', async () => {
+    const wrapper = await mountWithStore()
+    expect(wrapper.findComponent(NavMenu).exists()).toBe(true)
+    // dans la carte de la page, après le contenu
+    expect(wrapper.find('.page-card').element.lastElementChild.tagName.toLowerCase()).toBe('nav-menu-stub')
+  })
 
 describe('« Ma province »', () => {
   it('l\'avertissement est en tête, avant tout historique', async () => {
@@ -92,6 +100,20 @@ describe('« Ma province »', () => {
     const wrapper = await mountWithStore({ characters: [] })
     expect(wrapper.find('[data-testid="province-no-character"]').exists()).toBe(true)
     expect(http.get).not.toHaveBeenCalled()
+  })
+
+  it('échec de chargement : coffre refermé avec le message, « Réessayer » relance l\'appel', async () => {
+    http.get.mockRejectedValueOnce(new Error('réseau'))
+    const wrapper = mountView()
+    const { useAuthStore } = await import('../../src/stores/authStore')
+    useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
+    await flushPromises()
+    expect(wrapper.find('[data-testid="province-error"]').text()).toBe(fr.Province.LoadError)
+    http.get.mockResolvedValue({ data: HISTORY })
+    await wrapper.find('[data-testid="chest-retry"]').trigger('click')
+    await flushPromises()
+    expect(http.get).toHaveBeenCalledTimes(2)
+    expect(wrapper.find('[data-testid="province-copy"]').exists()).toBe(true)
   })
 
   it('résidence inconnue : dit ce qui manque', async () => {

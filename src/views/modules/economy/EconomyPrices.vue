@@ -10,6 +10,7 @@
   import useMinePrices from '@/use/useMinePrices'
   import { http } from '@/api.js'
   import MinePricesModal from '@/components/mines/MinePricesModal.vue'
+  import ChestLoader from '@/components/loading/ChestLoader.vue'
 
   /*
     Historique des prix des mines (lot 2 des prix du Registre ; brief admin/content/brief-prix-registre.md).
@@ -28,7 +29,8 @@
   const prices = ref([])
   const registry = ref(null)      // mandat du lecteur, pour l'alerte de semaines non couvertes (peut manquer)
   const loading = ref(false)
-  const error = ref('')
+  const error = ref('')   // chargement raté : le coffre se referme et propose « Réessayer »
+  const denied = ref('')  // pas d'accès aux prix : un refus, pas une panne — rien à réessayer
 
   const showAdd = ref(false) // « Ajouter un prix » ouvre la même modale que « Gérer les prix » du registre
   const editing = ref(null) // jeu en cours de correction : la modale sert aussi à modifier
@@ -39,6 +41,7 @@
     canWrite.value = false
     registry.value = null
     error.value = ''
+    denied.value = ''
     showAdd.value = false
     editing.value = null
     if (!character.value) return
@@ -47,7 +50,7 @@
       const access = await api.access(character.value.id)
       canWrite.value = !!access?.prices?.write
       province.value = access?.prices?.write ?? access?.prices?.read ?? null
-      if (!province.value) { error.value = t('EconomyMines.RegistryPage.Prices.NotAllowed'); return }
+      if (!province.value) { denied.value = t('EconomyMines.RegistryPage.Prices.NotAllowed'); return }
       prices.value = await api.list(province.value.id)
       // L'alerte a besoin du mandat : seuls les lecteurs du registre l'ont (le commissaire au commerce non).
       try {
@@ -94,10 +97,9 @@
 <template>
   <div class="w-full max-w-5xl text-slate-800 dark:text-slate-800">
     <p v-if="!character" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.NoCharacter') }}</p>
-    <p v-else-if="loading" role="status" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.Loading') }}</p>
-    <p v-else-if="error" role="alert" class="text-slate-700 dark:text-slate-700" data-testid="prices-error">{{ error }}</p>
-
-    <template v-else-if="province">
+    <p v-else-if="denied" role="alert" class="text-slate-700 dark:text-slate-700" data-testid="prices-error">{{ denied }}</p>
+    <ChestLoader v-else :loading="loading" :error="error" accent="gold" error-testid="prices-error" @retry="load">
+    <template v-if="province">
       <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-slate-300 pb-2">
         <!-- Retour à gauche, en bouton avec icône (Greg, 15/10/2026) ; le titre le suit, l'ajout est à droite. -->
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -159,6 +161,7 @@
         </li>
       </ol>
     </template>
+    </ChestLoader>
     <MinePricesModal :show="showAdd || !!editing" :edit="editing" :province-id="province?.id ?? null" :prices="prices" :show-history-link="false" @close="closeModal" @saved="onSaved" />
   </div>
 </template>

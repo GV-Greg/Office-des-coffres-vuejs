@@ -1,11 +1,11 @@
 <script setup>
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed } from 'vue'
   import { RouterLink, RouterView } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import NavMenu from '../../../components/NavMenu.vue'
   import HelpModal from '@/components/HelpModal.vue'
   import { useAuthStore } from '@/stores/authStore'
-  import { http } from '@/api.js'
+  import useMineAccess from '@/use/useMineAccess'
 
   const { t } = useI18n()
   const authStore = useAuthStore()
@@ -23,21 +23,8 @@
 
   // Registre des mines : le lien n'apparaît qu'à qui peut le consulter (commissaire aux mines, bailli,
   // dirigeant) — la règle vient de l'API (GET characters/{id}/mine-registry), jamais recalculée ici.
-  const canReadRegistry = ref(false)
-  watch(
-    () => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null),
-    async (id) => {
-      canReadRegistry.value = false
-      if (!id) return
-      try {
-        const { data } = await http.get(`characters/${id}/mine-registry`, { headers: { Authorization: `Bearer ${authStore.getToken}` } })
-        canReadRegistry.value = !!data?.read
-      } catch {
-        canReadRegistry.value = false
-      }
-    },
-    { immediate: true },
-  )
+  const { access } = useMineAccess(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null))
+  const canReadRegistry = computed(() => !!access.value?.read)
 </script>
 
 <template>

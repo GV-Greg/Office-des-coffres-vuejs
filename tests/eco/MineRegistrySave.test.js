@@ -147,3 +147,47 @@ describe('MineRegistrySave', () => {
     expect(push.error).toHaveBeenCalledWith('This report is already saved.')
   })
 })
+
+describe('MineRegistrySave — le greffe scelle le parchemin', () => {
+  it('pendant l\'envoi, le bouton se grise et dit « Le greffe scelle le parchemin… »', async () => {
+    let finish
+    http.post.mockImplementation(() => new Promise((resolve) => { finish = resolve }))
+    const wrapper = await mountSave()
+    await wrapper.find('[data-testid="mine-registry-save"]').trigger('click')
+    const button = wrapper.find('[data-testid="mine-registry-save"]')
+    expect(button.text()).toBe('Le greffe scelle le parchemin…')
+    expect(button.attributes('disabled')).toBeDefined()
+    expect(button.attributes('aria-busy')).toBe('true')
+    finish({ data: { report: { province_name: 'Artois', reported_at: '2026-05-08' }, replaced: null } })
+    await flushPromises()
+    expect(wrapper.find('[data-testid="mine-registry-save"]').text()).toBe('Inscrire au registre')
+  })
+
+  it('une fois inscrit, annonce « Parchemin scellé » avec la province, en plus du toast', async () => {
+    http.post.mockResolvedValue({ data: { report: { province_name: 'Artois', reported_at: '2026-05-08' }, replaced: null } })
+    const wrapper = await mountSave()
+    expect(wrapper.find('[data-testid="mine-registry-sealed"]').exists()).toBe(false)
+    await wrapper.find('[data-testid="mine-registry-save"]').trigger('click')
+    await flushPromises()
+    const sealed = wrapper.find('[data-testid="mine-registry-sealed"]')
+    expect(sealed.attributes('role')).toBe('status')
+    expect(sealed.text()).toContain('Parchemin scellé')
+    expect(sealed.text()).toContain('inscrit au registre de Artois')
+    expect(push.success).toHaveBeenCalledTimes(1)
+  })
+
+  it('le « Parchemin scellé » disparaît dès qu\'un nouveau collage arrive, et sur un échec il n\'apparaît pas', async () => {
+    http.post.mockResolvedValueOnce({ data: { report: { province_name: 'Artois', reported_at: '2026-05-08' }, replaced: null } })
+    const wrapper = await mountSave()
+    await wrapper.find('[data-testid="mine-registry-save"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="mine-registry-sealed"]').exists()).toBe(true)
+    await wrapper.setProps({ text: `${TEXT}2026-05-09\t12\n` })
+    expect(wrapper.find('[data-testid="mine-registry-sealed"]').exists()).toBe(false)
+
+    http.post.mockRejectedValueOnce(new Error('hors ligne'))
+    await wrapper.find('[data-testid="mine-registry-save"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="mine-registry-sealed"]').exists()).toBe(false)
+  })
+})

@@ -13,6 +13,7 @@
   import { toGameDateIso } from '@/modules/gameCalendar'
   import useMinePrices from '@/use/useMinePrices'
   import BilanTable from '@/components/mines/BilanTable.vue'
+  import ChestLoader from '@/components/loading/ChestLoader.vue'
   import MinePricesModal from '@/components/mines/MinePricesModal.vue'
 
   /*
@@ -161,10 +162,8 @@
        séparées par un filet. Couleurs de texte posées sur CHAQUE élément (règle globale `.dark p`). -->
   <div class="w-full text-slate-800 dark:text-slate-800">
     <p v-if="!character" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.NoCharacter') }}</p>
-    <p v-else-if="loading" role="status" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.Loading') }}</p>
-    <p v-else-if="error" role="alert" class="text-slate-700 dark:text-slate-700" data-testid="registry-error">{{ error }}</p>
-
-    <template v-else-if="registry">
+    <ChestLoader v-else :loading="loading" :error="error || ''" accent="gold" error-testid="registry-error" block-class="laptop:mt-14 laptop:w-[calc((100%-2rem)*3/5)]" @retry="load">
+    <template v-if="registry">
       <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
         <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Title', { province: registry.province.name }) }}</h2>
         <div class="flex flex-wrap items-center gap-3">
@@ -330,6 +329,7 @@
         </div>
       </div>
     </template>
+    </ChestLoader>
     <MinePricesModal :show="showPrices" :province-id="registry?.province?.id ?? null" :prices="priceSets" @close="showPrices = false" @saved="onPricesSaved" />
   </div>
 </template>

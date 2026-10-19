@@ -30,8 +30,7 @@
   "Common": {
     "SiteName": "Office des coffres",
     "Placeholder": "Test",
-    "LoadingOffice": "Opening the office…",
-    "LoadingChest": "Opening the chest…",
+    "LoadingRoom": "You step into the room…",
     "LoadingApi": "The clerk is handling your request…",
     "Theme": {
       "Title": "Theme",
@@ -433,6 +432,8 @@
       "Title": "Mine Registry",
       "Save": "Record in the registry",
       "Saved": "Report of {date} recorded in the registry of {province}.",
+      "Sealing": "The clerk is sealing the scroll…",
+      "Sealed": "Scroll sealed",
       "ReportOf": "Report of {date}",
       "Replaced": "It replaces the one by {pseudo}, which stays visible in the history.",
       "RecordedBy": "Current report: saved by {pseudo} ({office}).",
@@ -901,7 +902,6 @@
     "TitleShort": "My province",
     "For": "For your character {pseudo}",
     "Warning": "The Office only records what players declare: an office missing here is not necessarily vacant in the game.",
-    "Loading": "Loading the history…",
     "LoadError": "The province history cannot be loaded right now.",
     "NoCharacter": "Add a character first: this page follows its province of residence.",
     "NoResidence": "This character's residence is unknown: set it from your profile.",
@@ -918,5 +918,13 @@
     "Since": "since {from}",
     "FromTo": "from {from} to {to}",
     "Ongoing": "Ongoing"
+  },
+  "Chest": {
+    "Opening": "Opening the chest…",
+    "Failed": "The chest won't budge",
+    "Slow": "The chest is slow to open",
+    "SlowText": "Loading is taking longer than expected.",
+    "Retry": "Try again",
+    "Access": "You try the key in the lock…"
   }
 }
