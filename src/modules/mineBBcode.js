@@ -66,18 +66,18 @@ export function bilanToBBcode(b, { title, week, t }) {
     bb += `[color=${color}][b][size=14]${line.label}[/size][/b][/color] [size=10](#${line.number}${line.noeud ? ' - Noeud ' + line.noeud : ''})[/size]\n`
     bb += list([
       // L'or produit des écus : sa production EST sa valeur, inutile de la répéter.
-      `${bbt('Production')} : ${productionWithUnit(line, t)}${line.resource === 'OR' ? '' : ` — ${bbt('Value')} ${formatNum(line.valeur)}`}`,
-      `${bbt('Wages')} : ${formatNum(line.salaire)} (${formatNum(line.heures)} h)`,
-      `${bbt('Upkeep')} : ${formatNum(line.entretien)} (${upkeep(line.pierre, line.fer)})`,
+      `${bbt('Production')} : ${productionWithUnit(line, t)}${line.resource === 'OR' ? '' : ` — ${bbt('Value')} ${formatNum(line.valeur)} ${t('EconomyMines.Currency')}`}`,
+      `${bbt('Wages')} : ${formatNum(line.salaire)} ${t('EconomyMines.Currency')} (${formatNum(line.heures)} h)`,
+      `${bbt('Upkeep')} : ${formatNum(line.entretien)} ${t('EconomyMines.Currency')} (${upkeep(line.pierre, line.fer)})`,
       `[b]${bbt('Balance')} : ${signed(line.solde)}[/b]`,
     ])
   }
   // Le Total suit la forme d'une mine ; le net, à gauche, le conclut en grand.
   bb += `[b][size=14]${bbt('TotalTitle')}[/size][/b]\n`
   bb += list([
-    `${bbt('ValueProduced')} : ${formatNum(b.total.valeur)}`,
-    `${bbt('Wages')} : ${formatNum(b.total.salaire)} (${formatNum(b.total.heures)} h${b.rate !== null ? ` × ${formatNum(b.rate)}` : ''})`,
-    `${bbt('Upkeep')} : ${formatNum(b.total.entretien)} (${upkeep(b.total.pierre, b.total.fer)})`,
+    `${bbt('ValueProduced')} : ${formatNum(b.total.valeur)} ${t('EconomyMines.Currency')}`,
+    `${bbt('Wages')} : ${formatNum(b.total.salaire)} ${t('EconomyMines.Currency')} (${formatNum(b.total.heures)} h${b.rate !== null ? ` × ${formatNum(b.rate)}` : ''})`,
+    `${bbt('Upkeep')} : ${formatNum(b.total.entretien)} ${t('EconomyMines.Currency')} (${upkeep(b.total.pierre, b.total.fer)})`,
   ])
   bb += `[size=18][b]${t('EconomyMines.NetLabel')} : ${signed(b.net)} ${t('EconomyMines.Currency')}[/b][/size]\n`
   bb += `[size=9][i]${t('EconomyMines.Convention')}[/i][/size][/quote]`
