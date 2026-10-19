@@ -30,8 +30,7 @@
   "Common": {
     "SiteName": "Office des coffres",
     "Placeholder": "Test",
-    "LoadingOffice": "Ouverture de l'office…",
-    "LoadingChest": "Ouverture du coffre…",
+    "LoadingRoom": "Vous entrez dans la salle…",
     "LoadingApi": "Le greffe traite votre demande…",
     "Theme": {
       "Title": "Thème",
@@ -433,6 +432,8 @@
       "Title": "Registre des mines",
       "Save": "Inscrire au registre",
       "Saved": "Relevé du {date} inscrit au registre de {province}.",
+      "Sealing": "Le greffe scelle le parchemin…",
+      "Sealed": "Parchemin scellé",
       "ReportOf": "Relevé du {date}",
       "Replaced": "Il remplace celui de {pseudo}, qui reste visible dans l'historique.",
       "RecordedBy": "Relevé en place : enregistré par {pseudo} ({office}).",
@@ -901,7 +902,6 @@
     "TitleShort": "Ma province",
     "For": "Pour votre personnage {pseudo}",
     "Warning": "L'Office n'enregistre que ce que les joueurs déclarent : un poste absent ici n'est pas forcément vacant dans le jeu.",
-    "Loading": "Chargement de l'historique…",
     "LoadError": "Impossible de charger l'historique de la province pour le moment.",
     "NoCharacter": "Ajoutez d'abord un personnage : la page suit sa province de résidence.",
     "NoResidence": "La résidence de ce personnage n'est pas connue : indiquez-la depuis votre profil.",
@@ -918,5 +918,13 @@
     "Since": "depuis le {from}",
     "FromTo": "du {from} au {to}",
     "Ongoing": "En cours"
+  },
+  "Chest": {
+    "Opening": "Ouverture du coffre…",
+    "Failed": "Le coffre résiste",
+    "Slow": "Le coffre tarde à s'ouvrir",
+    "SlowText": "Le chargement prend plus de temps que prévu.",
+    "Retry": "Réessayer",
+    "Access": "Vous essayez la clé dans la serrure…"
   }
 }

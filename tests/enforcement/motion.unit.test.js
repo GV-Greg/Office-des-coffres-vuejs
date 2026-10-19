@@ -21,6 +21,17 @@ const vueFiles = (dir) => readdirSync(dir).flatMap((name) => {
   return statSync(path).isDirectory() ? vueFiles(path) : path.endsWith('.vue') ? [path] : []
 })
 
+const styleFiles = (dir) => readdirSync(dir).flatMap((name) => {
+  const path = join(dir, name)
+  return statSync(path).isDirectory() ? styleFiles(path) : /\.(vue|css)$/.test(path) ? [path] : []
+})
+
+// Les déclarations CSS d'animation (`animation:` raccourci ou `animation-iteration-count:`) qui bouclent.
+// Cherchées dans les `<style>` des vues (scoped compris) et dans les .css : l'ancien overlay de chargement
+// en avait, que le test des classes `animate-*` ne voyait pas.
+const INFINITE_CSS = /\banimation(?:-iteration-count)?\s*:[^;}]*\binfinite\b/g
+export const infiniteCssIn = (source) => source.match(INFINITE_CSS) ?? []
+
 const seconds = (token) => (token.endsWith('ms') ? parseFloat(token) / 1000 : parseFloat(token))
 
 // Deux nombres, pas un. Le budget est ce que le test fait respecter ; le plafond réglementaire
@@ -52,6 +63,17 @@ describe('Mouvement', () => {
     const offenders = vueFiles(join(root, 'src')).flatMap((file) =>
       (readFileSync(file, 'utf-8').match(INFINITE) ?? []).map((cls) => `${relative(root, file)} : ${cls}`))
     expect(offenders, 'animate-bounce/spin/ping/pulse bouclent à l\'infini — utiliser une animation finie de la config (ex. animate-bounce-hint), derrière motion-safe:').toEqual([])
+  })
+
+  it("aucune animation CSS (style de vue ou .css) ne boucle à l'infini", () => {
+    // Contrôle positif : sans lui, un motif cassé afficherait « aucun fautif » à tort.
+    expect(infiniteCssIn('.a { animation: spin 1s linear infinite; }')).toHaveLength(1)
+    expect(infiniteCssIn('.a { animation-iteration-count: infinite }')).toHaveLength(1)
+    expect(infiniteCssIn('.a { animation: access-sheen 1s linear 2; }')).toHaveLength(0)
+
+    const offenders = styleFiles(join(root, 'src')).flatMap((file) =>
+      infiniteCssIn(readFileSync(file, 'utf-8')).map((decl) => `${relative(root, file)} : ${decl}`))
+    expect(offenders, 'animation CSS infinie : écart WCAG 2.2.2 — itérations finies (charte §8)').toEqual([])
   })
 
   it('le CSS honore prefers-reduced-motion pour tout le site', () => {

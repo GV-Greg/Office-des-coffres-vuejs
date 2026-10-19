@@ -10,6 +10,8 @@ const isNavigationLoading = ref(false)
 // 'api' = un envoi à l'API sans navigation (inscription, renvoi de lien, résidence...) : même
 // écran, autre phrase. Le routeur ne voit pas ces requêtes, voir trackApiCall() plus bas.
 const navigationContext = ref('office')
+// Couleur du module d'arrivée (porte de l'overlay) : or, rose, sarcelle… ; neutre hors module.
+const navigationAccent = ref('office')
 let showTimer = null
 // Écran « tenu » : la navigation qui suit un envoi (connexion → /app/) garde la même phrase au
 // lieu de la remplacer, et n'en relance pas le délai — un seul écran du clic à l'arrivée. stop()
@@ -17,10 +19,11 @@ let showTimer = null
 let held = false
 
 export default function useNavigationLoading() {
-  const startNavigationLoading = (context = 'office', { hold = false } = {}) => {
+  const startNavigationLoading = (context = 'office', { hold = false, accent = 'office' } = {}) => {
     if (held) return
     held = hold
     navigationContext.value = context
+    navigationAccent.value = accent
     clearTimeout(showTimer)
     showTimer = setTimeout(() => {
       isNavigationLoading.value = true
@@ -50,5 +53,5 @@ export default function useNavigationLoading() {
     )
   }
 
-  return { isNavigationLoading, navigationContext, startNavigationLoading, stopNavigationLoading, trackApiCall }
+  return { isNavigationLoading, navigationContext, navigationAccent, startNavigationLoading, stopNavigationLoading, trackApiCall }
 }

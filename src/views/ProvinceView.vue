@@ -7,6 +7,8 @@
   import { apiMessage } from '@/stores/mandateStore'
   import { formatFieldDate } from '@/modules/playerDates'
   import { provinceHistoryToBBcode } from '@/modules/provinceBBcode'
+  import NavMenu from '@/components/NavMenu.vue'
+  import ChestLoader from '@/components/loading/ChestLoader.vue'
 
   /*
     « Ma province » (fil admin/echanges/mandats-historique, 04 §11, 07) : l'historique des postes de
@@ -86,11 +88,10 @@
           {{ t('Province.Warning') }}
         </p>
 
-        <p v-if="loading" role="status" class="text-center text-sm text-slate-600 dark:text-slate-300">{{ t('Province.Loading') }}</p>
-        <p v-else-if="failed" class="text-center text-sm text-red-700 dark:text-red-300">{{ t('Province.LoadError') }}</p>
-
+        <!-- Coffre du module (violet, comme le menu) : il porte l'attente et l'échec avec « Réessayer ». -->
+        <ChestLoader :loading="loading" :error="failed ? t('Province.LoadError') : ''" accent="violet" error-testid="province-error" @retry="load">
         <!-- Résidence inconnue : on dit ce qui manque. -->
-        <div v-else-if="history && !province" class="rounded-xl bg-white shadow-md p-6 text-center" data-testid="province-no-residence">
+        <div v-if="history && !province" class="rounded-xl bg-white shadow-md p-6 text-center" data-testid="province-no-residence">
           <p class="text-slate-700 dark:text-slate-700">{{ t('Province.NoResidence') }}</p>
           <RouterLink :to="{ name: 'profil' }" class="odc-btn odc-btn--soft odc-btn--sm odc--blue mt-3">{{ t('Province.ToProfile') }}</RouterLink>
         </div>
@@ -162,7 +163,10 @@
             </details>
           </section>
         </template>
+        </ChestLoader>
       </template>
     </div>
+    <!-- Le menu circulaire en bas, comme sur toutes les pages /app/* (Ma province en est le 6e bouton). -->
+    <NavMenu />
   </div>
 </template>

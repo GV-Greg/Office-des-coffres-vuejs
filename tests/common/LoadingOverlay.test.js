@@ -8,8 +8,8 @@ const i18n = createI18n({
   legacy: false,
   locale: 'fr',
   messages: {
-    fr: { Common: { LoadingOffice: "Ouverture de l'office…", LoadingChest: 'Ouverture du coffre…', LoadingApi: 'Le greffe traite votre demande…' } },
-    en: { Common: { LoadingOffice: 'Opening the office…', LoadingChest: 'Opening the chest…', LoadingApi: 'The clerk is handling your request…' } }
+    fr: { Common: { LoadingRoom: 'Vous entrez dans la salle…', LoadingApi: 'Le greffe traite votre demande…' } },
+    en: { Common: { LoadingRoom: 'You step into the room…', LoadingApi: 'The clerk is handling your request…' } }
   }
 })
 
@@ -33,33 +33,45 @@ describe('LoadingOverlay', () => {
     expect(wrapper.find('[role="status"]').exists()).toBe(false)
   })
 
-  it('affiche le pavillon et le texte "office" pour une navigation générale', async () => {
+  it('affiche le portique et « Vous entrez dans la salle » pour une navigation générale', async () => {
     const { startNavigationLoading } = useNavigationLoading()
     const wrapper = mountOverlay()
     startNavigationLoading('office')
     vi.advanceTimersByTime(150)
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.chest-icon').attributes('name')).toBe('gi-medieval-pavilion')
-    expect(wrapper.text()).toContain("Ouverture de l'office")
+    expect(wrapper.find('.gate').exists()).toBe(true)
+    expect(wrapper.find('.gate .icon').attributes('name')).toBe('gi-dungeon-gate')
+    expect(wrapper.find('.greffe-in').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Vous entrez dans la salle')
   })
 
-  it('affiche le coffre et le texte "coffre" pour un module Coffres X', async () => {
+  it('le portique d\'un module « Coffres X » prend la couleur du module', async () => {
     const { startNavigationLoading } = useNavigationLoading()
     const wrapper = mountOverlay()
-    startNavigationLoading('chest')
+    startNavigationLoading('chest', { accent: 'rose' })
     vi.advanceTimersByTime(150)
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.chest-icon').attributes('name')).toBe('gi-chest')
-    expect(wrapper.text()).toContain('Ouverture du coffre')
+    expect(wrapper.find('.gate').attributes('style')).toContain('--gate-ink: #e11d48')
+    expect(wrapper.text()).toContain('Vous entrez dans la salle')
   })
 
-  it('affiche le pavillon et la phrase du greffe pendant un envoi à l\'API', async () => {
+  it('hors module, le portique reste neutre même si une couleur est passée', async () => {
+    const { startNavigationLoading } = useNavigationLoading()
+    const wrapper = mountOverlay()
+    startNavigationLoading('office', { accent: 'rose' })
+    vi.advanceTimersByTime(150)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.gate').attributes('style')).toContain('--gate-ink: #f97316')
+  })
+
+  it('affiche le registre du greffe, pas le portique, pendant un envoi à l\'API', async () => {
     const { startNavigationLoading } = useNavigationLoading()
     const wrapper = mountOverlay()
     startNavigationLoading('api')
     vi.advanceTimersByTime(150)
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.chest-icon').attributes('name')).toBe('gi-medieval-pavilion')
+    expect(wrapper.find('.greffe-in').attributes('name')).toBe('gi-scroll-unfurled')
+    expect(wrapper.find('.gate').exists()).toBe(false)
     expect(wrapper.text()).toContain('Le greffe traite votre demande')
   })
 
