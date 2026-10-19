@@ -6,6 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-20] — PR #98 (export BBcode : « écus » partout)
+
+### Changed
+- Export BBcode du bilan des mines (Bilan et Registre) : « écus » après la valeur de la production, les salaires et l'entretien, dans chaque mine et dans le total.
+
 ## [2026-10-19] — PR #97 (chargements internes : coffre, portique, parchemin)
 
 ### Added
