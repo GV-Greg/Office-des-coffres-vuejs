@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [DATE DU MERGE À REMPLIR] — PR #97 (chargements internes : coffre, portique, parchemin)
+## [2026-10-19] — PR #97 (chargements internes : coffre, portique, parchemin)
 
 ### Added
 - `ChestLoader` : le coffre du logo s'ouvre dans la carte pendant le chargement d'une page (Registre, historique des prix, Ma province) ; prêt,
