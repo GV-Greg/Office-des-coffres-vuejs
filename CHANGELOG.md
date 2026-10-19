@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [DATE DU MERGE À REMPLIR] — PR #97 (chargements internes : coffre, portique, parchemin)
+
+### Added
+- `ChestLoader` : le coffre du logo s'ouvre dans la carte pendant le chargement d'une page (Registre, historique des prix, Ma province) ; prêt,
+  la lueur jaillit, le coffre s'efface, puis le contenu apparaît. Échec ou > 10 s : coffre refermé, message, « Réessayer ».
+- `AccessLoader` (cadenas en ligne, zone des prix du Bilan), `useSharedResource` / `useMineAccess` (une requête d'accès partagée).
+- Garde-fou `motion` : refuse aussi toute animation CSS `infinite` (styles de vues et `.css`).
+
+### Changed
+- Overlay global : portique aux torches (navigation, couleur du module) et parchemin déroulé (envoi) ; l'icône restait brun foncé en thème sombre.
+- `MineRegistrySave` : « Le greffe scelle le parchemin… » puis « Parchemin scellé ».
+
+### Fixed
+- Ma province : le menu circulaire manquait depuis l'origine.
+
 ## [2026-10-17] — PR #96 (charte : fin des anciens boutons `btn-*`)
 
 ### Changed
