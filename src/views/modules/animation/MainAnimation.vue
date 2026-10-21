@@ -7,12 +7,12 @@
 
 <template>
   <div class="page-card">
-    <div class="w-full flex flex-grow mb-2">
-      <div class="w-1/6 flex flex-col justify-start text-teal-600">
+    <div class="w-full flex flex-col laptop:flex-row flex-grow mb-2">
+      <div class="w-full laptop:w-1/6 flex flex-col justify-start text-teal-600">
         <h3 class="text-center">{{ t('Animation.Title') }}</h3>
         <v-icon name="gi-chest" scale="2" class="mr-1"/>
       </div>
-      <div class="w-5/6 ml-2 p-1">
+      <div class="w-full laptop:w-5/6 mt-2 laptop:mt-0 laptop:ml-2 p-1">
         {{ t('Common.Placeholder') }}
       </div>
     </div>

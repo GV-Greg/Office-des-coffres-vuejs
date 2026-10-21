@@ -11,6 +11,7 @@
   import { http } from '@/api.js'
   import MinePricesModal from '@/components/mines/MinePricesModal.vue'
   import ChestLoader from '@/components/loading/ChestLoader.vue'
+  import AccessDenied from '@/components/loading/AccessDenied.vue'
 
   /*
     Historique des prix des mines (lot 2 des prix du Registre ; brief admin/content/brief-prix-registre.md).
@@ -97,7 +98,7 @@
 <template>
   <div class="w-full max-w-5xl text-slate-800 dark:text-slate-800">
     <p v-if="!character" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.NoCharacter') }}</p>
-    <p v-else-if="denied" role="alert" class="text-slate-700 dark:text-slate-700" data-testid="prices-error">{{ denied }}</p>
+    <AccessDenied v-else-if="denied" :message="denied" testid="prices-error" />
     <ChestLoader v-else :loading="loading" :error="error" accent="gold" error-testid="prices-error" @retry="load">
     <template v-if="province">
       <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-slate-300 pb-2">

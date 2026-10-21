@@ -11,15 +11,15 @@
 
 <template>
   <div class="page-card">
-    <div class="w-full flex flex-grow mb-2">
-      <div class="w-1/6 flex flex-col justify-start text-rose-600">
+    <div class="w-full flex flex-col laptop:flex-row flex-grow mb-2">
+      <div class="w-full laptop:w-1/6 flex flex-col justify-start text-rose-600">
         <h3 class="text-center">{{ t('Security.Title') }}</h3>
           <RouterLink :to="{ name: 'security-guet'}" class="inline-flex items-center font-bold">
             <v-icon name="gi-chest" scale="2" class="mr-1"/>
             {{ t('Security.EntriesExits') }}
           </RouterLink>
       </div>
-      <div class="w-5/6 ml-2 p-1">
+      <div class="w-full laptop:w-5/6 mt-2 laptop:mt-0 laptop:ml-2 p-1">
         <RouterView />
       </div>
     </div>
