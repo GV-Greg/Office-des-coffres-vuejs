@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-21] — PR #99 (colonne des modules en mobile, cadenas « accès refusé »)
+
+### Fixed
+- Économie, Sécurité (Guet) et Animation : à 375 px la colonne de gauche (1/6 de la largeur) recouvrait le contenu ; sous 1024 px elle passe au-dessus, en pleine largeur. Inchangé au-delà.
+
+### Added
+- `AccessDenied` : le refus de l'historique des prix s'affiche avec un cadenas fermé et le message du serveur, sans « Réessayer ».
+
 ## [2026-10-20] — PR #98 (export BBcode : « écus » partout)
 
 ### Changed
