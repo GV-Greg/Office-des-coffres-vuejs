@@ -6,6 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-21] — PR #100 (Registre : le tableau de bilan ne déborde plus à 375 px)
+
+### Fixed
+- Registre des mines : à 375 px le tableau de bilan élargissait toute la page (la grille des deux colonnes n'avait pas de colonne définie sur mobile) ; `grid-cols-1` la borne, le tableau défile dans son conteneur. Inchangé sur ordinateur.
+
 ## [2026-10-21] — PR #99 (colonne des modules en mobile, cadenas « accès refusé »)
 
 ### Fixed
