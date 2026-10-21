@@ -189,7 +189,7 @@
            bilans de mandat, les jours sans données, le prédécesseur ; à droite la mémoire — l'historique des
            niveaux (accordéon par mine) et les relevés inscrits, repliés (Greg, 15/10).
            Sous `laptop`, une seule colonne dans le même ordre. -->
-      <div class="mt-5 grid gap-x-8 gap-y-5 laptop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div class="mt-5 grid grid-cols-1 gap-x-8 gap-y-5 laptop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div class="space-y-5">
       <!-- UN seul tableau de bilan, un seul sélecteur (Greg, 15/10 : combiner le bilan du mois et les semaines
            pour gagner de la place). Par défaut : le bilan EN COURS du mois de mandat (Greg, 09/10), PROVISOIRE,
