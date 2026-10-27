@@ -16,6 +16,7 @@
     "test:mandates": "vitest run tests/mandates tests/province",
     "test:cookies": "vitest run tests/cookies",
     "test:eco": "vitest run tests/eco",
+    "test:anim": "vitest run tests/anim",
     "test:security": "vitest run tests/security",
     "test:common": "vitest run tests/common",
     "test:legal": "vitest run tests/legal",

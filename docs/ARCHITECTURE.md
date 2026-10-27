@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 19/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 27/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -27,7 +27,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre ; enfant `registre/prix` → `economy-prices` (même garde), **sans lien de menu** : on y va par le bouton « Historique des prix » du registre |
 | `/app/secu` (enfant `/guet` → `security-guet`) | `security` | — |
 | `/app/company` | `company` | — |
-| `/app/anim` | `animation` | — |
+| `/app/anim` | `animation` | redirige vers `animation-decode` ; enfant `decode/:name?` → `animation-decode` (public, le lien de l'export BBCode) ; enfant `mes-activites` → `animation-mine` (`redirectToHomeIfNotLoggedIn`) |
 | `/app/profil` | `profil` | `redirectToHomeIfNotLoggedIn` |
 | `/app/province` | `province` | `redirectToHomeIfNotLoggedIn` — « Ma province » |
 | `/app/character/new` | `character-new` | `redirectToHomeIfNotLoggedIn` |
@@ -290,9 +290,31 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   plaque d'enregistrement (`EconomyMines.Registry.Help*`) dit que les prix viennent de la province ; l'aide du Bilan public a une 5ᵉ étape (prix en lecture seule
   d'un gérant). ⚠️ Une aide qui cite un bouton le cite **tel qu'il s'affiche** : `tests/eco/mineModuleTexts.unit.test.js` le garde (lecture des vraies locales).
   Les textes **légaux** (politique, « Vos données ») ne sont pas dans ce lot.
-- **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
-  vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
-  prévu.
+- **`modules/animation/MainAnimation.vue`** (27/10/2026) — coquille du module Animation, au patron de
+  l'Économie : une colonne de liens et un `RouterView`. Un lien par **type d'activité ouvert** (`GET
+  anim/activity-types`, aucun jeton — les types désactivés ne s'affichent pas, et une panne n'en affiche
+  aucun), « Mes activités » si connecté. `TYPE_ROUTES` associe la clé d'un type à sa route : ajouter une
+  activité = une ligne, sans refaire la page.
+- **`modules/animation/DecodeActivityView.vue`** (routes `animation-decode`, `/app/anim/decode/:name?`, public) —
+  **Les Coffres Scellés**, page en lecture seule : sans nom, un champ de recherche et les règles ; avec un nom,
+  l'activité, ses règles (locales `Animation.Types.decode.*`), le coffre en cours avec ses tentatives, les coffres
+  ouverts (combinaison révélée + découvreur) et le classement cumulé. C'est le lien de l'export BBCode du backend.
+  ⚠️ **Elle n'affiche jamais le code d'un coffre scellé** : le serveur ne l'envoie pas (seul l'organisateur le voit).
+  Nom inconnu (404) : le message de l'API, `AccessDenied`, sans « Réessayer ».
+- **`modules/animation/MyDecodeActivities.vue`** (route `animation-mine`, `/app/anim/mes-activites`,
+  `redirectToHomeIfNotLoggedIn`) — « Mes activités » du personnage actif : création (nom, description facultative,
+  lieu **province OU ville** via `CityCascadeSelect`), sceller un coffre, inscrire une proposition reçue, rouvrir,
+  clore, supprimer (confirmation en ligne, **uniquement sur une activité close**), exports BBCode des règles et des
+  résultats (copiés dans le presse-papiers, texte laissé affiché si la copie échoue). ⚠️ **Aucune règle côté site** :
+  seul l'organisateur gère, la note d'une combinaison vient du serveur, un refus s'affiche tel que l'API le dit
+  (`apiMessage`, FR et EN) ; les boutons ne suivent que l'état. L'organisateur voit la combinaison secrète du coffre
+  en cours (décision de Greg du 27/10, « pour le moment »).
+- **`use/useDecodeActivities.js`** — appels de l'API des Coffres Scellés (`anim/*` sans jeton, le reste avec).
+  Pas de store Pinia dédié. Textes sous `Animation.{Types,Status,Public,Mine}.*`.
+  ⚠️ Le **texte des règles** (`Animation.Types.decode.Rules`) est un **brouillon**, jumeau de `types.decode.rules`
+  du backend (export BBCode) : à retravailler par Cowork, **dans les deux dépôts**.
+- **`modules/company/MainCompany.vue`** — squelette vide, placeholder "Test" i18n minimal
+  (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est prévu.
 
 ## Composants (`src/components/`)
 

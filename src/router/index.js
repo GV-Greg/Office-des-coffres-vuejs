@@ -173,10 +173,27 @@ const router = createRouter({
     {
       path: '/app/anim',
       name: 'animation',
+      redirect: { name: 'animation-decode' },
       components: {
         Nav,
         default: () => import('@/views/modules/animation/MainAnimation.vue'),
       },
+      children: [
+        {
+          // Les Coffres Scellés : page publique d'une activité par son nom (le lien de l'export BBCode), ou
+          // champ de recherche sans nom. Aucun compte requis.
+          path: 'decode/:name?',
+          name: 'animation-decode',
+          component: () => import('@/views/modules/animation/DecodeActivityView.vue'),
+        },
+        {
+          // « Mes activités » : créer, sceller, inscrire les propositions, clore. Le serveur décide de tout.
+          path: 'mes-activites',
+          name: 'animation-mine',
+          component: () => import('@/views/modules/animation/MyDecodeActivities.vue'),
+          beforeEnter: redirectToHomeIfNotLoggedIn,
+        },
+      ],
     },
     {
       path: '/app/profil',
@@ -220,14 +237,14 @@ const router = createRouter({
 const CHEST_MODULE_ROUTE_NAMES = new Set([
   'economy', 'economy-mines', 'economy-registry', 'economy-prices',
   'security', 'security-guet',
-  'animation',
+  'animation', 'animation-decode', 'animation-mine',
 ])
 
 // Couleur du module (charte §3.3) : la porte de l'overlay et le coffre de la page la reprennent.
 const MODULE_ACCENT_BY_ROUTE = {
   economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold',
   security: 'rose', 'security-guet': 'rose',
-  animation: 'teal',
+  animation: 'teal', 'animation-decode': 'teal', 'animation-mine': 'teal',
 }
 
 const { startNavigationLoading, stopNavigationLoading } = useNavigationLoading()
