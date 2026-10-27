@@ -9,8 +9,9 @@ import { push } from 'notivue'
 import MyDecodeActivities from '../../src/views/modules/animation/MyDecodeActivities.vue'
 import { http } from '../../src/api.js'
 
-// Les Coffres Scellés — « Mes activités » (brief admin/modules/animation/brief-coffres-scelles.md, lot 2).
-// Aucune règle côté site : on vérifie que l'écran envoie ce qu'il faut et affiche ce que l'API répond.
+// Décode le code — « Mes activités » (mode PRIVÉ). Le formulaire de création est testé à part (DecodeCreateForm.test.js) : ici il est
+// remplacé par une doublure qui émet « confirm ». Aucune règle côté site : on vérifie que l'écran envoie ce qu'il faut et affiche ce
+// que l'API répond.
 
 vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn(), warning: vi.fn() } }))
 vi.mock('../../src/api.js', () => ({ http: { get: vi.fn(), post: vi.fn(), delete: vi.fn() } }))
@@ -22,11 +23,17 @@ const readLocale = lang => JSON.parse(fs.readFileSync(path.join(localesDir, `${l
 const fr = readLocale('fr')
 const en = readLocale('en')
 
+const FormStub = {
+  props: ['mode', 'errors', 'submitting'],
+  emits: ['confirm'],
+  template: '<div data-testid="form-stub" :data-mode="mode"><button data-testid="stub-confirm" @click="$emit(\'confirm\', { slug: \'nouveau-coffre\', name: \'Nouveau\' })">ok</button><span data-testid="stub-errors">{{ JSON.stringify(errors) }}</span></div>',
+}
+
 const activity = (over = {}) => ({
-  id: 1, name: 'Coffre des Marches', description: null, type: 'decode', status: 'launched', organizer: 'Artifice',
-  place: null, launched_at: '2026-10-01T10:00:00Z', closed_at: null,
+  id: 1, slug: 'coffre-des-marches', name: 'Coffre des Marches', type: 'decode', status: 'launched',
+  mode: 'private', organizer: 'Artifice', place: null, launched_at: '2026-10-01T10:00:00Z', closed_at: null,
   current: { id: 11, number: 1, code: '48213', proposals: [] },
-  opened: [], ranking: [],
+  opened: [], ranking: [], can_reopen: false,
   ...over,
 })
 
@@ -35,13 +42,10 @@ const refusal = (status, code, message, extra = {}) => ({
 })
 
 async function mountPage({ list = [activity()], locale = 'fr' } = {}) {
-  http.get.mockImplementation(async (url) => {
-    if (url === 'map') return { data: { kingdoms: [] } }
-    return { data: { success: true, activities: list } }
-  })
+  http.get.mockImplementation(async () => ({ data: { success: true, activities: list } }))
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
   const wrapper = mount(MyDecodeActivities, {
-    global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, CityCascadeSelect: true } },
+    global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, DecodeCreateForm: FormStub } },
   })
   await flushPromises()
   return wrapper
@@ -60,6 +64,7 @@ describe('MyDecodeActivities — liste', () => {
     expect(http.get).toHaveBeenCalledWith('characters/7/decode-activities', { headers: { Authorization: 'Bearer jeton' } })
     expect(w.find('[data-testid="activity-1"]').text()).toContain('Coffre des Marches')
     expect(w.find('[data-testid="status-1"]').text()).toBe('En cours')
+    expect(w.find('[data-testid="slug-1"]').exists()).toBe(false)
   })
 
   it('l\'organisateur voit la combinaison secrète du coffre en cours', async () => {
@@ -89,68 +94,43 @@ describe('MyDecodeActivities — liste', () => {
     expect(w.find('[data-testid="status-1"]').text()).toBe('In progress')
     expect(w.text()).toContain('Secret combination of chest #1')
   })
+
+  it('le formulaire de création est celui du mode PRIVÉ', async () => {
+    const w = await mountPage({ list: [] })
+
+    expect(w.find('[data-testid="form-stub"]').attributes('data-mode')).toBe('private')
+  })
+
+  it('une activité non close : le formulaire s\'efface ; close, il revient', async () => {
+    const open = await mountPage()
+    expect(open.find('[data-testid="form-stub"]').exists()).toBe(false)
+
+    const closed = await mountPage({ list: [activity({ status: 'closed', current: null })] })
+    expect(closed.find('[data-testid="form-stub"]').exists()).toBe(true)
+  })
 })
 
 describe('MyDecodeActivities — création', () => {
-  it('envoie le nom et la description, et ajoute l\'activité en tête', async () => {
+  it('envoie la charge du formulaire, ajoute l\'activité en tête, prévient', async () => {
     const w = await mountPage({ list: [] })
-    http.post.mockResolvedValue({ data: { success: true, activity: activity({ id: 5, name: 'Nouveau', status: 'new', current: null }) } })
+    http.post.mockResolvedValue({ data: { success: true, activity: activity({ id: 5, slug: 'nouveau-coffre', name: 'Nouveau', status: 'new', current: null }) } })
 
-    await w.find('[data-testid="create-name"]').setValue('  Nouveau  ')
-    await w.find('[data-testid="create-description"]').setValue('Pour la fête')
-    await w.find('[data-testid="mine-create"] form').trigger('submit')
+    await w.find('[data-testid="stub-confirm"]').trigger('click')
     await flushPromises()
 
-    expect(http.post).toHaveBeenCalledWith('characters/7/decode-activities', { name: 'Nouveau', description: 'Pour la fête' }, expect.anything())
+    expect(http.post).toHaveBeenCalledWith('characters/7/decode-activities', { slug: 'nouveau-coffre', name: 'Nouveau' }, expect.anything())
     expect(w.find('[data-testid="activity-5"]').exists()).toBe(true)
     expect(push.success).toHaveBeenCalledWith('Activité créée.')
   })
 
-  it('province OU ville : choisir « province » n\'envoie qu\'un province_id (une ville est exclue)', async () => {
+  it('refus de l\'API (adresse prise) : le message de l\'API est passé au formulaire, dans la langue', async () => {
     const w = await mountPage({ list: [] })
-    http.post.mockResolvedValue({ data: { success: true, activity: activity({ id: 5, status: 'new', current: null }) } })
+    http.post.mockRejectedValue(refusal(422, 'slug_taken', { fr: 'Cette adresse est déjà prise.', en: 'This address is already taken.' }, { errors: { slug: ['Cette adresse est déjà prise.'] } }))
 
-    await w.find('[data-testid="create-name"]').setValue('Avec lieu')
-    await w.find('[data-testid="place-province"]').setValue(true)
-    w.findComponent({ name: 'CityCascadeSelect' }).vm.$emit('update:modelValue', 3)
-    await w.find('[data-testid="mine-create"] form').trigger('submit')
+    await w.find('[data-testid="stub-confirm"]').trigger('click')
     await flushPromises()
 
-    const body = http.post.mock.calls[0][1]
-    expect(body.province_id).toBe(3)
-    expect(body).not.toHaveProperty('city_id')
-  })
-
-  it('un changement de type de lieu repart d\'une sélection vide', async () => {
-    const w = await mountPage({ list: [] })
-    http.post.mockResolvedValue({ data: { success: true, activity: activity({ id: 5, status: 'new', current: null }) } })
-
-    await w.find('[data-testid="create-name"]').setValue('Avec lieu')
-    await w.find('[data-testid="place-province"]').setValue(true)
-    w.findComponent({ name: 'CityCascadeSelect' }).vm.$emit('update:modelValue', 3)
-    await w.find('[data-testid="place-city"]').setValue(true)
-    await w.find('[data-testid="mine-create"] form').trigger('submit')
-    await flushPromises()
-
-    expect(http.post.mock.calls[0][1]).not.toHaveProperty('province_id')
-    expect(http.post.mock.calls[0][1]).not.toHaveProperty('city_id')
-  })
-
-  it('refus de l\'API (une seule activité active) : le message de l\'API sous le champ, dans la langue', async () => {
-    const w = await mountPage({ list: [] })
-    http.post.mockRejectedValue(refusal(422, 'activity_already_active', { fr: 'Vous avez déjà une activité de ce type en cours.', en: 'You already have an activity of this type in progress.' }, { errors: { name: ['Vous avez déjà une activité de ce type en cours.'] } }))
-
-    await w.find('[data-testid="create-name"]').setValue('Deuxième')
-    await w.find('[data-testid="mine-create"] form').trigger('submit')
-    await flushPromises()
-
-    expect(w.find('[data-testid="create-error-name"]').text()).toBe('Vous avez déjà une activité de ce type en cours.')
-  })
-
-  it('le bouton reste inactif sans nom', async () => {
-    const w = await mountPage({ list: [] })
-
-    expect(w.find('[data-testid="create-submit"]').attributes('disabled')).toBeDefined()
+    expect(JSON.parse(w.find('[data-testid="stub-errors"]').text())).toEqual({ slug: 'Cette adresse est déjà prise.' })
   })
 })
 
@@ -166,29 +146,28 @@ describe('MyDecodeActivities — gestes', () => {
     expect(w.find('[data-testid="code-1"]').text()).toBe('48213')
   })
 
-  it('inscrire une proposition : envoie combinaison et joueur, affiche la note de l\'API', async () => {
+  it('inscrire une proposition : envoie combinaison et nom du personnage, affiche la note de l\'API', async () => {
     const w = await mountPage()
-    const updated = activity({ current: { id: 11, number: 1, code: '48213', proposals: [{ combination: '12345', player: 'Aldric', points: 4 }] } })
-    http.post.mockResolvedValue({ data: { success: true, score: 4, found: false, proposal: { combination: '12345', player: 'Aldric', points: 4 }, activity: updated } })
+    const updated = activity({ current: { id: 11, number: 1, code: '48213', proposals: [{ combination: '12345', character_name: 'Aldric', points: 4 }] } })
+    http.post.mockResolvedValue({ data: { success: true, score: 4, found: false, proposal: { combination: '12345', character_name: 'Aldric', points: 4 }, activity: updated } })
 
     await w.find('[data-testid="combination-1"]').setValue('12345')
-    await w.find('[data-testid="player-1"]').setValue('Aldric')
-    await w.find('[data-testid="propose-1"]').trigger('submit')
+    await w.find('[data-testid="character-1"]').setValue('Aldric')
     await w.find('[data-testid="proposal-form-1"]').trigger('submit')
     await flushPromises()
 
-    expect(http.post).toHaveBeenCalledWith('decode-activities/1/secrets/11/proposals', { combination: '12345', player: 'Aldric' }, expect.anything())
+    expect(http.post).toHaveBeenCalledWith('decode-activities/1/secrets/11/proposals', { combination: '12345', character_name: 'Aldric' }, expect.anything())
     expect(w.find('[data-testid="result-1"]').text()).toBe('Combinaison 12345 de Aldric : 4 sur 10.')
-    expect(w.text()).toContain('1 tentative(s) sur ce coffre')
+    expect(w.text()).toContain('1 tentative sur ce coffre')
   })
 
   it('un coffre percé : le dit, et montre le nouveau coffre scellé', async () => {
     const w = await mountPage()
     const updated = activity({ status: 'relaunch', current: { id: 12, number: 2, code: '70251', proposals: [] }, opened: [{ number: 1, code: '48213', discoverer: 'Brunehaut' }] })
-    http.post.mockResolvedValue({ data: { success: true, score: 10, found: true, proposal: { combination: '48213', player: 'Brunehaut', points: 20 }, activity: updated } })
+    http.post.mockResolvedValue({ data: { success: true, score: 10, found: true, proposal: { combination: '48213', character_name: 'Brunehaut', points: 20 }, activity: updated } })
 
     await w.find('[data-testid="combination-1"]').setValue('48213')
-    await w.find('[data-testid="player-1"]').setValue('Brunehaut')
+    await w.find('[data-testid="character-1"]').setValue('Brunehaut')
     await w.find('[data-testid="proposal-form-1"]').trigger('submit')
     await flushPromises()
 
@@ -202,27 +181,28 @@ describe('MyDecodeActivities — gestes', () => {
     http.post.mockRejectedValue(refusal(422, 'combination_invalid', { fr: 'Une combinaison compte exactement cinq chiffres.', en: 'A combination is exactly five digits.' }))
 
     await w.find('[data-testid="combination-1"]').setValue('12345')
-    await w.find('[data-testid="player-1"]').setValue('X')
+    await w.find('[data-testid="character-1"]').setValue('X')
     await w.find('[data-testid="proposal-form-1"]').trigger('submit')
     await flushPromises()
 
     expect(push.error).toHaveBeenCalledWith('Une combinaison compte exactement cinq chiffres.')
   })
 
-  it('clore une activité', async () => {
+  it('clore une activité PRIVÉE : directement, sans confirmation (elle se rouvre)', async () => {
     const w = await mountPage()
-    http.post.mockResolvedValue({ data: { success: true, activity: activity({ status: 'closed', current: null }) } })
+    http.post.mockResolvedValue({ data: { success: true, activity: activity({ status: 'closed', current: null, can_reopen: true }) } })
 
     await w.find('[data-testid="close-1"]').trigger('click')
     await flushPromises()
 
+    expect(w.find('[data-testid="close-confirm-1"]').exists()).toBe(false)
     expect(http.post).toHaveBeenCalledWith('decode-activities/1/close', {}, expect.anything())
     expect(w.find('[data-testid="status-1"]').text()).toBe('Clos')
     expect(w.find('[data-testid="reopen-1"]').exists()).toBe(true)
   })
 
   it('rouvrir : le refus (une autre activité active) s\'affiche tel que l\'API le dit', async () => {
-    const w = await mountPage({ list: [activity({ status: 'closed', current: null })] })
+    const w = await mountPage({ list: [activity({ status: 'closed', current: null, can_reopen: true })] })
     http.post.mockRejectedValue(refusal(422, 'reopen_blocked', { fr: 'Vous avez une autre activité de ce type en cours.', en: 'You have another activity of this type in progress.' }))
 
     await w.find('[data-testid="reopen-1"]').trigger('click')
@@ -233,7 +213,7 @@ describe('MyDecodeActivities — gestes', () => {
   })
 
   it('rouvrir réussit', async () => {
-    const w = await mountPage({ list: [activity({ status: 'closed', current: null })] })
+    const w = await mountPage({ list: [activity({ status: 'closed', current: null, can_reopen: true })] })
     http.post.mockResolvedValue({ data: { success: true, activity: activity() } })
 
     await w.find('[data-testid="reopen-1"]').trigger('click')
@@ -246,7 +226,7 @@ describe('MyDecodeActivities — gestes', () => {
     const open = await mountPage()
     expect(open.find('[data-testid="delete-1"]').exists()).toBe(false)
 
-    const w = await mountPage({ list: [activity({ status: 'closed', current: null })] })
+    const w = await mountPage({ list: [activity({ status: 'closed', current: null, can_reopen: true })] })
     http.delete.mockResolvedValue({ data: { success: true } })
     await w.find('[data-testid="delete-1"]').trigger('click')
 
@@ -261,7 +241,7 @@ describe('MyDecodeActivities — gestes', () => {
   })
 
   it('annuler la confirmation ne supprime rien', async () => {
-    const w = await mountPage({ list: [activity({ status: 'closed', current: null })] })
+    const w = await mountPage({ list: [activity({ status: 'closed', current: null, can_reopen: true })] })
 
     await w.find('[data-testid="delete-1"]').trigger('click')
     await w.find('[data-testid="delete-confirm-1"] .odc--slate').trigger('click')

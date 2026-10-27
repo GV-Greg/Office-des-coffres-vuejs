@@ -2,7 +2,7 @@
 /*
   imports
 */
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, computed, watch, onMounted } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { http } from '@/api.js'
   import { push } from 'notivue'
@@ -11,6 +11,9 @@
   const { t, locale } = useI18n()
 
   const props = defineProps({
+    // `inline` : royaume et province côte à côte sur une ligne (dès `tablet`) ; la ville reste dessous. Désactivé par défaut : le Profil,
+    // l'ajout de personnage et les mandats gardent leurs listes empilées.
+    inline: { type: Boolean, default: false },
     // Mode « ville » (défaut) : l'id de la ville. Mode « province » : l'id de la province.
     modelValue: {
       type: [Number, String],
@@ -21,7 +24,7 @@
     stopAt: {
       type: String,
       default: 'city',
-      validator: (value) => ['city', 'province'].includes(value),
+      validator: (value) => ['city', 'province', 'kingdom'].includes(value),
     },
     // Ville servant seulement à présélectionner royaume et province (la résidence), en mode province.
     initialCityId: {
@@ -30,7 +33,10 @@
     },
   })
   const stopsAtProvince = computed(() => props.stopAt === 'province')
-  const emit = defineEmits(['update:modelValue'])
+  // Décode le code : le lieu d'une activité peut être un royaume (D1) — la cascade s'arrête au premier niveau.
+  const stopsAtKingdom = computed(() => props.stopAt === 'kingdom')
+  // `label` : le nom du lieu retenu au dernier niveau de la cascade (royaume traduit, province, ville), pour un récapitulatif.
+  const emit = defineEmits(['update:modelValue', 'label'])
 
 /*
   données
@@ -46,10 +52,17 @@
   const selectedProvince = computed(() => provinces.value.find(p => p.id === Number(selectedProvinceId.value)))
   const cities = computed(() => selectedProvince.value?.cities ?? [])
 
+  const selectedLabel = computed(() => {
+    if (stopsAtKingdom.value) return selectedKingdom.value ? translateKingdomName(selectedKingdom.value.kingdom_name, locale.value) : ''
+    if (stopsAtProvince.value) return selectedProvince.value?.province_name ?? ''
+    return cities.value.find(c => c.id === Number(selectedCityId.value))?.city_name ?? ''
+  })
+  watch(selectedLabel, label => emit('label', label), { immediate: true })
+
   const onKingdomChange = () => {
     selectedProvinceId.value = ''
     selectedCityId.value = ''
-    emit('update:modelValue', '')
+    emit('update:modelValue', stopsAtKingdom.value ? selectedKingdomId.value : '')
   }
   const onProvinceChange = () => {
     selectedCityId.value = ''
@@ -92,7 +105,16 @@
     try {
       const response = await http.get('map')
       kingdoms.value = response.data.kingdoms
-      if (stopsAtProvince.value) {
+      if (stopsAtKingdom.value) {
+        if (props.modelValue) {
+          selectedKingdomId.value = Number(props.modelValue)
+        } else if (props.initialCityId) {
+          preselectFromCityId(props.initialCityId)
+          selectedProvinceId.value = ''
+          selectedCityId.value = ''
+          if (selectedKingdomId.value) emit('update:modelValue', selectedKingdomId.value)
+        }
+      } else if (stopsAtProvince.value) {
         if (props.modelValue) {
           preselectFromProvinceId(props.modelValue)
         } else if (props.initialCityId) {
@@ -102,6 +124,10 @@
         }
       } else if (props.modelValue) {
         preselectFromCityId(props.modelValue)
+      } else if (props.initialCityId) {
+        // Mode ville : royaume et province de la résidence sont proposés, la ville reste à choisir.
+        preselectFromCityId(props.initialCityId)
+        selectedCityId.value = ''
       }
     } catch {
       push.error(t('AddCharacter.MapError'))
@@ -112,10 +138,17 @@
 </script>
 
 <template>
-  <div v-if="loadingMap" class="text-center text-sm text-gray-300 dark:text-gray-500 my-4">
-    {{ t('AddCharacter.LoadingMap') }}
+  <!-- Attente de la carte : la place des listes est réservée (squelettes) et le texte est lisible sur la carte claire. -->
+  <div v-if="loadingMap" class="my-3 space-y-2" role="status" aria-live="polite" data-testid="map-loading">
+    <p class="text-sm font-semibold text-slate-700 dark:text-slate-700">{{ t('AddCharacter.LoadingMap') }}</p>
+    <div class="space-y-3" aria-hidden="true">
+      <span class="map-skeleton block h-10 w-full rounded-md"></span>
+      <span v-if="!stopsAtKingdom" class="map-skeleton block h-10 w-full rounded-md"></span>
+      <span v-if="!stopsAtKingdom && !stopsAtProvince" class="map-skeleton block h-10 w-full rounded-md"></span>
+    </div>
   </div>
   <template v-else>
+    <div :class="inline ? 'grid tablet:grid-cols-2 gap-x-3' : ''" data-testid="cascade-row">
     <div class="form-group">
       <label class="form-label">{{ t('AddCharacter.KingdomLabel') }} <span class="text-red-500">*</span></label>
       <div class="relative">
@@ -129,7 +162,7 @@
       </div>
     </div>
 
-    <div class="form-group">
+    <div v-if="!stopsAtKingdom" class="form-group">
       <label class="form-label">{{ t('AddCharacter.ProvinceLabel') }} <span class="text-red-500">*</span></label>
       <div class="relative">
         <select v-model="selectedProvinceId" @change="onProvinceChange" :disabled="!selectedKingdomId" class="form-field appearance-none pr-10 w-full" :class="{ 'text-slate-500': !selectedProvinceId, 'border-green-500': selectedProvinceId, 'border-red-300': !selectedProvinceId }">
@@ -142,7 +175,9 @@
       </div>
     </div>
 
-    <div v-if="!stopsAtProvince" class="form-group">
+    </div>
+
+    <div v-if="!stopsAtProvince && !stopsAtKingdom" class="form-group">
       <label class="form-label">{{ t('AddCharacter.CityLabel') }} <span class="text-red-500">*</span></label>
       <div class="relative">
         <select v-model="selectedCityId" @change="onCityChange" :disabled="!selectedProvinceId" class="form-field appearance-none pr-10 w-full" :class="{ 'text-slate-500': !selectedCityId, 'border-green-500': selectedCityId, 'border-red-300': !selectedCityId }">
@@ -156,3 +191,9 @@
     </div>
   </template>
 </template>
+
+<style scoped>
+  /* Brillance qui passe deux fois puis s'arrête : jamais en boucle (charte §8) ; fixe en mouvement réduit (règle globale de base.css). */
+  .map-skeleton { background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 40%, #e2e8f0 80%) 0 0 / 220% 100%; animation: map-sheen 1s linear 2; }
+  @keyframes map-sheen { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+</style>

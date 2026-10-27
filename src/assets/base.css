@@ -97,3 +97,10 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Champs mot de passe : le navigateur (Edge) dessine son propre œil, qui ne s'affiche qu'au focus et disparaît une fois le champ quitté.
+   On le masque : le bouton « Afficher / Masquer » du site (PasswordField) reste, lui, toujours visible. */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}

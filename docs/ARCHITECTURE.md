@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 27/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 28/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -27,7 +27,8 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre ; enfant `registre/prix` → `economy-prices` (même garde), **sans lien de menu** : on y va par le bouton « Historique des prix » du registre |
 | `/app/secu` (enfant `/guet` → `security-guet`) | `security` | — |
 | `/app/company` | `company` | — |
-| `/app/anim` | `animation` | redirige vers `animation-decode` ; enfant `decode/:name?` → `animation-decode` (public, le lien de l'export BBCode) ; enfant `mes-activites` → `animation-mine` (`redirectToHomeIfNotLoggedIn`) |
+| `/app/anim` | — | enfants : `` (accueil, `animation`) ; `decode` → `animation-decode` (l'ENTRÉE des salles, publique) ; `decode/creer` → `animation-create`, `decode/gerer` → `animation-manage`, `decode/reinitialiser` → `animation-reset`, `decode/confirmer-email` → `animation-confirm-email` (publics, sans compte) ; `decode/ma-salle` → `animation-mine` (`redirectToHomeIfNotLoggedIn`) — toutes les pages propres à une activité vivent sous `decode/` (un autre type aura son propre préfixe) |
+| `/public/activite/decode/:slug` | `animation-public` | — (`meta.public`, `meta.noFooter`) — la page publique d'une activité, **à partager** (le lien de l'export BBCode). Convention de Greg (27/10) : `/app/` = pages de l'application, `/public/` = pages à partager avec la communauté ; hors `MainAnimation`, sans NavBar ni footer commun |
 | `/app/profil` | `profil` | `redirectToHomeIfNotLoggedIn` |
 | `/app/province` | `province` | `redirectToHomeIfNotLoggedIn` — « Ma province » |
 | `/app/character/new` | `character-new` | `redirectToHomeIfNotLoggedIn` |
@@ -290,29 +291,35 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   plaque d'enregistrement (`EconomyMines.Registry.Help*`) dit que les prix viennent de la province ; l'aide du Bilan public a une 5ᵉ étape (prix en lecture seule
   d'un gérant). ⚠️ Une aide qui cite un bouton le cite **tel qu'il s'affiche** : `tests/eco/mineModuleTexts.unit.test.js` le garde (lecture des vraies locales).
   Les textes **légaux** (politique, « Vos données ») ne sont pas dans ce lot.
-- **`modules/animation/MainAnimation.vue`** (27/10/2026) — coquille du module Animation, au patron de
-  l'Économie : une colonne de liens et un `RouterView`. Un lien par **type d'activité ouvert** (`GET
-  anim/activity-types`, aucun jeton — les types désactivés ne s'affichent pas, et une panne n'en affiche
-  aucun), « Mes activités » si connecté. `TYPE_ROUTES` associe la clé d'un type à sa route : ajouter une
-  activité = une ligne, sans refaire la page.
-- **`modules/animation/DecodeActivityView.vue`** (routes `animation-decode`, `/app/anim/decode/:name?`, public) —
-  **Les Coffres Scellés**, page en lecture seule : sans nom, un champ de recherche et les règles ; avec un nom,
-  l'activité, ses règles (locales `Animation.Types.decode.*`), le coffre en cours avec ses tentatives, les coffres
-  ouverts (combinaison révélée + découvreur) et le classement cumulé. C'est le lien de l'export BBCode du backend.
-  ⚠️ **Elle n'affiche jamais le code d'un coffre scellé** : le serveur ne l'envoie pas (seul l'organisateur le voit).
-  Nom inconnu (404) : le message de l'API, `AccessDenied`, sans « Réessayer ».
-- **`modules/animation/MyDecodeActivities.vue`** (route `animation-mine`, `/app/anim/mes-activites`,
-  `redirectToHomeIfNotLoggedIn`) — « Mes activités » du personnage actif : création (nom, description facultative,
-  lieu **province OU ville** via `CityCascadeSelect`), sceller un coffre, inscrire une proposition reçue, rouvrir,
-  clore, supprimer (confirmation en ligne, **uniquement sur une activité close**), exports BBCode des règles et des
-  résultats (copiés dans le presse-papiers, texte laissé affiché si la copie échoue). ⚠️ **Aucune règle côté site** :
-  seul l'organisateur gère, la note d'une combinaison vient du serveur, un refus s'affiche tel que l'API le dit
-  (`apiMessage`, FR et EN) ; les boutons ne suivent que l'état. L'organisateur voit la combinaison secrète du coffre
-  en cours (décision de Greg du 27/10, « pour le moment »).
-- **`use/useDecodeActivities.js`** — appels de l'API des Coffres Scellés (`anim/*` sans jeton, le reste avec).
-  Pas de store Pinia dédié. Textes sous `Animation.{Types,Status,Public,Mine}.*`.
-  ⚠️ Le **texte des règles** (`Animation.Types.decode.Rules`) est un **brouillon**, jumeau de `types.decode.rules`
-  du backend (export BBCode) : à retravailler par Cowork, **dans les deux dépôts**.
+- **Module Animation** (27-28/10/2026, `views/modules/animation/`) — première activité : **Décode le code** (« Crack the Code »). Le serveur dit
+  quelles activités sont ouvertes (`GET anim/activity-types`, sans jeton ; une panne n'en affiche aucune). Vocabulaire : « personnage » pour
+  les noms inscrits (D34). ⚠️ **Aucune règle côté site** : adresse, mot de passe, lieu, notes, droits sont jugés par le serveur, ses refus
+  s'affichent tels quels (`apiMessage` / `apiFieldErrors`, FR et EN). Spécification : fil `admin/echanges/animation-coffres-scelles/12-synthese-cc.md`.
+  - **`MainAnimation.vue`** — coquille : menu à gauche (**un lien par activité ouverte**, `TYPE_ROUTES` : ajouter une activité = une ligne) et `RouterView`.
+    Charge la liste des types **une fois** et la passe par `provide` (`animationTypes`, `animationTypesReady`). Aucun autre lien dans le menu.
+  - **`AnimationHomeView.vue`** (route `animation`, `/app/anim`) — « La Salle des Jeux » : titre centré, une carte par activité (`ModuleHomeCards`,
+    modèle **réutilisable pour tout module** : slot `visual-<clé>`, couleur du module), chargement par `ChestLoader`. Le visuel de Décode le code
+    (`anim/DecodeCodeVisual.vue`, cinq cases « ? ») vit à côté du titre de la carte et de la page de l'activité.
+  - **`DecodePublicView.vue`** (`animation-public`) — l'enveloppe de la page publique : menu (logo centré, « Organiser ma propre activité » discret vers `welcome`, thème et langue), `page-card` pleine largeur, pas de footer.
+  - **`DecodeActivityView.vue`** — avec une adresse (sous `DecodePublicView`) : l'activité en **trois quarts / un quart** (encadré `DecodeHero`, tentatives et coffres ouverts côte à côte ; règles et classement à droite ; **jamais le code d'un coffre scellé**), chargement par la porte (`ChestLoader illustration="gate"`, « Ouverture de la salle… ») ; une activité sans compte close se lit sur sa **photo figée**. Sans adresse (route `animation-decode`) : le panneau « Votre activité » puis les règles.
+  - **`anim/DecodeStartPanel.vue`** — scénarios de l'entrée : connecté sans personnage / avec activité (**redirige vers « Ma salle »**) / sans
+    activité ; déconnecté avec adresse mémorisée et encore ouverte (**redirige vers « Retrouver ma salle »**, adresse préremplie) ou rien de
+    mémorisé (créer, retrouver). Pas de redirection si l'on vient de l'intérieur du module. Aucune invitation à se connecter dans la page.
+    L'adresse mémorisée est la comfort data `anim_decode_slug` (préférences acceptées seulement, D4/D22), **vérifiée auprès du serveur**.
+  - **`MyDecodeActivities.vue`** (`animation-mine`, `redirectToHomeIfNotLoggedIn`) — mode **privé** : création (`DecodeCreateForm`), puis `DecodeActivityCard`.
+  - **`DecodeCreateAnonymousView.vue`** (`animation-create`, `creer`), **`DecodeManageView.vue`** (`animation-manage`, `gerer`),
+    **`DecodeResetView.vue`** (`animation-reset`, `reinitialiser`), **`DecodeEmailConfirmView.vue`** (`animation-confirm-email`, `confirmer-email`) — mode **sans compte**.
+    Le mot de passe va dans le **corps** des requêtes, n'est jamais mémorisé ; seule l'adresse peut l'être.
+  - **`anim/DecodeCreateForm.vue`** — formulaire puis écran de confirmation (D25, D39 : récapitulatif selon les choix, **un seul** bouton « Je confirme »).
+    Sans compte : **deux colonnes** (la salle / l'identité) ; privé : une colonne à 3/4. Nom, adresse, **lieu** (royaume, province OU ville, `CityCascadeSelect`
+    `inline`), pseudo et mot de passe sont **obligatoires** (étoile + note) ; plus de description. `SlugField` (aperçu et disponibilité par le serveur),
+    `PasswordField` (barre de force **indicative** via `modules/passwordStrength.js`, conseils, œil « Afficher » toujours visible ; l'œil natif d'Edge est masqué dans `base.css`).
+  - **Blocs partagés page publique / organisateur** : `anim/DecodeHero.vue` (cases + titre + badge, slot d'actions à droite), `DecodeAttemptsTable.vue`, `DecodeOpenedChests.vue`, `DecodeRankingCard.vue` ; `DecodeCodeVisual.vue` accepte `digits`, `size` et `tone`.
+  - **`anim/DecodeActivityCard.vue`** — l'écran de l'organisateur (« Ma salle « … » », même mise en page que la page publique + code du coffre, saisie du pseudo et de la combinaison — pseudos déjà inscrits proposés —, gestes), **le même** pour les deux modes (elle reçoit des `gestures`) : sceller, proposer, clore (**confirmation
+    sans compte**, la clôture est définitive), rouvrir et supprimer (**privé seulement**), exports BBCode, état de l'email.
+  - **`use/useDecodeActivities.js`** — tous les appels (`anim/*` sans jeton, le reste avec) ; `asOrganizer()` / `asAnonymous(slug, mot de passe)`. Pas de store Pinia.
+  - Textes sous `Animation.{Home,Start,Types,Status,Public,Slug,Password,Create,Recap,Manage,Reset,Confirm,Mine}.*`. ⚠️ Le **texte des règles**
+    (`Animation.Types.decode.Rules`) est un **brouillon**, jumeau de `types.decode.rules` du backend : à retravailler par Cowork, **dans les deux dépôts**.
 - **`modules/company/MainCompany.vue`** — squelette vide, placeholder "Test" i18n minimal
   (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est prévu.
 

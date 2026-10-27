@@ -28,6 +28,8 @@
     // Place du coffre : par défaut au centre du conteneur ; une page à colonnes le cale sur la zone qu'il remplace
     // (ex. le tableau du registre, pas toute la largeur) en passant des classes LITTÉRALES.
     blockClass: { type: String, default: '' },
+    // `gate` : la porte de la salle s'ouvre (page à partager) au lieu du coffre ; le titre suit (« Ouverture de la salle… »).
+    illustration: { type: String, default: 'chest', validator: v => ['chest', 'gate'].includes(v) },
   })
   const emit = defineEmits(['retry'])
   const { t } = useI18n()
@@ -105,7 +107,7 @@
   const title = computed(() => {
     if (failed.value) return t('Chest.Failed')
     if (stuck.value) return t('Chest.Slow')
-    return t('Chest.Opening') // le texte ne change pas à la fin de l'ouverture
+    return t(props.illustration === 'gate' ? 'Chest.OpeningRoom' : 'Chest.Opening') // le texte ne change pas à la fin de l'ouverture
   })
   // Classes littérales (jamais construites) : la couleur du bouton est celle du module (charte §6.7).
   const BUTTON_COLORS = { gold: 'odc--gold', rose: 'odc--rose', teal: 'odc--teal', violet: 'odc--violet', blue: 'odc--blue', orange: 'odc--orange' }
@@ -123,7 +125,16 @@
         aria-live="polite"
         data-testid="chest-loader"
       >
-        <ChestIllustration :open="open && !closed" :burst="burst" :shake="shake" :accent="accent" />
+        <v-icon
+          v-if="illustration === 'gate'"
+          name="gi-open-gate"
+          scale="6"
+          class="gate-in text-teal-700 drop-shadow-[0_0_12px_rgba(13,148,136,0.45)]"
+          :class="{ 'opacity-60': closed }"
+          aria-hidden="true"
+          data-testid="gate-loader-icon"
+        />
+        <ChestIllustration v-else :open="open && !closed" :burst="burst" :shake="shake" :accent="accent" />
         <p class="mt-1 text-lg font-bold text-slate-800 dark:text-slate-800" data-testid="chest-title">{{ title }}</p>
         <p v-if="failed" class="max-w-sm text-center text-sm text-slate-700 dark:text-slate-700" :data-testid="errorTestid">{{ error }}</p>
         <p v-else-if="stuck" class="max-w-sm text-center text-sm text-slate-700 dark:text-slate-700">{{ t('Chest.SlowText') }}</p>
@@ -141,4 +152,7 @@
 <style scoped>
   .chest-fade-enter-active, .chest-fade-leave-active { transition: opacity 0.35s ease; }
   .chest-fade-enter-from, .chest-fade-leave-to { opacity: 0; }
+  /* La porte surgit et pulse deux fois, puis reste fixe (mouvement fini, charte §8 ; fixe en mouvement réduit via base.css). */
+  .gate-in { animation: gate-in 1s ease-out 2 both; }
+  @keyframes gate-in { from { opacity: 0.2; transform: scale(0.9); } 60% { opacity: 1; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
 </style>

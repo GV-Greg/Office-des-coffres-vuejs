@@ -37,7 +37,7 @@
          WelcomeView a son propre footer fusionné (disclaimer + liens légaux, voir WelcomeView.vue).
          Sur /app/*, contenu réduit : "Gérer mes préférences" est déjà dans la NavBar. -->
     <AppFooter
-      v-if="route.name !== 'welcome'"
+      v-if="route.name !== 'welcome' && !route.meta.noFooter"
       :show-preferences="!!route.meta.public"
       :show-unofficial-tag="!!route.meta.public"
     />
