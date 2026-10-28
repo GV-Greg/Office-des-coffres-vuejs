@@ -66,6 +66,14 @@ describe('EconomyRegistry', () => {
     expect(wrapper.find('[data-testid="registry-age"]').text()).toBe('Dernier relevé : hier, le 09/05.')
   })
 
+  it('mobile : la grille des deux colonnes a une colonne unique bornée (sinon le tableau élargit la page à 375 px)', async () => {
+    const wrapper = await mountPage()
+    const grid = wrapper.find('[data-testid="registry-week"], table').element.closest('.grid')
+    expect(grid, 'le tableau de bilan doit être dans la grille du registre').not.toBeNull()
+    // Sans `grid-cols-1` (= minmax(0, 1fr)), la piste implicite prend la largeur du tableau (769 px) : la page déborde.
+    expect(grid.className).toContain('grid-cols-1')
+  })
+
   it('en tête : le bilan EN COURS du mois de mandat, provisoire, niveau compris (Greg, 09/10)', async () => {
     const days = { '2026-05-07': { production: 10, pierre: 1 }, '2026-05-08': { heures: 50 } }
     const withBilan = report({
