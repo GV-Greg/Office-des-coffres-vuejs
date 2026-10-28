@@ -678,7 +678,7 @@
       "SecretTitle": "Secret combination of chest #{number}",
       "SecretHelp": "The chest is sealed: nobody knows the combination, not even you. It will be revealed when the chest is opened.",
       "Combination": "Combination",
-      "Character": "Character's nickname",
+      "Character": "Nickname",
       "Submit": "Record",
       "ResultScore": "Combination {combination} from {character}: {score} out of 10.",
       "ResultFound": "Chest cracked by {character}! A new chest is sealed.",

@@ -678,7 +678,7 @@
       "SecretTitle": "Combinaison secrète du coffre n°{number}",
       "SecretHelp": "Le coffre est scellé : nul ne connaît la combinaison, pas même vous. Elle sera révélée à l'ouverture du coffre.",
       "Combination": "Combinaison",
-      "Character": "Pseudo du personnage",
+      "Character": "Pseudo",
       "Submit": "Inscrire",
       "ResultScore": "Combinaison {combination} de {character} : {score} sur 10.",
       "ResultFound": "Coffre percé par {character} ! Un nouveau coffre est scellé.",
