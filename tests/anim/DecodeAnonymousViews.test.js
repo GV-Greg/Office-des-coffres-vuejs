@@ -43,7 +43,7 @@ const FormStub = {
 const refusal = (status, messages, extra = {}) => ({ response: { status, data: { success: false, messages, message: messages.fr, ...extra } } })
 const activity = (over = {}) => ({
   id: 1, slug: 'les-trois-coffres', name: 'Les Trois Coffres', status: 'launched', mode: 'anonymous', organizer: 'Artifice',
-  current: { id: 11, number: 1, code: '48213', proposals: [] }, opened: [], ranking: [], can_reopen: false, email: null, ...over,
+  current: { id: 11, number: 1, proposals: [] }, opened: [], ranking: [], can_reopen: false, email: null, ...over,
 })
 
 function mountView(component, { locale = 'fr', stubs = {} } = {}) {

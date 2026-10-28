@@ -17,7 +17,7 @@
     useDecodeActivities : asOrganizer / asAnonymous). ⚠️ AUCUNE règle ici : seul l'organisateur gère, la note d'une combinaison
     vient du serveur, un refus s'affiche tel que l'API le dit (`apiMessage`, FR et EN). Les boutons ne suivent que l'état et ce
     que les gestes offrent (pas de « Rouvrir » ni de « Supprimer » sans compte : D19, D13).
-    Le code du coffre en cours n'est visible que de son organisateur : il vient de cette API, jamais de la page publique.
+    Le code du coffre en cours n'est visible de PERSONNE, l'organisateur compris : il n'apparaît qu'une fois le coffre percé (coffres ouverts).
     Vocabulaire (D34) : le nom saisi est celui d'un PERSONNAGE.
     Mise en page : celle de la page publique (encadré de tête, trois quarts à gauche, un quart à droite), avec en plus ce que seul l'organisateur voit
     (le code du coffre, la saisie) et ses gestes. Les blocs communs sont des composants partagés (DecodeHero, DecodeAttemptsTable…).
@@ -125,8 +125,8 @@
           <p class="!m-0 flex items-center gap-1.5 text-sm font-bold text-slate-800 dark:text-slate-800">
             <v-icon name="gi-chest" scale="1.2" class="text-teal-700" aria-hidden="true" />{{ t('Animation.Mine.SecretTitle', { number: activity.current.number }) }}
           </p>
-          <DecodeCodeVisual :digits="String(activity.current.code)" tone="light" size="large" class="mt-2" :testid="`code-cells-${activity.id}`" />
-          <p class="sr-only" :data-testid="`code-${activity.id}`">{{ activity.current.code }}</p>
+          <!-- Le coffre reste scellé pour tout le monde, l'organisateur compris : il ne connaît pas la combinaison (Greg, 28/10/2026). -->
+          <DecodeCodeVisual tone="light" size="large" class="mt-2" :testid="`code-cells-${activity.id}`" />
           <p class="!mb-0 mt-2 text-xs text-slate-700 dark:text-slate-700">{{ t('Animation.Mine.SecretHelp') }}</p>
 
           </div>

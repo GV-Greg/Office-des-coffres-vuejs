@@ -32,7 +32,7 @@ const FormStub = {
 const activity = (over = {}) => ({
   id: 1, slug: 'coffre-des-marches', name: 'Coffre des Marches', type: 'decode', status: 'launched',
   mode: 'private', organizer: 'Artifice', place: null, launched_at: '2026-10-01T10:00:00Z', closed_at: null,
-  current: { id: 11, number: 1, code: '48213', proposals: [] },
+  current: { id: 11, number: 1, proposals: [] },
   opened: [], ranking: [], can_reopen: false,
   ...over,
 })
@@ -67,11 +67,13 @@ describe('MyDecodeActivities — liste', () => {
     expect(w.find('[data-testid="slug-1"]').exists()).toBe(false)
   })
 
-  it('l\'organisateur voit la combinaison secrète du coffre en cours', async () => {
+  it('le coffre en cours reste scellé, même pour l\'organisateur : jamais de code à l\'écran', async () => {
     const w = await mountPage()
 
-    expect(w.find('[data-testid="code-1"]').text()).toBe('48213')
-    expect(w.text()).toContain('Visible de vous seul')
+    expect(w.find('[data-testid="code-1"]').exists()).toBe(false)
+    expect(w.find('[data-testid="code-cells-1"]').text()).toBe('?????')
+    expect(w.html()).not.toContain('48213')
+    expect(w.text()).toContain('nul ne connaît la combinaison')
   })
 
   it('sans personnage : un message, aucun appel', async () => {
@@ -143,12 +145,14 @@ describe('MyDecodeActivities — gestes', () => {
     await flushPromises()
 
     expect(http.post).toHaveBeenCalledWith('decode-activities/1/secrets', {}, expect.anything())
-    expect(w.find('[data-testid="code-1"]').text()).toBe('48213')
+    expect(w.find('[data-testid="code-1"]').exists()).toBe(false)
+    expect(w.find('[data-testid="code-cells-1"]').text()).toBe('?????')
+    expect(w.html()).not.toContain('48213')
   })
 
   it('inscrire une proposition : envoie combinaison et nom du personnage, affiche la note de l\'API', async () => {
     const w = await mountPage()
-    const updated = activity({ current: { id: 11, number: 1, code: '48213', proposals: [{ combination: '12345', character_name: 'Aldric', points: 4 }] } })
+    const updated = activity({ current: { id: 11, number: 1, proposals: [{ combination: '12345', character_name: 'Aldric', points: 4 }] } })
     http.post.mockResolvedValue({ data: { success: true, score: 4, found: false, proposal: { combination: '12345', character_name: 'Aldric', points: 4 }, activity: updated } })
 
     await w.find('[data-testid="combination-1"]').setValue('12345')
@@ -163,7 +167,7 @@ describe('MyDecodeActivities — gestes', () => {
 
   it('un coffre percé : le dit, et montre le nouveau coffre scellé', async () => {
     const w = await mountPage()
-    const updated = activity({ status: 'relaunch', current: { id: 12, number: 2, code: '70251', proposals: [] }, opened: [{ number: 1, code: '48213', discoverer: 'Brunehaut' }] })
+    const updated = activity({ status: 'relaunch', current: { id: 12, number: 2, proposals: [] }, opened: [{ number: 1, code: '48213', discoverer: 'Brunehaut' }] })
     http.post.mockResolvedValue({ data: { success: true, score: 10, found: true, proposal: { combination: '48213', character_name: 'Brunehaut', points: 20 }, activity: updated } })
 
     await w.find('[data-testid="combination-1"]').setValue('48213')
@@ -173,7 +177,9 @@ describe('MyDecodeActivities — gestes', () => {
 
     expect(w.find('[data-testid="result-1"]').text()).toContain('Coffre percé par Brunehaut')
     expect(w.find('[data-testid="status-1"]').text()).toBe('Relancé')
-    expect(w.find('[data-testid="code-1"]').text()).toBe('70251')
+    expect(w.find('[data-testid="current-1"]').text()).toContain('coffre n°2')
+    expect(w.find('[data-testid="code-cells-1"]').text()).toBe('?????')
+    expect(w.html()).not.toContain('70251')
   })
 
   it('une proposition refusée par l\'API : le message de l\'API en toast', async () => {

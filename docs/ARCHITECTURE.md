@@ -315,11 +315,11 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
     `inline`), pseudo et mot de passe sont **obligatoires** (étoile + note) ; plus de description. `SlugField` (aperçu et disponibilité par le serveur),
     `PasswordField` (barre de force **indicative** via `modules/passwordStrength.js`, conseils, œil « Afficher » toujours visible ; l'œil natif d'Edge est masqué dans `base.css`).
   - **Blocs partagés page publique / organisateur** : `anim/DecodeHero.vue` (cases + titre + badge, slot d'actions à droite), `DecodeAttemptsTable.vue`, `DecodeOpenedChests.vue`, `DecodeRankingCard.vue` ; `DecodeCodeVisual.vue` accepte `digits`, `size` et `tone`.
-  - **`anim/DecodeActivityCard.vue`** — l'écran de l'organisateur (« Ma salle « … » », même mise en page que la page publique + code du coffre, saisie du pseudo et de la combinaison — pseudos déjà inscrits proposés —, gestes), **le même** pour les deux modes (elle reçoit des `gestures`) : sceller, proposer, clore (**confirmation
+  - **`anim/DecodeActivityCard.vue`** — l'écran de l'organisateur (« Ma salle « … » », même mise en page que la page publique ; le coffre en cours reste **scellé, l'organisateur ne connaît jamais le code** ; saisie du pseudo et de la combinaison — pseudos déjà inscrits proposés —, gestes), **le même** pour les deux modes (elle reçoit des `gestures`) : sceller, proposer, clore (**confirmation
     sans compte**, la clôture est définitive), rouvrir et supprimer (**privé seulement**), exports BBCode, état de l'email.
   - **`use/useDecodeActivities.js`** — tous les appels (`anim/*` sans jeton, le reste avec) ; `asOrganizer()` / `asAnonymous(slug, mot de passe)`. Pas de store Pinia.
-  - Textes sous `Animation.{Home,Start,Types,Status,Public,Slug,Password,Create,Recap,Manage,Reset,Confirm,Mine}.*`. ⚠️ Le **texte des règles**
-    (`Animation.Types.decode.Rules`) est un **brouillon**, jumeau de `types.decode.rules` du backend : à retravailler par Cowork, **dans les deux dépôts**.
+  - Textes sous `Animation.{Home,Start,Types,Status,Public,Slug,Password,Create,Recap,Manage,Reset,Confirm,Mine}.*`. Le **texte des règles**
+    (`Animation.Types.decode.Rules`, rédigé par Cowork le 28/10/2026) est le jumeau de `types.decode.rules` du backend ; affiché avec `whitespace-pre-line` (ses retours à la ligne comptent).
 - **`modules/company/MainCompany.vue`** — squelette vide, placeholder "Test" i18n minimal
   (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est prévu.
 

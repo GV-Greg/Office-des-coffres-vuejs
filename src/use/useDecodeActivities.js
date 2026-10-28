@@ -59,7 +59,7 @@ export default function useDecodeActivities() {
       const { data } = await http.post(`${manage(slug)}/open`, { password })
       return data.activity
     },
-    /** Demande un lien de réinitialisation (par email s'il est confirmé, sinon la demande est notée pour l'administrateur) : la réponse est la même quoi qu'il arrive (le serveur ne révèle rien). */
+    /** Demande un lien de réinitialisation (par email s'il est confirmé, sinon la demande est notée pour l'administrateur du site) : la réponse est la même quoi qu'il arrive (le serveur ne révèle rien). */
     async requestReset(slug) {
       await http.post(`${manage(slug)}/reset-request`)
     },

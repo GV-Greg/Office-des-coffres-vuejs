@@ -74,7 +74,7 @@
         </div>
         <section class="laptop:col-span-1 rounded-xl border border-slate-300 bg-white p-4 text-slate-800 dark:text-slate-800" data-testid="decode-rules-intro">
           <h3 class="!mt-0 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-red-700 to-orange-600">{{ t('Animation.Types.decode.RulesTitle') }}</h3>
-          <p class="!mb-0 text-sm text-slate-700 dark:text-slate-700">{{ t('Animation.Types.decode.Rules') }}</p>
+          <p class="!mb-0 text-sm whitespace-pre-line text-slate-700 dark:text-slate-700">{{ t('Animation.Types.decode.Rules') }}</p>
         </section>
       </div>
     </template>
@@ -114,7 +114,7 @@
           <div class="laptop:col-span-1 space-y-5">
             <section class="rounded-xl border border-slate-300 bg-white p-4 text-slate-800 dark:text-slate-800" data-testid="decode-rules-card">
               <h3 class="!mt-0 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-red-700 to-orange-600">{{ t('Animation.Types.decode.RulesTitle') }}</h3>
-              <p class="!mb-0 text-sm text-slate-700 dark:text-slate-700" data-testid="decode-rules">{{ t('Animation.Types.decode.Rules') }}</p>
+              <p class="!mb-0 text-sm whitespace-pre-line text-slate-700 dark:text-slate-700" data-testid="decode-rules">{{ t('Animation.Types.decode.Rules') }}</p>
             </section>
 
             <DecodeRankingCard :ranking="activity.ranking" />

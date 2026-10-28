@@ -123,8 +123,8 @@
               <span class="text-slate-700 dark:text-slate-700"><strong class="text-slate-800 dark:text-slate-800">{{ t('Animation.Manage.LostNoEmailLead') }}</strong> {{ t('Animation.Manage.LostNoEmail') }}</span>
             </li>
           </ul>
-          <!-- UN seul bouton : avec une salle mémorisée sur l'appareil, « Réinitialiser mon mot de passe » ; sans, « Demander à l'administrateur ».
-               Le serveur fait la même chose dans les deux cas (lien par email s'il est confirmé, sinon demande notée pour l'administration). -->
+          <!-- UN seul bouton : avec une salle mémorisée sur l'appareil, « Réinitialiser mon mot de passe » ; sans, « Demander à l'administrateur du site ».
+               Le serveur fait la même chose dans les deux cas (lien par email s'il est confirmé, sinon demande notée pour l'administrateur du site). -->
           <button type="button" class="mt-4 odc-btn odc-btn--soft odc-btn--sm odc--slate w-full" :disabled="!slug.trim()" data-testid="manage-forgot" @click="forgot">
             <v-icon :name="hasRemembered ? 'fa-lock' : 'gi-tied-scroll'" aria-hidden="true" />{{ hasRemembered ? t('Animation.Manage.Forgot') : t('Animation.Manage.AskAdmin') }}
           </button>

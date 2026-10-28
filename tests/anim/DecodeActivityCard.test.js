@@ -19,14 +19,14 @@ const en = readLocale('en')
 
 const activity = (over = {}) => ({
   id: 1, slug: 'les-trois-coffres', name: 'Les Trois Coffres', status: 'launched', mode: 'anonymous', organizer: 'Artifice',
-  current: { id: 11, number: 1, code: '48213', proposals: [] }, opened: [], ranking: [], can_reopen: false, email: null,
+  current: { id: 11, number: 1, proposals: [] }, opened: [], ranking: [], can_reopen: false, email: null,
   ...over,
 })
 
 function gestures(mode, over = {}) {
   const base = {
     mode,
-    generateSecret: vi.fn().mockResolvedValue(activity({ current: { id: 12, number: 2, code: '70251', proposals: [] } })),
+    generateSecret: vi.fn().mockResolvedValue(activity({ current: { id: 12, number: 2, proposals: [] } })),
     propose: vi.fn().mockResolvedValue({ score: 4, found: false, proposal: { combination: '12345', character_name: 'Aldric', points: 4 }, activity: activity() }),
     close: vi.fn().mockResolvedValue(activity({ status: 'closed', current: null })),
     exportRules: vi.fn().mockResolvedValue('[b]Règles[/b]'),
@@ -60,7 +60,9 @@ describe('DecodeActivityCard — sans compte', () => {
     expect(w.find('[data-testid="public-1"]').exists()).toBe(true)
     expect(w.find('[data-testid="decode-divider"]').exists()).toBe(false)
     expect(w.find('[data-testid="status-1"]').text()).toBe('En cours')
-    expect(w.find('[data-testid="code-1"]').text()).toBe('48213')
+    expect(w.find('[data-testid="code-1"]').exists()).toBe(false)
+    expect(w.find('[data-testid="code-cells-1"]').text()).toBe('?????')
+    expect(w.html()).not.toContain('48213')
   })
 
   it('pas de « Rouvrir » ni de « Supprimer » : la clôture est définitive, l\'auteur ne supprime pas', () => {
@@ -121,7 +123,7 @@ describe('DecodeActivityCard — sans compte', () => {
   it('propose les pseudos déjà inscrits (classement et coffre en cours), sans doublon', () => {
     const w = mountCard({ act: activity({
       ranking: [{ character_name: 'Brunehaut', points: 20 }, { character_name: 'Aldric', points: 4 }],
-      current: { id: 11, number: 2, code: '48213', proposals: [{ combination: '12345', character_name: 'Aldric', points: 4 }, { combination: '54321', character_name: 'Clovis', points: 2 }] },
+      current: { id: 11, number: 2, proposals: [{ combination: '12345', character_name: 'Aldric', points: 4 }, { combination: '54321', character_name: 'Clovis', points: 2 }] },
     }) })
 
     const options = w.findAll('[data-testid="names-1"] option').map(o => o.attributes('value'))
@@ -130,7 +132,7 @@ describe('DecodeActivityCard — sans compte', () => {
   })
 
   it('le nombre de tentatives s\'accorde : singulier pour une, pluriel sinon', () => {
-    const count = n => mountCard({ act: activity({ current: { id: 11, number: 1, code: '48213', proposals: Array.from({ length: n }, (_, i) => ({ combination: '1234' + i, character_name: 'A', points: 1 })) } }) }).text()
+    const count = n => mountCard({ act: activity({ current: { id: 11, number: 1, proposals: Array.from({ length: n }, (_, i) => ({ combination: '1234' + i, character_name: 'A', points: 1 })) } }) }).text()
 
     expect(count(1)).toContain('1 tentative sur ce coffre')
     expect(count(2)).toContain('2 tentatives sur ce coffre')
