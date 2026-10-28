@@ -172,11 +172,66 @@ const router = createRouter({
     },
     {
       path: '/app/anim',
-      name: 'animation',
+      // Pas de nom ici : le nom `animation` est celui de l'ACCUEIL (enfant au chemin vide), pour que `{ name: 'animation' }` rende la page.
       components: {
         Nav,
         default: () => import('@/views/modules/animation/MainAnimation.vue'),
       },
+      children: [
+        {
+          // Accueil du module : une carte par activité (nom + descriptif). Chaque module aura le même modèle.
+          path: '',
+          name: 'animation',
+          component: () => import('@/views/modules/animation/AnimationHomeView.vue'),
+        },
+        {
+          // Décode le code : l'ENTRÉE des salles (créer, retrouver, reprendre). La page publique d'une activité, elle, est
+          // à partager : elle vit sous `/public/` (route `animation-public`, plus bas). Aucun compte requis.
+          path: 'decode',
+          name: 'animation-decode',
+          component: () => import('@/views/modules/animation/DecodeActivityView.vue'),
+        },
+        {
+          // Organiser une activité SANS COMPTE (D2) : formulaire puis écran de confirmation.
+          path: 'decode/creer',
+          name: 'animation-create',
+          component: () => import('@/views/modules/animation/DecodeCreateAnonymousView.vue'),
+        },
+        {
+          // Retrouver SON activité sans compte : adresse + mot de passe (D3, D10).
+          path: 'decode/gerer',
+          name: 'animation-manage',
+          component: () => import('@/views/modules/animation/DecodeManageView.vue'),
+        },
+        {
+          // Choisir un nouveau mot de passe avec le lien à usage unique, reçu par email ou par message en jeu (D35, D36).
+          path: 'decode/reinitialiser',
+          name: 'animation-reset',
+          component: () => import('@/views/modules/animation/DecodeResetView.vue'),
+        },
+        {
+          // Confirmation de l'adresse email par le lien signé reçu à cette adresse (D29).
+          path: 'decode/confirmer-email',
+          name: 'animation-confirm-email',
+          component: () => import('@/views/modules/animation/DecodeEmailConfirmView.vue'),
+        },
+        {
+          // « Ma salle » (joueur connecté, mode privé) : créer, sceller, inscrire les propositions, clore. Le serveur décide de tout.
+          path: 'decode/ma-salle',
+          name: 'animation-mine',
+          component: () => import('@/views/modules/animation/MyDecodeActivities.vue'),
+          beforeEnter: redirectToHomeIfNotLoggedIn,
+        },
+      ],
+    },
+    {
+      // Page à PARTAGER avec la communauté (le lien de l'export BBCode, D8) : `/public/` pour ce qui se partage, `/app/` pour les pages
+      // de l'application. Aucun mot réservé (D14) : le slug est le dernier segment. Pas de NavBar, comme les pages légales.
+      path: '/public/activite/decode/:slug',
+      name: 'animation-public',
+      component: () => import('@/views/modules/animation/DecodePublicView.vue'),
+      // Page à partager : ni NavBar ni footer commun (le menu de la page porte logo, thème et langue).
+      meta: { public: true, noFooter: true },
     },
     {
       path: '/app/profil',
@@ -220,14 +275,14 @@ const router = createRouter({
 const CHEST_MODULE_ROUTE_NAMES = new Set([
   'economy', 'economy-mines', 'economy-registry', 'economy-prices',
   'security', 'security-guet',
-  'animation',
+  'animation', 'animation-decode', 'animation-public', 'animation-mine', 'animation-create', 'animation-manage', 'animation-reset', 'animation-confirm-email',
 ])
 
 // Couleur du module (charte §3.3) : la porte de l'overlay et le coffre de la page la reprennent.
 const MODULE_ACCENT_BY_ROUTE = {
   economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold',
   security: 'rose', 'security-guet': 'rose',
-  animation: 'teal',
+  animation: 'teal', 'animation-decode': 'teal', 'animation-public': 'teal', 'animation-mine': 'teal', 'animation-create': 'teal', 'animation-manage': 'teal', 'animation-reset': 'teal', 'animation-confirm-email': 'teal',
 }
 
 const { startNavigationLoading, stopNavigationLoading } = useNavigationLoading()

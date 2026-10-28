@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-28] — PR #101 (Décode le code : interface de la première activité du module Animation)
+
+### Added
+- Activité **« Décode le code »** (Mastermind à 5 chiffres) dans la Salle des Jeux, en deux modes : **privé** (« Ma salle », lié au personnage) et **sans compte** (créer, retrouver sa salle, réinitialiser son mot de passe, confirmer son adresse). Pages sous `/app/anim/decode/…` ; page à partager `/public/activite/decode/:slug`, sans NavBar ni footer commun (ligne « site non officiel »).
+- Blocs partagés `DecodeHero`, `DecodeAttemptsTable`, `DecodeOpenedChests`, `DecodeRankingCard`, `DecodeCodeVisual`, `DecodeStartPanel`, `DecodeActivityCard` ; le coffre en cours reste scellé (cinq cases « ? »), personne n'en connaît la combinaison. Textes FR et EN, aucune règle côté site.
+- **Texte légal** : trois insertions dans la politique de confidentialité (§3, §5, §6, dont « administrateur du site » au §6) et l'énumération des Préférences de la politique des cookies ; garde-fou `tests/legal/privacyAnimDecode`. Dates `LAST_UPDATED` au 28/10/2026.
+- Entrée `decode-activity` de la Chronique (`whatsNew.json`) : annonce Discord au déploiement.
+
+### Prod
+- Dépend de back #72 (déployée, `migrate` et `route:cache` faits le 28/10/2026). ⚠️ `policy:notify 2026-10-28-decode-le-code` à lancer à la main une fois cette PR en ligne.
+
 ## [2026-10-21] — PR #100 (Registre : le tableau de bilan ne déborde plus à 375 px)
 
 ### Fixed

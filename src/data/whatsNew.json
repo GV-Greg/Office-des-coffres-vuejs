@@ -46,5 +46,13 @@
     "type": "feature",
     "fr": "Ajout des demandes de postes municipaux ou comtaux afin d'avoir accès à des coffres spéciaux.",
     "en": "You can now request a municipal or county office, to gain access to special chests."
+  },
+  {
+    "id": "decode-activity",
+    "date": "2026-10-28",
+    "scope": "public",
+    "type": "feature",
+    "fr": "La Salle des Jeux ouvre ses portes avec « Décode le code » : scellez un coffre à cinq chiffres, recevez les propositions et révélez qui perce le secret ! Avec ou sans compte.",
+    "en": "The Games Hall opens its doors with “Crack the Code”: seal a five-digit chest, collect the guesses and reveal who breaks the secret! With or without an account."
   }
 ]

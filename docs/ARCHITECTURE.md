@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 19/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 28/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -27,7 +27,8 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre ; enfant `registre/prix` → `economy-prices` (même garde), **sans lien de menu** : on y va par le bouton « Historique des prix » du registre |
 | `/app/secu` (enfant `/guet` → `security-guet`) | `security` | — |
 | `/app/company` | `company` | — |
-| `/app/anim` | `animation` | — |
+| `/app/anim` | — | enfants : `` (accueil, `animation`) ; `decode` → `animation-decode` (l'ENTRÉE des salles, publique) ; `decode/creer` → `animation-create`, `decode/gerer` → `animation-manage`, `decode/reinitialiser` → `animation-reset`, `decode/confirmer-email` → `animation-confirm-email` (publics, sans compte) ; `decode/ma-salle` → `animation-mine` (`redirectToHomeIfNotLoggedIn`) — toutes les pages propres à une activité vivent sous `decode/` (un autre type aura son propre préfixe) |
+| `/public/activite/decode/:slug` | `animation-public` | — (`meta.public`, `meta.noFooter`) — la page publique d'une activité, **à partager** (le lien de l'export BBCode). Convention de Greg (27/10) : `/app/` = pages de l'application, `/public/` = pages à partager avec la communauté ; hors `MainAnimation`, sans NavBar ni footer commun |
 | `/app/profil` | `profil` | `redirectToHomeIfNotLoggedIn` |
 | `/app/province` | `province` | `redirectToHomeIfNotLoggedIn` — « Ma province » |
 | `/app/character/new` | `character-new` | `redirectToHomeIfNotLoggedIn` |
@@ -138,6 +139,7 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   namespace `Legal` (clés de contact partagées dans `Legal.Common.Contact.*`). ⚠️ Les listes y
   sont rendues avec `tm()` **+ `rt()`** : `tm()` seul renvoie des AST compilés, affichés tels
   quels à l'écran mais invisibles en test (les mocks ne sont pas précompilés).
+  **Décode le code** (28/10/2026) : trois insertions (§3 ce qui est conservé en mode public, §5 durées — 30 jours d'inactivité dans les deux modes, 5 ans de page figée sans les propositions —, §6 destinataires) et l'énumération des Préférences de `Legal.Cookies` ; texte de Cowork `admin/content/policy-coffres-scelles.md`, garde-fou `tests/legal/privacyAnimDecode`. `LAST_UPDATED` des deux pages = 28/10/2026 (à ajuster à la date de mise en ligne).
   **Registre des mines** (08/10/2026) : la politique porte ses trois insertions (§3 ce qui est
   conservé, §5 la durée et la coupure du lien, §6 qui y accède — avant « Personne d'autre »),
   **avant** l'ouverture de l'écriture. Texte validé par Greg le 06/10
@@ -290,9 +292,37 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   plaque d'enregistrement (`EconomyMines.Registry.Help*`) dit que les prix viennent de la province ; l'aide du Bilan public a une 5ᵉ étape (prix en lecture seule
   d'un gérant). ⚠️ Une aide qui cite un bouton le cite **tel qu'il s'affiche** : `tests/eco/mineModuleTexts.unit.test.js` le garde (lecture des vraies locales).
   Les textes **légaux** (politique, « Vos données ») ne sont pas dans ce lot.
-- **`modules/animation/MainAnimation.vue`**, **`modules/company/MainCompany.vue`** — squelettes
-  vides, placeholder "Test" i18n minimal (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est
-  prévu.
+- **Module Animation** (27-28/10/2026, `views/modules/animation/`) — première activité : **Décode le code** (« Crack the Code »). Le serveur dit
+  quelles activités sont ouvertes (`GET anim/activity-types`, sans jeton ; une panne n'en affiche aucune). Vocabulaire : « personnage » pour
+  les noms inscrits (D34). ⚠️ **Aucune règle côté site** : adresse, mot de passe, lieu, notes, droits sont jugés par le serveur, ses refus
+  s'affichent tels quels (`apiMessage` / `apiFieldErrors`, FR et EN). Spécification : fil `admin/echanges/animation-coffres-scelles/12-synthese-cc.md`.
+  - **`MainAnimation.vue`** — coquille : menu à gauche (**un lien par activité ouverte**, `TYPE_ROUTES` : ajouter une activité = une ligne) et `RouterView`.
+    Charge la liste des types **une fois** et la passe par `provide` (`animationTypes`, `animationTypesReady`). Aucun autre lien dans le menu.
+  - **`AnimationHomeView.vue`** (route `animation`, `/app/anim`) — « La Salle des Jeux » : titre centré, une carte par activité (`ModuleHomeCards`,
+    modèle **réutilisable pour tout module** : slot `visual-<clé>`, couleur du module), chargement par `ChestLoader`. Le visuel de Décode le code
+    (`anim/DecodeCodeVisual.vue`, cinq cases « ? ») vit à côté du titre de la carte et de la page de l'activité.
+  - **`DecodePublicView.vue`** (`animation-public`) — l'enveloppe de la page publique : menu (logo centré, « Organiser ma propre activité » discret vers `welcome`, thème et langue), `page-card` pleine largeur, pas de footer.
+  - **`DecodeActivityView.vue`** — avec une adresse (sous `DecodePublicView`) : l'activité en **trois quarts / un quart** (encadré `DecodeHero`, tentatives et coffres ouverts côte à côte ; règles et classement à droite ; **jamais le code d'un coffre scellé**), chargement par la porte (`ChestLoader illustration="gate"`, « Ouverture de la salle… ») ; une activité sans compte close se lit sur sa **photo figée**. Sans adresse (route `animation-decode`) : le panneau « Votre activité » puis les règles.
+  - **`anim/DecodeStartPanel.vue`** — scénarios de l'entrée : connecté sans personnage / avec activité (**redirige vers « Ma salle »**) / sans
+    activité ; déconnecté avec adresse mémorisée et encore ouverte (**redirige vers « Retrouver ma salle »**, adresse préremplie) ou rien de
+    mémorisé (créer, retrouver). Pas de redirection si l'on vient de l'intérieur du module. Aucune invitation à se connecter dans la page.
+    L'adresse mémorisée est la comfort data `anim_decode_slug` (préférences acceptées seulement, D4/D22), **vérifiée auprès du serveur**.
+  - **`MyDecodeActivities.vue`** (`animation-mine`, `redirectToHomeIfNotLoggedIn`) — mode **privé** : création (`DecodeCreateForm`), puis `DecodeActivityCard`.
+  - **`DecodeCreateAnonymousView.vue`** (`animation-create`, `creer`), **`DecodeManageView.vue`** (`animation-manage`, `gerer`),
+    **`DecodeResetView.vue`** (`animation-reset`, `reinitialiser`), **`DecodeEmailConfirmView.vue`** (`animation-confirm-email`, `confirmer-email`) — mode **sans compte**.
+    Le mot de passe va dans le **corps** des requêtes, n'est jamais mémorisé ; seule l'adresse peut l'être.
+  - **`anim/DecodeCreateForm.vue`** — formulaire puis écran de confirmation (D25, D39 : récapitulatif selon les choix, **un seul** bouton « Je confirme »).
+    Sans compte : **deux colonnes** (la salle / l'identité) ; privé : une colonne à 3/4. Nom, adresse, **lieu** (royaume, province OU ville, `CityCascadeSelect`
+    `inline`), pseudo et mot de passe sont **obligatoires** (étoile + note) ; plus de description. `SlugField` (aperçu et disponibilité par le serveur),
+    `PasswordField` (barre de force **indicative** via `modules/passwordStrength.js`, conseils, œil « Afficher » toujours visible ; l'œil natif d'Edge est masqué dans `base.css`).
+  - **Blocs partagés page publique / organisateur** : `anim/DecodeHero.vue` (cases + titre + badge, slot d'actions à droite), `DecodeAttemptsTable.vue`, `DecodeOpenedChests.vue`, `DecodeRankingCard.vue` ; `DecodeCodeVisual.vue` accepte `digits`, `size` et `tone`.
+  - **`anim/DecodeActivityCard.vue`** — l'écran de l'organisateur (« Ma salle « … » », même mise en page que la page publique ; le coffre en cours reste **scellé, l'organisateur ne connaît jamais le code** ; saisie du pseudo et de la combinaison — pseudos déjà inscrits proposés —, gestes), **le même** pour les deux modes (elle reçoit des `gestures`) : sceller, proposer, clore (**confirmation
+    sans compte**, la clôture est définitive), rouvrir et supprimer (**privé seulement**), exports BBCode, état de l'email.
+  - **`use/useDecodeActivities.js`** — tous les appels (`anim/*` sans jeton, le reste avec) ; `asOrganizer()` / `asAnonymous(slug, mot de passe)`. Pas de store Pinia.
+  - Textes sous `Animation.{Home,Start,Types,Status,Public,Slug,Password,Create,Recap,Manage,Reset,Confirm,Mine}.*`. Le **texte des règles**
+    (`Animation.Types.decode.Rules`, version **site**, rédigée par Cowork le 28/10/2026) n'est PAS le jumeau de `types.decode.rules` du backend, qui est la version **export forum** (deux textes voulus distincts) ; affiché avec `whitespace-pre-line` (ses retours à la ligne comptent).
+- **`modules/company/MainCompany.vue`** — squelette vide, placeholder "Test" i18n minimal
+  (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est prévu.
 
 ## Composants (`src/components/`)
 

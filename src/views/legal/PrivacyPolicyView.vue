@@ -17,7 +17,7 @@
   // admin/content/policy-privacy-draft.md).
   // Date de MISE EN LIGNE de la dernière modification : la page « Vos données » (front #90), qui lui
   // ajoute une ligne par outil (§3) — même date que DataPageView.vue.
-  const LAST_UPDATED = '2026-10-16'
+  const LAST_UPDATED = '2026-10-28'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
@@ -28,6 +28,7 @@
   const dataRows = computed(() => tm('Legal.Privacy.Section4.Rows'))
   const mineRegistryFields = computed(() => tm('Legal.Privacy.Section3.MineRegistryFields'))
   const minePricesFields = computed(() => tm('Legal.Privacy.Section3.MinePricesFields'))
+  const animDecodeFields = computed(() => tm('Legal.Privacy.Section3.AnimDecodeFields'))
   const rights = computed(() => tm('Legal.Privacy.Section7.Rights'))
   const measures = computed(() => tm('Legal.Privacy.Section8.Measures'))
 </script>
@@ -121,6 +122,16 @@
               </li>
             </ul>
 
+            <!-- Décode le code (module Animation) : texte de admin/content/policy-coffres-scelles.md
+                 (Cowork, 28/10/2026), posé AVANT l'ouverture du mode public — D40. -->
+            <p class="mt-4">{{ t('Legal.Privacy.Section3.AnimDecodeIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-anim-decode">
+              <li v-for="(field, index) in animDecodeFields" :key="`anim-decode-${index}`">
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
+            <p class="mt-2">{{ t('Legal.Privacy.Section3.AnimDecodeNote') }}</p>
+
             <!-- Une ligne par outil, avec son lien. AJOUT seulement : les énumérations de la politique
                  (§4, §5, §6) ne perdent jamais une ligne, la page porte l'usage et le contenu de
                  chaque outil et renvoie ici pour la durée et les destinataires (fil
@@ -178,6 +189,7 @@
               <li>{{ t('Legal.Privacy.Section5.Mandates') }}</li>
               <li>{{ t('Legal.Privacy.Section5.MineRegistry') }}</li>
             <li>{{ t('Legal.Privacy.Section5.MinePrices') }}</li>
+              <li>{{ t('Legal.Privacy.Section5.AnimDecode', { email: contactEmail }) }}</li>
               <li>{{ t('Legal.Privacy.Section5.TechnicalLogs') }}</li>
             </ul>
           </section>
@@ -191,6 +203,7 @@
               <!-- Avant « Personne d'autre en dehors de ce qui précède », qui clôt l'énumération. -->
               <li>{{ t('Legal.Privacy.Section6.MineRegistryHolders') }}</li>
             <li>{{ t('Legal.Privacy.Section6.MinePricesHolders') }}</li>
+              <li>{{ t('Legal.Privacy.Section6.AnimDecodeHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.NoOneElse') }}</li>
             </ul>
             <p class="mt-4">{{ t('Legal.Privacy.Section6.Hosting') }}</p>

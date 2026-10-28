@@ -52,7 +52,8 @@
       "Steps": "Étapes à suivre",
       "Close": "Fermer"
     },
-    "CloseModal": "Fermer"
+    "CloseModal": "Fermer",
+    "Discover": "Découvrir"
   },
   "Profil": {
     "Title": "Mon profil",
@@ -492,7 +493,223 @@
     "HelpStep5": "Prix et salaire/heure : saisis les tiens, ils sont mémorisés avec chaque semaine. Si tu es commissaire au commerce, commissaire aux mines ou bailli, ce sont ceux de ta province, affichés en lecture seule : ils se gèrent depuis le registre."
   },
   "Animation": {
-    "Title": "Coffres Animation"
+    "Title": "Coffres Animation",
+    "MyActivitiesLink": "Mes activités",
+    "Menu": {
+      "CreateAnonymous": "Organiser sans compte",
+      "Manage": "Retrouver mon activité"
+    },
+    "Start": {
+      "Title": "Votre activité",
+      "NoCharacter": "Une activité privée est confiée à un personnage : présentez-en un à l'Office pour la tenir avec lui. Sans compte, vous pouvez aussi la tenir sans personnage.",
+      "AddCharacter": "Ajouter un personnage",
+      "MineFound": "Vous organisez « {name} » avec {character}.",
+      "ResumeMine": "Reprendre mon activité",
+      "SeeMine": "Voir mes activités",
+      "MineNone": "{character} n'organise pas cette activité pour le moment.",
+      "CreateMine": "Créer mon activité",
+      "RememberedFound": "Cet appareil se souvient de votre activité « {name} ».",
+      "ResumeRemembered": "Reprendre mon activité sans compte",
+      "SeePage": "Voir sa page",
+      "AlsoRemembered": "Cet appareil se souvient aussi d'une activité sans compte : « {name} ».",
+      "GuestIntro": "Vous êtes dans l'entrée des salles des coffres scellés.",
+      "CreateGuest": "Ouvrir votre salle",
+      "FindGuest": "Retrouver ma salle",
+      "CookieHint": "Vous organisez l'activité sans compte, si vous souhaitez que l'Office retienne votre salle, il faut accepter les cookies de confort dans « Gérer mes préférences »."
+    },
+    "Home": {
+      "Title": "La Salle des Jeux",
+      "Intro": "Voici les coffres que l'Office met à disposition des animateurs",
+      "Open": "Entrez dans la salle",
+      "Empty": "Aucune activité n'est ouverte pour le moment."
+    },
+    "Types": {
+      "decode": {
+        "Name": "Décode le code",
+        "Description": "Une salle de coffres scellés vous attend. Invitez votre communauté à en percer les codes : chaque participant tente une combinaison de 5 chiffres, vous inscrivez leur proposition, et le mécanisme révèle combien sont bien placés. Le premier à tout trouver ouvre le coffre — et le classement général retrace les exploits de chacun.",
+        "RulesTitle": "Règles du jeu",
+        "Rules": "L'Office des Coffres met à votre disposition une salle remplie de coffres scellés. Chaque coffre est verrouillé par une combinaison secrète de cinq chiffres (0 à 9). Pour tenter d'en percer un, soumettez votre combinaison à l'organisateur de la salle.\n\nÀ chaque tentative, le mécanisme du coffre vous répond :\n— 2 points par chiffre bien placé (à la bonne position),\n— 1 point par chiffre présent dans la combinaison mais mal placé.\n\nLe score maximum d'une tentative est de 10 points — cinq chiffres, tous bien placés. Si vous l'atteignez, le coffre s'ouvre et on passe au suivant — vous obtenez un bonus de 10 pour avoir ouvert le coffre !\n\nUn classement général comptabilise les points accumulés par chaque participant. Bonne chance !"
+      }
+    },
+    "Status": {
+      "new": "Nouveau",
+      "launched": "En cours",
+      "relaunch": "Relancé",
+      "closed": "Clos"
+    },
+    "Public": {
+      "ActionsLabel": "Organiser ou retrouver une activité",
+      "NotFound": "Cette activité n'existe pas.",
+      "Organize": "Organiser ma propre activité",
+      "Footer": "Site d'aide à la communauté des joueurs du jeu Renaissance Kingdoms - Site non officiel",
+      "ChestNumber": "Coffre n°{number}",
+      "Organizer": "Organisateur : {name}",
+      "OrganizerGone": "Organisateur : compte supprimé",
+      "PlaceKingdom": "Royaume : {name}",
+      "PlaceProvince": "Province de {name}",
+      "PlaceCity": "Ville de {name}",
+      "ClosedNotice": "Cette activité est close : plus aucune proposition n'est inscrite.",
+      "CurrentChest": "Coffre n°{number} à percer",
+      "NoChest": "Aucun coffre n'est scellé pour le moment.",
+      "NoAttempts": "Aucune tentative pour le moment.",
+      "AttemptsTitle": "Tentatives",
+      "Combination": "Combinaison",
+      "Character": "Pseudo",
+      "Score": "Note",
+      "Points": "{points} pt",
+      "OpenedTitle": "Coffres ouverts",
+      "NoOpened": "Aucun coffre n'a encore été ouvert.",
+      "OpenedLine": "Coffre n°{number} : {code}",
+      "DiscoveredBy": "percé par {name}",
+      "RankingTitle": "Classement cumulé",
+      "NoRanking": "Aucun personnage n'a encore marqué de points."
+    },
+    "Slug": {
+      "Label": "Adresse de l'activité",
+      "Help": "De {min} à {max} lettres minuscules, sans chiffre, tirets possibles au milieu. Elle compose le lien que vous partagerez et ne pourra plus être modifiée.",
+      "Empty": "L'adresse est proposée à partir du nom.",
+      "Checking": "Vérification de l'adresse…",
+      "Invalid": "Adresse refusée : de {min} à {max} lettres minuscules, sans chiffre, tirets au milieu seulement.",
+      "Taken": "Cette adresse est déjà prise : choisissez-en une autre.",
+      "Free": "Cette adresse est libre."
+    },
+    "Password": {
+      "Label": "Mot de passe",
+      "Confirm": "Ressaisissez le mot de passe",
+      "Show": "Afficher",
+      "Hide": "Masquer",
+      "Help": "Au moins {min} caractères, différent de l'adresse et de votre pseudo. Vous seul le connaîtrez : personne ne peut le relire.",
+      "Level0": "Insuffisant",
+      "Level1": "Faible",
+      "Level2": "Correct",
+      "Level3": "Solide",
+      "TipShort": "Encore {n} caractère | Encore {n} caractères",
+      "TipSame": "Choisissez autre chose que l'adresse de l'activité ou votre pseudo.",
+      "Tip": "Pour le renforcer : allongez-le et mêlez majuscules, chiffres et symboles — ou composez une phrase de plusieurs mots.",
+      "TooGuessable": "évitez les mots courants, les suites de chiffres et les répétitions",
+      "Mismatch": "Les deux saisies ne sont pas identiques."
+    },
+    "Create": {
+      "RequiredNote": "* champ obligatoire",
+      "ColumnActivity": "Votre salle",
+      "ColumnOrganizer": "Votre identité",
+      "Title": "Organiser une activité sans compte",
+      "Intro": "Aucun compte n'est nécessaire. Vous choisissez un nom, une adresse et un mot de passe : c'est tout ce qui prouvera que l'activité est la vôtre.",
+      "Organizer": "Pseudo de votre personnage",
+      "OrganizerHint": "(utile si l'administrateur du site doit vous envoyer un lien pour réinitialiser votre mot de passe)",
+      "Email": "Adresse email (facultative)",
+      "EmailHelp": "Pour recevoir un lien si vous oubliez votre mot de passe, un avis à chaque changement de mot de passe, et le compte rendu complet à la clôture. Elle doit être confirmée par un lien, et elle est effacée à la clôture.",
+      "Continue": "Continuer",
+      "DoneTitle": "Votre activité est créée.",
+      "DoneAddress": "Son adresse :",
+      "DoneEmail": "Un lien de confirmation vient d'être envoyé à votre adresse email : tant qu'elle n'est pas confirmée, elle n'est pas utilisée.",
+      "DonePassword": "Gardez votre mot de passe : sans lui, et sans email confirmé, l'activité ne se récupère pas.",
+      "DoneManage": "Gérer mon activité"
+    },
+    "Recap": {
+      "Title": "Avant de créer : ce que vous confirmez",
+      "Intro": "Relisez ces points. Ils dépendent de vos choix, et rien n'est créé tant que vous n'avez pas confirmé.",
+      "Confirm": "Je confirme",
+      "Back": "Modifier",
+      "Address": "Adresse de l'activité, définitive (elle ne pourra jamais changer) : {address}",
+      "Organizer": "Le pseudo « {pseudo} » sera affiché publiquement comme organisateur.",
+      "OrganizerPrivate": "L'activité est liée à votre personnage « {pseudo} », affiché comme organisateur.",
+      "Place": "Lieu rattaché à l'activité : {place}.",
+      "Password": "Votre mot de passe n'est connu que de vous : il est stocké haché et personne ne peut le relire. Vous ne pouvez pas le changer vous-même.",
+      "EmailYes": "Votre adresse email sera confirmée par un lien. Une fois confirmée, elle servira à vous envoyer un lien si vous oubliez votre mot de passe, à vous prévenir à chaque changement de mot de passe, et à vous envoyer le compte rendu complet (propositions comprises) à la clôture. Elle est effacée à la clôture.",
+      "EmailNo": "Vous n'avez pas donné d'email : si vous oubliez votre mot de passe, l'administrateur du site enverra un lien au personnage « {pseudo} » dans le jeu. Si ce pseudo n'est pas le vôtre, vous perdrez l'activité.",
+      "Connection": "L'empreinte de votre connexion (jamais votre adresse IP elle-même) est conservée jusqu'à la clôture, pour limiter à une seule activité sans compte ouverte à la fois par connexion.",
+      "ClosingAnonymous": "La clôture est définitive : l'activité ne pourra pas être rouverte. Seul un résumé reste en ligne pendant 5 ans (nom, organisateur, lieu, codes trouvés et noms des personnages, classement final), puis il est supprimé et l'adresse redevient libre. La description et les propositions sont effacées à la clôture.",
+      "ClosingPrivate": "Vous pourrez clore l'activité, la rouvrir, puis la supprimer une fois close. Elle n'est jamais supprimée automatiquement.",
+      "Idle": "Sans action pendant 30 jours, l'activité est close automatiquement.",
+      "DeletionPrivate": "Elle est supprimée avec votre personnage ou votre compte, avec ses coffres et ses propositions.",
+      "CookiesYes": "L'adresse de l'activité sera retenue sur cet appareil (jamais le mot de passe), parce que vous avez accepté les cookies « Préférences ».",
+      "CookiesNo": "Les cookies « Préférences » sont refusés : l'adresse ne sera pas retenue, vous devrez la saisir à votre retour."
+    },
+    "Manage": {
+      "Title": "Retrouver ma salle",
+      "FormTitle": "Ouvrir ma salle",
+      "LostTitle": "Mot de passe perdu ?",
+      "Intro": "Saisissez l'adresse de votre activité et le mot de passe choisi à sa création. Il n'y a ni session ni compte : le mot de passe n'est gardé que le temps de cette page.",
+      "Slug": "Adresse de l'activité",
+      "Password": "Mot de passe",
+      "Open": "Ouvrir",
+      "Forgot": "Réinitialiser mon mot de passe",
+      "ResetSent": "Si cette activité a une adresse email confirmée, un lien vient d'y être envoyé. Sinon, votre demande est notée : l'administrateur du site fera porter un lien, dans le jeu, au personnage indiqué comme organisateur.",
+      "AskAdmin": "Demander à l'administrateur du site",
+      "NotFound": "Adresse ou mot de passe inconnus.",
+      "NoActivity": "Pas encore de salle ?",
+      "LostEmailLead": "Avec une adresse email confirmée :",
+      "LostEmail": "« J'ai oublié mon mot de passe » vous envoie un lien, valable 24 h, pour en choisir un nouveau.",
+      "LostNoEmailLead": "Sans adresse confirmée :",
+      "LostNoEmail": "le site ne peut rien pour vous. Demandez à l'administrateur du site : il fera porter un lien, dans le jeu, au personnage indiqué comme organisateur.",
+      "NoActivityText": "Scellez un coffre en quelques instants, sans compte : un nom, une adresse, un mot de passe.",
+      "CreateOne": "Organiser sans compte",
+      "Leave": "Fermer la gestion"
+    },
+    "Reset": {
+      "Title": "Choisir un nouveau mot de passe",
+      "Missing": "Ce lien est incomplet. Demandez-en un nouveau.",
+      "Intro": "Activité {slug} : choisissez vous-même votre nouveau mot de passe. Ce lien est valable 24 heures et ne s'emploie qu'une seule fois.",
+      "Submit": "Enregistrer le mot de passe",
+      "Done": "Votre mot de passe est modifié."
+    },
+    "Confirm": {
+      "Title": "Confirmer l'adresse email",
+      "Loading": "Confirmation en cours…",
+      "Ok": "Votre adresse est confirmée. Elle sera effacée à la clôture de l'activité.",
+      "Error": "Cette adresse ne peut pas être confirmée : le lien est périmé ou l'activité n'existe plus."
+    },
+    "Mine": {
+      "Title": "Ma salle",
+      "NoCharacter": "Choisissez un personnage pour gérer ses activités.",
+      "Empty": "Aucune salle n'est ouverte à votre nom : celles que vous organiserez, ouvertes ou closes, paraîtront ici.",
+      "CreateTitle": "Organiser une activité",
+      "Name": "Nom de l'activité",
+      "Place": "Lieu",
+      "PlaceNone": "Aucun lieu",
+      "PlaceKingdom": "Un royaume",
+      "PlaceProvince": "Une province",
+      "PlaceCity": "Une ville",
+      "Created": "Activité créée.",
+      "OneAtATime": "Une seule activité à la fois : clôturez la précédente avant d'en créer une autre.",
+      "Seal": "Sceller un coffre",
+      "Sealed": "Un coffre est scellé.",
+      "SecretTitle": "Combinaison secrète du coffre n°{number}",
+      "SecretHelp": "Le coffre est scellé : nul ne connaît la combinaison, pas même vous. Elle sera révélée à l'ouverture du coffre.",
+      "Combination": "Combinaison",
+      "Character": "Pseudo",
+      "Submit": "Inscrire",
+      "ResultScore": "Combinaison {combination} de {character} : {score} sur 10.",
+      "ResultFound": "Coffre percé par {character} ! Un nouveau coffre est scellé.",
+      "Reopen": "Rouvrir",
+      "Reopened": "Activité rouverte.",
+      "Close": "Clore",
+      "Closed": "Activité close.",
+      "ClosedAnonymous": "Activité close, définitivement. Seul son résumé reste en ligne pendant 5 ans.",
+      "CloseConfirmAnonymous": "Clore cette activité est définitif : elle ne pourra pas être rouverte, le coffre en cours, les propositions et la description seront effacés, et seul le résumé restera en ligne pendant 5 ans.",
+      "CloseConfirmButton": "Oui, clore définitivement",
+      "Delete": "Supprimer",
+      "DeleteConfirm": "Supprimer « {name} » avec tous ses coffres et ses propositions ? La page publique disparaîtra.",
+      "DeleteConfirmButton": "Oui, supprimer",
+      "DeleteCancel": "Annuler",
+      "Deleted": "Activité supprimée.",
+      "ExportRules": "Exporter les règles",
+      "ExportResults": "Exporter les résultats",
+      "Copied": "BBCode copié dans le presse-papiers.",
+      "CopyFailed": "La copie a échoué : sélectionnez le texte ci-dessous.",
+      "ExportTitle": "BBCode à coller sur le forum",
+      "ViewPublic": "Voir la page publique",
+      "RoomTitle": "Ma salle « {name} »",
+      "ProposalsTitle": "Propositions reçues",
+      "ProposalsEmpty": "Aucune proposition pour l'instant : le coffre attend ses premiers prétendants.",
+      "ProposalPoints": "{points} pts",
+      "ActionsTitle": "Actions",
+      "SealedChest": "Coffre n°{number} scellé",
+      "Attempts": "{count} tentative sur ce coffre | {count} tentatives sur ce coffre",
+      "EmailConfirmed": "Adresse email confirmée.",
+      "EmailPending": "Adresse email en attente de confirmation : elle n'est pas utilisée tant que le lien reçu n'a pas été ouvert."
+    }
   },
   "Company": {
     "Title": "Compagnie"
@@ -524,8 +741,8 @@
         "Intro": "Aucun cookie HTTP tiers n'est déposé sur ce site. Nous utilisons deux mécanismes de stockage côté navigateur, tous deux limités au strict nécessaire :",
         "Preferences": {
           "Title": "Stockage local (localStorage) — Préférences",
-          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines).",
-          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics.",
+          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines, Décode le code).",
+          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics, et l'adresse de la dernière activité de Décode le code que vous avez créée ou ouverte en mode public sur cet appareil.",
           "Retention": "jusqu'à ce que vous effaciez vos données de site depuis votre navigateur, ou que vous retiriez votre consentement via le bandeau cookies.",
           "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques).",
           "IfDecline": "le site fonctionne normalement, mais vos préférences et brouillons ne sont pas mémorisés d'une visite à l'autre."
@@ -722,6 +939,26 @@
             "Text": "le personnage qui a enregistré le prix et celui qui l'a corrigé en dernier, avec la date et l'heure."
           }
         ],
+        "AnimDecodeIntro": "Décode le code, activité du module Animation, se joue de deux façons. En mode privé, l'activité est liée à votre personnage, qui porte toute l'information nécessaire : rien de plus n'est demandé, et l'activité disparaît avec votre personnage ou votre compte (voir §5). En mode public, pour créer et gérer une activité sans utiliser de personnage, l'Office conserve :",
+        "AnimDecodeFields": [
+          {
+            "Label": "Un pseudo",
+            "Text": "celui que vous choisissez pour être identifié comme organisateur sur la page publique de l'activité — obligatoire, pour pouvoir vous contacter en cas de besoin."
+          },
+          {
+            "Label": "Un mot de passe",
+            "Text": "choisi par vous, stocké haché (jamais en clair), pour prouver que vous êtes l'organisateur à chaque action de gestion. Vous pouvez le réinitialiser via votre adresse email confirmée, ou en faire la demande à l'administrateur du site."
+          },
+          {
+            "Label": "Une adresse email (facultative)",
+            "Text": "si vous la renseignez et la confirmez par le lien que nous vous envoyons, elle vous permet de réinitialiser vous-même votre mot de passe, d'être averti à chaque changement de celui-ci, et de recevoir un compte rendu complet de votre activité à sa clôture. Sans adresse confirmée, la réinitialisation reste possible sur demande à l'administrateur du site. Une adresse renseignée mais non confirmée n'est jamais utilisée."
+          },
+          {
+            "Label": "Une empreinte calculée à partir de votre adresse IP",
+            "Text": "une empreinte à sens unique (HMAC-SHA256) : elle permet de reconnaître une même connexion pour vérifier que vous ne créez pas plusieurs activités publiques en même temps, mais nous ne pouvons pas en retrouver l'adresse d'origine. Elle est effacée dès que votre activité est close."
+          }
+        ],
+        "AnimDecodeNote": "Dans les deux modes, les pseudos que vous inscrivez dans les propositions reçues — celui qui a tenté une combinaison, celui qui a percé le coffre — sont saisis librement par vous, à partir de ce que vous recevez (forum, gazette, en jeu). Nous ne les vérifions pas, et ils ne sont liés à aucun compte.",
         "ToolsIntro": "À quoi sert chaque outil, qui peut l'utiliser, ce que vous y mettez et ce qu'il enregistre ou non est expliqué outil par outil sur la page {dataLink} :"
       },
       "Section4": {
@@ -779,17 +1016,19 @@
         "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés.",
         "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte).",
         "MineRegistry": "Registre des mines : les relevés que vous enregistrez sont conservés sans limite de durée, parce qu'ils forment la mémoire de gestion d'une province, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, le relevé reste, mais le lien avec votre compte est supprimé : il garde sa date, sa province et le poste utilisé, et ne désigne plus aucun personnage. Nous écrivons « le lien est supprimé » et non « le relevé est anonymisé » : l'historique des postes de la province reste consultable, et il peut permettre de rapprocher une date et un poste d'un nom de personnage. Enfin, aucun relevé ne peut être effacé, pas même par celui qui l'a écrit : un relevé erroné est remplacé, et le remplacement reste visible.",
-        "MinePrices": "Prix des mines : les prix enregistrés sont conservés sans limite de durée, parce qu'ils servent à calculer les bilans de la province, d'un titulaire au suivant. Vous pouvez corriger un prix tant que vous tenez le poste, et jusqu'à 7 jours après la fin de votre mandat ; ensuite il est verrouillé. Les jeux de prix successifs forment un historique et restent tous consultables ; en revanche, corriger un jeu remplace ses valeurs, et l'ancienne valeur n'est pas conservée. Personne ne peut effacer un prix. À la suppression de votre personnage ou de votre compte, les prix restent, mais le lien avec votre compte est supprimé : ils gardent leur date et leur province, et ne désignent plus aucun personnage. Là encore, « le lien est supprimé » et non « anonymisé » : l'historique des postes de la province peut permettre de rapprocher une date d'un nom de personnage."
+        "MinePrices": "Prix des mines : les prix enregistrés sont conservés sans limite de durée, parce qu'ils servent à calculer les bilans de la province, d'un titulaire au suivant. Vous pouvez corriger un prix tant que vous tenez le poste, et jusqu'à 7 jours après la fin de votre mandat ; ensuite il est verrouillé. Les jeux de prix successifs forment un historique et restent tous consultables ; en revanche, corriger un jeu remplace ses valeurs, et l'ancienne valeur n'est pas conservée. Personne ne peut effacer un prix. À la suppression de votre personnage ou de votre compte, les prix restent, mais le lien avec votre compte est supprimé : ils gardent leur date et leur province, et ne désignent plus aucun personnage. Là encore, « le lien est supprimé » et non « anonymisé » : l'historique des postes de la province peut permettre de rapprocher une date d'un nom de personnage.",
+        "AnimDecode": "Décode le code (module Animation) : en mode privé, l'activité, ses coffres et les propositions que vous avez inscrites sont conservés tant que vous ne supprimez ni l'activité, ni le personnage, ni le compte qui l'a créée — leur suppression supprime l'activité avec eux, coffres et propositions compris. Dans les deux modes, une activité sans action depuis 30 jours est automatiquement close ; en mode privé, vous pouvez la rouvrir et tout est conservé, alors qu'en mode public cette fermeture est définitive : aucune réouverture n'est possible. En mode public, à la clôture, qu'elle soit manuelle ou automatique, un compte rendu incluant l'ensemble des propositions reçues est envoyé à votre adresse email si vous en avez confirmé une ; l'empreinte de votre connexion, votre adresse email, votre mot de passe et toute demande de réinitialisation en attente sont ensuite effacés. Ce qui reste visible à la communauté pendant 5 ans après la clôture : le nom de l'activité, votre pseudo d'organisateur, le lieu, les coffres percés avec le pseudo de qui les a trouvés, et le classement final — jamais les propositions reçues, qui sont effacées à la clôture. Passé ce délai, la page et le pseudonyme sont supprimés. Pour demander le retrait d'un pseudo inscrit sur une de ces pages avant ce délai, contactez {email}."
       },
       "Section6": {
         "Title": "6. À qui vos données sont accessibles",
         "Yourself": "Vous-même, via votre compte (page Profil).",
-        "Editor": "L'éditeur du site (voir §2), pour l'administration technique, le support utilisateur et la vérification de vos demandes de poste — accès limité au strict nécessaire.",
+        "Editor": "L'administrateur du site (voir §2), pour l'administration technique, le support utilisateur et la vérification de vos demandes de poste — accès limité au strict nécessaire.",
         "NoOneElse": "Personne d'autre en dehors de ce qui précède. Aucun partage, aucune revente, aucune transmission à des tiers, y compris à Celsius Online (éditeur du jeu Renaissance Kingdoms), sauf réquisition judiciaire dûment notifiée.",
         "Hosting": "Les données sont hébergées sur des serveurs situés dans l'Union européenne (hébergeur : o2switch, France).",
         "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration.",
         "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, qui tiennent le Registre des mines de cette province, ainsi que son commissaire au commerce et son dirigeant (comte, duc…), qui peuvent le consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais les autres conseillers, jamais un joueur d'une autre province.",
-        "MinePricesHolders": "Prix des mines : le commissaire au commerce, le commissaire aux mines et le bailli de la province, qui les gèrent, et son dirigeant (comte, duc…), qui peut les consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. Les autres titulaires de ces trois postes reçoivent aussi, une fois par jour, un email qui résume les prix modifiés et nomme le personnage qui les a modifiés. Jamais les autres conseillers, jamais un joueur d'une autre province."
+        "MinePricesHolders": "Prix des mines : le commissaire au commerce, le commissaire aux mines et le bailli de la province, qui les gèrent, et son dirigeant (comte, duc…), qui peut les consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. Les autres titulaires de ces trois postes reçoivent aussi, une fois par jour, un email qui résume les prix modifiés et nomme le personnage qui les a modifiés. Jamais les autres conseillers, jamais un joueur d'une autre province.",
+        "AnimDecodeHolders": "Décode le code : la page publique d'une activité (nom, lieu, pseudo de l'organisateur, coffres percés et classement) est visible de tout le monde, qu'elle ait été créée en mode privé ou public — c'est le but de cet outil, partagé sur le forum du jeu. Votre mot de passe n'est jamais visible de personne, pas même de l'administrateur du site. Votre adresse email, si vous en avez confirmé une, est visible de l'administrateur du site dans son panneau d'administration — pour vous aider en cas de mot de passe oublié et pour les besoins de l'administration technique du service. Votre pseudo d'organisateur et, le cas échéant, la date de la dernière réinitialisation de mot de passe y sont également visibles."
       },
       "DataPageLink": "Vos données, outil par outil",
       "Section7": {
@@ -921,6 +1160,7 @@
   },
   "Chest": {
     "Opening": "Ouverture du coffre…",
+    "OpeningRoom": "Ouverture de la salle…",
     "Failed": "Le coffre résiste",
     "Slow": "Le coffre tarde à s'ouvrir",
     "SlowText": "Le chargement prend plus de temps que prévu.",

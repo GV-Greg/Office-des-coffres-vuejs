@@ -52,7 +52,8 @@
       "Steps": "Steps to follow",
       "Close": "Close"
     },
-    "CloseModal": "Close"
+    "CloseModal": "Close",
+    "Discover": "Discover"
   },
   "Profil": {
     "Title": "My profile",
@@ -492,7 +493,223 @@
     "HelpStep5": "Prices and wage/hour: enter your own, they are kept with each week. If you are Trade Minister, Mines Superintendent or Sheriff, they are your province's, shown read-only: they are managed from the registry."
   },
   "Animation": {
-    "Title": "Animation Chest"
+    "Title": "Animation Chest",
+    "MyActivitiesLink": "My activities",
+    "Menu": {
+      "CreateAnonymous": "Run one without an account",
+      "Manage": "Find my activity"
+    },
+    "Start": {
+      "Title": "Your activity",
+      "NoCharacter": "A private activity is entrusted to a character: introduce one to the Office to keep it with them. Without an account, you can also keep one without a character.",
+      "AddCharacter": "Add a character",
+      "MineFound": "You are running “{name}” with {character}.",
+      "ResumeMine": "Resume my activity",
+      "SeeMine": "See my activities",
+      "MineNone": "{character} is not running this activity at the moment.",
+      "CreateMine": "Create my activity",
+      "RememberedFound": "This device remembers your activity “{name}”.",
+      "ResumeRemembered": "Resume my activity without an account",
+      "SeePage": "See its page",
+      "AlsoRemembered": "This device also remembers an activity without an account: “{name}”.",
+      "GuestIntro": "You are at the entrance to the halls of sealed chests.",
+      "CreateGuest": "Open your hall",
+      "FindGuest": "Find my hall",
+      "CookieHint": "You are running the activity without an account. If you want the Office to remember your hall, you must accept comfort cookies in “Manage my preferences”."
+    },
+    "Home": {
+      "Title": "The Game Hall",
+      "Intro": "Here are the chests the Office makes available to entertainers",
+      "Open": "Enter the hall",
+      "Empty": "No activity is open at the moment."
+    },
+    "Types": {
+      "decode": {
+        "Name": "Crack the Code",
+        "Description": "A hall of sealed chests awaits you. Invite your community to crack their codes: each participant tries a 5-digit combination, you enter their guess, and the mechanism reveals how many are well placed. The first to find them all opens the chest — and the overall ranking recounts everyone's feats.",
+        "RulesTitle": "Rules of the game",
+        "Rules": "The Office des Coffres provides you with a room full of sealed chests. Each chest is locked by a secret combination of five digits (0 to 9). To try to crack one open, submit your combination to the room's organiser.\n\nFor each attempt, the chest's mechanism responds:\n— 2 points for each digit in the correct position,\n— 1 point for each digit present in the combination but in the wrong position.\n\nThe maximum score for an attempt is 10 — five digits, all in the right place. If you reach it, the chest opens and we move to the next — you earn a bonus of 10 for cracking the chest!\n\nThe overall standings track the points accumulated by each participant. Good luck!"
+      }
+    },
+    "Status": {
+      "new": "New",
+      "launched": "In progress",
+      "relaunch": "Relaunched",
+      "closed": "Closed"
+    },
+    "Public": {
+      "ActionsLabel": "Run or find an activity",
+      "NotFound": "This activity does not exist.",
+      "Organize": "Organize my own activity",
+      "Footer": "Community help site for Renaissance Kingdoms players - Unofficial site",
+      "ChestNumber": "Chest #{number}",
+      "Organizer": "Organizer: {name}",
+      "OrganizerGone": "Organizer: deleted account",
+      "PlaceKingdom": "Kingdom: {name}",
+      "PlaceProvince": "Province of {name}",
+      "PlaceCity": "City of {name}",
+      "ClosedNotice": "This activity is closed: no more guesses are recorded.",
+      "CurrentChest": "Chest #{number} to crack",
+      "NoChest": "No chest is sealed at the moment.",
+      "NoAttempts": "No attempt yet.",
+      "AttemptsTitle": "Attempts",
+      "Combination": "Combination",
+      "Character": "Nickname",
+      "Score": "Score",
+      "Points": "{points} pt",
+      "OpenedTitle": "Opened chests",
+      "NoOpened": "No chest has been opened yet.",
+      "OpenedLine": "Chest #{number}: {code}",
+      "DiscoveredBy": "cracked by {name}",
+      "RankingTitle": "Overall ranking",
+      "NoRanking": "No character has scored yet."
+    },
+    "Slug": {
+      "Label": "Activity address",
+      "Help": "{min} to {max} lowercase letters, no digits, hyphens allowed in the middle. It forms the link you will share and can no longer be changed.",
+      "Empty": "The address is suggested from the name.",
+      "Checking": "Checking the address…",
+      "Invalid": "Address rejected: {min} to {max} lowercase letters, no digits, hyphens in the middle only.",
+      "Taken": "This address is already taken: pick another one.",
+      "Free": "This address is available."
+    },
+    "Password": {
+      "Label": "Password",
+      "Confirm": "Type the password again",
+      "Show": "Show",
+      "Hide": "Hide",
+      "Help": "At least {min} characters, different from the address and from your pseudo. Only you will know it: nobody can read it back.",
+      "Level0": "Insufficient",
+      "Level1": "Weak",
+      "Level2": "Fair",
+      "Level3": "Strong",
+      "TipShort": "{n} more character | {n} more characters",
+      "TipSame": "Choose something other than the activity address or your pseudo.",
+      "Tip": "To strengthen it: make it longer and mix capitals, digits and symbols — or compose a phrase of several words.",
+      "TooGuessable": "avoid common words, number sequences and repetitions",
+      "Mismatch": "The two entries are not identical."
+    },
+    "Create": {
+      "RequiredNote": "* required field",
+      "ColumnActivity": "Your hall",
+      "ColumnOrganizer": "Your identity",
+      "Title": "Run an activity without an account",
+      "Intro": "No account is needed. You pick a name, an address and a password: that is all that will prove the activity is yours.",
+      "Organizer": "Your character's pseudo",
+      "OrganizerHint": "(useful if the site administrator needs to send you a link to reset your password)",
+      "Email": "Email address (optional)",
+      "EmailHelp": "To get a link if you forget your password, a notice each time the password changes, and the full report when the activity closes. It must be confirmed by a link, and it is erased when the activity closes.",
+      "Continue": "Continue",
+      "DoneTitle": "Your activity is created.",
+      "DoneAddress": "Its address:",
+      "DoneEmail": "A confirmation link has just been sent to your email address: until it is confirmed, it is not used.",
+      "DonePassword": "Keep your password: without it, and without a confirmed email, the activity cannot be recovered.",
+      "DoneManage": "Manage my activity"
+    },
+    "Recap": {
+      "Title": "Before creating: what you confirm",
+      "Intro": "Read these points. They depend on your choices, and nothing is created until you confirm.",
+      "Confirm": "I confirm",
+      "Back": "Edit",
+      "Address": "Activity address, final (it can never change): {address}",
+      "Organizer": "The pseudo \"{pseudo}\" will be shown publicly as the organizer.",
+      "OrganizerPrivate": "The activity is tied to your character \"{pseudo}\", shown as the organizer.",
+      "Place": "Place attached to the activity: {place}.",
+      "Password": "Only you know your password: it is stored hashed and nobody can read it back. You cannot change it yourself.",
+      "EmailYes": "Your email address will be confirmed by a link. Once confirmed, it will be used to send you a link if you forget your password, to warn you each time the password changes, and to send you the full report (guesses included) when the activity closes. It is erased when the activity closes.",
+      "EmailNo": "You gave no email: if you forget your password, the site administrator will send a link to the character \"{pseudo}\" in the game. If that pseudo is not yours, you will lose the activity.",
+      "Connection": "A fingerprint of your connection (never your IP address itself) is kept until the activity closes, to limit you to one open activity without an account per connection.",
+      "ClosingAnonymous": "Closing is final: the activity cannot be reopened. Only a summary stays online for 5 years (name, organizer, place, codes found and character names, final ranking), then it is deleted and the address becomes free again. The description and the guesses are erased when the activity closes.",
+      "ClosingPrivate": "You will be able to close the activity, reopen it, then delete it once closed. It is never deleted automatically.",
+      "Idle": "With no action for 30 days, the activity is closed automatically.",
+      "DeletionPrivate": "It is deleted with your character or your account, along with its chests and guesses.",
+      "CookiesYes": "The activity address will be remembered on this device (never the password), because you accepted the \"Preferences\" cookies.",
+      "CookiesNo": "The \"Preferences\" cookies are declined: the address will not be remembered, you will have to type it when you come back."
+    },
+    "Manage": {
+      "Title": "Find my room",
+      "FormTitle": "Open my room",
+      "LostTitle": "Lost your password?",
+      "Intro": "Enter your activity's address and the password you chose when creating it. There is no session and no account: the password is only kept for the time of this page.",
+      "Slug": "Activity address",
+      "Password": "Password",
+      "Open": "Open",
+      "Forgot": "Reset my password",
+      "ResetSent": "If this activity has a confirmed email address, a link has just been sent to it. Otherwise your request is recorded: the site administrator will have a link delivered, in the game, to the character named as organizer.",
+      "AskAdmin": "Ask the site administrator",
+      "NotFound": "Unknown address or password.",
+      "NoActivity": "No room yet?",
+      "LostEmailLead": "With a confirmed email address:",
+      "LostEmail": "“I forgot my password” sends you a link, valid for 24 hours, to choose a new one.",
+      "LostNoEmailLead": "Without a confirmed address:",
+      "LostNoEmail": "the site cannot help. Ask the site administrator, who will have a link delivered, in the game, to the character named as organizer.",
+      "NoActivityText": "Seal a chest in a few moments, no account needed: a name, an address, a password.",
+      "CreateOne": "Run one without an account",
+      "Leave": "Close the management"
+    },
+    "Reset": {
+      "Title": "Choose a new password",
+      "Missing": "This link is incomplete. Ask for a new one.",
+      "Intro": "Activity {slug}: choose your new password yourself. This link is valid for 24 hours and can only be used once.",
+      "Submit": "Save the password",
+      "Done": "Your password has been changed."
+    },
+    "Confirm": {
+      "Title": "Confirm the email address",
+      "Loading": "Confirming…",
+      "Ok": "Your address is confirmed. It will be erased when the activity closes.",
+      "Error": "This address cannot be confirmed: the link has expired or the activity no longer exists."
+    },
+    "Mine": {
+      "Title": "My room",
+      "NoCharacter": "Pick a character to manage its activities.",
+      "Empty": "No room is open under your name: the ones you organize, open or closed, will appear here.",
+      "CreateTitle": "Run an activity",
+      "Name": "Activity name",
+      "Place": "Place",
+      "PlaceNone": "No place",
+      "PlaceKingdom": "A kingdom",
+      "PlaceProvince": "A province",
+      "PlaceCity": "A city",
+      "Created": "Activity created.",
+      "OneAtATime": "One activity at a time: close the previous one before creating another.",
+      "Seal": "Seal a chest",
+      "Sealed": "A chest is sealed.",
+      "SecretTitle": "Secret combination of chest #{number}",
+      "SecretHelp": "The chest is sealed: nobody knows the combination, not even you. It will be revealed when the chest is opened.",
+      "Combination": "Combination",
+      "Character": "Nickname",
+      "Submit": "Record",
+      "ResultScore": "Combination {combination} from {character}: {score} out of 10.",
+      "ResultFound": "Chest cracked by {character}! A new chest is sealed.",
+      "Reopen": "Reopen",
+      "Reopened": "Activity reopened.",
+      "Close": "Close",
+      "Closed": "Activity closed.",
+      "ClosedAnonymous": "Activity closed, for good. Only its summary stays online for 5 years.",
+      "CloseConfirmAnonymous": "Closing this activity is final: it cannot be reopened, the current chest, the guesses and the description will be erased, and only the summary will stay online for 5 years.",
+      "CloseConfirmButton": "Yes, close for good",
+      "Delete": "Delete",
+      "DeleteConfirm": "Delete \"{name}\" with all its chests and guesses? The public page will disappear.",
+      "DeleteConfirmButton": "Yes, delete",
+      "DeleteCancel": "Cancel",
+      "Deleted": "Activity deleted.",
+      "ExportRules": "Export the rules",
+      "ExportResults": "Export the results",
+      "Copied": "BBCode copied to the clipboard.",
+      "CopyFailed": "Copying failed: select the text below.",
+      "ExportTitle": "BBCode to paste on the forum",
+      "ViewPublic": "View the public page",
+      "RoomTitle": "My room “{name}”",
+      "ProposalsTitle": "Proposals received",
+      "ProposalsEmpty": "No proposal yet: the chest awaits its first challengers.",
+      "ProposalPoints": "{points} pts",
+      "ActionsTitle": "Actions",
+      "SealedChest": "Chest no. {number} sealed",
+      "Attempts": "{count} attempt on this chest | {count} attempts on this chest",
+      "EmailConfirmed": "Email address confirmed.",
+      "EmailPending": "Email address awaiting confirmation: it is not used until the link you received has been opened."
+    }
   },
   "Company": {
     "Title": "Company"
@@ -524,8 +741,8 @@
         "Intro": "No third-party HTTP cookies are set on this site. We use two browser storage mechanisms, both limited to what is strictly necessary:",
         "Preferences": {
           "Title": "Local storage — Preferences",
-          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report).",
-          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools.",
+          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Crack the Code).",
+          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, and the address of the last Crack the Code activity you created or opened in public mode on this device.",
           "Retention": "until you clear site data from your browser, or withdraw your consent via the cookies banner.",
           "LegalBasis": "your consent (GDPR art. 6.1.a, article 129 of the Belgian law of 13 June 2005 on electronic communications, transposing the ePrivacy Directive).",
           "IfDecline": "the site works normally, but your preferences and drafts are not remembered between visits."
@@ -722,6 +939,26 @@
             "Text": "the character who recorded the price and the one who last corrected it, with the date and time."
           }
         ],
+        "AnimDecodeIntro": "Crack the Code, an Animation module activity, can be played two ways. In private mode, the activity is linked to your character, which carries everything needed: nothing more is asked, and the activity disappears with your character or your account (see §5). In public mode, to create and manage an activity without using a character, the Office stores:",
+        "AnimDecodeFields": [
+          {
+            "Label": "A nickname",
+            "Text": "the one you choose to be identified as the organiser on the activity's public page — required, so you can be contacted if needed."
+          },
+          {
+            "Label": "A password",
+            "Text": "chosen by you, stored hashed (never in plain text), to prove you are the organiser for every management action. You can reset it via your confirmed email address, or by requesting a reset from the site administrator."
+          },
+          {
+            "Label": "An email address (optional)",
+            "Text": "if you provide and confirm it via the link we send you, it lets you reset your own password, be warned each time it is changed, and receive a full report of your activity when it closes. Without a confirmed address, a reset remains possible by contacting the site administrator. An address provided but not confirmed is never used."
+          },
+          {
+            "Label": "A fingerprint computed from your IP address",
+            "Text": "a one-way fingerprint (HMAC-SHA256): it lets us recognise the same connection to check that you are not creating several public activities at once, but we cannot recover the underlying address from it. It is erased as soon as your activity closes."
+          }
+        ],
+        "AnimDecodeNote": "In both modes, the nicknames you enter for the proposals you receive — whoever attempted a combination, whoever cracked the chest — are freely typed by you, from what you receive (forum, newsletter, in-game). We do not verify them, and they are not linked to any account.",
         "ToolsIntro": "What each tool is for, who can use it, what you put into it and what it does or does not store is explained tool by tool on the {dataLink} page:"
       },
       "Section4": {
@@ -779,17 +1016,19 @@
         "TechnicalLogs": "Technical logs (server access, application errors): kept for a maximum of 12 months for incident investigation and service security, then erased.",
         "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account).",
         "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible.",
-        "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price while you hold the office, and up to 7 days after your term ends; after that it is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name."
+        "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price while you hold the office, and up to 7 days after your term ends; after that it is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name.",
+        "AnimDecode": "Crack the Code (Animation module): in private mode, the activity, its chests and the proposals you entered are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, chests and proposals included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, a report including all proposals received is sent to your email address if you confirmed one; the fingerprint of your connection, your email address, your password and any pending reset request are then erased. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname, the location, the chests cracked with the nickname of who found them, and the final standings — never the proposals received, which are erased on closing. After that period, the page and the nickname are deleted. To request the removal of a nickname entered on one of these pages before that period, contact {email}."
       },
       "Section6": {
         "Title": "6. Who can access your data",
         "Yourself": "Yourself, via your account (Profile page).",
-        "Editor": "The site editor (see §2), for technical administration, user support and checking your office requests — access limited to the strict minimum.",
+        "Editor": "The site administrator (see §2), for technical administration, user support and checking your office requests — access limited to the strict minimum.",
         "NoOneElse": "No one else beyond the above. No sharing, no resale, no transmission to third parties, including Celsius Online (publisher of Renaissance Kingdoms), except for a duly notified judicial requisition.",
         "Hosting": "Data is hosted on servers located in the European Union (host: o2switch, France).",
         "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
         "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province.",
-        "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province."
+        "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province.",
+        "AnimDecodeHolders": "Crack the Code: an activity's public page (name, location, organiser nickname, chests cracked and standings) is visible to everyone, whether created in private or public mode — that is the point of this tool, shared on the game's forum. Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there."
       },
       "DataPageLink": "Your data, tool by tool",
       "Section7": {
@@ -921,6 +1160,7 @@
   },
   "Chest": {
     "Opening": "Opening the chest…",
+    "OpeningRoom": "Opening the room…",
     "Failed": "The chest won't budge",
     "Slow": "The chest is slow to open",
     "SlowText": "Loading is taking longer than expected.",
