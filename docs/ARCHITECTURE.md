@@ -319,7 +319,7 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
     sans compte**, la clôture est définitive), rouvrir et supprimer (**privé seulement**), exports BBCode, état de l'email.
   - **`use/useDecodeActivities.js`** — tous les appels (`anim/*` sans jeton, le reste avec) ; `asOrganizer()` / `asAnonymous(slug, mot de passe)`. Pas de store Pinia.
   - Textes sous `Animation.{Home,Start,Types,Status,Public,Slug,Password,Create,Recap,Manage,Reset,Confirm,Mine}.*`. Le **texte des règles**
-    (`Animation.Types.decode.Rules`, rédigé par Cowork le 28/10/2026) est le jumeau de `types.decode.rules` du backend ; affiché avec `whitespace-pre-line` (ses retours à la ligne comptent).
+    (`Animation.Types.decode.Rules`, version **site**, rédigée par Cowork le 28/10/2026) n'est PAS le jumeau de `types.decode.rules` du backend, qui est la version **export forum** (deux textes voulus distincts) ; affiché avec `whitespace-pre-line` (ses retours à la ligne comptent).
 - **`modules/company/MainCompany.vue`** — squelette vide, placeholder "Test" i18n minimal
   (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est prévu.
 
