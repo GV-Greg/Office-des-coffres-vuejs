@@ -37,5 +37,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Une ligne discrète tient lieu de footer : la mention « site non officiel » reste sur cette page. -->
+    <p class="px-4 py-3 text-center text-xs text-slate-700 dark:text-slate-300" data-testid="public-footer">{{ t('Animation.Public.Footer') }}</p>
   </div>
 </template>

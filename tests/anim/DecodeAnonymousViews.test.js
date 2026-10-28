@@ -168,7 +168,7 @@ describe('DecodeManageView', () => {
   it('UN seul bouton de mot de passe perdu : « Demander à l\'administrateur » sans salle mémorisée, « Réinitialiser mon mot de passe » avec', async () => {
     const w = mountManage()
     expect(w.findAll('[data-testid="manage-forgot"]')).toHaveLength(1)
-    expect(w.find('[data-testid="manage-forgot"]').text()).toBe('Demander à l\'administrateur')
+    expect(w.find('[data-testid="manage-forgot"]').text()).toBe('Demander à l\'administrateur du site')
 
     comfort.anim_decode_slug = 'les-trois-coffres'
     const remembered = mountManage()
