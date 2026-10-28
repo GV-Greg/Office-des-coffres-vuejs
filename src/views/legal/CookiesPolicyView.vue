@@ -15,7 +15,7 @@
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
   // à chaque modification substantielle (voir Legal.Cookies.Section8 / draft
   // admin/content/policy-cookies-draft.md).
-  const LAST_UPDATED = '2026-08-10'
+  const LAST_UPDATED = '2026-10-28'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }

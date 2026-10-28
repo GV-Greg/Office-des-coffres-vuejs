@@ -139,6 +139,7 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   namespace `Legal` (clés de contact partagées dans `Legal.Common.Contact.*`). ⚠️ Les listes y
   sont rendues avec `tm()` **+ `rt()`** : `tm()` seul renvoie des AST compilés, affichés tels
   quels à l'écran mais invisibles en test (les mocks ne sont pas précompilés).
+  **Décode le code** (28/10/2026) : trois insertions (§3 ce qui est conservé en mode public, §5 durées — 30 jours d'inactivité dans les deux modes, 5 ans de page figée sans les propositions —, §6 destinataires) et l'énumération des Préférences de `Legal.Cookies` ; texte de Cowork `admin/content/policy-coffres-scelles.md`, garde-fou `tests/legal/privacyAnimDecode`. `LAST_UPDATED` des deux pages = 28/10/2026 (à ajuster à la date de mise en ligne).
   **Registre des mines** (08/10/2026) : la politique porte ses trois insertions (§3 ce qui est
   conservé, §5 la durée et la coupure du lien, §6 qui y accède — avant « Personne d'autre »),
   **avant** l'ouverture de l'écriture. Texte validé par Greg le 06/10
