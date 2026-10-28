@@ -47,10 +47,13 @@
         class="mt-12 max-w-6xl mx-auto w-full px-4 grid grid-cols-1 tablet:grid-cols-2 gap-x-16 gap-y-12"
       >
         <section v-if="visibleNews.length" class="news">
-          <h3 class="flex items-center gap-2 text-orange-500 dark:text-orange-500 uppercase tracking-widest text-xs font-bold mb-5">
+          <h3 id="home-news-title" class="flex items-center gap-2 text-orange-500 dark:text-orange-500 uppercase tracking-widest text-xs font-bold mb-5">
             <v-icon name="gi-scroll-unfurled" scale="1.1" />
             {{ t('Home.News') }}
           </h3>
+          <!-- Hauteur plafonnée : la chronique défile dans son cadre au lieu d'allonger la page (et de repousser
+               le footer) à chaque entrée. Marge gauche compensée : les pastilles dépassent de la ligne. -->
+          <div class="chronicle-scroll max-h-[max(14rem,calc(100vh-31rem))] overflow-y-auto pl-4 -ml-4 pr-3 pb-8" tabindex="0" role="region" aria-labelledby="home-news-title">
           <ol class="relative border-l-2 border-slate-300 dark:border-slate-300 space-y-6">
             <li v-for="item in visibleNews" :key="item.id" class="relative pl-6">
               <span
@@ -73,12 +76,14 @@
               </p>
             </li>
           </ol>
+          </div>
         </section>
         <section v-if="visibleFixes.length" class="fixes">
-          <h3 class="flex items-center gap-2 text-slate-500 dark:text-slate-400 uppercase tracking-widest text-xs font-bold mb-5">
+          <h3 id="home-fixes-title" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 uppercase tracking-widest text-xs font-bold mb-5">
             <v-icon name="gi-hammer-nails" scale="1.1" />
             {{ t('Home.Fixes') }}
           </h3>
+          <div class="chronicle-scroll max-h-[max(14rem,calc(100vh-31rem))] overflow-y-auto pl-4 -ml-4 pr-3 pb-8" tabindex="0" role="region" aria-labelledby="home-fixes-title">
           <ol class="relative border-l-2 border-slate-300 dark:border-slate-300 space-y-6">
             <li v-for="item in visibleFixes" :key="item.id" class="relative pl-6">
               <span
@@ -101,6 +106,7 @@
               </p>
             </li>
           </ol>
+          </div>
         </section>
       </div>
     </div>
@@ -111,5 +117,15 @@
 <style scoped>
   h2 {
     @apply font-normal
+  }
+
+  /* Cadre de la chronique : barre fine (celle du site, sombre et épaisse, est faite pour la page entière) et
+     fondu sur les deux dernières rem, qui dit « la liste continue ». Le pb-8 du cadre laisse la dernière
+     entrée hors du fondu une fois en bas. Les propriétés standard l'emportent sur ::-webkit-scrollbar. */
+  .chronicle-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 transparent; /* slate-400, 2,45:1 contre la carte : voulu par Greg, sous les 3:1 de WCAG 1.4.11 */
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2rem), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 2rem), transparent);
   }
 </style>
