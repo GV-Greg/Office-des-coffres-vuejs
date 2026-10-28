@@ -6,6 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-10-29] — PR #102 (accueil : la chronique défile dans son cadre)
+
+### Fixed
+- Accueil : la zone de contenu n'avait aucune hauteur plafonnée, donc chaque entrée de la chronique allongeait la carte et repoussait le footer sous la ligne de flottaison. Chaque liste (Chroniques, Registre des Réparations) défile maintenant dans un cadre plafonné, atteignable au clavier et nommé par son titre, avec un fondu en bas et une barre fine. ⚠️ Le contraste de la barre (2,45:1) est sous les 3:1 de WCAG 1.4.11 : voulu par Greg.
+
 ## [2026-10-28] — PR #101 (Décode le code : interface de la première activité du module Animation)
 
 ### Added
