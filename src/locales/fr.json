@@ -30,6 +30,7 @@
   "Common": {
     "SiteName": "Office des coffres",
     "Placeholder": "Test",
+    "Retry": "Réessayer",
     "LoadingRoom": "Vous entrez dans la salle…",
     "LoadingApi": "Le greffe traite votre demande…",
     "Theme": {

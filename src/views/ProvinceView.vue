@@ -8,7 +8,6 @@
   import { formatFieldDate } from '@/modules/playerDates'
   import { provinceHistoryToBBcode } from '@/modules/provinceBBcode'
   import NavMenu from '@/components/NavMenu.vue'
-  import ChestLoader from '@/components/loading/ChestLoader.vue'
 
   /*
     « Ma province » (fil admin/echanges/mandats-historique, 04 §11, 07) : l'historique des postes de
@@ -88,82 +87,147 @@
           {{ t('Province.Warning') }}
         </p>
 
-        <!-- Coffre du module (violet, comme le menu) : il porte l'attente et l'échec avec « Réessayer ». -->
-        <ChestLoader :loading="loading" :error="failed ? t('Province.LoadError') : ''" accent="violet" error-testid="province-error" @retry="load">
+        <!-- Squelette pendant le chargement : mime la forme des deux sections + le panneau d'actions. -->
+        <template v-if="loading">
+          <div class="flex flex-col laptop:flex-row gap-4 items-start">
+            <div class="flex-1 min-w-0 flex flex-col gap-6">
+              <div class="rounded-xl bg-white shadow-md overflow-hidden">
+                <div class="h-12 bg-violet-50 border-b border-violet-100" />
+                <div class="p-4 grid gap-3 laptop:grid-cols-2">
+                  <div class="rounded-lg border border-slate-200 overflow-hidden">
+                    <div class="h-9 bg-slate-100 border-b border-slate-200" />
+                    <div class="p-3 flex flex-col gap-2">
+                      <div class="h-3.5 bg-slate-100 rounded w-1/2" />
+                      <div class="h-3.5 bg-slate-100 rounded w-1/3" />
+                    </div>
+                  </div>
+                  <div class="rounded-lg border border-slate-200 overflow-hidden">
+                    <div class="h-9 bg-slate-100 border-b border-slate-200" />
+                    <div class="p-3 flex flex-col gap-2">
+                      <div class="h-3.5 bg-slate-100 rounded w-2/3" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="rounded-xl bg-white shadow-md overflow-hidden">
+                <div class="h-12 bg-slate-100 border-b border-slate-200" />
+                <div class="p-4 flex flex-col gap-2">
+                  <div class="h-3.5 bg-slate-100 rounded w-1/3" />
+                  <div class="h-3.5 bg-slate-100 rounded w-1/2" />
+                </div>
+              </div>
+            </div>
+            <div class="w-full laptop:w-52 shrink-0">
+              <div class="rounded-xl bg-white shadow-md p-4">
+                <div class="h-9 bg-slate-100 rounded-lg" />
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Erreur réseau avec retry. -->
+        <div v-else-if="failed" class="rounded-xl bg-white shadow-md p-6 text-center">
+          <p class="text-slate-700 dark:text-slate-700" data-testid="province-error">{{ t('Province.LoadError') }}</p>
+          <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--violet mt-3" data-testid="chest-retry" @click="load">
+            {{ t('Common.Retry') }}
+          </button>
+        </div>
+
         <!-- Résidence inconnue : on dit ce qui manque. -->
-        <div v-if="history && !province" class="rounded-xl bg-white shadow-md p-6 text-center" data-testid="province-no-residence">
+        <div v-else-if="history && !province" class="rounded-xl bg-white shadow-md p-6 text-center" data-testid="province-no-residence">
           <p class="text-slate-700 dark:text-slate-700">{{ t('Province.NoResidence') }}</p>
           <RouterLink :to="{ name: 'profil' }" class="odc-btn odc-btn--soft odc-btn--sm odc--blue mt-3">{{ t('Province.ToProfile') }}</RouterLink>
         </div>
 
         <template v-else-if="province">
-          <div class="flex justify-end">
-            <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="province-copy" @click="copyForForum">
-              <v-icon name="fa-copy" />
-              {{ t('Province.CopyForForum') }}
-            </button>
+          <div class="flex flex-col laptop:flex-row gap-4 items-start">
+
+            <!-- Colonnes de contenu : conseil + espace + maires -->
+            <div class="flex-1 min-w-0 flex flex-col gap-6">
+
+              <!-- Conseil comtal, par titre (Q2) — violet = couleur du module Province -->
+              <section class="rounded-xl bg-white shadow-md overflow-hidden" aria-labelledby="province-council">
+                <h3 id="province-council" class="mt-0 mb-0 flex items-center gap-2 px-4 py-3 border-b border-violet-100 bg-violet-50 text-base font-bold text-violet-900 dark:text-violet-900">
+                  <v-icon name="gi-tower-flag" class="opacity-70 shrink-0" />
+                  {{ t('Province.Council') }}
+                </h3>
+                <div class="p-4">
+                  <p v-if="!declaredOffices.length" class="text-sm text-slate-600 dark:text-slate-600">{{ t('Province.NoCouncil') }}</p>
+                  <div class="grid gap-3 laptop:grid-cols-2">
+                    <article v-for="office in declaredOffices" :key="office.key" class="rounded-lg border border-slate-200" data-testid="province-office">
+                      <p class="px-3 py-2 border-b border-slate-200 bg-violet-50 text-sm font-semibold text-violet-800 dark:text-violet-800">{{ label(office.label) }}</p>
+                      <ul class="divide-y divide-slate-100">
+                        <li v-for="(holder, index) in office.holders" :key="index" class="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm" data-testid="province-holder">
+                          <span class="font-semibold text-slate-800 dark:text-slate-800">{{ holder.pseudo }}</span>
+                          <span class="tabular-nums text-slate-500 dark:text-slate-500">
+                            {{ holder.ongoing
+                              ? t('Province.Since', { from: fieldDate('history_started_at', holder.started_at) })
+                              : t('Province.FromTo', { from: fieldDate('history_started_at', holder.started_at), to: fieldDate('history_ended_at', holder.ended_at) }) }}
+                          </span>
+                          <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="causeClass(holder)">
+                            {{ holder.ongoing ? t('Province.Ongoing') : label(holder.end_reason_label) }}
+                          </span>
+                        </li>
+                      </ul>
+                    </article>
+                  </div>
+                  <p v-if="emptyOffices.length && declaredOffices.length" class="mt-3 text-xs text-slate-500 dark:text-slate-500">
+                    {{ t('Province.OfficesWithout', { offices: emptyOffices.map(o => label(o.label)).join(', ') }) }}
+                  </p>
+                </div>
+              </section>
+
+              <!-- Maires, par ville (Q3) — slate = niveau ville, hiérarchiquement sous le conseil -->
+              <section class="rounded-xl bg-white shadow-md overflow-hidden" aria-labelledby="province-mayors">
+                <h3 id="province-mayors" class="mt-0 mb-0 flex items-center gap-2 px-4 py-3 border-b border-slate-200 bg-slate-100 text-base font-bold text-slate-700 dark:text-slate-700">
+                  <v-icon name="fa-map-marker-alt" class="opacity-60 shrink-0" />
+                  {{ t('Province.Mayors') }}
+                </h3>
+                <div class="p-4">
+                  <p v-if="!history.mayors.length" class="text-sm text-slate-600 dark:text-slate-600">{{ t('Province.NoMayor') }}</p>
+                  <div class="grid gap-3 laptop:grid-cols-2">
+                    <article v-for="group in history.mayors" :key="group.city.id" class="rounded-lg border border-slate-200" data-testid="province-city">
+                      <p class="px-3 py-2 border-b border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700 dark:text-slate-700">{{ group.city.name }}</p>
+                      <ul class="divide-y divide-slate-100">
+                        <li v-for="(holder, index) in group.holders" :key="index" class="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm">
+                          <span class="font-semibold text-slate-800 dark:text-slate-800">{{ holder.pseudo }}</span>
+                          <span class="tabular-nums text-slate-500 dark:text-slate-500">
+                            {{ holder.ongoing
+                              ? t('Province.Since', { from: fieldDate('history_started_at', holder.started_at) })
+                              : t('Province.FromTo', { from: fieldDate('history_started_at', holder.started_at), to: fieldDate('history_ended_at', holder.ended_at) }) }}
+                          </span>
+                          <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="causeClass(holder)">
+                            {{ holder.ongoing ? t('Province.Ongoing') : label(holder.end_reason_label) }}
+                          </span>
+                        </li>
+                      </ul>
+                    </article>
+                  </div>
+                  <!-- Jamais masquées : un compteur dépliable (Q3). -->
+                  <details v-if="history.cities_without_mandate.length" class="group mt-3 text-sm" data-testid="province-cities-without">
+                    <summary class="inline-flex cursor-pointer list-none items-center gap-1 font-semibold text-slate-600 dark:text-slate-600 [&::-webkit-details-marker]:hidden">
+                      <v-icon name="fa-chevron-right" class="w-2.5 h-2.5 transition-transform group-open:rotate-90" />
+                      {{ t('Province.CitiesWithout', { count: history.cities_without_mandate.length }, history.cities_without_mandate.length) }}
+                    </summary>
+                    <p class="mt-1 pl-4 text-slate-500 dark:text-slate-500">{{ history.cities_without_mandate.join(', ') }}</p>
+                  </details>
+                </div>
+              </section>
+
+            </div>
+
+            <!-- Panneau d'actions : sticky à droite, extensible pour de futures actions. -->
+            <aside class="w-full laptop:w-52 shrink-0">
+              <div class="sticky top-4 rounded-xl bg-white shadow-md p-4 flex flex-col gap-2">
+                <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--violet w-full" data-testid="province-copy" @click="copyForForum">
+                  <v-icon name="fa-copy" />
+                  {{ t('Province.CopyForForum') }}
+                </button>
+              </div>
+            </aside>
+
           </div>
-
-          <!-- Conseil comtal, par titre (Q2) -->
-          <section class="rounded-xl bg-white shadow-md p-4" aria-labelledby="province-council">
-            <h3 id="province-council" class="mt-0 mb-3 text-base font-bold text-slate-800 dark:text-slate-800">{{ t('Province.Council') }}</h3>
-            <p v-if="!declaredOffices.length" class="text-sm text-slate-600 dark:text-slate-600">{{ t('Province.NoCouncil') }}</p>
-            <div class="grid gap-3 laptop:grid-cols-2">
-              <article v-for="office in declaredOffices" :key="office.key" class="rounded-lg border border-slate-200" data-testid="province-office">
-                <p class="px-3 py-2 border-b border-slate-200 bg-indigo-50 text-sm font-bold text-indigo-900 dark:text-indigo-900">{{ label(office.label) }}</p>
-                <ul class="divide-y divide-slate-100">
-                  <li v-for="(holder, index) in office.holders" :key="index" class="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm" data-testid="province-holder">
-                    <span class="font-semibold text-slate-800">{{ holder.pseudo }}</span>
-                    <span class="tabular-nums text-slate-600">
-                      {{ holder.ongoing
-                        ? t('Province.Since', { from: fieldDate('history_started_at', holder.started_at) })
-                        : t('Province.FromTo', { from: fieldDate('history_started_at', holder.started_at), to: fieldDate('history_ended_at', holder.ended_at) }) }}
-                    </span>
-                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="causeClass(holder)">
-                      {{ holder.ongoing ? t('Province.Ongoing') : label(holder.end_reason_label) }}
-                    </span>
-                  </li>
-                </ul>
-              </article>
-            </div>
-            <p v-if="emptyOffices.length && declaredOffices.length" class="mt-3 text-xs text-slate-600 dark:text-slate-600">
-              {{ t('Province.OfficesWithout', { offices: emptyOffices.map(o => label(o.label)).join(', ') }) }}
-            </p>
-          </section>
-
-          <!-- Maires, par ville (Q3) -->
-          <section class="rounded-xl bg-white shadow-md p-4" aria-labelledby="province-mayors">
-            <h3 id="province-mayors" class="mt-0 mb-3 text-base font-bold text-slate-800 dark:text-slate-800">{{ t('Province.Mayors') }}</h3>
-            <p v-if="!history.mayors.length" class="text-sm text-slate-600 dark:text-slate-600">{{ t('Province.NoMayor') }}</p>
-            <div class="grid gap-3 laptop:grid-cols-2">
-              <article v-for="group in history.mayors" :key="group.city.id" class="rounded-lg border border-slate-200" data-testid="province-city">
-                <p class="px-3 py-2 border-b border-slate-200 bg-teal-50 text-sm font-bold text-teal-900 dark:text-teal-900">{{ group.city.name }}</p>
-                <ul class="divide-y divide-slate-100">
-                  <li v-for="(holder, index) in group.holders" :key="index" class="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm">
-                    <span class="font-semibold text-slate-800">{{ holder.pseudo }}</span>
-                    <span class="tabular-nums text-slate-600">
-                      {{ holder.ongoing
-                        ? t('Province.Since', { from: fieldDate('history_started_at', holder.started_at) })
-                        : t('Province.FromTo', { from: fieldDate('history_started_at', holder.started_at), to: fieldDate('history_ended_at', holder.ended_at) }) }}
-                    </span>
-                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="causeClass(holder)">
-                      {{ holder.ongoing ? t('Province.Ongoing') : label(holder.end_reason_label) }}
-                    </span>
-                  </li>
-                </ul>
-              </article>
-            </div>
-            <!-- Jamais masquées : un compteur dépliable (Q3). -->
-            <details v-if="history.cities_without_mandate.length" class="group mt-3 text-sm" data-testid="province-cities-without">
-              <summary class="inline-flex cursor-pointer list-none items-center gap-1 font-semibold text-slate-700 dark:text-slate-700 [&::-webkit-details-marker]:hidden">
-                <v-icon name="fa-chevron-right" class="w-2.5 h-2.5 transition-transform group-open:rotate-90" />
-                {{ t('Province.CitiesWithout', { count: history.cities_without_mandate.length }, history.cities_without_mandate.length) }}
-              </summary>
-              <p class="mt-1 pl-4 text-slate-600 dark:text-slate-600">{{ history.cities_without_mandate.join(', ') }}</p>
-            </details>
-          </section>
         </template>
-        </ChestLoader>
       </template>
     </div>
     <!-- Le menu circulaire en bas, comme sur toutes les pages /app/* (Ma province en est le 6e bouton). -->
