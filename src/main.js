@@ -78,7 +78,13 @@ import {
   FaHistory,
   FaPlus,
   FaCopy,
-  FaSave
+  FaSave,
+  RiDownload2Line,
+  RiMailLine,
+  RiMailSettingsLine,
+  RiMailSendLine,
+  RiLockPasswordLine,
+  RiUserSettingsLine
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -142,7 +148,13 @@ addIcons(
   FaHistory,
   FaPlus,
   FaCopy,
-  FaSave
+  FaSave,
+  RiDownload2Line,
+  RiMailLine,
+  RiMailSettingsLine,
+  RiMailSendLine,
+  RiLockPasswordLine,
+  RiUserSettingsLine
 )
 
 // Configuration de Notivue

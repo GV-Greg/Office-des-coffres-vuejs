@@ -8,12 +8,15 @@
   import NavMenu from '@/components/NavMenu.vue'
   import CityCascadeSelect from '@/components/forms/CityCascadeSelect.vue'
   import DeleteAccountModal from '@/components/DeleteAccountModal.vue'
+  import ChangeEmailModal from '@/components/ChangeEmailModal.vue'
+  import ChangePasswordModal from '@/components/ChangePasswordModal.vue'
   import CharacterMandates from '@/components/mandates/CharacterMandates.vue'
   import { useMandateStore } from '@/stores/mandateStore'
   import { useAuthStore } from '@/stores/authStore'
   import useNavigationLoading from '@/use/useNavigationLoading'
   import { translateKingdomName } from '@/modules/kingdomTranslations'
   import { push } from 'notivue'
+  import { http } from '@/api.js'
 
 /*
  datas user
@@ -59,6 +62,64 @@
   }
 
 /*
+  export de données (art. 20 RGPD)
+*/
+  const isDownloading = ref(false)
+
+  const downloadData = async () => {
+    isDownloading.value = true
+    try {
+      const response = await http.get('auth/account/export/pdf', {
+        headers: { Authorization: `Bearer ${authStore.getToken}` },
+        responseType: 'blob',
+      })
+      const url = URL.createObjectURL(response.data)
+      const today = new Date().toISOString().slice(0, 10)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `office-des-coffres-export-${today}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      push.success(t('Profil.DataExport.SuccessToast'))
+    } catch (error) {
+      if (error.response?.status === 429) {
+        push.error(t('Profil.DataExport.RateLimitToast'))
+      } else {
+        push.error(t('Profil.DataExport.ErrorToast'))
+      }
+    } finally {
+      isDownloading.value = false
+    }
+  }
+
+/*
+  gestion du compte (email, mot de passe — back #75)
+*/
+  const isChangeEmailOpen = ref(false)
+  const isChangePasswordOpen = ref(false)
+
+  const confirmEmailChange = ({ currentPassword, newEmail }, { onSuccess, onError }) => {
+    trackApiCall(authStore.requestEmailChange(currentPassword, newEmail))
+      .then(() => onSuccess())
+      .catch(error => {
+        onError(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
+      })
+  }
+
+  const confirmPasswordChange = ({ currentPassword, newPassword, passwordConfirmation }, { onError }) => {
+    trackApiCall(authStore.changePassword(currentPassword, newPassword, passwordConfirmation))
+      .then(() => {
+        isChangePasswordOpen.value = false
+        push.success(t('Profil.Account.PasswordModal.SuccessToast'))
+      })
+      .catch(error => {
+        onError(error.response?.data?.message ?? t('Auth.Errors.NetworkError'))
+      })
+  }
+
+/*
   suppression du compte (art. 17 RGPD)
 */
   const isDeleteModalOpen = ref(false)
@@ -88,20 +149,19 @@
          REPLIÉE à droite (1/3) — dépliée en grand, elle attirait l'œil juste après le titre. Sur
          mobile, tout reste empilé, personnages d'abord. -->
     <div class="w-full max-w-7xl flex flex-col flex-grow">
-      <h2 class="mt-0 mb-1">{{ t('Profil.Title') }}</h2>
-      <p class="mb-5 text-center text-sm text-slate-500 dark:text-slate-500 break-all">{{ authStore.getUser?.email }}</p>
+      <h2 class="mt-0 mb-5">{{ t('Profil.Title') }}</h2>
+
+      <!-- Bouton ajout hors grille : même niveau de départ pour les deux colonnes. -->
+      <div class="flex justify-start mb-3">
+        <RouterLink to="/app/character/new" class="odc-btn odc-btn--soft odc-btn--sm odc--orange">
+          <v-icon name="fa-user-plus" />
+          {{ t('Profil.AddCharacter') }}
+        </RouterLink>
+      </div>
 
       <div class="grid grid-cols-1 laptop:grid-cols-4 gap-6 items-start">
         <!-- Personnages -->
         <div class="laptop:col-span-3 flex flex-col gap-3">
-          <!-- Ajout en tête de liste : sous la liste, il flottait et touchait le menu circulaire. -->
-          <div class="flex justify-end">
-            <RouterLink to="/app/character/new" class="odc-btn odc-btn--soft odc-btn--sm odc--orange">
-              <v-icon name="fa-user-plus" />
-              {{ t('Profil.AddCharacter') }}
-            </RouterLink>
-          </div>
-
           <div v-if="!authStore.hasCharacters" class="w-full bg-white rounded-xl shadow-md border border-gray-200 p-6 text-center">
             <p class="text-slate-700 dark:text-slate-700">{{ t('Profil.NoCharacter') }}</p>
           </div>
@@ -229,35 +289,122 @@
           </article>
         </div>
 
-        <!-- Suppression du compte : dépliant natif (clavier et lecteur d'écran sans script), replié
-             par défaut. La modale en deux étapes redit de toute façon ce qui sera effacé. Le fond
-             reste clair en permanence, textes répétés en `dark:` à cause de `.dark p`. -->
-        <details
-          data-testid="danger-zone"
-          class="group w-full rounded-xl border border-red-200 bg-red-50 shadow-md overflow-hidden"
-        >
-          <summary class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold text-red-700 dark:text-red-700 [&::-webkit-details-marker]:hidden">
-            <v-icon name="fa-exclamation-triangle" class="w-4 h-4 shrink-0" />
-            <span class="flex-1">{{ t('Profil.DeleteAccount.SectionTitle') }}</span>
-            <v-icon name="fa-chevron-down" class="w-3 h-3 shrink-0 transition-transform group-open:rotate-180" />
-          </summary>
-          <div class="px-4 pb-4">
-            <p class="text-sm text-slate-700 dark:text-slate-700">
-              {{ t('Profil.DeleteAccount.Warning') }}
-            </p>
+        <!-- Colonne droite : compte, export de données, suppression. -->
+        <div class="flex flex-col gap-4">
+          <!-- Mon compte (email, mot de passe — back #75) -->
+          <div
+            data-testid="account-section"
+            class="w-full rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden"
+          >
+            <!-- Filet coloré en tête, identique aux modales. -->
+            <div class="h-1 bg-gradient-to-r from-orange-400 via-red-500 to-violet-500"></div>
+            <h3 class="mt-0 mb-0 flex items-center gap-2 px-4 py-3 font-bold text-slate-700 dark:text-slate-700 border-b border-slate-100">
+              <v-icon name="ri-user-settings-line" class="w-4 h-4 shrink-0" />
+              {{ t('Profil.Account.SectionTitle') }}
+            </h3>
+
+            <!-- Rangée email : toute la rangée est cliquable (pattern settings). -->
             <button
               type="button"
-              class="odc-btn odc-btn--soft odc-btn--sm odc--red mt-3"
-              data-testid="delete-account-open"
-              @click="isDeleteModalOpen = true"
+              class="w-full flex items-center gap-3 px-4 py-3 border-b border-slate-100 hover:bg-orange-50 active:bg-orange-100 transition-colors text-left"
+              data-testid="change-email-open"
+              @click="isChangeEmailOpen = true"
             >
-              <v-icon name="fa-trash-alt" />
-              {{ t('Profil.DeleteAccount.Button') }}
+              <v-icon name="ri-mail-line" class="w-4 h-4 shrink-0 text-slate-400" />
+              <div class="flex-1 min-w-0">
+                <p class="text-xs text-slate-500 dark:text-slate-500 leading-none mb-0.5">{{ t('Profil.Account.Email') }}</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-slate-700 break-all leading-snug">{{ authStore.getUser?.email }}</p>
+              </div>
+              <v-icon name="fa-chevron-right" class="w-3 h-3 shrink-0 text-slate-300" />
+            </button>
+
+            <!-- Rangée mot de passe. -->
+            <button
+              type="button"
+              class="w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 active:bg-blue-100 transition-colors text-left"
+              data-testid="change-password-open"
+              @click="isChangePasswordOpen = true"
+            >
+              <v-icon name="ri-lock-password-line" class="w-4 h-4 shrink-0 text-slate-400" />
+              <div class="flex-1 min-w-0">
+                <p class="text-xs text-slate-500 dark:text-slate-500 leading-none mb-0.5">{{ t('Profil.Account.Password') }}</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-slate-700 leading-snug tracking-widest select-none">••••••••</p>
+              </div>
+              <v-icon name="fa-chevron-right" class="w-3 h-3 shrink-0 text-slate-300" />
             </button>
           </div>
-        </details>
+
+          <!-- Mes données (art. 20 RGPD) : dépliant natif, replié par défaut. -->
+          <details
+            data-testid="data-export-section"
+            class="group w-full rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden"
+          >
+            <summary class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold text-slate-700 dark:text-slate-700 [&::-webkit-details-marker]:hidden">
+              <v-icon name="ri-download-2-line" class="w-4 h-4 shrink-0" />
+              <span class="flex-1">{{ t('Profil.DataExport.SectionTitle') }}</span>
+              <v-icon name="fa-chevron-down" class="w-3 h-3 shrink-0 transition-transform group-open:rotate-180" />
+            </summary>
+            <div class="px-4 pb-4">
+              <p class="text-sm text-slate-600 dark:text-slate-600">
+                {{ t('Profil.DataExport.Text') }}
+              </p>
+              <button
+                type="button"
+                class="odc-btn odc-btn--soft odc-btn--sm odc--slate mt-3"
+                :disabled="isDownloading"
+                :aria-busy="isDownloading ? 'true' : 'false'"
+                data-testid="export-data-button"
+                @click="downloadData"
+              >
+                <v-icon name="ri-download-2-line" />
+                {{ isDownloading ? t('Profil.DataExport.Preparing') : t('Profil.DataExport.Button') }}
+              </button>
+            </div>
+          </details>
+
+          <!-- Suppression du compte : dépliant natif (clavier et lecteur d'écran sans script),
+               replié par défaut. La modale en deux étapes redit de toute façon ce qui sera effacé.
+               Le fond reste clair en permanence, textes répétés en `dark:` à cause de `.dark p`. -->
+          <details
+            data-testid="danger-zone"
+            class="group w-full rounded-xl border border-red-200 bg-red-50 shadow-md overflow-hidden"
+          >
+            <summary class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold text-red-700 dark:text-red-700 [&::-webkit-details-marker]:hidden">
+              <v-icon name="fa-exclamation-triangle" class="w-4 h-4 shrink-0" />
+              <span class="flex-1">{{ t('Profil.DeleteAccount.SectionTitle') }}</span>
+              <v-icon name="fa-chevron-down" class="w-3 h-3 shrink-0 transition-transform group-open:rotate-180" />
+            </summary>
+            <div class="px-4 pb-4">
+              <p class="text-sm text-slate-700 dark:text-slate-700">
+                {{ t('Profil.DeleteAccount.Warning') }}
+              </p>
+              <button
+                type="button"
+                class="odc-btn odc-btn--soft odc-btn--sm odc--red mt-3"
+                data-testid="delete-account-open"
+                @click="isDeleteModalOpen = true"
+              >
+                <v-icon name="fa-trash-alt" />
+                {{ t('Profil.DeleteAccount.Button') }}
+              </button>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
+
+    <ChangeEmailModal
+      :show="isChangeEmailOpen"
+      :current-email="authStore.getUser?.email ?? ''"
+      @close="isChangeEmailOpen = false"
+      @confirm="confirmEmailChange"
+    />
+
+    <ChangePasswordModal
+      :show="isChangePasswordOpen"
+      @close="isChangePasswordOpen = false"
+      @confirm="confirmPasswordChange"
+    />
 
     <DeleteAccountModal
       :show="isDeleteModalOpen"
