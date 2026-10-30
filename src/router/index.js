@@ -4,6 +4,7 @@ import WelcomeView from '@/views/WelcomeView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+import VerifyEmailChangeView from '@/views/auth/VerifyEmailChangeView.vue'
 import SecurityGuetView from '@/views/modules/security/SecurityGuet.vue'
 import { push } from 'notivue'
 import useNavigationLoading from '@/use/useNavigationLoading'
@@ -81,6 +82,12 @@ const router = createRouter({
       path: '/verify-email',
       name: 'verify-email',
       component: VerifyEmailView,
+      meta: { public: true },
+    },
+    {
+      path: '/verify-email-change',
+      name: 'verify-email-change',
+      component: VerifyEmailChangeView,
       meta: { public: true },
     },
     {

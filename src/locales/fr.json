@@ -88,6 +88,43 @@
       "Step2Confirm": "Supprimer définitivement",
       "SuccessToast": "Votre compte a été supprimé. Merci d'avoir utilisé l'Office des coffres."
     },
+    "DataExport": {
+      "SectionTitle": "Mes données",
+      "Text": "Téléchargez une copie des données que l'Office conserve sur vous : votre compte et vos personnages. Vos préférences et vos saisies des modules publics restent dans votre navigateur et n'y figurent pas.",
+      "Button": "Télécharger mes données",
+      "Preparing": "Préparation…",
+      "SuccessToast": "Vos données ont été téléchargées.",
+      "RateLimitToast": "Trop de demandes. Réessayez dans une minute.",
+      "ErrorToast": "Le téléchargement a échoué. Réessayez plus tard."
+    },
+    "Account": {
+      "SectionTitle": "Mon compte",
+      "Email": "Adresse email",
+      "Password": "Mot de passe",
+      "ChangeEmail": "Modifier",
+      "ChangePassword": "Modifier",
+      "ShowPassword": "Afficher",
+      "HidePassword": "Masquer",
+      "EmailModal": {
+        "Title": "Modifier l'adresse email",
+        "CurrentPasswordLabel": "Mot de passe actuel",
+        "NewEmailLabel": "Nouvelle adresse email",
+        "Submit": "Envoyer le lien de confirmation",
+        "Success": "Lien envoyé !",
+        "SuccessText": "Un lien de confirmation a été envoyé à la nouvelle adresse. Cliquez dessus pour valider le changement.",
+        "SuccessNote": "Votre adresse email actuelle ne change pas tant que vous n'avez pas cliqué le lien.",
+        "Close": "Fermer"
+      },
+      "PasswordModal": {
+        "Title": "Changer le mot de passe",
+        "CurrentPasswordLabel": "Mot de passe actuel",
+        "NewPasswordLabel": "Nouveau mot de passe",
+        "ConfirmPasswordLabel": "Confirmation",
+        "Submit": "Changer le mot de passe",
+        "SuccessToast": "Mot de passe modifié.",
+        "NewSection": "Nouveau mot de passe"
+      }
+    },
     "Mandates": {
       "Title": "Postes",
       "NotValidated": "Votre personnage doit d'abord être validé pour demander un poste.",
@@ -242,6 +279,13 @@
     "ResendPrompt": "Entrez votre email pour recevoir un nouveau lien.",
     "ResendButton": "Renvoyer le lien",
     "ResendSuccess": "Un nouveau lien vient de vous être envoyé si ce compte existe."
+  },
+  "VerifyEmailChange": {
+    "Verifying": "Vérification en cours…",
+    "SuccessTitle": "Adresse email mise à jour",
+    "SuccessText": "Votre nouvelle adresse est désormais active. Reconnectez-vous pour continuer.",
+    "InvalidLink": "Ce lien de confirmation est invalide ou a expiré.",
+    "LoginButton": "Se connecter"
   },
   "AddCharacter": {
     "BackLink": "Retour",
@@ -1057,11 +1101,11 @@
           },
           {
             "Label": "Droit à la portabilité",
-            "Text": "recevoir vos données dans un format structuré et lisible par machine (JSON), pour les transmettre à un autre service."
+            "Text": "recevoir une copie de vos données personnelles dans un format électronique d'usage courant, pour les transmettre à un autre service."
           }
         ],
         "Complaint": "Droit d'introduire une réclamation auprès de l'{apdLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD.",
-        "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. La suppression de votre compte peut être effectuée immédiatement depuis votre Profil ; le canal email reste disponible en secours."
+        "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. Le téléchargement de vos données et la suppression de votre compte sont disponibles immédiatement depuis votre Profil ; le canal email reste disponible en secours."
       },
       "Section8": {
         "Title": "8. Sécurité de vos données",

@@ -88,6 +88,43 @@
       "Step2Confirm": "Delete permanently",
       "SuccessToast": "Your account has been deleted. Thank you for using the Office des coffres."
     },
+    "DataExport": {
+      "SectionTitle": "My data",
+      "Text": "Download a copy of the data the Office keeps about you: your account and your characters. Your preferences and what you enter in the public modules stay in your browser and are not included.",
+      "Button": "Download my data",
+      "Preparing": "Preparing…",
+      "SuccessToast": "Your data has been downloaded.",
+      "RateLimitToast": "Too many requests. Please try again in a minute.",
+      "ErrorToast": "The download failed. Please try again later."
+    },
+    "Account": {
+      "SectionTitle": "My account",
+      "Email": "Email address",
+      "Password": "Password",
+      "ChangeEmail": "Edit",
+      "ChangePassword": "Edit",
+      "ShowPassword": "Show",
+      "HidePassword": "Hide",
+      "EmailModal": {
+        "Title": "Change email address",
+        "CurrentPasswordLabel": "Current password",
+        "NewEmailLabel": "New email address",
+        "Submit": "Send confirmation link",
+        "Success": "Link sent!",
+        "SuccessText": "A confirmation link has been sent to the new address. Click it to confirm the change.",
+        "SuccessNote": "Your current email address will not change until you click the link.",
+        "Close": "Close"
+      },
+      "PasswordModal": {
+        "Title": "Change password",
+        "CurrentPasswordLabel": "Current password",
+        "NewPasswordLabel": "New password",
+        "ConfirmPasswordLabel": "Confirm password",
+        "Submit": "Change password",
+        "SuccessToast": "Password changed.",
+        "NewSection": "New password"
+      }
+    },
     "Mandates": {
       "Title": "Offices",
       "NotValidated": "Your character must be validated before requesting an office.",
@@ -242,6 +279,13 @@
     "ResendPrompt": "Enter your email to receive a new link.",
     "ResendButton": "Resend link",
     "ResendSuccess": "A new link has just been sent if this account exists."
+  },
+  "VerifyEmailChange": {
+    "Verifying": "Verifying…",
+    "SuccessTitle": "Email address updated",
+    "SuccessText": "Your new address is now active. Sign in again to continue.",
+    "InvalidLink": "This confirmation link is invalid or has expired.",
+    "LoginButton": "Sign in"
   },
   "AddCharacter": {
     "BackLink": "Back",
@@ -1057,11 +1101,11 @@
           },
           {
             "Label": "Right to data portability",
-            "Text": "receive your data in a structured, machine-readable format (JSON), to transmit it to another service."
+            "Text": "receive a copy of your personal data in a common electronic format, to transmit it to another service."
           }
         ],
         "Complaint": "Right to lodge a complaint with the {apdLink} if you consider that the processing of your data does not comply with GDPR.",
-        "HowToExercise": "To exercise these rights: contact {email}. A response will be provided within a maximum of one month. Your account can be deleted immediately from your Profile; the email channel remains available as a fallback."
+        "HowToExercise": "To exercise these rights: contact {email}. A response will be provided within a maximum of one month. Your data can be downloaded and your account can be deleted immediately from your Profile; the email channel remains available as a fallback."
       },
       "Section8": {
         "Title": "8. Security of your data",

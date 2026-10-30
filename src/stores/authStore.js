@@ -216,6 +216,41 @@ export const useAuthStore = defineStore('auth', () => {
     activeCharacterId.value = null
   }
 
+  const requestEmailChange = async (currentPassword, newEmail) => {
+    await http.patch('auth/account/email', {
+      current_password: currentPassword,
+      email: newEmail,
+    }, {
+      headers: { Authorization: `Bearer ${token.value}` },
+    })
+  }
+
+  const confirmEmailChange = async ({ id, hash, expires, signature }) => {
+    await http.get(
+      `auth/account/email/verify/${encodeURIComponent(id)}/${encodeURIComponent(hash)}`,
+      {
+        params: { expires, signature },
+        headers: { Accept: 'application/json' },
+      }
+    )
+  }
+
+  const changePassword = async (currentPassword, newPassword, passwordConfirmation) => {
+    await http.patch('auth/account/password', {
+      current_password: currentPassword,
+      password: newPassword,
+      password_confirmation: passwordConfirmation,
+    }, {
+      headers: { Authorization: `Bearer ${token.value}` },
+    })
+  }
+
+  const clearSession = () => {
+    setToken(null)
+    setUser(null)
+    setRefreshToken(null, false)
+  }
+
   // Une seule vérification en vol par token : le premier garde de route qui crée ce store
   // (ex. Welcome → /login → /app/) déclenche l'hydratation ci-dessous PUIS appelle lui-même
   // checkAuth() — deux auth/me et deux préflights pour une navigation. Les appels concurrents
@@ -344,5 +379,9 @@ export const useAuthStore = defineStore('auth', () => {
     updateCharacterCity,
     setToken,
     setUser,
+    requestEmailChange,
+    confirmEmailChange,
+    changePassword,
+    clearSession,
   }
 })
