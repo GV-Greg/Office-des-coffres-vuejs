@@ -1,0 +1,55 @@
+name: Réannoncer sur Discord (manuel)
+
+on:
+  workflow_dispatch:
+    inputs:
+      exclude_ids:
+        description: 'IDs à considérer comme "nouveaux" (JSON array, ex: ["id1","id2"])'
+        required: true
+        default: '["economy-salle-des-comptes","mon-bureau"]'
+      dry_run:
+        description: 'Dry run — affiche le payload sans envoyer à Discord'
+        type: boolean
+        default: true
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Préparer l'état précédent et annoncer
+        env:
+          DISCORD_NEWS_WEBHOOK_URL: ${{ secrets.DISCORD_NEWS_WEBHOOK_URL }}
+          DISCORD_FIXES_WEBHOOK_URL: ${{ secrets.DISCORD_FIXES_WEBHOOK_URL }}
+        run: |
+          # Génère un JSON "avant" en excluant les IDs à ré-annoncer,
+          # puis lance le script d'annonce. Par défaut en dry-run.
+          python3 -c "
+          import json, sys
+          exclude = set(json.loads(sys.argv[1]))
+          with open('src/data/whatsNew.json') as f:
+              entries = json.load(f)
+          old = [e for e in entries if e.get('id') not in exclude]
+          with open('/tmp/whatsNew.old.json', 'w') as f:
+              json.dump(old, f)
+          print(f'État précédent : {len(old)} entrée(s)')
+          print(f'Nouvelles à annoncer : {len(entries) - len(old)} entrée(s)')
+          " '${{ inputs.exclude_ids }}'
+
+          DRY_RUN_FLAG=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            DRY_RUN_FLAG="--dry-run"
+          fi
+
+          node scripts/whatsNewAnnounce.mjs \
+            --old /tmp/whatsNew.old.json \
+            --new src/data/whatsNew.json \
+            $DRY_RUN_FLAG
