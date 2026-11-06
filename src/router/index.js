@@ -127,12 +127,18 @@ const router = createRouter({
     {
       path: '/app/eco',
       name: 'economy',
-      redirect: { name: 'economy-mines' },
+      redirect: { name: 'economy-home' },
       components: {
         Nav,
         default: () => import('@/views/modules/economy/MainEconomy.vue'),
       },
       children: [
+        {
+          // Page d'accueil du module Économie : cartes vers les outils disponibles (brief-accueil-economie.md).
+          path: '',
+          name: 'economy-home',
+          component: () => import('@/views/modules/economy/EconomyHomeView.vue'),
+        },
         {
           path: 'mines',
           name: 'economy-mines',
@@ -151,6 +157,12 @@ const router = createRouter({
           name: 'economy-prices',
           component: () => import('@/views/modules/economy/EconomyPrices.vue'),
           beforeEnter: redirectToHomeIfNotLoggedIn,
+        },
+        {
+          // Inventaires économiques (phase 1) : copier-coller, catégorisation, export BBCode. Public.
+          path: 'inventaire',
+          name: 'economy-inventory',
+          component: () => import('@/views/modules/economy/EconomyInventory.vue'),
         },
       ],
     },
@@ -250,14 +262,18 @@ const router = createRouter({
       beforeEnter: redirectToHomeIfNotLoggedIn,
     },
     {
-      // « Ma province » : historique des postes de la province de résidence du personnage actif.
-      path: '/app/province',
+      // « Mon bureau » : panneau de paramétrage et fiche province. Ancienne route /app/province redirigée.
+      path: '/app/mon-bureau',
       name: 'province',
       components: {
         Nav,
-        default: () => import('@/views/ProvinceView.vue'),
+        default: () => import('@/views/MonBureauView.vue'),
       },
       beforeEnter: redirectToHomeIfNotLoggedIn,
+    },
+    {
+      path: '/app/province',
+      redirect: { name: 'province' },
     },
     {
       path: '/app/character/new',
@@ -280,14 +296,14 @@ const router = createRouter({
 // Modules "Coffres X" (voir la charte de titres Economy/Security/Animation) — le reste de la
 // navigation (Accueil, compte, pages publiques) reste dans le contexte "office".
 const CHEST_MODULE_ROUTE_NAMES = new Set([
-  'economy', 'economy-mines', 'economy-registry', 'economy-prices',
+  'economy', 'economy-mines', 'economy-registry', 'economy-prices', 'economy-inventory',
   'security', 'security-guet',
   'animation', 'animation-decode', 'animation-public', 'animation-mine', 'animation-create', 'animation-manage', 'animation-reset', 'animation-confirm-email',
 ])
 
 // Couleur du module (charte §3.3) : la porte de l'overlay et le coffre de la page la reprennent.
 const MODULE_ACCENT_BY_ROUTE = {
-  economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold',
+  economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold', 'economy-inventory': 'gold',
   security: 'rose', 'security-guet': 'rose',
   animation: 'teal', 'animation-decode': 'teal', 'animation-public': 'teal', 'animation-mine': 'teal', 'animation-create': 'teal', 'animation-manage': 'teal', 'animation-reset': 'teal', 'animation-confirm-email': 'teal',
 }

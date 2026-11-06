@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, provide } from 'vue'
   import { RouterLink, RouterView } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import NavMenu from '../../../components/NavMenu.vue'
@@ -11,7 +11,9 @@
   const authStore = useAuthStore()
 
   const showHelp = ref(false)
+  const showInventoryHelp = ref(false)
   const showRegistryHelp = ref(false)
+  const inventoryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventory.HelpStep${n}`)))
   const registryHelpSteps = computed(() => [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => t(`EconomyMines.RegistryPage.HelpStep${n}`)))
   const helpSteps = computed(() => [
     t('EconomyMines.HelpStep1'),
@@ -23,15 +25,21 @@
 
   // Registre des mines : le lien n'apparaît qu'à qui peut le consulter (commissaire aux mines, bailli,
   // dirigeant) — la règle vient de l'API (GET characters/{id}/mine-registry), jamais recalculée ici.
-  const { access } = useMineAccess(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null))
+  const { access, ready } = useMineAccess(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null))
   const canReadRegistry = computed(() => !!access.value?.read)
+
+  // EconomyHomeView injecte ces valeurs pour éviter un double appel API (même pattern qu'Animation).
+  provide('economyAccess', access)
+  provide('economyAccessReady', ready)
 </script>
 
 <template>
   <div class="page-card">
     <div class="w-full flex flex-col laptop:flex-row flex-grow mb-2">
       <div class="w-full laptop:w-52 laptop:shrink-0 flex flex-col justify-start text-yellow-600">
-        <h3 class="text-center">{{ t('Economy.Title') }}</h3>
+        <RouterLink :to="{ name: 'economy-home' }" class="block text-center hover:opacity-80 transition-opacity">
+          <h3>{{ t('Economy.Title') }}</h3>
+        </RouterLink>
         <div class="inline-flex items-center gap-1.5">
           <RouterLink :to="{ name: 'economy-mines' }" class="inline-flex items-center font-bold">
             <v-icon name="gi-chest" scale="2" class="mr-1"/>
@@ -43,6 +51,22 @@
             class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
             :aria-label="t('EconomyMines.HelpButton')"
             :title="t('EconomyMines.HelpButton')"
+          >
+            <v-icon name="fa-info-circle" scale="0.9" />
+          </button>
+        </div>
+
+        <div class="inline-flex items-center gap-1.5 mt-2">
+          <RouterLink :to="{ name: 'economy-inventory' }" class="inline-flex items-center font-bold">
+            <v-icon name="gi-chest" scale="2" class="mr-1"/>
+            {{ t('Economy.InventoryLink') }}
+          </RouterLink>
+          <button
+            type="button"
+            @click="showInventoryHelp = true"
+            class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
+            :aria-label="t('EconomyInventory.HelpButton')"
+            :title="t('EconomyInventory.HelpButton')"
           >
             <v-icon name="fa-info-circle" scale="0.9" />
           </button>
@@ -79,6 +103,15 @@
       :overview="t('EconomyMines.HelpOverview')"
       :steps="helpSteps"
       @close="showHelp = false"
+    />
+
+    <HelpModal
+      :show="showInventoryHelp"
+      :title="t('EconomyInventory.HelpTitle')"
+      :purpose="t('EconomyInventory.HelpPurpose')"
+      :overview="t('EconomyInventory.HelpOverview')"
+      :steps="inventoryHelpSteps"
+      @close="showInventoryHelp = false"
     />
 
     <HelpModal
