@@ -320,7 +320,7 @@
     "Security": "Sécurité",
     "Animation": "Animation",
     "Profile": "Profil",
-    "Province": "Ma province"
+    "Province": "Mon bureau"
   },
   "Security": {
     "Title": "Coffres Sécurité",
@@ -336,7 +336,114 @@
   "Economy": {
     "Title": "Coffres Économie",
     "MinesLink": "Bilan des mines",
-    "MineRegistryLink": "Registre des mines"
+    "MineRegistryLink": "Registre des mines",
+    "InventoryLink": "Inventaires",
+    "Home": {
+      "Title": "Économie",
+      "Intro": "Voici les coffres que l'Office met à disposition pour les mines, les inventaires et les marchés.",
+      "Empty": "Aucun outil disponible pour le moment.",
+      "Open": "Ouvrir"
+    },
+    "Cards": {
+      "mines": {
+        "Name": "Bilan des mines",
+        "Description": "Collez le relevé hebdomadaire de vos mines : l'Office en dresse le bilan et prépare le compte rendu de la semaine."
+      },
+      "inventory": {
+        "Name": "Inventaires",
+        "Description": "Collez un inventaire pour le classer par catégorie, le trier et en rédiger l'état pour vos marchands."
+      },
+      "registry": {
+        "Name": "Registre des mines",
+        "Description": "Feuilletez le livre des mines de votre province : relevés, bilans de mandat et niveaux au fil des semaines."
+      },
+      "prices": {
+        "Name": "Prix et salaires",
+        "Description": "Consultez et tenez à jour le barème des prix de la province, pour que chaque bilan soit calculé au juste tarif."
+      }
+    }
+  },
+  "EconomyInventory": {
+    "PageTitle": "Inventaires économiques",
+    "PasteLabel": "Inventaire",
+    "PastePlaceholder": "Colle ici le texte copié depuis le jeu…",
+    "Summary": "{count} article(s) · {ecus} écus",
+    "SummaryNoEcus": "{count} article(s)",
+    "TruncatedHint": "Nom tronqué — le jeu a raccourci ce nom",
+    "CategoryAriaLabel": "Catégorie de {name}",
+    "ExportButton": "Confier au scribe",
+    "CopiedToast": "BBCode copié !",
+    "ClearButton": "Effacer",
+    "NoItems": "Aucun article reconnu dans ce texte.",
+    "ManageCategories": "Gérer les catégories",
+    "SettingsInDesk": "Gérer mes catégories",
+    "HideAll": "Tout masquer",
+    "ShowAll": "Tout afficher",
+    "HideCategory": "Masquer la catégorie",
+    "ShowCategory": "Afficher la catégorie",
+    "HideItem": "Masquer cet article",
+    "ShowItem": "Afficher cet article",
+    "ManageCategoriesTitle": "Catégories d'inventaire",
+    "ItemsHint": "Cliquez sur une catégorie pour gérer la liste de ses articles.",
+    "BuiltInLabel": "Prédéfinies",
+    "CustomLabel": "Personnalisées",
+    "AddCategoryTitle": "Ajouter une catégorie",
+    "AddCategoryFr": "Nom en français (requis)",
+    "AddCategoryEn": "Nom en anglais (optionnel)",
+    "AddCategoryBtn": "Ajouter",
+    "DeleteCategory": "Supprimer",
+    "DeleteCategoryConfirm": "Supprimer",
+    "DeleteCategoryCancelBtn": "Annuler",
+    "DeleteCategoryInfo": "Les articles de cette catégorie seront déplacés en « Divers ».",
+    "CategoryKeyInvalid": "Le nom ne contient pas de caractères utilisables.",
+    "CategoryDuplicate": "Une catégorie avec ce nom existe déjà.",
+    "HideBuiltIn": "Masquer",
+    "RestoreBuiltIn": "Restaurer",
+    "HiddenBuiltInLabel": "Masquées",
+    "AllHidden": "Toutes masquées.",
+    "NoCustomYet": "Aucune catégorie personnalisée.",
+    "NoneHidden": "Aucune catégorie masquée.",
+    "HelpButton": "Comment ça marche ?",
+    "HelpTitle": "Comment fonctionne le module Inventaires ?",
+    "HelpPurpose": "Coller, catégoriser et exporter un inventaire de personnage ou de ville, prêt à partager sur le forum.",
+    "HelpOverview": "Le module lit le texte copié depuis l'onglet Inventaire du jeu et le réorganise par catégorie. Les articles inconnus tombent en « Divers » — tu peux les déplacer ou configurer leur catégorie à l'avance dans Mon bureau.",
+    "HelpStep1": "Ouvre l'onglet Inventaire de ton personnage dans le jeu et copie tout le texte de la page.",
+    "HelpStep2": "Colle le texte dans la zone de saisie — les articles sont automatiquement groupés par catégorie.",
+    "HelpStep3": "Pour chaque article mal classé, utilise le menu déroulant à droite pour le déplacer dans la bonne catégorie.",
+    "HelpStep4": "Masque les catégories ou les articles que tu ne veux pas exporter avec l'icône œil — ils n'apparaîtront pas dans le BBCode.",
+    "HelpStep5": "Clique sur « Confier au scribe » pour copier le BBCode dans le presse-papier, prêt à coller sur le forum.",
+    "ExpandItemsFor": "Articles de la catégorie « {cat} »",
+    "ItemsInCategory": "Articles de cette catégorie",
+    "NoItemsYet": "Aucun article associé pour le moment.",
+    "AddItemPlaceholder": "Nom de l'article…",
+    "ItemAlreadyInCategory": "Cet article est déjà dans cette catégorie.",
+    "RemoveItem": "Retirer « {item} »",
+    "AddItemBtn": "Ajouter",
+    "CloseModal": "Fermer",
+    "ExportOptionsTitle": "Options d'export",
+    "ExportQtyFormat": "Format de quantité",
+    "ExportQtyPrefix": "Nombre devant (596 articles)",
+    "ExportQtySuffix": "Quantité après (Article x596)",
+    "ExportShowEcus": "Afficher le trésor",
+    "ExportWrapper": "Mise en forme",
+    "ExportWrapperNone": "Sans balise",
+    "ExportWrapperRp": "[rp] global",
+    "ExportWrapperQuote": "[quote] par catégorie",
+    "ExportColorTitle": "Couleur des titres à l'export",
+    "ExportColorHint": "Utilisée dans le BBCode pour les titres de catégorie sur le forum.",
+    "ExportColorAriaLabel": "Couleur {color}",
+    "ExportColorSelected": "(sélectionnée)",
+    "Categories": {
+      "alimentation": "Alimentation",
+      "matieres_premieres": "Matières premières",
+      "materiel_medical": "Matériel médical",
+      "outils_equipement": "Outils & équipement",
+      "vetements_accessoires": "Vêtements & accessoires",
+      "produits_luxe": "Produits de luxe",
+      "fleurs_plantes": "Fleurs & plantes",
+      "animaux": "Animaux",
+      "divers": "Divers"
+    }
   },
   "EconomyMines": {
     "Title": "Bilan des mines",
@@ -426,6 +533,7 @@
         "ModalTitle": "Prix en vigueur",
         "ViewHistory": "Voir l'historique",
         "ManageButton": "Gérer les prix",
+        "SettingsInDesk": "Paramétrer dans Mon bureau",
         "PageTitle": "Historique des prix de {province}",
         "PageTitleShort": "Historique des prix",
         "BackToRegistry": "Retour au registre",
@@ -1202,6 +1310,16 @@
     "Since": "depuis le {from}",
     "FromTo": "du {from} au {to}",
     "Ongoing": "En cours"
+  },
+  "MonBureau": {
+    "Title": "Mon bureau",
+    "Collapse": "Réduire",
+    "Expand": "Développer",
+    "PricesPanel": "Prix et salaires des mines — {province}",
+    "PricesDesc": "Définissez les prix des ressources et le taux horaire pour votre province.",
+    "ManagePrices": "Modifier les prix",
+    "PricesHistory": "Historique des prix",
+    "CatPersoPanel": "Catégories d'inventaire — Personnel"
   },
   "Chest": {
     "Opening": "Ouverture du coffre…",

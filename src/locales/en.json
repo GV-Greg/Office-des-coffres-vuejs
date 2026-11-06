@@ -320,7 +320,7 @@
     "Security": "Security",
     "Animation": "Animation",
     "Profile": "Profile",
-    "Province": "My province"
+    "Province": "My desk"
   },
   "Security": {
     "Title": "Security Chest",
@@ -336,7 +336,114 @@
   "Economy": {
     "Title": "Economy Chest",
     "MinesLink": "Mines report",
-    "MineRegistryLink": "Mine Registry"
+    "MineRegistryLink": "Mine Registry",
+    "InventoryLink": "Inventories",
+    "Home": {
+      "Title": "Economy",
+      "Intro": "These are the chests the Office holds for mines, inventories and markets.",
+      "Empty": "No tools available at the moment.",
+      "Open": "Open"
+    },
+    "Cards": {
+      "mines": {
+        "Name": "Mine Report",
+        "Description": "Paste your weekly mine report: the Office draws up the balance and prepares the week's account."
+      },
+      "inventory": {
+        "Name": "Inventories",
+        "Description": "Paste an inventory to sort it by category and draft its statement for your merchants."
+      },
+      "registry": {
+        "Name": "Mine Registry",
+        "Description": "Browse the mine book of your province: reports, mandate summaries and level changes over time."
+      },
+      "prices": {
+        "Name": "Prices & Wages",
+        "Description": "View and manage the province's price list, so each report is calculated at the fair rate of the day."
+      }
+    }
+  },
+  "EconomyInventory": {
+    "PageTitle": "Economic inventories",
+    "PasteLabel": "Inventory",
+    "PastePlaceholder": "Paste here the text copied from the game…",
+    "Summary": "{count} item(s) · {ecus} écus",
+    "SummaryNoEcus": "{count} item(s)",
+    "TruncatedHint": "Truncated name — the game has shortened this name",
+    "CategoryAriaLabel": "Category for {name}",
+    "ExportButton": "Entrust to the scribe",
+    "CopiedToast": "BBCode copied!",
+    "ClearButton": "Clear",
+    "NoItems": "No items recognised in this text.",
+    "ManageCategories": "Manage categories",
+    "SettingsInDesk": "Manage my categories",
+    "HideAll": "Hide all",
+    "ShowAll": "Show all",
+    "HideCategory": "Hide category",
+    "ShowCategory": "Show category",
+    "HideItem": "Hide item",
+    "ShowItem": "Show item",
+    "ManageCategoriesTitle": "Inventory categories",
+    "ItemsHint": "Click a category to manage its item list.",
+    "BuiltInLabel": "Built-in",
+    "CustomLabel": "Custom",
+    "AddCategoryTitle": "Add a category",
+    "AddCategoryFr": "Name in French (required)",
+    "AddCategoryEn": "Name in English (optional)",
+    "AddCategoryBtn": "Add",
+    "DeleteCategory": "Delete",
+    "DeleteCategoryConfirm": "Delete",
+    "DeleteCategoryCancelBtn": "Cancel",
+    "DeleteCategoryInfo": "Items in this category will be moved to \"Miscellaneous\".",
+    "CategoryKeyInvalid": "The name does not contain usable characters.",
+    "CategoryDuplicate": "A category with this name already exists.",
+    "HideBuiltIn": "Hide",
+    "RestoreBuiltIn": "Restore",
+    "HiddenBuiltInLabel": "Hidden",
+    "AllHidden": "All hidden.",
+    "NoCustomYet": "No custom category yet.",
+    "NoneHidden": "No hidden category.",
+    "HelpButton": "How does it work?",
+    "HelpTitle": "How does the Inventory module work?",
+    "HelpPurpose": "Paste, categorize and export a character or city inventory, ready to share on the forum.",
+    "HelpOverview": "The module reads text copied from the in-game Inventory tab and reorganizes it by category. Unknown items fall into 'Miscellaneous' — you can move them or pre-configure their category in My Office.",
+    "HelpStep1": "Open your character's Inventory tab in the game and copy all the text from the page.",
+    "HelpStep2": "Paste the text into the input area — items are automatically grouped by category.",
+    "HelpStep3": "For any misclassified item, use the dropdown on the right to move it to the correct category.",
+    "HelpStep4": "Hide categories or items you don't want to export using the eye icon — they won't appear in the BBCode.",
+    "HelpStep5": "Click 'Hand to the scribe' to copy the BBCode to your clipboard, ready to paste on the forum.",
+    "ExpandItemsFor": "Items in category \"{cat}\"",
+    "ItemsInCategory": "Items in this category",
+    "NoItemsYet": "No items assigned yet.",
+    "AddItemPlaceholder": "Item name…",
+    "ItemAlreadyInCategory": "This item is already in this category.",
+    "RemoveItem": "Remove \"{item}\"",
+    "AddItemBtn": "Add",
+    "CloseModal": "Close",
+    "ExportOptionsTitle": "Export options",
+    "ExportQtyFormat": "Quantity format",
+    "ExportQtyPrefix": "Number first (596 items)",
+    "ExportQtySuffix": "Qty after (Item x596)",
+    "ExportShowEcus": "Show treasury",
+    "ExportWrapper": "Formatting",
+    "ExportWrapperNone": "No wrapper",
+    "ExportWrapperRp": "[rp] global",
+    "ExportWrapperQuote": "[quote] per category",
+    "ExportColorTitle": "Export header colour",
+    "ExportColorHint": "Used in BBCode for category headers on the forum.",
+    "ExportColorAriaLabel": "Colour {color}",
+    "ExportColorSelected": "(selected)",
+    "Categories": {
+      "alimentation": "Food",
+      "matieres_premieres": "Raw materials",
+      "materiel_medical": "Medical supplies",
+      "outils_equipement": "Tools & equipment",
+      "vetements_accessoires": "Clothing & accessories",
+      "produits_luxe": "Luxury goods",
+      "fleurs_plantes": "Flowers & plants",
+      "animaux": "Animals",
+      "divers": "Miscellaneous"
+    }
   },
   "EconomyMines": {
     "Title": "Mines report",
@@ -426,6 +533,7 @@
         "ModalTitle": "Current prices",
         "ViewHistory": "View history",
         "ManageButton": "Manage prices",
+        "SettingsInDesk": "Settings in My desk",
         "PageTitle": "Price history of {province}",
         "PageTitleShort": "Price history",
         "BackToRegistry": "Back to the registry",
@@ -1202,6 +1310,16 @@
     "Since": "since {from}",
     "FromTo": "from {from} to {to}",
     "Ongoing": "Ongoing"
+  },
+  "MonBureau": {
+    "Title": "My desk",
+    "Collapse": "Collapse",
+    "Expand": "Expand",
+    "PricesPanel": "Mine prices & wages — {province}",
+    "PricesDesc": "Set the resource prices and hourly rate for your province.",
+    "ManagePrices": "Edit prices",
+    "PricesHistory": "Price history",
+    "CatPersoPanel": "Inventory categories — Personal"
   },
   "Chest": {
     "Opening": "Opening the chest…",
