@@ -38,7 +38,7 @@
 
     <div class="mx-auto mt-5 max-w-3xl rounded-xl border border-slate-300 bg-white p-5">
       <!-- Le lien signé est vérifié par le serveur : la porte s'ouvre pendant l'attente (comme les autres pages du module). -->
-      <ChestLoader :loading="state === 'loading'" accent="teal" illustration="gate">
+      <ChestLoader :loading="state === 'loading'" accent="teal">
         <p v-if="state === 'ok'" role="status" class="!mt-0 flex items-center gap-2 font-semibold text-green-900 dark:text-green-900" data-testid="confirm-ok"><v-icon name="fa-check-circle" class="text-teal-700" aria-hidden="true" />{{ t('Animation.Confirm.Ok') }}</p>
         <p v-else role="alert" class="!mt-0 font-semibold text-red-700 dark:text-red-700" data-testid="confirm-error">{{ message || t('Animation.Confirm.Error') }}</p>
         <RouterLink :to="{ name: 'animation-manage' }" class="mt-3 odc-btn odc-btn--soft odc-btn--rect flex-col !gap-1 !min-h-[5.5rem] min-w-[10rem] px-8 text-base odc--teal" data-testid="confirm-manage">

@@ -96,7 +96,7 @@
     <h3 id="decode-start-title" class="!mt-0 !mb-2 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-red-700 to-orange-600">{{ t('Animation.Start.Title') }}</h3>
 
     <!-- Le coffre du registre pendant la recherche (rien avant 150 ms : une réponse rapide n'en montre pas). -->
-    <ChestLoader :loading="scenario.endsWith('loading')" accent="teal" illustration="gate">
+    <ChestLoader :loading="scenario.endsWith('loading')" accent="teal">
     <!-- Connecté, sans personnage : l'activité privée est liée à un personnage. -->
     <template v-if="scenario === 'user-no-character'">
       <p class="text-slate-700 dark:text-slate-700" data-testid="start-no-character">{{ t('Animation.Start.NoCharacter') }}</p>

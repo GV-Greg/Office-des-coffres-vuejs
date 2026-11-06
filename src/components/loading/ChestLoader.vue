@@ -112,6 +112,17 @@
   // Classes littérales (jamais construites) : la couleur du bouton est celle du module (charte §6.7).
   const BUTTON_COLORS = { gold: 'odc--gold', rose: 'odc--rose', teal: 'odc--teal', violet: 'odc--violet', blue: 'odc--blue', orange: 'odc--orange' }
   const buttonColor = computed(() => BUTTON_COLORS[props.accent] ?? 'odc--gold')
+
+  // Classes littérales (jamais construites) : la couleur de la porte suit l'accent du module (charte §6.7).
+  const GATE_STYLES = {
+    gold:   'text-yellow-700 drop-shadow-[0_0_12px_rgba(161,98,7,0.45)]',
+    teal:   'text-teal-700 drop-shadow-[0_0_12px_rgba(13,148,136,0.45)]',
+    rose:   'text-rose-600 drop-shadow-[0_0_12px_rgba(225,29,72,0.45)]',
+    violet: 'text-violet-600 drop-shadow-[0_0_12px_rgba(124,58,237,0.45)]',
+    blue:   'text-blue-600 drop-shadow-[0_0_12px_rgba(37,99,235,0.45)]',
+    orange: 'text-orange-600 drop-shadow-[0_0_12px_rgba(234,88,12,0.45)]',
+  }
+  const gateStyle = computed(() => GATE_STYLES[props.accent] ?? GATE_STYLES.gold)
 </script>
 
 <template>
@@ -129,8 +140,8 @@
           v-if="illustration === 'gate'"
           name="gi-open-gate"
           scale="6"
-          class="gate-in text-teal-700 drop-shadow-[0_0_12px_rgba(13,148,136,0.45)]"
-          :class="{ 'opacity-60': closed }"
+          class="gate-in"
+          :class="[gateStyle, { 'opacity-60': closed }]"
           aria-hidden="true"
           data-testid="gate-loader-icon"
         />

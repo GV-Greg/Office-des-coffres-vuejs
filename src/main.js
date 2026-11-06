@@ -56,6 +56,7 @@ import {
   FaUserPlus,
   RiUserStarFill,
   GiTowerFlag,
+  GiQuill,
   FaSyncAlt,
   FaExchangeAlt,
   FaCheckCircle,
@@ -84,7 +85,9 @@ import {
   RiMailSettingsLine,
   RiMailSendLine,
   RiLockPasswordLine,
-  RiUserSettingsLine
+  RiUserSettingsLine,
+  FaChevronUp,
+  FaCoins
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -126,6 +129,7 @@ addIcons(
   FaUserPlus,
   RiUserStarFill,
   GiTowerFlag,
+  GiQuill,
   FaSyncAlt,
   FaExchangeAlt,
   FaCheckCircle,
@@ -154,7 +158,9 @@ addIcons(
   RiMailSettingsLine,
   RiMailSendLine,
   RiLockPasswordLine,
-  RiUserSettingsLine
+  RiUserSettingsLine,
+  FaChevronUp,
+  FaCoins
 )
 
 // Configuration de Notivue

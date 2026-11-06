@@ -15,10 +15,16 @@
   --odc-selection-bg: #fde68a;
   --odc-selection-fg: #1c1917;
 
-  /* Barre de défilement (WebKit) : ardoises neutres. */
-  --odc-scrollbar-track: #334155;
-  --odc-scrollbar-thumb: #64748b;
-  --odc-scrollbar-thumb-hover: #94a3b8;
+  /* Barre de défilement — thème clair : piste transparente, curseur ardoise discret, or au survol. */
+  --odc-scrollbar-track: transparent;
+  --odc-scrollbar-thumb: #cbd5e1;        /* slate-300 */
+  --odc-scrollbar-thumb-hover: #b45309;  /* amber-700 (accent or de la charte) */
+}
+
+/* Thème sombre (Tailwind darkMode: 'class') */
+.dark {
+  --odc-scrollbar-thumb: #475569;        /* slate-600 */
+  --odc-scrollbar-thumb-hover: #d97706;  /* amber-600 */
 }
 
 /* Reset de base */
@@ -53,7 +59,13 @@ body {
   box-shadow: 0 0 0 2px var(--odc-focus-inner);
 }
 
-/* Scrollbar styles */
+/* Scrollbar styles — Firefox */
+html {
+  scrollbar-color: var(--odc-scrollbar-thumb) var(--odc-scrollbar-track);
+  scrollbar-width: thin;
+}
+
+/* Scrollbar styles — WebKit (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -65,11 +77,16 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--odc-scrollbar-thumb);
-  border-radius: 0.375rem;
+  border-radius: 100px;
+  /* Espacement visuel entre le curseur et les bords de la piste */
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background 150ms ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--odc-scrollbar-thumb-hover);
+  background-clip: content-box;
 }
 
 /* Selection styles */

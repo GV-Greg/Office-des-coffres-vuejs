@@ -80,7 +80,7 @@
     </template>
 
     <AccessDenied v-if="notFound" :message="notFound" testid="decode-not-found" />
-    <ChestLoader v-else-if="name" :loading="loading" :error="error" accent="teal" illustration="gate" error-testid="decode-error" @retry="load">
+    <ChestLoader v-else-if="name" :loading="loading" :error="error" accent="teal" error-testid="decode-error" @retry="load">
       <article v-if="activity" data-testid="decode-activity">
         <!-- Pleine largeur : les trois quarts à gauche (l'encadré, puis les tentatives et les coffres ouverts côte à côte), un quart à droite (règles, classement). -->
         <div class="grid gap-5 laptop:grid-cols-4 items-start">

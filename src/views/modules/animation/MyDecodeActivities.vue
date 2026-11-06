@@ -77,7 +77,7 @@
 <template>
   <div class="w-full text-slate-800 dark:text-slate-800" :class="activities.length ? '' : 'max-w-4xl'">
     <!-- Toute la page attend ses données : changer de personnage rouvre la porte de la salle, formulaire et titre compris. -->
-    <ChestLoader :loading="loading" :error="error" accent="teal" illustration="gate" error-testid="mine-error" @retry="load">
+    <ChestLoader :loading="loading" :error="error" accent="teal" error-testid="mine-error" @retry="load">
       <!-- Sans salle, l'en-tête de l'entrée des salles (cases, titre, filet) ; dès qu'une salle existe, c'est SON encadré (« Ma salle … ») qui fait le titre. -->
       <template v-if="!activities.length">
         <div class="flex items-center justify-center gap-3">
