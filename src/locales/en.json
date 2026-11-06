@@ -339,7 +339,7 @@
     "MineRegistryLink": "Mine Registry",
     "InventoryLink": "Inventories",
     "Home": {
-      "Title": "Economy",
+      "Title": "The Counting Room",
       "Intro": "These are the chests the Office holds for mines, inventories and markets.",
       "Empty": "No tools available at the moment.",
       "Open": "Open"
