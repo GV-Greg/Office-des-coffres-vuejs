@@ -368,7 +368,7 @@ describe('EconomyInventory — select conditionnel (Phase B)', () => {
     expect(hieroSelectAfter).toBeDefined()
   })
 
-  it('connecté : le select disparaît après un premier changement de catégorie', async () => {
+  it('connecté : le select reste visible après un changement de catégorie (recatégorisation possible)', async () => {
     const w = mountPageLoggedIn()
     await w.find('[data-testid="inventory-paste"]').setValue(FIXTURE)
     const hieroSelect = w.findAll('select').find(s =>
@@ -376,11 +376,11 @@ describe('EconomyInventory — select conditionnel (Phase B)', () => {
     )
     expect(hieroSelect).toBeDefined()
     await hieroSelect.setValue('alimentation')
-    // Connecté + item dans customCats → select masqué
+    // Connecté + item dans customCats → select toujours présent pour permettre la recatégorisation
     const hieroSelectAfter = w.findAll('select').find(s =>
       s.attributes('aria-label')?.includes('Hiéroglyphes violets'),
     )
-    expect(hieroSelectAfter).toBeUndefined()
+    expect(hieroSelectAfter).toBeDefined()
   })
 
   it('connecté : item non encore catégorisé garde son select', async () => {

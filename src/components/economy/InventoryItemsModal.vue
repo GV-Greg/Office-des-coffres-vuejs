@@ -9,9 +9,10 @@ const props = defineProps({
   items: { type: Array, default: () => [] },
   autocompleteItems: { type: Array, default: () => [] },
   catKey: { type: String, required: true },
+  otherCategories: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['close', 'add', 'remove'])
+const emit = defineEmits(['close', 'add', 'remove', 'move'])
 
 const { t } = useI18n()
 
@@ -77,9 +78,18 @@ defineExpose({ handleAddError })
             <li
               v-for="item in items"
               :key="item"
-              class="flex items-center justify-between gap-2 text-sm text-slate-700 dark:text-slate-200 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+              class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               <span class="flex-1 truncate">{{ item }}</span>
+              <select
+                v-if="otherCategories.length > 0"
+                class="shrink-0 text-xs border border-slate-300 dark:border-slate-600 rounded-md px-1.5 py-1 bg-white dark:bg-slate-700 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-400 max-w-[7rem]"
+                :aria-label="t('EconomyInventory.MoveItemTo', { item })"
+                @change="e => { if (e.target.value) { emit('move', item, e.target.value); e.target.value = '' } }"
+              >
+                <option value="">{{ t('EconomyInventory.MoveItemPlaceholder') }}</option>
+                <option v-for="cat in otherCategories" :key="cat.key" :value="cat.key">{{ cat.label }}</option>
+              </select>
               <button
                 type="button"
                 class="shrink-0 text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 transition-colors"

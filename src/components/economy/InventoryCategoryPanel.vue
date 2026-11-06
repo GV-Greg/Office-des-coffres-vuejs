@@ -63,6 +63,19 @@ const modalAutocompleteItems = computed(() => {
     .sort((a, b) => a.localeCompare(b, locale.value))
 })
 
+// Toutes les catégories sauf celle ouverte, pour le sélecteur "déplacer vers"
+const modalOtherCategories = computed(() => {
+  if (!modalCatKey.value) return []
+  const result = []
+  for (const k of visibleBuiltIn.value) {
+    if (k !== modalCatKey.value) result.push({ key: k, label: t(`EconomyInventory.Categories.${k}`) })
+  }
+  for (const c of customCategories.value) {
+    if (c.key !== modalCatKey.value) result.push({ key: c.key, label: locale.value === 'fr' ? c.fr : (c.en || c.fr) })
+  }
+  return result.sort((a, b) => a.label.localeCompare(b.label, locale.value))
+})
+
 // Label de la catégorie ouverte dans la modale
 const modalCatLabel = computed(() => {
   if (!modalCatKey.value) return ''
@@ -94,6 +107,10 @@ function removeItem(itemName) {
   const updated = { ...customCats.value }
   delete updated[itemName]
   saveCustomCats(updated)
+}
+
+function moveItem(itemName, targetCatKey) {
+  saveCustomCats({ ...customCats.value, [itemName]: targetCatKey })
 }
 
 function labelToKey(label) {
@@ -160,11 +177,29 @@ function doDelete() {
 
 <template>
   <div>
-    <!-- Accroche -->
-    <p class="text-xs text-slate-400 dark:text-slate-500 italic mb-3 flex items-center gap-1">
-      <v-icon name="fa-info-circle" scale="0.75" aria-hidden="true" />
-      {{ t('EconomyInventory.ItemsHint') }}
-    </p>
+    <!-- Accroche + couleur des titres -->
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-3">
+      <p class="text-xs text-slate-400 dark:text-slate-500 italic flex items-center gap-1 shrink-0">
+        <v-icon name="fa-info-circle" scale="0.75" aria-hidden="true" />
+        {{ t('EconomyInventory.ItemsHint') }}
+      </p>
+      <div class="flex items-center gap-2 flex-wrap" role="radiogroup" :aria-label="t('EconomyInventory.ExportColorTitle')">
+        <span class="text-xs font-medium text-slate-600 dark:text-slate-300 shrink-0 whitespace-nowrap">
+          {{ t('EconomyInventory.ExportColorTitle') }} :
+        </span>
+        <button
+          v-for="c in EXPORT_COLORS"
+          :key="c.value"
+          type="button"
+          class="w-6 h-6 rounded-full border-2 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+          :style="{ backgroundColor: c.hex, borderColor: selectedColor === c.value ? '#c2410c' : 'transparent' }"
+          :class="selectedColor === c.value ? 'ring-2 ring-orange-600 ring-offset-1 dark:ring-offset-slate-700' : 'hover:border-slate-400 dark:hover:border-slate-300'"
+          :aria-label="t('EconomyInventory.ExportColorAriaLabel', { color: c.value }) + (selectedColor === c.value ? ' ' + t('EconomyInventory.ExportColorSelected') : '')"
+          :aria-pressed="selectedColor === c.value"
+          @click="setExportColor(c.value)"
+        />
+      </div>
+    </div>
 
     <!-- Corps : 3 colonnes sur tablet+ -->
     <div class="tablet:grid tablet:grid-cols-3 tablet:gap-5">
@@ -336,28 +371,6 @@ function doDelete() {
       <p v-if="addError" class="mt-1 text-xs text-red-500 dark:text-red-400">{{ addError }}</p>
     </div>
 
-    <!-- Couleur des titres à l'export -->
-    <div class="border-t border-slate-200 dark:border-slate-600 mt-4 pt-4">
-      <p class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
-        {{ t('EconomyInventory.ExportColorTitle') }}
-      </p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 italic mb-2">
-        {{ t('EconomyInventory.ExportColorHint') }}
-      </p>
-      <div class="flex flex-wrap gap-1.5" role="radiogroup" :aria-label="t('EconomyInventory.ExportColorTitle')">
-        <button
-          v-for="c in EXPORT_COLORS"
-          :key="c.value"
-          type="button"
-          class="w-6 h-6 rounded-full border-2 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
-          :style="{ backgroundColor: c.hex, borderColor: selectedColor === c.value ? '#c2410c' : 'transparent' }"
-          :class="selectedColor === c.value ? 'ring-2 ring-orange-600 ring-offset-1 dark:ring-offset-slate-700' : 'hover:border-slate-400 dark:hover:border-slate-300'"
-          :aria-label="t('EconomyInventory.ExportColorAriaLabel', { color: c.value }) + (selectedColor === c.value ? ' ' + t('EconomyInventory.ExportColorSelected') : '')"
-          :aria-pressed="selectedColor === c.value"
-          @click="setExportColor(c.value)"
-        />
-      </div>
-    </div>
 
     <!-- Modale items -->
     <InventoryItemsModal
@@ -367,9 +380,11 @@ function doDelete() {
       :cat-label="modalCatLabel"
       :items="modalCatKey ? itemsForCategory(modalCatKey) : []"
       :autocomplete-items="modalAutocompleteItems"
+      :other-categories="modalOtherCategories"
       @close="closeModal"
       @add="addItem"
       @remove="removeItem"
+      @move="moveItem"
     />
   </div>
 </template>

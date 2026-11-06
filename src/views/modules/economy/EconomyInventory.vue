@@ -77,9 +77,7 @@ const getCategoryLabelFr = key => {
 
 const getCategory = name => suggestCategory(name, customCats.value) ?? 'divers'
 
-// Le <select> s'affiche uniquement si non connecté OU si l'item n'est pas encore catégorisé explicitement.
-// Connecté + catégorie explicite (customCats) = réglé via Mon bureau → pas de <select>.
-const showCategorySelect = name => !authStore.isLoggedIn || !(name in customCats.value)
+const showCategorySelect = () => true
 
 const changeCategory = (name, catKey) => {
   customCats.value = { ...customCats.value, [name]: catKey }
