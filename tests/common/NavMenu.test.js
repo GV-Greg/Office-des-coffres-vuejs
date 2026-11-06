@@ -9,8 +9,8 @@ const i18n = createI18n({
   legacy: false,
   locale: 'fr',
   messages: {
-    fr: { NavMenu: { Home: 'Accueil', Economy: 'Éco', Security: 'Sécu', Animation: 'Anim', Profile: 'Profil', Province: 'Ma province' } },
-    en: { NavMenu: { Home: 'Home', Economy: 'Eco', Security: 'Sec', Animation: 'Anim', Profile: 'Profile', Province: 'My province' } }
+    fr: { NavMenu: { Home: 'Accueil', Economy: 'Éco', Security: 'Sécu', Animation: 'Anim', Profile: 'Profil', Province: 'Mon bureau' } },
+    en: { NavMenu: { Home: 'Home', Economy: 'Eco', Security: 'Sec', Animation: 'Anim', Profile: 'Profile', Province: 'My desk' } }
   }
 })
 
@@ -23,6 +23,7 @@ async function mountNavMenu({ isLoggedIn = false } = {}) {
       { path: '/app/secu/guet', name: 'security-guet', component: { template: '<div/>' } },
       { path: '/app/anim', name: 'animation', component: { template: '<div/>' } },
       { path: '/app/profil', name: 'profil', component: { template: '<div/>' } },
+      { path: '/app/mon-bureau', name: 'province', component: { template: '<div/>' } },
     ]
   })
   router.push('/app/')
@@ -84,11 +85,11 @@ describe('NavMenu', () => {
     expect(first.classes().some((c) => c.startsWith('btn-'))).toBe(false)
   })
 
-  it('affiche les 6 entrées, Profil et Ma province masqués hors connexion', async () => {
+  it('affiche les 6 entrées, Profil et Mon bureau masqués hors connexion', async () => {
     const wrapper = await mountNavMenu()
     const links = wrapper.findAll('a.menu-btn')
     expect(links).toHaveLength(6)
-    for (const name of ['Profil', 'Ma province']) {
+    for (const name of ['Profil', 'Mon bureau']) {
       expect(links.find((l) => l.text().includes(name)).isVisible()).toBe(false)
     }
     expect(links.filter((l) => l.isVisible())).toHaveLength(4)

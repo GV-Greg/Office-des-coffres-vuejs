@@ -326,9 +326,9 @@ describe('registre : prix, navigation des semaines et export', () => {
   }
 
   it('« Gérer les prix » n\'apparaît que pour qui peut écrire (le dirigeant ne l\'a pas)', async () => {
-    expect((await mountRegistry()).find('[data-testid="manage-prices"]').exists()).toBe(true)
+    expect((await mountRegistry()).find('[data-testid="manage-prices-link"]').exists()).toBe(true)
     const leader = await mountRegistry({ access: accessOf({ prices: { write: null, read: province } }) })
-    expect(leader.find('[data-testid="manage-prices"]').exists()).toBe(false)
+    expect(leader.find('[data-testid="manage-prices-link"]').exists()).toBe(false)
     expect(leader.find('[data-testid="prices-history-link"]').exists()).toBe(true)
   })
 

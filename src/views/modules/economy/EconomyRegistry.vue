@@ -14,7 +14,6 @@
   import useMinePrices from '@/use/useMinePrices'
   import BilanTable from '@/components/mines/BilanTable.vue'
   import ChestLoader from '@/components/loading/ChestLoader.vue'
-  import MinePricesModal from '@/components/mines/MinePricesModal.vue'
 
   /*
     Registre des mines — lecture (PR 4b ; brief admin/content/brief-registre-mines.md §7 ; fil
@@ -39,7 +38,6 @@
   const minePrices = useMinePrices()
   const priceSets = ref([])
   const canManagePrices = ref(false)
-  const showPrices = ref(false)
   const selectedMonday = ref(null) // null = le bilan en cours du mois de mandat (affichage par défaut)
 
   const auth = () => ({ headers: { Authorization: `Bearer ${authStore.getToken}` } })
@@ -141,7 +139,6 @@
       .then(() => push.success(t('EconomyMines.RegistryPage.Export.Copied')))
       .catch(() => push.error(t('EconomyMines.CopyError')))
   }
-  const onPricesSaved = async () => { await loadPrices() }
 
   /** Jours consécutifs regroupés en plages : « du 23/09 au 07/10 », un jour isolé reste seul. */
   const ranges = (days) => {
@@ -170,9 +167,9 @@
           <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="prices-history-link">
             <v-icon name="fa-history" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}
           </RouterLink>
-          <button v-if="canManagePrices" type="button" class="odc-btn odc-btn--soft odc--gold odc-btn--sm" data-testid="manage-prices" @click="showPrices = true">
-            <v-icon name="fa-tag" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.ManageButton') }}
-          </button>
+          <RouterLink v-if="canManagePrices" :to="{ name: 'province' }" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" data-testid="manage-prices-link">
+            <v-icon name="fa-cog" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.SettingsInDesk') }}
+          </RouterLink>
         </div>
         <!-- Âge du dernier relevé, toujours visible (brief §7) ; orange dès deux jours : on travaille à l'aveugle. -->
         <p class="text-sm italic" :class="stale ? 'font-bold text-orange-800 dark:text-orange-800' : 'text-slate-700 dark:text-slate-700'" data-testid="registry-age">
@@ -330,7 +327,6 @@
       </div>
     </template>
     </ChestLoader>
-    <MinePricesModal :show="showPrices" :province-id="registry?.province?.id ?? null" :prices="priceSets" @close="showPrices = false" @saved="onPricesSaved" />
   </div>
 </template>
 
