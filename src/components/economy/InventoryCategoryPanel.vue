@@ -349,7 +349,7 @@ function doDelete() {
           v-for="c in EXPORT_COLORS"
           :key="c.value"
           type="button"
-          class="w-6 h-6 rounded-full border-2 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+          class="w-6 h-6 rounded-full border-2 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
           :style="{ backgroundColor: c.hex, borderColor: selectedColor === c.value ? '#c2410c' : 'transparent' }"
           :class="selectedColor === c.value ? 'ring-2 ring-orange-600 ring-offset-1 dark:ring-offset-slate-700' : 'hover:border-slate-400 dark:hover:border-slate-300'"
           :aria-label="t('EconomyInventory.ExportColorAriaLabel', { color: c.value }) + (selectedColor === c.value ? ' ' + t('EconomyInventory.ExportColorSelected') : '')"
