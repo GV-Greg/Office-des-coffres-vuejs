@@ -1,15 +1,18 @@
 import { readFileSync } from 'node:fs'
 
-// Parse le contenu JSON d'un whatsNew.json — tolérant : fichier absent,
-// vide ou invalide (ex. premier run, ou --old inexistant) donne juste [].
+// Parse le contenu JSON d'un whatsNew.json.
+// - Chaîne absente ou vide → [] (premier run, fichier introuvable).
+// - JSON invalide mais non vide → null (signale "ne pas annoncer") : on
+//   ne peut pas distinguer "nouveau" d'"existant", mieux vaut ne rien
+//   annoncer que tout ré-annoncer par erreur.
 export function parseEntries(jsonString) {
   if (!jsonString || !jsonString.trim()) return []
   try {
     const parsed = JSON.parse(jsonString)
     return Array.isArray(parsed) ? parsed : []
   } catch (err) {
-    console.warn(`[whatsNewAnnounce] JSON invalide, ignoré : ${err.message}`)
-    return []
+    console.warn(`[whatsNewAnnounce] JSON invalide : ${err.message}`)
+    return null
   }
 }
 
@@ -160,6 +163,18 @@ async function main() {
 
   const previousEntries = parseEntries(safeRead(args.oldPath))
   const currentEntries = parseEntries(safeRead(args.newPath))
+
+  // null = JSON non vide mais invalide : impossible de savoir quoi est nouveau.
+  // Mieux vaut ne rien annoncer que tout ré-annoncer par erreur.
+  if (previousEntries === null) {
+    console.warn('[whatsNewAnnounce] État précédent invalide — annonce ignorée pour éviter les doublons.')
+    return
+  }
+  if (currentEntries === null) {
+    console.warn('[whatsNewAnnounce] État courant invalide — annonce ignorée.')
+    return
+  }
+
   const newEntries = diffNewEntries(previousEntries, currentEntries)
   const { feature, fix } = splitByType(newEntries)
 

@@ -13,8 +13,8 @@ describe('whatsNewAnnounce', () => {
       expect(parseEntries('')).toEqual([])
     })
 
-    it('renvoie [] pour un JSON invalide', () => {
-      expect(parseEntries('{not valid')).toEqual([])
+    it('renvoie null pour un JSON invalide non vide (évite les ré-annonces)', () => {
+      expect(parseEntries('{not valid')).toBeNull()
     })
 
     it('renvoie [] si le JSON parsé n\'est pas un tableau', () => {
