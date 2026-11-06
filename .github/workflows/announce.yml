@@ -10,7 +10,7 @@ on:
       dry_run:
         description: 'Dry run — affiche le payload sans envoyer à Discord'
         type: boolean
-        default: true
+        default: false
 
 jobs:
   announce:
