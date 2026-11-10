@@ -1,25 +1,30 @@
 <script setup>
-  import { ref, watch, onBeforeUnmount } from 'vue'
+  import { ref, watch, computed, onBeforeUnmount } from 'vue'
   import { useI18n } from 'vue-i18n'
   import useDecodeActivities from '@/use/useDecodeActivities'
+  import useRewardsGrid from '@/use/useRewardsGrid'
 
   /*
-    L'adresse d'une activité de « Décode le code » (le « code », D3, D14, D26, D27). Proposée à partir du nom, modifiable, jamais
-    modifiée en silence : l'utilisateur voit l'adresse définitive en direct et l'accepte avant de créer (écran de confirmation).
-    ⚠️ AUCUNE règle de slug ici : l'aperçu, la validité et la disponibilité viennent du SERVEUR (GET anim/decode-slug), seule source
-    des règles — le site n'en recopie rien. Jamais de suffixe automatique : « déjà prise » s'affiche et l'utilisateur choisit.
-    Tant qu'il n'a pas touché au champ, l'adresse suit le nom ; dès qu'il le corrige à la main, elle ne bouge plus.
+    L'adresse d'une activité d'Animation. Proposée à partir du nom, modifiable, jamais modifiée en silence : l'utilisateur voit
+    l'adresse définitive en direct et l'accepte avant de créer (écran de confirmation).
+    ⚠️ AUCUNE règle de slug ici : l'aperçu, la validité et la disponibilité viennent du SERVEUR (`activity-type` choisit l'endpoint),
+    seule source des règles — le site n'en recopie rien. Jamais de suffixe automatique : « déjà prise » s'affiche et l'utilisateur
+    choisit. Tant qu'il n'a pas touché au champ, l'adresse suit le nom ; dès qu'il le corrige à la main, elle ne bouge plus.
+    Les slugs de decode et de rewards sont indépendants (tables séparées, URLs distinctes) : le même slug peut exister pour les deux.
   */
   const props = defineProps({
     name: { type: String, default: '' },
     modelValue: { type: String, default: '' },
     delay: { type: Number, default: 300 }, // anti-rebond de la frappe ; 0 = immédiat (tests)
     idPrefix: { type: String, default: 'slug' },
+    activityType: { type: String, default: 'decode', validator: v => ['decode', 'rewards'].includes(v) },
   })
   const emit = defineEmits(['update:modelValue', 'state'])
 
   const { t } = useI18n()
-  const api = useDecodeActivities()
+  const decodeApi = useDecodeActivities()
+  const rewardsApi = useRewardsGrid()
+  const slugFn = computed(() => props.activityType === 'rewards' ? rewardsApi.slug : decodeApi.slug)
 
   const edited = ref(false) // l'utilisateur a corrigé l'adresse à la main
   const status = ref({ valid: false, taken: false, min: 3, max: 20, checked: false })
@@ -33,7 +38,7 @@
     const mine = ++seq
     pending.value = true
     try {
-      const data = await api.slug(params)
+      const data = await slugFn.value(params)
       if (mine !== seq) return // une réponse plus récente a pris le relais
       status.value = { valid: data.valid, taken: data.taken, min: data.min, max: data.max, checked: true }
       if (applyProposal) emit('update:modelValue', data.proposal)

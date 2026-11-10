@@ -241,6 +241,44 @@ const router = createRouter({
           component: () => import('@/views/modules/animation/MyDecodeActivities.vue'),
           beforeEnter: redirectToHomeIfNotLoggedIn,
         },
+        // ── Grille des lots ───────────────────────────────────────────────────────────────────────
+        {
+          // Entrée de l'activité Grille des lots : panneau contextuel selon le visiteur (connecté/anonyme/mémorisé).
+          path: 'grille',
+          name: 'animation-rewards',
+          component: () => import('@/views/modules/animation/RewardsGridEntryView.vue'),
+        },
+        {
+          // Créer une grille SANS COMPTE.
+          path: 'grille/creer',
+          name: 'animation-rewards-create',
+          component: () => import('@/views/modules/animation/RewardsGridCreateView.vue'),
+        },
+        {
+          // Retrouver SA grille sans compte : adresse + mot de passe.
+          path: 'grille/gerer',
+          name: 'animation-rewards-manage',
+          component: () => import('@/views/modules/animation/RewardsGridManageView.vue'),
+        },
+        {
+          // Choisir un nouveau mot de passe avec le lien à usage unique reçu par email ou en jeu.
+          path: 'grille/reinitialiser',
+          name: 'animation-rewards-reset',
+          component: () => import('@/views/modules/animation/RewardsGridResetView.vue'),
+        },
+        {
+          // Confirmation de l'adresse email par le lien signé reçu à cette adresse.
+          path: 'grille/confirmer-email',
+          name: 'animation-rewards-confirm-email',
+          component: () => import('@/views/modules/animation/RewardsGridConfirmEmailView.vue'),
+        },
+        {
+          // « Ma grille » (joueur connecté, mode privé) : créer, ajouter des lots, tirer, attribuer, clore.
+          path: 'grille/ma-grille',
+          name: 'animation-rewards-mine',
+          component: () => import('@/views/modules/animation/MyRewardsGrids.vue'),
+          beforeEnter: redirectToHomeIfNotLoggedIn,
+        },
       ],
     },
     {
@@ -250,6 +288,13 @@ const router = createRouter({
       name: 'animation-public',
       component: () => import('@/views/modules/animation/DecodePublicView.vue'),
       // Page à partager : ni NavBar ni footer commun (le menu de la page porte logo, thème et langue).
+      meta: { public: true, noFooter: true },
+    },
+    {
+      // Page publique de la Grille des lots (visible depuis le statut `drawed`).
+      path: '/public/activite/grille/:slug',
+      name: 'animation-rewards-public',
+      component: () => import('@/views/modules/animation/RewardsGridPublicView.vue'),
       meta: { public: true, noFooter: true },
     },
     {
@@ -299,6 +344,7 @@ const CHEST_MODULE_ROUTE_NAMES = new Set([
   'economy', 'economy-mines', 'economy-registry', 'economy-prices', 'economy-inventory',
   'security', 'security-guet',
   'animation', 'animation-decode', 'animation-public', 'animation-mine', 'animation-create', 'animation-manage', 'animation-reset', 'animation-confirm-email',
+  'animation-rewards', 'animation-rewards-mine', 'animation-rewards-create', 'animation-rewards-manage', 'animation-rewards-reset', 'animation-rewards-confirm-email', 'animation-rewards-public',
 ])
 
 // Couleur du module (charte §3.3) : la porte de l'overlay et le coffre de la page la reprennent.
@@ -306,6 +352,7 @@ const MODULE_ACCENT_BY_ROUTE = {
   economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold', 'economy-inventory': 'gold',
   security: 'rose', 'security-guet': 'rose',
   animation: 'teal', 'animation-decode': 'teal', 'animation-public': 'teal', 'animation-mine': 'teal', 'animation-create': 'teal', 'animation-manage': 'teal', 'animation-reset': 'teal', 'animation-confirm-email': 'teal',
+  'animation-rewards': 'teal', 'animation-rewards-mine': 'teal', 'animation-rewards-create': 'teal', 'animation-rewards-manage': 'teal', 'animation-rewards-reset': 'teal', 'animation-rewards-confirm-email': 'teal', 'animation-rewards-public': 'teal',
 }
 
 const { startNavigationLoading, stopNavigationLoading } = useNavigationLoading()

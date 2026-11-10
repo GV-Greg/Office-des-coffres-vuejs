@@ -21,7 +21,7 @@
   const api = useDecodeActivities()
 
   // clé de type (serveur) → route de la page de l'activité. Une clé inconnue du site n'est pas affichée.
-  const TYPE_ROUTES = { decode: 'animation-decode' }
+  const TYPE_ROUTES = { decode: 'animation-decode', rewards: 'animation-rewards' }
 
   const types = ref([])
   const links = computed(() => types.value.filter(key => TYPE_ROUTES[key]).map(key => ({ key, route: TYPE_ROUTES[key] })))

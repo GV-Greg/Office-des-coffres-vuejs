@@ -4,6 +4,7 @@
   import ModuleHomeCards from '@/components/ModuleHomeCards.vue'
   import ChestLoader from '@/components/loading/ChestLoader.vue'
   import DecodeCodeVisual from '@/components/anim/DecodeCodeVisual.vue'
+  import RewardsGridVisual from '@/components/anim/RewardsGridVisual.vue'
 
   /*
     Accueil du module Animation : un titre centré, puis une carte par ACTIVITÉ ouverte, avec son nom et son descriptif. Le serveur dit
@@ -16,7 +17,7 @@
   const ready = inject('animationTypesReady', ref(true)) // la liste des types n'est pas encore connue : le coffre s'ouvre
 
   // clé de type (serveur) → page de l'activité. Une clé que le site ne connaît pas n'est pas affichée.
-  const ACTIVITIES = { decode: 'animation-decode' }
+  const ACTIVITIES = { decode: 'animation-decode', rewards: 'animation-rewards' }
 
   const items = computed(() => (openTypes?.value ?? [])
     .filter(key => ACTIVITIES[key])
@@ -48,6 +49,10 @@
       <!-- Visuel propre à « Décode le code » : les cinq cases de la combinaison, encore scellées. Décoratif. -->
       <template #visual-decode>
         <DecodeCodeVisual />
+      </template>
+      <!-- Visuel propre à « Grille des lots » : mini-grille 3×3 avec quelques cases réclamées. Décoratif. -->
+      <template #visual-rewards>
+        <RewardsGridVisual />
       </template>
     </ModuleHomeCards>
     </ChestLoader>
