@@ -87,7 +87,9 @@ import {
   RiLockPasswordLine,
   RiUserSettingsLine,
   FaChevronUp,
-  FaCoins
+  FaCoins,
+  GiOpenTreasureChest,
+  FaExternalLinkAlt
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -160,7 +162,9 @@ addIcons(
   RiLockPasswordLine,
   RiUserSettingsLine,
   FaChevronUp,
-  FaCoins
+  FaCoins,
+  GiOpenTreasureChest,
+  FaExternalLinkAlt
 )
 
 // Configuration de Notivue

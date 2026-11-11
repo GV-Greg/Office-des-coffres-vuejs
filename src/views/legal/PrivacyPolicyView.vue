@@ -17,7 +17,7 @@
   // admin/content/policy-privacy-draft.md).
   // Date de MISE EN LIGNE de la dernière modification : la page « Vos données » (front #90), qui lui
   // ajoute une ligne par outil (§3) — même date que DataPageView.vue.
-  const LAST_UPDATED = '2026-10-28'
+  const LAST_UPDATED = '2026-11-11'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
@@ -28,7 +28,8 @@
   const dataRows = computed(() => tm('Legal.Privacy.Section4.Rows'))
   const mineRegistryFields = computed(() => tm('Legal.Privacy.Section3.MineRegistryFields'))
   const minePricesFields = computed(() => tm('Legal.Privacy.Section3.MinePricesFields'))
-  const animDecodeFields = computed(() => tm('Legal.Privacy.Section3.AnimDecodeFields'))
+  const animFields = computed(() => tm('Legal.Privacy.Section3.AnimFields'))
+  const animActivities = computed(() => tm('Legal.Privacy.Section3.AnimActivities'))
   const rights = computed(() => tm('Legal.Privacy.Section7.Rights'))
   const measures = computed(() => tm('Legal.Privacy.Section8.Measures'))
 </script>
@@ -122,15 +123,23 @@
               </li>
             </ul>
 
-            <!-- Décode le code (module Animation) : texte de admin/content/policy-coffres-scelles.md
-                 (Cowork, 28/10/2026), posé AVANT l'ouverture du mode public — D40. -->
-            <p class="mt-4">{{ t('Legal.Privacy.Section3.AnimDecodeIntro') }}</p>
-            <ul class="list-disc list-inside space-y-1" data-testid="privacy-anim-decode">
-              <li v-for="(field, index) in animDecodeFields" :key="`anim-decode-${index}`">
+            <!-- Animation (Décode le code, Grille des lots) : UN chapitre commun aux activités, une phrase
+                 par activité pour ce qui les distingue. Texte : admin/content/policy-animation.md, analysé
+                 par Cowork (fil animation-textes-legaux, 11/11/2026). Un type d'activité de plus = une ligne
+                 dans `AnimActivities`, pas un bloc de plus. Remplace le bloc « Décode le code » (28/10/2026). -->
+            <p class="mt-4">{{ t('Legal.Privacy.Section3.AnimIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-anim">
+              <li v-for="(field, index) in animFields" :key="`anim-${index}`">
                 <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
               </li>
             </ul>
-            <p class="mt-2">{{ t('Legal.Privacy.Section3.AnimDecodeNote') }}</p>
+            <p class="mt-2">{{ t('Legal.Privacy.Section3.AnimNote') }}</p>
+            <p class="mt-2">{{ t('Legal.Privacy.Section3.AnimActivitiesIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-anim-activities">
+              <li v-for="(field, index) in animActivities" :key="`anim-activity-${index}`">
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
 
             <!-- Une ligne par outil, avec son lien. AJOUT seulement : les énumérations de la politique
                  (§4, §5, §6) ne perdent jamais une ligne, la page porte l'usage et le contenu de
@@ -189,7 +198,7 @@
               <li>{{ t('Legal.Privacy.Section5.Mandates') }}</li>
               <li>{{ t('Legal.Privacy.Section5.MineRegistry') }}</li>
             <li>{{ t('Legal.Privacy.Section5.MinePrices') }}</li>
-              <li>{{ t('Legal.Privacy.Section5.AnimDecode', { email: contactEmail }) }}</li>
+              <li>{{ t('Legal.Privacy.Section5.Animation', { email: contactEmail }) }}</li>
               <li>{{ t('Legal.Privacy.Section5.TechnicalLogs') }}</li>
             </ul>
           </section>
@@ -203,7 +212,7 @@
               <!-- Avant « Personne d'autre en dehors de ce qui précède », qui clôt l'énumération. -->
               <li>{{ t('Legal.Privacy.Section6.MineRegistryHolders') }}</li>
             <li>{{ t('Legal.Privacy.Section6.MinePricesHolders') }}</li>
-              <li>{{ t('Legal.Privacy.Section6.AnimDecodeHolders') }}</li>
+              <li>{{ t('Legal.Privacy.Section6.AnimationHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.NoOneElse') }}</li>
             </ul>
             <p class="mt-4">{{ t('Legal.Privacy.Section6.Hosting') }}</p>

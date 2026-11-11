@@ -27,4 +27,7 @@ export const DATA_PAGE_SECTIONS = [
   { id: 'registre-des-mines', key: 'MineRegistry', access: 'office' },
   { id: 'guet', key: 'Watch', access: 'none' },
   { id: 'carte', key: 'Map', access: 'none' },
+  // Une seule entrée pour toutes les activités d'Animation (Décode le code, Grille des lots) : une activité de plus
+  // s'ajoute dans le texte de la section, pas ici (fil animation-textes-legaux, 11/11/2026).
+  { id: 'animation', key: 'Animation', access: 'none' },
 ]

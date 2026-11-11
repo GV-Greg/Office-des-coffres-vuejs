@@ -54,7 +54,8 @@
       "Close": "Fermer"
     },
     "CloseModal": "Fermer",
-    "Discover": "Découvrir"
+    "Discover": "Découvrir",
+    "Copy": "Copier"
   },
   "Profil": {
     "Title": "Mon profil",
@@ -684,7 +685,189 @@
         "Description": "Une salle de coffres scellés vous attend. Invitez votre communauté à en percer les codes : chaque participant tente une combinaison de 5 chiffres, vous inscrivez leur proposition, et le mécanisme révèle combien sont bien placés. Le premier à tout trouver ouvre le coffre — et le classement général retrace les exploits de chacun.",
         "RulesTitle": "Règles du jeu",
         "Rules": "L'Office des Coffres met à votre disposition une salle remplie de coffres scellés. Chaque coffre est verrouillé par une combinaison secrète de cinq chiffres (0 à 9). Pour tenter d'en percer un, soumettez votre combinaison à l'organisateur de la salle.\n\nÀ chaque tentative, le mécanisme du coffre vous répond :\n— 2 points par chiffre bien placé (à la bonne position),\n— 1 point par chiffre présent dans la combinaison mais mal placé.\n\nLe score maximum d'une tentative est de 10 points — cinq chiffres, tous bien placés. Si vous l'atteignez, le coffre s'ouvre et on passe au suivant — vous obtenez un bonus de 10 pour avoir ouvert le coffre !\n\nUn classement général comptabilise les points accumulés par chaque participant. Bonne chance !"
+      },
+      "rewards": {
+        "Name": "Grille des lots",
+        "Description": "Organisez un tirage au sort sous forme de grille numérotée. Remplissez les cases avec vos lots, tirez les positions au sort, puis invitez votre communauté à réclamer les cases qu'elle a choisies — l'organisateur révèle le contenu de chacune."
       }
+    },
+    "GridStatus": {
+      "new": "Nouvelle",
+      "incomplete": "En cours de remplissage",
+      "filled": "Complète",
+      "drawed": "Tirée au sort",
+      "confirmed": "Confirmée",
+      "closed": "Close"
+    },
+    "Rewards": {
+      "HowTitle": "Comment ça marche ?",
+      "HowStep1": "Créez votre grille et nommez vos lots (un par case).",
+      "HowStep2": "Tirez les positions au sort : chaque lot reçoit une case numérotée.",
+      "HowStep3": "Partagez la page publique : vos joueurs réclament leur case.",
+      "HowStep4": "Attribuez les cases réclamées, puis clôturez la grille.",
+      "Start": {
+        "Title": "Votre grille",
+        "NoCharacter": "Une grille privée est confiée à un personnage : présentez-en un à l'Office pour en créer une avec lui. Sans compte, vous pouvez aussi en organiser une sans personnage.",
+        "MineFound": "Vous gérez la grille « {name} » avec {character}.",
+        "ResumeMine": "Gérer ma grille",
+        "SeeMine": "Voir mes grilles",
+        "MineNone": "{character} n'a pas de grille pour le moment.",
+        "CreateMine": "Créer ma grille",
+        "RememberedFound": "Cet appareil se souvient de votre grille « {name} ».",
+        "ResumeRemembered": "Retrouver ma grille sans compte",
+        "AlsoRemembered": "Cet appareil se souvient aussi d'une grille sans compte : « {name} ».",
+        "GuestIntro": "Organisez un tirage au sort sous forme de grille numérotée de lots.",
+        "CreateGuest": "Créer une grille",
+        "FindGuest": "Retrouver ma grille",
+        "CookieHint": "Vous organisez sans compte ; si vous souhaitez que l'Office retienne votre grille, acceptez les cookies de confort dans « Gérer mes préférences »."
+      },
+      "Manage": {
+        "Title": "Retrouver ma grille",
+        "FormTitle": "Ouvrir ma grille",
+        "Intro": "Saisissez l'adresse de votre grille et le mot de passe choisi à sa création. Il n'y a ni session ni compte : le mot de passe n'est gardé que le temps de cette page.",
+        "Slug": "Adresse de la grille",
+        "NotFound": "Adresse ou mot de passe inconnus.",
+        "ResetSent": "Si cette grille a une adresse email confirmée, un lien vient d'y être envoyé. Sinon, votre demande est notée : l'administrateur du site fera porter un lien, dans le jeu, au personnage indiqué comme organisateur.",
+        "NoActivity": "Pas encore de grille ?",
+        "NoActivityText": "Créez-en une en quelques instants, sans compte : un nom, une adresse, des dimensions, un mot de passe.",
+        "CreateOne": "Organiser sans compte",
+        "Password": "Mot de passe",
+        "Open": "Ouvrir ma grille",
+        "LostTitle": "Mot de passe perdu ?",
+        "LostEmailLead": "Avec email confirmé :",
+        "LostEmail": "cliquez « Réinitialiser mon mot de passe » — un lien vous sera envoyé.",
+        "LostNoEmailLead": "Sans email :",
+        "LostNoEmail": "l'administrateur du site émet un lien de réinitialisation et le transmet à votre personnage dans le jeu.",
+        "Forgot": "Réinitialiser mon mot de passe",
+        "AskAdmin": "Demander à l'administrateur du site",
+        "Leave": "Quitter la grille"
+      },
+      "Reset": {
+        "Intro": "Grille {slug} : choisissez vous-même votre nouveau mot de passe. Ce lien est valable 24 heures et ne s'emploie qu'une seule fois.",
+        "Title": "Réinitialiser mon mot de passe",
+        "Missing": "Ce lien est incomplet. Ouvrez l'email reçu et cliquez le lien tel quel.",
+        "Done": "Mot de passe modifié. Vous pouvez maintenant accéder à votre grille.",
+        "Submit": "Enregistrer le nouveau mot de passe"
+      },
+      "Confirm": {
+        "Ok": "Votre adresse est confirmée. Elle ne sert qu'à vous envoyer un lien si vous oubliez votre mot de passe et à vous prévenir à chaque changement de mot de passe, et sera effacée à la clôture de la grille.",
+        "Error": "Cette adresse ne peut pas être confirmée : le lien est périmé ou la grille n'existe plus.",
+        "Title": "Confirmation de l'adresse email",
+        "Loading": "Confirmation en cours…"
+      },
+      "Create": {
+        "Title": "Organiser une grille sans compte",
+        "Intro": "Aucun compte n'est nécessaire. Vous choisissez un nom, une adresse, les dimensions et un mot de passe : c'est tout ce qui prouvera que la grille est la vôtre.",
+        "ColumnActivity": "Votre grille",
+        "Dimensions": "Dimensions de la grille",
+        "DoneTitle": "Votre grille est créée.",
+        "DonePassword": "Gardez votre mot de passe : sans lui, et sans email confirmé, la grille ne se récupère pas.",
+        "DoneManage": "Gérer ma grille",
+        "EmailHelp": "Pour recevoir un lien si vous oubliez votre mot de passe, et un avis à chaque changement de mot de passe. Elle doit être confirmée par un lien, et elle est effacée à la clôture.",
+        "DoneAddress": "L'adresse de votre grille :",
+        "DoneEmail": "Un email de confirmation vous a été envoyé à l'adresse indiquée.",
+        "PreviewTitle": "Aperçu de la grille",
+        "PreviewCaption": "{count} case, donc 1 lot à inscrire avant le tirage. | {count} cases, donc {count} lots à inscrire avant le tirage.",
+        "PreviewInvalid": "Indiquez une largeur et une hauteur pour voir la grille."
+      },
+      "Recap": {
+        "Dimensions": "Grille de {width} × {height} cases : {count} lots à inscrire avant le tirage.",
+        "EmailYes": "Votre adresse email sera confirmée par un lien. Une fois confirmée, elle ne servira qu'à vous envoyer un lien si vous oubliez votre mot de passe et à vous prévenir à chaque changement de mot de passe. Elle est effacée à la clôture.",
+        "ClosingAnonymous": "La clôture est définitive : la grille ne pourra pas être rouverte. Le mot de passe, l'empreinte de connexion et l'email sont effacés ; le nom de la grille, le pseudo de l'organisateur, le lieu et les lots restent consultables.",
+        "ClosingPrivate": "Vous pourrez clore la grille, la rouvrir, puis la supprimer une fois close.",
+        "DeletionPrivate": "Elle est supprimée avec votre personnage ou votre compte, avec ses lots."
+      },
+      "Public": {
+        "NotFound": "Cette grille n'existe pas, ou n'a pas encore été tirée.",
+        "ClosedNotice": "Cette grille est close : plus aucune case n'est attribuée."
+      },
+      "Mine": {
+        "Name": "Nom de la grille"
+      },
+      "Slug": {
+        "Label": "Adresse de la grille"
+      }
+    },
+    "Grid": {
+      "Loading": "Chargement de la grille…",
+      "BoardTitle": "La grille",
+      "BoardLabel": "Grille des lots",
+      "Cell": "Case {n}",
+      "ClaimedTitle": "Liste des lots",
+      "NoClaimed": "Aucune case réclamée pour l'instant.",
+      "CardTitle": "Ma grille de lots « {name} »",
+      "LotsTitle": "Lots",
+      "LotNamePlaceholder": "Nom du lot…",
+      "AddLot": "Ajouter",
+      "LotAdded": "Lot ajouté.",
+      "LotsAdded": "{count} lot(s) ajouté(s).",
+      "LotsAddedWithSkipped": "{added} lot(s) ajouté(s), {skipped} ignoré(s) — grille complète.",
+      "AddList": "Ajouter une liste",
+      "AddBulk": "Ajouter tous",
+      "BulkPlaceholder": "Un lot par ligne, ou séparés par une virgule ou une tabulation…",
+      "GridFilled": "Tous les lots ont été ajoutés. La grille est complète.",
+      "Close": "Clore la grille",
+      "CloseDefinitive": "Clore la grille définitivement",
+      "AssignSection": "Attribution des cases",
+      "AssignHelp": "Cliquez sur une case libre dans la grille pour l'attribuer à un personnage.",
+      "ConfirmedGuideTitle": "La grille est prête",
+      "ConfirmedGuideStep1": "Partagez le lien de la page publique avec les joueurs.",
+      "ConfirmedGuideStep2": "Cliquez sur une case libre pour l'attribuer à un personnage.",
+      "ConfirmedGuideStep3": "Cochez « Remis » une fois le lot remis au joueur.",
+      "TakenTitle": "Lots remis",
+      "Taken": "Remis",
+      "NotTaken": "Non remis",
+      "Draw": "Tirer au sort",
+      "Confirm": "Confirmer la grille",
+      "ConfirmHelp": "Le tirage est effectué. Vérifiez la répartition des lots, puis confirmez pour rendre la grille publique et permettre aux joueurs de réserver une case.",
+      "LotName": "Lot",
+      "Sealed": "Case scellée",
+      "AssignTitle": "Attribuer cette case",
+      "PlayerName": "Nom du personnage",
+      "PlayerRequired": "Le nom du personnage est obligatoire.",
+      "Assign": "Attribuer",
+      "Cancel": "Annuler",
+      "MineTitle": "Ma grille de lots",
+      "NoCharacter": "Une grille privée est confiée à un personnage : présentez-en un à l'Office pour la tenir avec lui.",
+      "CreateTitle": "Créer une grille",
+      "OneAtATime": "Une seule grille à la fois : clôturez la précédente avant d'en créer une autre.",
+      "Name": "Nom de la grille",
+      "Slug": "Adresse (slug)",
+      "Width": "Largeur (colonnes)",
+      "Height": "Hauteur (lignes)",
+      "Place": "Lieu",
+      "PlaceKingdom": "Royaume",
+      "PlaceProvince": "Province",
+      "PlaceCity": "Ville",
+      "CreateConfirmBtn": "Vérifier avant de créer",
+      "ConfirmTitle": "Confirmer la création",
+      "Dimensions": "Dimensions",
+      "Cells": "cases",
+      "Back": "Retour",
+      "ConfirmCreate": "Créer la grille",
+      "Created": "Grille créée.",
+      "Empty": "Aucune grille pour le moment.",
+      "OrganizerName": "Pseudo du personnage",
+      "OrganizerEmail": "Adresse email (optionnelle)",
+      "TakenEmpty": "Aucun lot attribué pour l'instant. Cliquez sur une case libre du plateau pour l'attribuer à un personnage.",
+      "RemoveLot": "Retirer le lot « {name} »",
+      "BoardProgress": "{claimed} case dévoilée sur {total} | {claimed} cases dévoilées sur {total}",
+      "AssignModalTitle": "Attribuer la case {n}",
+      "AssignModalHelp": "Le lot de cette case sera révélé sur la page publique, avec le nom du personnage. Une case attribuée ne se modifie plus.",
+      "LegendFree": "Case libre",
+      "LegendRevealed": "Case dévoilée",
+      "LegendTitle": "Légende",
+      "LegendFreeText": "Personne ne l'a encore réclamée : son lot reste caché.",
+      "LegendRevealedText": "Un personnage l'a réclamée : son lot est révélé dans la liste.",
+      "LotQuantity": "Quantité (nombre de lots identiques)",
+      "AddGuideTitle": "Comment remplir la grille ?",
+      "AddGuideStep1": "Saisissez le nom du lot. Avec une quantité, il est inscrit plusieurs fois : 3 × « 50 écus » font trois lots, donc trois cases.",
+      "AddGuideStep2": "« Ajouter une liste » inscrit un lot par ligne, ou séparés par une virgule ou une tabulation, sans quantité.",
+      "AddGuideReadyTitle": "Toutes les cases ont leur lot",
+      "AddGuideReady": "« Tirer au sort » répartit les lots au hasard : la page publique s'ouvre et les joueurs choisissent leur case.",
+      "LotsListLabel": "Lots inscrits",
+      "EntrustResults": "Confier les résultats au scribe",
+      "EntrustRules": "Confier les règles au scribe"
     },
     "Status": {
       "new": "Nouveau",
@@ -896,8 +1079,8 @@
         "Intro": "Aucun cookie HTTP tiers n'est déposé sur ce site. Nous utilisons deux mécanismes de stockage côté navigateur, tous deux limités au strict nécessaire :",
         "Preferences": {
           "Title": "Stockage local (localStorage) — Préférences",
-          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines, Décode le code).",
-          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics, et l'adresse de la dernière activité de Décode le code que vous avez créée ou ouverte en mode public sur cet appareil.",
+          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines, Animation : Décode le code, Grille des lots).",
+          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics, et l'adresse de votre dernière activité de chaque type d'Animation (Décode le code, Grille des lots) que vous avez créée ou ouverte en mode public sur cet appareil.",
           "Retention": "jusqu'à ce que vous effaciez vos données de site depuis votre navigateur, ou que vous retiriez votre consentement via le bandeau cookies.",
           "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques).",
           "IfDecline": "le site fonctionne normalement, mais vos préférences et brouillons ne sont pas mémorisés d'une visite à l'autre."
@@ -1010,6 +1193,11 @@
         "Audience": "Personne d'autre que vous : ces données ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu.",
         "Deletion": "Sans effet : le Guet n'est lié à aucun compte."
       },
+      "Animation": {
+        "Title": "Animation",
+        "Purpose": "Organiser une activité pour la communauté et en partager la page sur le forum du jeu : Décode le code (des coffres scellés par une combinaison secrète, que les joueurs tentent de percer) ou la Grille des lots (une grille de lots que l'on tire, puis que les joueurs choisissent case par case). Vous pouvez l'organiser sans compte (un pseudo et un mot de passe suffisent) ou avec un personnage, qui porte alors toute l'information.",
+        "Input": "Le nom de l'activité, son lieu (royaume, province ou ville), un pseudo d'organisateur et un mot de passe en mode public, et, si vous le souhaitez, une adresse email, confirmée par un lien. Puis le contenu de l'activité : pour Décode le code, les propositions reçues et les noms des personnages qui les ont faites ; pour la Grille des lots, les lots et les noms des personnages qui ont choisi une case. Ce qui n'est pas enregistré : aucun mot de passe en clair (il est haché), aucune adresse IP (seulement une empreinte à sens unique, effacée à la clôture), et rien de plus que ce qui est listé ci-dessus."
+      },
       "Map": {
         "Title": "Carte des royaumes",
         "Purpose": "Choisir une ville dans le référentiel des royaumes, provinces et villes du jeu, par exemple à la création d'un personnage, au changement de résidence ou à une demande de poste. Aucun compte n'est nécessaire.",
@@ -1094,8 +1282,8 @@
             "Text": "le personnage qui a enregistré le prix et celui qui l'a corrigé en dernier, avec la date et l'heure."
           }
         ],
-        "AnimDecodeIntro": "Décode le code, activité du module Animation, se joue de deux façons. En mode privé, l'activité est liée à votre personnage, qui porte toute l'information nécessaire : rien de plus n'est demandé, et l'activité disparaît avec votre personnage ou votre compte (voir §5). En mode public, pour créer et gérer une activité sans utiliser de personnage, l'Office conserve :",
-        "AnimDecodeFields": [
+        "AnimIntro": "Le module Animation propose des activités que vous organisez pour la communauté : Décode le code (des coffres scellés par une combinaison secrète) et la Grille des lots (une grille de lots à tirer). Chaque activité se joue de deux façons. En mode privé, l'activité est liée à votre personnage, qui porte toute l'information nécessaire : rien de plus n'est demandé, et l'activité disparaît avec votre personnage ou votre compte (voir §5). En mode public, pour créer et gérer une activité sans utiliser de personnage, l'Office conserve :",
+        "AnimFields": [
           {
             "Label": "Un pseudo",
             "Text": "celui que vous choisissez pour être identifié comme organisateur sur la page publique de l'activité — obligatoire, pour pouvoir vous contacter en cas de besoin."
@@ -1106,14 +1294,25 @@
           },
           {
             "Label": "Une adresse email (facultative)",
-            "Text": "si vous la renseignez et la confirmez par le lien que nous vous envoyons, elle vous permet de réinitialiser vous-même votre mot de passe, d'être averti à chaque changement de celui-ci, et de recevoir un compte rendu complet de votre activité à sa clôture. Sans adresse confirmée, la réinitialisation reste possible sur demande à l'administrateur du site. Une adresse renseignée mais non confirmée n'est jamais utilisée."
+            "Text": "si vous la renseignez et la confirmez par le lien que nous vous envoyons, elle vous permet de réinitialiser vous-même votre mot de passe et d'être averti à chaque changement de celui-ci ; pour Décode le code, elle sert aussi à recevoir un compte rendu complet de votre activité à sa clôture. Sans adresse confirmée, la réinitialisation reste possible sur demande à l'administrateur du site. Une adresse renseignée mais non confirmée n'est jamais utilisée. Elle est effacée à la clôture de l'activité."
           },
           {
             "Label": "Une empreinte calculée à partir de votre adresse IP",
-            "Text": "une empreinte à sens unique (HMAC-SHA256) : elle permet de reconnaître une même connexion pour vérifier que vous ne créez pas plusieurs activités publiques en même temps, mais nous ne pouvons pas en retrouver l'adresse d'origine. Elle est effacée dès que votre activité est close."
+            "Text": "une empreinte à sens unique (HMAC-SHA256) : elle permet de reconnaître une même connexion pour vérifier que vous ne créez pas plusieurs activités publiques du même type en même temps, mais nous ne pouvons pas en retrouver l'adresse d'origine. Elle est effacée dès que votre activité est close."
           }
         ],
-        "AnimDecodeNote": "Dans les deux modes, les pseudos que vous inscrivez dans les propositions reçues — celui qui a tenté une combinaison, celui qui a percé le coffre — sont saisis librement par vous, à partir de ce que vous recevez (forum, gazette, en jeu). Nous ne les vérifions pas, et ils ne sont liés à aucun compte.",
+        "AnimNote": "Dans les deux modes, les noms de personnages que vous inscrivez — celui qui a tenté une combinaison ou percé un coffre (Décode le code), celui qui a choisi une case (Grille des lots) — sont saisis librement par vous, à partir de ce que vous recevez (forum, gazette, en jeu). Nous ne les vérifions pas, et ils ne sont liés à aucun compte.",
+        "AnimActivitiesIntro": "Selon l'activité, l'Office conserve en plus son contenu :",
+        "AnimActivities": [
+          {
+            "Label": "Décode le code",
+            "Text": "les coffres, leur combinaison secrète (chiffrée) et les propositions reçues."
+          },
+          {
+            "Label": "Grille des lots",
+            "Text": "les dimensions de la grille et ses lots (le nom de chaque lot et la case où il se trouve)."
+          }
+        ],
         "ToolsIntro": "À quoi sert chaque outil, qui peut l'utiliser, ce que vous y mettez et ce qu'il enregistre ou non est expliqué outil par outil sur la page {dataLink} :"
       },
       "Section4": {
@@ -1172,7 +1371,7 @@
         "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte).",
         "MineRegistry": "Registre des mines : les relevés que vous enregistrez sont conservés sans limite de durée, parce qu'ils forment la mémoire de gestion d'une province, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, le relevé reste, mais le lien avec votre compte est supprimé : il garde sa date, sa province et le poste utilisé, et ne désigne plus aucun personnage. Nous écrivons « le lien est supprimé » et non « le relevé est anonymisé » : l'historique des postes de la province reste consultable, et il peut permettre de rapprocher une date et un poste d'un nom de personnage. Enfin, aucun relevé ne peut être effacé, pas même par celui qui l'a écrit : un relevé erroné est remplacé, et le remplacement reste visible.",
         "MinePrices": "Prix des mines : les prix enregistrés sont conservés sans limite de durée, parce qu'ils servent à calculer les bilans de la province, d'un titulaire au suivant. Vous pouvez corriger un prix tant que vous tenez le poste, et jusqu'à 7 jours après la fin de votre mandat ; ensuite il est verrouillé. Les jeux de prix successifs forment un historique et restent tous consultables ; en revanche, corriger un jeu remplace ses valeurs, et l'ancienne valeur n'est pas conservée. Personne ne peut effacer un prix. À la suppression de votre personnage ou de votre compte, les prix restent, mais le lien avec votre compte est supprimé : ils gardent leur date et leur province, et ne désignent plus aucun personnage. Là encore, « le lien est supprimé » et non « anonymisé » : l'historique des postes de la province peut permettre de rapprocher une date d'un nom de personnage.",
-        "AnimDecode": "Décode le code (module Animation) : en mode privé, l'activité, ses coffres et les propositions que vous avez inscrites sont conservés tant que vous ne supprimez ni l'activité, ni le personnage, ni le compte qui l'a créée — leur suppression supprime l'activité avec eux, coffres et propositions compris. Dans les deux modes, une activité sans action depuis 30 jours est automatiquement close ; en mode privé, vous pouvez la rouvrir et tout est conservé, alors qu'en mode public cette fermeture est définitive : aucune réouverture n'est possible. En mode public, à la clôture, qu'elle soit manuelle ou automatique, un compte rendu incluant l'ensemble des propositions reçues est envoyé à votre adresse email si vous en avez confirmé une ; l'empreinte de votre connexion, votre adresse email, votre mot de passe et toute demande de réinitialisation en attente sont ensuite effacés. Ce qui reste visible à la communauté pendant 5 ans après la clôture : le nom de l'activité, votre pseudo d'organisateur, le lieu, les coffres percés avec le pseudo de qui les a trouvés, et le classement final — jamais les propositions reçues, qui sont effacées à la clôture. Passé ce délai, la page et le pseudonyme sont supprimés. Pour demander le retrait d'un pseudo inscrit sur une de ces pages avant ce délai, contactez {email}."
+        "Animation": "Animation (Décode le code, Grille des lots) : en mode privé, l'activité et son contenu — les coffres et les propositions que vous avez inscrites (Décode le code), les lots (Grille des lots) — sont conservés tant que vous ne supprimez ni l'activité, ni le personnage, ni le compte qui l'a créée — leur suppression supprime l'activité avec eux, contenu compris. Dans les deux modes, une activité sans action depuis 30 jours est automatiquement close ; en mode privé, vous pouvez la rouvrir et tout est conservé, alors qu'en mode public cette fermeture est définitive : aucune réouverture n'est possible. En mode public, à la clôture, qu'elle soit manuelle ou automatique, l'empreinte de votre connexion, votre adresse email, votre mot de passe et toute demande de réinitialisation en attente sont effacés ; pour Décode le code, un compte rendu incluant l'ensemble des propositions reçues est d'abord envoyé à votre adresse email si vous en avez confirmé une. Ce qui reste visible à la communauté pendant 5 ans après la clôture : le nom de l'activité, votre pseudo d'organisateur et le lieu, plus, pour Décode le code, les coffres percés avec le pseudo de qui les a trouvés et le classement final — jamais les propositions reçues, qui sont effacées à la clôture — et, pour la Grille des lots, les dimensions, tous les lots et le nom des personnages qui ont choisi une case. Passé ce délai, la page et le pseudonyme sont supprimés. Pour demander le retrait d'un nom inscrit sur une de ces pages avant ce délai, contactez {email}."
       },
       "Section6": {
         "Title": "6. À qui vos données sont accessibles",
@@ -1183,7 +1382,7 @@
         "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration.",
         "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, qui tiennent le Registre des mines de cette province, ainsi que son commissaire au commerce et son dirigeant (comte, duc…), qui peuvent le consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais les autres conseillers, jamais un joueur d'une autre province.",
         "MinePricesHolders": "Prix des mines : le commissaire au commerce, le commissaire aux mines et le bailli de la province, qui les gèrent, et son dirigeant (comte, duc…), qui peut les consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. Les autres titulaires de ces trois postes reçoivent aussi, une fois par jour, un email qui résume les prix modifiés et nomme le personnage qui les a modifiés. Jamais les autres conseillers, jamais un joueur d'une autre province.",
-        "AnimDecodeHolders": "Décode le code : la page publique d'une activité (nom, lieu, pseudo de l'organisateur, coffres percés et classement) est visible de tout le monde, qu'elle ait été créée en mode privé ou public — c'est le but de cet outil, partagé sur le forum du jeu. Votre mot de passe n'est jamais visible de personne, pas même de l'administrateur du site. Votre adresse email, si vous en avez confirmé une, est visible de l'administrateur du site dans son panneau d'administration — pour vous aider en cas de mot de passe oublié et pour les besoins de l'administration technique du service. Votre pseudo d'organisateur et, le cas échéant, la date de la dernière réinitialisation de mot de passe y sont également visibles."
+        "AnimationHolders": "Animation (Décode le code, Grille des lots) : la page publique d'une activité est visible de tout le monde, qu'elle ait été créée en mode privé ou public — c'est le but de ces outils, partagés sur le forum du jeu. Elle montre le nom, le lieu et le pseudo de l'organisateur, plus, pour Décode le code, les coffres percés et le classement ; pour la Grille des lots, visible dès le tirage, les cases et, pour chaque case choisie, le lot révélé et le nom du personnage qui l'a choisie (le contenu des cases non choisies reste caché jusqu'à la clôture, où tous les lots deviennent visibles). Votre mot de passe n'est jamais visible de personne, pas même de l'administrateur du site. Votre adresse email, si vous en avez confirmé une, est visible de l'administrateur du site dans son panneau d'administration — pour vous aider en cas de mot de passe oublié et pour les besoins de l'administration technique du service. Votre pseudo d'organisateur et, le cas échéant, la date de la dernière réinitialisation de mot de passe y sont également visibles."
       },
       "DataPageLink": "Vos données, outil par outil",
       "Section7": {

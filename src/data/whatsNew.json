@@ -70,5 +70,13 @@
     "type": "feature",
     "fr": "L'Office inaugure votre Bureau : un espace pour personnaliser votre expérience au sein de l'Office.",
     "en": "The Office opens your Desk: a personal space to tailor your experience within the Office."
+  },
+  {
+    "id": "rewards-grid-activity",
+    "date": "2026-11-11",
+    "scope": "public",
+    "type": "feature",
+    "fr": "La Salle des Jeux propose un nouveau coffre pour vous aider avec une grille de lots, avec ou sans compte.",
+    "en": "The Games Hall offers a new chest to help you with a prize grid, with or without an account."
   }
 ]
