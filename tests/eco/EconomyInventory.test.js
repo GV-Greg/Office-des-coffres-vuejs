@@ -28,7 +28,7 @@ const FIXTURE = `Encombrement : 29950
 1Clarabelle3
 1Objet inconnu et fantaisiste999`
 
-const ROUTER_ROUTES = [{ path: '/app/mon-bureau', name: 'province', component: { template: '<div/>' } }]
+const ROUTER_ROUTES = [{ path: '/app/mon-bureau/:section?', name: 'province', component: { template: '<div/>' } }]
 
 function mountPage(locale = 'fr') {
   setActivePinia(createPinia())
@@ -454,6 +454,16 @@ describe('EconomyInventory — ordre des catégories', () => {
     expect(headers.findIndex(h => h.includes('Curiosités'))).toBe(0)
     expect(headers.findIndex(h => h.includes('Curiosités'))).toBeLessThan(headers.findIndex(h => h.includes('Alimentation')))
     expect(headers.some(h => h.includes('Animaux'))).toBe(false) // Clarabelle n'est plus chez les animaux
+  })
+})
+
+describe('EconomyInventory — lien vers Mon bureau', () => {
+  it("« Gérer mes catégories » ouvre directement l'onglet des catégories de Mon bureau", async () => {
+    const w = mountPage()
+    await w.find('[data-testid="inventory-paste"]').setValue(FIXTURE)
+    const link = w.findAll('a').find(a => a.text().includes('Gérer mes catégories'))
+    expect(link).toBeDefined()
+    expect(link.attributes('href')).toBe('/app/mon-bureau/categories')
   })
 })
 
