@@ -14,6 +14,8 @@
     // `inline` : royaume et province côte à côte sur une ligne (dès `tablet`) ; la ville reste dessous. Désactivé par défaut : le Profil,
     // l'ajout de personnage et les mandats gardent leurs listes empilées.
     inline: { type: Boolean, default: false },
+    // `oneLine` (avec `inline`) : royaume, province ET ville sur la MÊME ligne (dès `tablet`) au lieu de la ville dessous — les formulaires larges.
+    oneLine: { type: Boolean, default: false },
     // Mode « ville » (défaut) : l'id de la ville. Mode « province » : l'id de la province.
     modelValue: {
       type: [Number, String],
@@ -148,7 +150,7 @@
     </div>
   </div>
   <template v-else>
-    <div :class="inline ? 'grid tablet:grid-cols-2 gap-x-3' : ''" data-testid="cascade-row">
+    <div :class="inline ? ['grid gap-x-3', oneLine && !stopsAtProvince && !stopsAtKingdom ? 'tablet:grid-cols-3' : 'tablet:grid-cols-2'] : ''" data-testid="cascade-row">
     <div class="form-group">
       <label class="form-label">{{ t('AddCharacter.KingdomLabel') }} <span class="text-red-500">*</span></label>
       <div class="relative">
@@ -175,9 +177,7 @@
       </div>
     </div>
 
-    </div>
-
-    <div v-if="!stopsAtProvince && !stopsAtKingdom" class="form-group">
+    <div v-if="!stopsAtProvince && !stopsAtKingdom" class="form-group" :class="inline && !oneLine ? 'tablet:col-span-2' : ''">
       <label class="form-label">{{ t('AddCharacter.CityLabel') }} <span class="text-red-500">*</span></label>
       <div class="relative">
         <select v-model="selectedCityId" @change="onCityChange" :disabled="!selectedProvinceId" class="form-field appearance-none pr-10 w-full" :class="{ 'text-slate-500': !selectedCityId, 'border-green-500': selectedCityId, 'border-red-300': !selectedCityId }">
@@ -188,6 +188,7 @@
         </select>
         <v-icon name="fa-chevron-down" scale="0.9" class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
       </div>
+    </div>
     </div>
   </template>
 </template>

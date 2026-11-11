@@ -13,7 +13,8 @@ function placeLine(place) {
 }
 
 /**
- * Résultats : lots attribués + lots non réclamés.
+ * Résultats : les lots ATTRIBUÉS seulement. 🔴 Jamais le contenu d'une case non réclamée, quel que soit l'état de la grille (décision de Greg,
+ * 10/11/2026) : le suspense est le jeu, et un export posté sur le forum le détruirait. (La page publique ne le montre pas non plus avant la clôture.)
  * @param {Object} grid  { name, place, lots, slug }
  * @param {string} baseUrl  ex. 'https://officedescoffres.creacube.be'
  */
@@ -21,13 +22,11 @@ export function exportResults(grid, baseUrl) {
   const { name, place, lots, slug } = grid
 
   const claimed = (lots ?? []).filter(l => l.player && l.place != null)
-  const unclaimed = (lots ?? []).filter(l => !l.player && l.place != null && l.name)
 
   claimed.sort((a, b) => a.place - b.place)
-  unclaimed.sort((a, b) => a.place - b.place)
 
   const lines = []
-  lines.push(`[color=darkcyan][size=18][b]🎁 Grille « ${name} »[/b][/size][/color]`)
+  lines.push(`[color=darkcyan][size=18][b]Grille « ${name} »[/b][/size][/color]`)
   const pl = placeLine(place)
   if (pl) lines.push(`[size=12]${pl}[/size]`)
   lines.push('')
@@ -37,16 +36,6 @@ export function exportResults(grid, baseUrl) {
     lines.push('[list]')
     for (const l of claimed) {
       lines.push(`[*] [b]Case ${l.place}[/b] — ${l.name ?? '?'} → ${l.player}`)
-    }
-    lines.push('[/list]')
-    lines.push('')
-  }
-
-  if (unclaimed.length) {
-    lines.push('[b]Lots non réclamés :[/b]')
-    lines.push('[list]')
-    for (const l of unclaimed) {
-      lines.push(`[*] [b]Case ${l.place}[/b] — ${l.name}`)
     }
     lines.push('[/list]')
     lines.push('')
@@ -69,7 +58,7 @@ export function exportRules(grid, baseUrl) {
   const total = (width ?? 0) * (height ?? 0)
 
   const lines = []
-  lines.push(`[color=darkcyan][size=18][b]🎁 Grille des lots « ${name} »[/b][/size][/color]`)
+  lines.push(`[color=darkcyan][size=18][b]Grille des lots « ${name} »[/b][/size][/color]`)
   const pl = placeLine(place)
   if (pl) lines.push(`[size=12]${pl}[/size]`)
   lines.push('')

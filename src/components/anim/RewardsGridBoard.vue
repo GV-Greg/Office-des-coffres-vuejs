@@ -1,16 +1,19 @@
 <script setup>
   import { ref, computed } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import RewardsAssignModal from '@/components/anim/RewardsAssignModal.vue'
 
   /*
-    La grille graphique des lots (vue organisateur).
-    Mise en page : mini-grille à gauche (numéro si libre, ✕ si réclamée) + liste des cases
-    dévoilées à droite (numéro | lot | joueur).
+    Le plateau de la grille : une mosaïque de cases carrées numérotées. Une case LIBRE est un sceau ardoise (son numéro) ; une case ATTRIBUÉE est
+    un coffre ouvert, doré (le joueur est dans l'infobulle et le nom accessible, la liste complète est à côté du plateau). L'organisateur d'une grille
+    TIRÉE (`editable`) clique une case libre pour l'attribuer ; les cases attribuées ne se modifient plus.
+    Les cases s'élargissent avec la place disponible, jusqu'à 4 rem ; un plateau large défile dans son cadre au lieu de déborder de la page.
+    ⚠️ Aucune règle ici (les bornes des dimensions sont au serveur) : le site dessine ce que le serveur envoie.
 
     Props :
-      - grid : { width, height, status, lots: [{ id, place, name, player, is_taken }] }
+      - grid : { width, height, status, lots: [{ id, place, name, player, is_taken }] } — sur la page publique, `lots` ne porte que les cases dévoilées
       - editable : vrai si l'organisateur peut cliquer les cases libres (mode `confirmed`)
-    Émet `assign(lotId, player)` quand l'organisateur saisit le nom du joueur.
+    Émet `assign(lotId, player)` quand l'organisateur valide la modale d'attribution (RewardsAssignModal).
   */
   const props = defineProps({
     grid: { type: Object, required: true },
@@ -32,105 +35,74 @@
     })
   })
 
-  const claimedCells = computed(() => cells.value.filter(c => c.lot?.player))
+  const total = computed(() => props.grid.width * props.grid.height)
+  const claimedCount = computed(() => cells.value.filter(c => c.lot?.player).length)
+
+  // Colonnes : de 2,25 rem (1,75 rem au-delà de 12 colonnes) à 4 rem, et jamais plus grandes que ce qui laisse TOUTES les lignes à l'écran en hauteur
+  // (24 rem pour l'en-tête, le titre et le bilan) : la grille tient sans faire défiler la page. Le style est le seul endroit où le nombre de colonnes existe.
+  const columns = computed(() => {
+    const min = props.grid.width > 12 ? '1.75rem' : '2.25rem'
+    return `repeat(${props.grid.width}, minmax(${min}, min(4rem, calc((100vh - 24rem) / ${props.grid.height}))))`
+  })
 
   const assigningId = ref(null)
-  const assignPlayer = ref('')
-  const assignError = ref('')
+  const assigningCell = computed(() => cells.value.find(c => c.lot?.id === assigningId.value) ?? null)
 
-  function startAssign(lotId) {
-    assigningId.value = lotId
-    assignPlayer.value = ''
-    assignError.value = ''
-  }
-  function cancelAssign() {
+  const startAssign = lotId => { assigningId.value = lotId }
+  const cancelAssign = () => { assigningId.value = null }
+  function submitAssign(lotId, player) {
+    emit('assign', lotId, player)
     assigningId.value = null
-    assignPlayer.value = ''
-  }
-  function submitAssign(lotId) {
-    if (!assignPlayer.value.trim()) { assignError.value = t('Animation.Grid.PlayerRequired'); return }
-    emit('assign', lotId, assignPlayer.value.trim())
-    assigningId.value = null
-    assignPlayer.value = ''
   }
 
-  function canClick(lot) {
-    return props.editable && lot && !lot.player && props.grid.status === 'confirmed'
-  }
+  const canClick = lot => props.editable && lot && !lot.player && props.grid.status === 'confirmed'
+
+  const cellLabel = ({ pos, lot }) => `${t('Animation.Grid.Cell', { n: pos })}${lot?.player ? ` — ${lot.player}` : ''}`
 </script>
 
 <template>
-  <div class="flex flex-col laptop:flex-row gap-5 items-start">
-
-    <!-- Mini-grille : numéro si libre, ✕ si réclamée -->
-    <div
-      class="grid gap-1 shrink-0"
-      :style="{ gridTemplateColumns: `repeat(${grid.width}, minmax(0, 1fr))` }"
-      :aria-label="t('Animation.Grid.BoardLabel')"
-      role="grid"
-    >
-      <button
-        v-for="{ pos, lot } in cells"
-        :key="pos"
-        role="gridcell"
-        type="button"
-        class="w-10 h-10 rounded border font-bold flex items-center justify-center select-none transition-colors"
-        :class="{
-          'bg-slate-800 border-slate-600 text-slate-500 cursor-default':                    !lot,
-          'bg-slate-800 border-teal-700 text-slate-300 hover:border-teal-400 cursor-pointer': lot && !lot.player && canClick(lot),
-          'bg-slate-800 border-teal-700 text-slate-400 cursor-default':                     lot && !lot.player && !canClick(lot),
-          'bg-teal-900/40 border-teal-600 text-orange-400 cursor-default':                  lot?.player,
-        }"
-        :aria-label="`${t('Animation.Grid.Cell', { n: pos })}${lot?.player ? ` — ${lot.player}` : ''}`"
-        :disabled="!canClick(lot)"
-        @click="canClick(lot) ? startAssign(lot.id) : null"
+  <div>
+    <!-- Le plateau : un groupe de boutons (pas un `grid` ARIA, qui exigerait des lignes). -->
+    <div class="max-w-full overflow-x-auto pb-1.5" data-testid="board-scroll">
+      <div
+        class="grid gap-1.5 w-max max-w-full"
+        :style="{ gridTemplateColumns: columns }"
+        :aria-label="t('Animation.Grid.BoardLabel')"
+        role="group"
+        data-testid="board-cells"
       >
-        <span v-if="!lot?.player" class="font-mono text-xs leading-none">{{ pos }}</span>
-        <span v-else aria-hidden="true" class="text-sm leading-none">✕</span>
-      </button>
-    </div>
-
-    <!-- Liste des cases dévoilées -->
-    <div class="flex-1 min-w-0">
-      <h5 class="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
-        {{ t('Animation.Grid.ClaimedTitle') }}
-        <span v-if="claimedCells.length" class="ml-1 font-normal normal-case text-slate-400">({{ claimedCells.length }}&thinsp;/&thinsp;{{ grid.width * grid.height }})</span>
-      </h5>
-      <p v-if="!claimedCells.length" class="text-xs text-slate-400 dark:text-slate-500 italic">{{ t('Animation.Grid.NoClaimed') }}</p>
-      <ul v-else class="space-y-1.5">
-        <li
-          v-for="{ pos, lot } in claimedCells"
-          :key="pos"
-          class="flex items-center gap-2 rounded px-2.5 py-1.5 bg-slate-100 dark:bg-slate-700/60 text-sm"
+        <button
+          v-for="cell in cells"
+          :key="cell.pos"
+          type="button"
+          class="relative aspect-square w-full rounded-lg border-2 flex items-center justify-center select-none transition-colors motion-safe:transition-transform"
+          :class="[
+            cell.lot?.player
+              ? 'bg-orange-100 border-orange-500 text-slate-800 cursor-default'
+              : canClick(cell.lot)
+                ? 'bg-slate-800 border-teal-600 text-white cursor-pointer hover:bg-slate-700 hover:border-teal-300 motion-safe:hover:-translate-y-0.5'
+                : 'bg-slate-800 border-slate-600 text-slate-200 cursor-default',
+          ]"
+          :aria-label="cellLabel(cell)"
+          :title="cell.lot?.player ? cellLabel(cell) : undefined"
+          :disabled="!canClick(cell.lot)"
+          @click="canClick(cell.lot) ? startAssign(cell.lot.id) : null"
         >
-          <span class="font-mono text-xs text-slate-400 w-5 shrink-0 text-right">#{{ pos }}</span>
-          <span class="font-semibold text-slate-800 dark:text-slate-200 truncate flex-1">{{ lot.name }}</span>
-          <span class="shrink-0 text-xs text-teal-600 dark:text-teal-400 font-medium">{{ lot.player }}</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Formulaire d'assignation (en dessous) -->
-  <div v-if="assigningId !== null" class="mt-3 rounded-lg border border-teal-400 bg-teal-50 dark:bg-teal-900/30 p-3" data-testid="assign-form">
-    <p class="text-sm font-semibold text-teal-800 dark:text-teal-200 mb-2">{{ t('Animation.Grid.AssignTitle') }}</p>
-    <form class="flex gap-2 items-end" @submit.prevent="submitAssign(assigningId)">
-      <div class="flex-1">
-        <label for="assign-player" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">{{ t('Animation.Grid.PlayerName') }}</label>
-        <input
-          id="assign-player"
-          v-model="assignPlayer"
-          type="text"
-          maxlength="40"
-          required
-          autofocus
-          class="form-field w-full"
-          data-testid="assign-player-input"
-        />
-        <p v-if="assignError" role="alert" class="text-xs text-red-700 mt-1">{{ assignError }}</p>
+          <template v-if="cell.lot?.player">
+            <!-- Case dévoilée : un grand coffre ouvert, le numéro en coin (la légende, `RewardsGridLegend`, est sur la page publique). -->
+            <v-icon name="gi-open-treasure-chest" scale="1.9" aria-hidden="true" />
+            <span class="absolute left-1 top-0.5 font-mono text-[10px] leading-none font-bold" aria-hidden="true">{{ cell.pos }}</span>
+          </template>
+          <span v-else class="font-mono text-sm leading-none font-bold">{{ cell.pos }}</span>
+        </button>
       </div>
-      <button type="submit" class="odc-btn odc-btn--soft odc-btn--sm odc--teal" data-testid="assign-submit">{{ t('Animation.Grid.Assign') }}</button>
-      <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="assign-cancel" @click="cancelAssign">{{ t('Animation.Grid.Cancel') }}</button>
-    </form>
+    </div>
+
+    <p class="mt-2 mb-0 text-sm font-semibold text-slate-800 dark:text-slate-800" data-testid="board-progress">
+      {{ t('Animation.Grid.BoardProgress', { claimed: claimedCount, total }, claimedCount) }}
+    </p>
+
+    <!-- L'attribution d'une case : une modale (charte §6.7), qui ne cache rien d'autre qu'elle-même. -->
+    <RewardsAssignModal :show="assigningId !== null" :cell="assigningCell" @close="cancelAssign" @assign="submitAssign" />
   </div>
 </template>

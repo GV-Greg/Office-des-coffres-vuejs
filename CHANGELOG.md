@@ -6,6 +6,30 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [à dater au merge] — Grille des lots, 2ᵉ activité du module Animation (`feat/rewards-grid-ui`, non mergée)
+
+### Added
+- Activité **« Grille des lots »** (`rewards`) : une grille N×M de cases numérotées, des lots à inscrire, un tirage au sort, l'attribution des cases réclamées, la clôture. Deux modes comme Décode le code : **privé** (« Ma grille », lié au personnage) et **sans compte** (créer, retrouver sa grille, réinitialiser le mot de passe, confirmer l'email). Page publique `/public/activite/grille/:slug` (visible dès le tirage), export BBCode en liste `[list][*]` (règles et résultats).
+- Le **tirage fait passer la grille directement à « tirée »** (décision de Greg, 10/11/2026) : plus d'étape « confirmer » ; la page publique s'ouvre au tirage.
+- **Écrans communs à toutes les activités d'Animation** (`modules/animKinds.js`, `use/animApi.js`, `use/useAnimKind.js`, `AnimCreateForm`, `AnimStartPanel`, `AnimPublicShell`, `Anim{CreateAnonymous,Manage,Reset,ConfirmEmail}View`) : Décode le code et la grille en sont deux déclarations ; les vues `Decode*` ne sont plus que des enveloppes. Aucun changement de comportement pour Décode.
+- Garde-fou `tests/enforcement/anim-i18n-keys` : toute clé de texte littérale du module Animation existe en français et en anglais.
+- 100+ tests (`tests/anim/Rewards*`, `useRewardsGrid`, `rewardsBBcode`).
+
+- **Ajout des lots** : une **quantité** (3 × « 50 écus » = trois lots, donc trois cases) à côté du nom ; « Ajouter une liste » (un lot par ligne, virgule ou tabulation, sans quantité ; un nombre collé au nom reçoit une espace, un nombre seul + tabulation est recollé au nom). Tout passe par **un seul appel** (`names` sur `POST …/lots`, tout ou rien) : 100 lots ne dépassent plus la limite de 60 requêtes par minute.
+- **Écran de l'organisateur** : « Ma grille de lots « … » », liste des lots à gauche, plateau au milieu, explicatif et exports à droite ; l'attribution d'une case dans une **modale** (charte §6.7) ; plateau aux cases carrées (sceau ardoise / coffre ouvert doré) dont la taille est bornée pour que toute la grille tienne à l'écran ; liste des lots défilant dans son cadre ; explicatif qui évolue (comment remplir, puis le tirage).
+- **Création** : formulaire pleine largeur, aperçu vivant de la grille, nom et adresse sur une ligne, royaume / province / ville sur une ligne (`CityCascadeSelect` : option `one-line`).
+- **Page publique** : même structure (liste, grille, légende « case libre / case dévoilée »), sans cadres blancs.
+- **Exports BBCode** : « Confier les règles / les résultats au scribe » copient directement dans le presse-papier ; les résultats **ne dévoilent jamais une case non réclamée** ; plus d'icône dans le titre.
+
+### Fixed
+- Grille sans compte : l'adresse email n'était **jamais envoyée au serveur** (clé `organizer_email` au lieu de `email`) — ni lien de confirmation ni réinitialisation par email.
+- Une grille sans compte **pas encore tirée** n'était pas retrouvée à l'entrée (sa page publique répond 404) : la reprise est proposée.
+- Plateau : défile dans son cadre et rétrécit ses cases au lieu de déborder à 375 px ; `role="grid"` invalide remplacé par un groupe de boutons ; « Case » n'est plus en dur ; bouton « × » de retrait nommé ; statut de la grille remis à jour après un retrait de lot ; clés `TakenEmpty` manquantes ; couleurs hors thème (`sky`) ; refus `dimensions` du serveur désormais affiché.
+- Textes de la grille : plus de promesse de « notifications » à l'adresse confirmée ni de clôture automatique (le serveur ne ferme pas encore les grilles inactives).
+
+### Prod
+- Dépend de back `feat/rewards-grid` (migrations `anim_rewards_*`, routes : `migrate` + `route:cache`). ⚠️ **Rien ne se déploie avant le texte légal** (politique, cookies, « Vos données », registre des traitements).
+
 ## [2026-10-29] — PR #102 (accueil : la chronique défile dans son cadre)
 
 ### Fixed

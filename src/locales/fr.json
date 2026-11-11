@@ -720,6 +720,72 @@
         "CreateGuest": "Créer une grille",
         "FindGuest": "Retrouver ma grille",
         "CookieHint": "Vous organisez sans compte ; si vous souhaitez que l'Office retienne votre grille, acceptez les cookies de confort dans « Gérer mes préférences »."
+      },
+      "Manage": {
+        "Title": "Retrouver ma grille",
+        "FormTitle": "Ouvrir ma grille",
+        "Intro": "Saisissez l'adresse de votre grille et le mot de passe choisi à sa création. Il n'y a ni session ni compte : le mot de passe n'est gardé que le temps de cette page.",
+        "Slug": "Adresse de la grille",
+        "NotFound": "Adresse ou mot de passe inconnus.",
+        "ResetSent": "Si cette grille a une adresse email confirmée, un lien vient d'y être envoyé. Sinon, votre demande est notée : l'administrateur du site fera porter un lien, dans le jeu, au personnage indiqué comme organisateur.",
+        "NoActivity": "Pas encore de grille ?",
+        "NoActivityText": "Créez-en une en quelques instants, sans compte : un nom, une adresse, des dimensions, un mot de passe.",
+        "CreateOne": "Organiser sans compte",
+        "Password": "Mot de passe",
+        "Open": "Ouvrir ma grille",
+        "LostTitle": "Mot de passe perdu ?",
+        "LostEmailLead": "Avec email confirmé :",
+        "LostEmail": "cliquez « Réinitialiser mon mot de passe » — un lien vous sera envoyé.",
+        "LostNoEmailLead": "Sans email :",
+        "LostNoEmail": "l'administrateur du site émet un lien de réinitialisation et le transmet à votre personnage dans le jeu.",
+        "Forgot": "Réinitialiser mon mot de passe",
+        "AskAdmin": "Demander à l'administrateur du site",
+        "Leave": "Quitter la grille"
+      },
+      "Reset": {
+        "Intro": "Grille {slug} : choisissez vous-même votre nouveau mot de passe. Ce lien est valable 24 heures et ne s'emploie qu'une seule fois.",
+        "Title": "Réinitialiser mon mot de passe",
+        "Missing": "Ce lien est incomplet. Ouvrez l'email reçu et cliquez le lien tel quel.",
+        "Done": "Mot de passe modifié. Vous pouvez maintenant accéder à votre grille.",
+        "Submit": "Enregistrer le nouveau mot de passe"
+      },
+      "Confirm": {
+        "Ok": "Votre adresse est confirmée. Elle ne sert qu'à vous envoyer un lien si vous oubliez votre mot de passe, et sera effacée à la clôture de la grille.",
+        "Error": "Cette adresse ne peut pas être confirmée : le lien est périmé ou la grille n'existe plus.",
+        "Title": "Confirmation de l'adresse email",
+        "Loading": "Confirmation en cours…"
+      },
+      "Create": {
+        "Title": "Organiser une grille sans compte",
+        "Intro": "Aucun compte n'est nécessaire. Vous choisissez un nom, une adresse, les dimensions et un mot de passe : c'est tout ce qui prouvera que la grille est la vôtre.",
+        "ColumnActivity": "Votre grille",
+        "Dimensions": "Dimensions de la grille",
+        "DoneTitle": "Votre grille est créée.",
+        "DonePassword": "Gardez votre mot de passe : sans lui, et sans email confirmé, la grille ne se récupère pas.",
+        "DoneManage": "Gérer ma grille",
+        "EmailHelp": "Pour recevoir un lien si vous oubliez votre mot de passe. Elle doit être confirmée par un lien, et elle est effacée à la clôture.",
+        "DoneAddress": "L'adresse de votre grille :",
+        "DoneEmail": "Un email de confirmation vous a été envoyé à l'adresse indiquée.",
+        "PreviewTitle": "Aperçu de la grille",
+        "PreviewCaption": "{count} case, donc 1 lot à inscrire avant le tirage. | {count} cases, donc {count} lots à inscrire avant le tirage.",
+        "PreviewInvalid": "Indiquez une largeur et une hauteur pour voir la grille."
+      },
+      "Recap": {
+        "Dimensions": "Grille de {width} × {height} cases : {count} lots à inscrire avant le tirage.",
+        "EmailYes": "Votre adresse email sera confirmée par un lien. Une fois confirmée, elle ne servira qu'à vous envoyer un lien si vous oubliez votre mot de passe. Elle est effacée à la clôture.",
+        "ClosingAnonymous": "La clôture est définitive : la grille ne pourra pas être rouverte. Le mot de passe, l'empreinte de connexion et l'email sont effacés ; le nom de la grille, le pseudo de l'organisateur, le lieu et les lots restent consultables.",
+        "ClosingPrivate": "Vous pourrez clore la grille, la rouvrir, puis la supprimer une fois close.",
+        "DeletionPrivate": "Elle est supprimée avec votre personnage ou votre compte, avec ses lots."
+      },
+      "Public": {
+        "NotFound": "Cette grille n'existe pas, ou n'a pas encore été tirée.",
+        "ClosedNotice": "Cette grille est close : plus aucune case n'est attribuée."
+      },
+      "Mine": {
+        "Name": "Nom de la grille"
+      },
+      "Slug": {
+        "Label": "Adresse de la grille"
       }
     },
     "Grid": {
@@ -727,9 +793,9 @@
       "BoardTitle": "La grille",
       "BoardLabel": "Grille des lots",
       "Cell": "Case {n}",
-      "ClaimedTitle": "Lots attribués",
+      "ClaimedTitle": "Liste des lots",
       "NoClaimed": "Aucune case réclamée pour l'instant.",
-      "CardTitle": "Grille « {name} »",
+      "CardTitle": "Ma grille de lots « {name} »",
       "LotsTitle": "Lots",
       "LotNamePlaceholder": "Nom du lot…",
       "AddLot": "Ajouter",
@@ -738,7 +804,7 @@
       "LotsAddedWithSkipped": "{added} lot(s) ajouté(s), {skipped} ignoré(s) — grille complète.",
       "AddList": "Ajouter une liste",
       "AddBulk": "Ajouter tous",
-      "BulkPlaceholder": "Un lot par ligne, ou séparés par des virgules…",
+      "BulkPlaceholder": "Un lot par ligne, ou séparés par une virgule ou une tabulation…",
       "GridFilled": "Tous les lots ont été ajoutés. La grille est complète.",
       "Close": "Clore la grille",
       "CloseDefinitive": "Clore la grille définitivement",
@@ -764,7 +830,7 @@
       "MineTitle": "Ma grille de lots",
       "NoCharacter": "Une grille privée est confiée à un personnage : présentez-en un à l'Office pour la tenir avec lui.",
       "CreateTitle": "Créer une grille",
-      "OneAtATime": "Un seul outil en cours d'utilisation à la fois par personnage.",
+      "OneAtATime": "Une seule grille à la fois : clôturez la précédente avant d'en créer une autre.",
       "Name": "Nom de la grille",
       "Slug": "Adresse (slug)",
       "Width": "Largeur (colonnes)",
@@ -783,53 +849,25 @@
       "Empty": "Aucune grille pour le moment.",
       "OrganizerName": "Pseudo du personnage",
       "OrganizerEmail": "Adresse email (optionnelle)",
-      "Manage": {
-        "FormTitle": "Retrouver ma grille",
-        "Intro": "Saisissez l'adresse de votre grille et votre mot de passe pour y accéder.",
-        "Slug": "Adresse",
-        "Password": "Mot de passe",
-        "Open": "Ouvrir ma grille",
-        "NotFound": "Cette grille n'existe pas ou le mot de passe est incorrect.",
-        "LostTitle": "Mot de passe perdu ?",
-        "LostEmailLead": "Avec email confirmé :",
-        "LostEmail": "cliquez « Réinitialiser mon mot de passe » — un lien vous sera envoyé.",
-        "LostNoEmailLead": "Sans email :",
-        "LostNoEmail": "l'administrateur du site émet un lien de réinitialisation et le transmet à votre personnage dans le jeu.",
-        "Forgot": "Réinitialiser mon mot de passe",
-        "AskAdmin": "Demander à l'administrateur du site",
-        "ResetSent": "La demande a bien été envoyée.",
-        "NoActivity": "Pas encore de grille ?",
-        "NoActivityText": "Créez-en une en quelques secondes, sans compte.",
-        "CreateOne": "Créer une grille",
-        "Leave": "Quitter la grille"
-      },
-      "Reset": {
-        "Title": "Réinitialiser mon mot de passe",
-        "Missing": "Ce lien est incomplet. Ouvrez l'email reçu et cliquez le lien tel quel.",
-        "Done": "Mot de passe modifié. Vous pouvez maintenant accéder à votre grille.",
-        "Intro": "Choisissez un nouveau mot de passe pour la grille « {slug} ».",
-        "Submit": "Enregistrer le nouveau mot de passe"
-      },
-      "ConfirmEmail": {
-        "Title": "Confirmation de l'adresse email",
-        "Ok": "Adresse email confirmée. Vous recevrez désormais les notifications de votre grille.",
-        "Error": "Ce lien est invalide ou a déjà été utilisé."
-      },
-      "Create": {
-        "Title": "Créer une grille sans compte",
-        "DoneTitle": "Grille créée !",
-        "DoneAddress": "L'adresse de votre grille :",
-        "DoneEmail": "Un email de confirmation vous a été envoyé à l'adresse indiquée.",
-        "DonePassword": "Conservez votre mot de passe précieusement : il ne vous sera pas envoyé par email.",
-        "ConfirmTitle": "Confirmer la création",
-        "ConfirmWarning": "Vérifiez bien les informations ci-dessus avant de créer votre grille.",
-        "ConfirmCreate": "Oui, créer cette grille",
-        "GoConfirm": "Vérifier avant de créer",
-        "SectionGrid": "La grille",
-        "SectionIdentity": "Mon identité",
-        "EmailHelp": "Si vous la confirmez, vous pourrez réinitialiser votre mot de passe seul en cas de perte.",
-        "Required": "Champ obligatoire"
-      }
+      "TakenEmpty": "Aucun lot attribué pour l'instant. Cliquez sur une case libre du plateau pour l'attribuer à un personnage.",
+      "RemoveLot": "Retirer le lot « {name} »",
+      "BoardProgress": "{claimed} case dévoilée sur {total} | {claimed} cases dévoilées sur {total}",
+      "AssignModalTitle": "Attribuer la case {n}",
+      "AssignModalHelp": "Le lot de cette case sera révélé sur la page publique, avec le nom du personnage. Une case attribuée ne se modifie plus.",
+      "LegendFree": "Case libre",
+      "LegendRevealed": "Case dévoilée",
+      "LegendTitle": "Légende",
+      "LegendFreeText": "Personne ne l'a encore réclamée : son lot reste caché.",
+      "LegendRevealedText": "Un personnage l'a réclamée : son lot est révélé dans la liste.",
+      "LotQuantity": "Quantité (nombre de lots identiques)",
+      "AddGuideTitle": "Comment remplir la grille ?",
+      "AddGuideStep1": "Saisissez le nom du lot. Avec une quantité, il est inscrit plusieurs fois : 3 × « 50 écus » font trois lots, donc trois cases.",
+      "AddGuideStep2": "« Ajouter une liste » inscrit un lot par ligne, ou séparés par une virgule ou une tabulation, sans quantité.",
+      "AddGuideReadyTitle": "Toutes les cases ont leur lot",
+      "AddGuideReady": "« Tirer au sort » répartit les lots au hasard : la page publique s'ouvre et les joueurs choisissent leur case.",
+      "LotsListLabel": "Lots inscrits",
+      "EntrustResults": "Confier les résultats au scribe",
+      "EntrustRules": "Confier les règles au scribe"
     },
     "Status": {
       "new": "Nouveau",

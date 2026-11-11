@@ -1,6 +1,6 @@
 <script setup>
   import { ref, watch, computed, onBeforeUnmount } from 'vue'
-  import { useI18n } from 'vue-i18n'
+  import useAnimKind from '@/use/useAnimKind'
   import useDecodeActivities from '@/use/useDecodeActivities'
   import useRewardsGrid from '@/use/useRewardsGrid'
 
@@ -21,7 +21,7 @@
   })
   const emit = defineEmits(['update:modelValue', 'state'])
 
-  const { t } = useI18n()
+  const { kt } = useAnimKind(props.activityType)
   const decodeApi = useDecodeActivities()
   const rewardsApi = useRewardsGrid()
   const slugFn = computed(() => props.activityType === 'rewards' ? rewardsApi.slug : decodeApi.slug)
@@ -76,15 +76,15 @@
 <template>
   <div>
     <div class="flex flex-wrap items-baseline gap-x-2">
-      <label :for="`${idPrefix}-slug`" class="block text-sm font-bold">{{ t('Animation.Slug.Label') }}<span class="text-red-700 dark:text-red-700" aria-hidden="true"> *</span></label>
+      <label :for="`${idPrefix}-slug`" class="block text-sm font-bold">{{ kt('Slug.Label') }}<span class="text-red-700 dark:text-red-700" aria-hidden="true"> *</span></label>
       <!-- L'état est écrit (la couleur ne porte jamais seule le sens) et annoncé. -->
       <span class="text-xs text-slate-600 dark:text-slate-600" aria-hidden="true">—</span>
       <p :id="`${idPrefix}-status`" role="status" class="text-xs italic text-slate-700 dark:text-slate-700" :data-testid="`${idPrefix}-status`">
-        <template v-if="!modelValue">{{ t('Animation.Slug.Empty') }}</template>
-        <template v-else-if="pending || !status.checked">{{ t('Animation.Slug.Checking') }}</template>
-        <span v-else-if="!status.valid" class="text-red-700 dark:text-red-700" data-state="invalid">{{ t('Animation.Slug.Invalid', { min: status.min, max: status.max }) }}</span>
-        <span v-else-if="status.taken" class="text-red-700 dark:text-red-700" data-state="taken">{{ t('Animation.Slug.Taken') }}</span>
-        <span v-else class="text-green-800 dark:text-green-800" data-state="free">{{ t('Animation.Slug.Free') }}</span>
+        <template v-if="!modelValue">{{ kt('Slug.Empty') }}</template>
+        <template v-else-if="pending || !status.checked">{{ kt('Slug.Checking') }}</template>
+        <span v-else-if="!status.valid" class="text-red-700 dark:text-red-700" data-state="invalid">{{ kt('Slug.Invalid', { min: status.min, max: status.max }) }}</span>
+        <span v-else-if="status.taken" class="text-red-700 dark:text-red-700" data-state="taken">{{ kt('Slug.Taken') }}</span>
+        <span v-else class="text-green-800 dark:text-green-800" data-state="free">{{ kt('Slug.Free') }}</span>
       </p>
     </div>
     <input
@@ -99,6 +99,6 @@
       :data-testid="`${idPrefix}-input`"
       @input="onInput"
     />
-    <p class="text-xs text-slate-600 dark:text-slate-600">{{ t('Animation.Slug.Help', { min: status.min, max: status.max }) }}</p>
+    <p class="text-xs text-slate-600 dark:text-slate-600">{{ kt('Slug.Help', { min: status.min, max: status.max }) }}</p>
   </div>
 </template>

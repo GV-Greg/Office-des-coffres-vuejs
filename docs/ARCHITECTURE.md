@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 28/10/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 10/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -321,6 +321,25 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   - **`use/useDecodeActivities.js`** — tous les appels (`anim/*` sans jeton, le reste avec) ; `asOrganizer()` / `asAnonymous(slug, mot de passe)`. Pas de store Pinia.
   - Textes sous `Animation.{Home,Start,Types,Status,Public,Slug,Password,Create,Recap,Manage,Reset,Confirm,Mine}.*`. Le **texte des règles**
     (`Animation.Types.decode.Rules`, version **site**, rédigée par Cowork le 28/10/2026) n'est PAS le jumeau de `types.decode.rules` du backend, qui est la version **export forum** (deux textes voulus distincts) ; affiché avec `whitespace-pre-line` (ses retours à la ligne comptent).
+- **Écrans communs à toutes les activités d'Animation** (10/11/2026, factorisation faite AVANT le premier merge de la Grille des lots) — un type d'activité ne copie
+  plus les écrans de Décode : il se déclare dans **`modules/animKinds.js`** (`ANIM_KINDS` : noms de routes API, clé comfort data de l'adresse, espace de textes `ns`,
+  routes, titre/icônes, `autoClose` = peut-on promettre la clôture automatique à 30 jours) et les écrans lisent cette entrée. Pièces : `use/animApi.js` (socle API : lecture
+  publique, slug, mode privé, mode sans compte, réinitialisation, confirmation d'email — `useDecodeActivities` et `useRewardsGrid` n'y ajoutent que leurs gestes),
+  `use/useAnimKind.js` (`kt('Section.Clé')` lit `Animation.{ns}.Section.Clé`, à défaut `Animation.Section.Clé` : un type ne redéfinit que ce qu'il dit autrement),
+  `components/anim/AnimCreateForm.vue` (formulaire + récapitulatif, slot `extra` et props `extraDefaults/extraValid/extraRecap` pour les champs propres à un type ;
+  `DecodeCreateForm` et `RewardsCreateForm` en sont des enveloppes), `AnimStartPanel.vue` (les six scénarios de l'entrée ; `DecodeStartPanel`/`RewardsStartPanel`),
+  `AnimPublicShell.vue` (coquille des pages publiques `/public/activite/<type>/<adresse>`), `animHeroes.js` (l'encadré sombre de chaque type), et les vues
+  `views/modules/animation/Anim{CreateAnonymous,Manage,Reset,ConfirmEmail}View.vue` (les `Decode*View` et `RewardsGrid*View` correspondantes sont des enveloppes d'une
+  ligne : `<AnimManageView kind="…" />`). ⚠️ Les testids sont ceux de Décode pour tous les types (une seule page à la fois) ; les cartes d'organisateur restent nommées
+  explicitement dans les vues (elles se remplacent par leur nom dans les tests). Ajouter un type : voir `admin/strategies/animation.md`.
+- **Grille des lots** (`rewards`, 2ᵉ activité, brief `admin/content/brief-grille-des-lots.md`) — routes `/app/anim/grille[/creer|/gerer|/reinitialiser|/confirmer-email|/ma-grille]`
+  et `/public/activite/grille/:slug`. Pièces propres : `RewardsGridBoard.vue` (plateau : cases numérotées en groupe de boutons, ✕ si réclamée, cliquables pour l'organisateur
+  d'une grille **tirée** seulement ; défile dans son cadre et rétrécit ses cases au-delà de 8 puis 12 colonnes), `RewardsGridCard.vue` (écran de l'organisateur, mêmes
+  `gestures` privé/sans compte), `RewardsGridAside.vue` (lots attribués, exports BBCode règles/résultats, état de l'email — écrit une fois), `RewardsCreateForm.vue` (dimensions),
+  `RewardsGridHero.vue`/`RewardsGridVisual.vue`, `modules/rewardsBBcode.js` (BBCode en français fixe, format liste `[list][*]`). 🔴 **Le tirage fait passer la grille directement
+  à `confirmed`** (décision de Greg, 10/11/2026 : l'étape « confirmer » ne laissait rien à modifier) : `drawed` n'est jamais affiché et il n'y a aucun geste `confirm`.
+  Une grille n'a **pas de page publique avant son tirage** (le serveur répond 404) : l'entrée retrouve pourtant une grille sans compte mémorisée en interrogeant l'aperçu du
+  slug (`taken`). Les bornes des dimensions sont au serveur (le site ne vérifie que deux entiers) ; l'email part sous la clé `email`.
 - **`modules/company/MainCompany.vue`** — squelette vide, placeholder "Test" i18n minimal
   (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est prévu.
 

@@ -720,6 +720,72 @@
         "CreateGuest": "Create a grid",
         "FindGuest": "Find my grid",
         "CookieHint": "You are organising without an account; to have the Office remember your grid, accept comfort cookies in 'Manage my preferences'."
+      },
+      "Manage": {
+        "Title": "Find my grid",
+        "FormTitle": "Open my grid",
+        "Intro": "Enter your grid's address and the password you chose when you created it. There is no session and no account: the password is only kept while this page is open.",
+        "Slug": "Grid address",
+        "NotFound": "Unknown address or password.",
+        "ResetSent": "If this grid has a confirmed email address, a link has just been sent to it. Otherwise your request is noted: the site administrator will have a link delivered, in the game, to the character named as organizer.",
+        "NoActivity": "No grid yet?",
+        "NoActivityText": "Create one in a few moments, without an account: a name, an address, dimensions and a password.",
+        "CreateOne": "Organize without an account",
+        "Password": "Password",
+        "Open": "Open my grid",
+        "LostTitle": "Lost your password?",
+        "LostEmailLead": "With a confirmed email:",
+        "LostEmail": "click 'Reset my password' — a link will be sent to you.",
+        "LostNoEmailLead": "Without email:",
+        "LostNoEmail": "the site administrator issues a reset link and sends it to your character in the game.",
+        "Forgot": "Reset my password",
+        "AskAdmin": "Ask the site administrator",
+        "Leave": "Leave the grid"
+      },
+      "Reset": {
+        "Intro": "Grid {slug}: choose your new password yourself. This link is valid for 24 hours and can only be used once.",
+        "Title": "Reset my password",
+        "Missing": "This link is incomplete. Open the email you received and click the link as is.",
+        "Done": "Password changed. You can now access your grid.",
+        "Submit": "Save the new password"
+      },
+      "Confirm": {
+        "Ok": "Your address is confirmed. It is only used to send you a link if you forget your password, and it will be erased when the grid is closed.",
+        "Error": "This address cannot be confirmed: the link has expired or the grid no longer exists.",
+        "Title": "Email address confirmation",
+        "Loading": "Confirming…"
+      },
+      "Create": {
+        "Title": "Organize a grid without an account",
+        "Intro": "No account is needed. You choose a name, an address, the dimensions and a password: that is all that will prove the grid is yours.",
+        "ColumnActivity": "Your grid",
+        "Dimensions": "Grid dimensions",
+        "DoneTitle": "Your grid is created.",
+        "DonePassword": "Keep your password: without it, and without a confirmed email, the grid cannot be recovered.",
+        "DoneManage": "Manage my grid",
+        "EmailHelp": "To receive a link if you forget your password. It must be confirmed by a link, and it is erased when the grid is closed.",
+        "DoneAddress": "Your grid address:",
+        "DoneEmail": "A confirmation email has been sent to the address you provided.",
+        "PreviewTitle": "Grid preview",
+        "PreviewCaption": "{count} cell, so 1 prize to enter before the draw. | {count} cells, so {count} prizes to enter before the draw.",
+        "PreviewInvalid": "Enter a width and a height to see the grid."
+      },
+      "Recap": {
+        "Dimensions": "A grid of {width} × {height} cells: {count} prizes to enter before the draw.",
+        "EmailYes": "Your email address will be confirmed by a link. Once confirmed, it will only be used to send you a link if you forget your password. It is erased when the grid is closed.",
+        "ClosingAnonymous": "Closing is final: the grid cannot be reopened. The password, the connection fingerprint and the email are erased; the grid name, the organizer's name, the place and the prizes stay visible.",
+        "ClosingPrivate": "You will be able to close the grid, reopen it, then delete it once it is closed.",
+        "DeletionPrivate": "It is deleted with your character or your account, along with its prizes."
+      },
+      "Public": {
+        "NotFound": "This grid does not exist, or has not been drawn yet.",
+        "ClosedNotice": "This grid is closed: no more cells are being assigned."
+      },
+      "Mine": {
+        "Name": "Grid name"
+      },
+      "Slug": {
+        "Label": "Grid address"
       }
     },
     "Grid": {
@@ -727,9 +793,9 @@
       "BoardTitle": "The grid",
       "BoardLabel": "Prize grid",
       "Cell": "Cell {n}",
-      "ClaimedTitle": "Awarded prizes",
+      "ClaimedTitle": "Prize list",
       "NoClaimed": "No cells claimed yet.",
-      "CardTitle": "Grid \"{name}\"",
+      "CardTitle": "My rewards grid \"{name}\"",
       "LotsTitle": "Prizes",
       "LotNamePlaceholder": "Prize name…",
       "AddLot": "Add",
@@ -738,7 +804,7 @@
       "LotsAddedWithSkipped": "{added} prize(s) added, {skipped} skipped — grid full.",
       "AddList": "Add a list",
       "AddBulk": "Add all",
-      "BulkPlaceholder": "One prize per line, or comma-separated…",
+      "BulkPlaceholder": "One prize per line, or separated by a comma or a tab…",
       "GridFilled": "All prizes have been added. The grid is complete.",
       "Close": "Close the grid",
       "CloseDefinitive": "Close the grid permanently",
@@ -764,7 +830,7 @@
       "MineTitle": "My rewards grid",
       "NoCharacter": "A private grid is entrusted to a character: introduce one to the Office to manage it with them.",
       "CreateTitle": "Create a grid",
-      "OneAtATime": "Only one active tool at a time per character.",
+      "OneAtATime": "One grid at a time: close the previous one before creating another.",
       "Name": "Grid name",
       "Slug": "Address (slug)",
       "Width": "Width (columns)",
@@ -783,53 +849,25 @@
       "Empty": "No grid yet.",
       "OrganizerName": "Character name",
       "OrganizerEmail": "Email address (optional)",
-      "Manage": {
-        "FormTitle": "Find my grid",
-        "Intro": "Enter your grid address and your password to access it.",
-        "Slug": "Address",
-        "Password": "Password",
-        "Open": "Open my grid",
-        "NotFound": "This grid does not exist or the password is incorrect.",
-        "LostTitle": "Lost your password?",
-        "LostEmailLead": "With a confirmed email:",
-        "LostEmail": "click 'Reset my password' — a link will be sent to you.",
-        "LostNoEmailLead": "Without email:",
-        "LostNoEmail": "the site administrator issues a reset link and sends it to your character in the game.",
-        "Forgot": "Reset my password",
-        "AskAdmin": "Ask the site administrator",
-        "ResetSent": "The request has been sent.",
-        "NoActivity": "No grid yet?",
-        "NoActivityText": "Create one in seconds, without an account.",
-        "CreateOne": "Create a grid",
-        "Leave": "Leave the grid"
-      },
-      "Reset": {
-        "Title": "Reset my password",
-        "Missing": "This link is incomplete. Open the email you received and click the link as is.",
-        "Done": "Password changed. You can now access your grid.",
-        "Intro": "Choose a new password for the grid \"{slug}\".",
-        "Submit": "Save the new password"
-      },
-      "ConfirmEmail": {
-        "Title": "Email address confirmation",
-        "Ok": "Email address confirmed. You will now receive notifications for your grid.",
-        "Error": "This link is invalid or has already been used."
-      },
-      "Create": {
-        "Title": "Create a grid without an account",
-        "DoneTitle": "Grid created!",
-        "DoneAddress": "Your grid address:",
-        "DoneEmail": "A confirmation email has been sent to the address you provided.",
-        "DonePassword": "Keep your password safe: it will not be sent to you by email.",
-        "ConfirmTitle": "Confirm creation",
-        "ConfirmWarning": "Please check the information above before creating your grid.",
-        "ConfirmCreate": "Yes, create this grid",
-        "GoConfirm": "Review before creating",
-        "SectionGrid": "The grid",
-        "SectionIdentity": "My identity",
-        "EmailHelp": "If you confirm it, you will be able to reset your password yourself if lost.",
-        "Required": "Required field"
-      }
+      "TakenEmpty": "No prize assigned yet. Click a free cell on the board to assign it to a character.",
+      "RemoveLot": "Remove the prize \"{name}\"",
+      "BoardProgress": "{claimed} cell revealed out of {total} | {claimed} cells revealed out of {total}",
+      "AssignModalTitle": "Assign cell {n}",
+      "AssignModalHelp": "The prize in this cell will be revealed on the public page, with the character's name. An assigned cell can no longer be changed.",
+      "LegendFree": "Free cell",
+      "LegendRevealed": "Revealed cell",
+      "LegendTitle": "Legend",
+      "LegendFreeText": "Nobody has claimed it yet: its prize stays hidden.",
+      "LegendRevealedText": "A character claimed it: its prize is shown in the list.",
+      "LotQuantity": "Quantity (number of identical prizes)",
+      "AddGuideTitle": "How to fill the grid?",
+      "AddGuideStep1": "Enter the prize name. With a quantity, it is entered several times: 3 × \"50 crowns\" makes three prizes, so three cells.",
+      "AddGuideStep2": "\"Add a list\" enters one prize per line, or separated by a comma or a tab, without a quantity.",
+      "AddGuideReadyTitle": "Every cell has its prize",
+      "AddGuideReady": "\"Draw\" spreads the prizes at random: the public page opens and players pick their cell.",
+      "LotsListLabel": "Entered prizes",
+      "EntrustResults": "Entrust the results to the scribe",
+      "EntrustRules": "Entrust the rules to the scribe"
     },
     "Status": {
       "new": "New",
