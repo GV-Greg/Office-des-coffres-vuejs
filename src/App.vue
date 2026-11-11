@@ -35,11 +35,12 @@
     </main>
     <!-- Un seul design de footer partout (Cookies #12), toujours hors du cadre de contenu.
          WelcomeView a son propre footer fusionné (disclaimer + liens légaux, voir WelcomeView.vue).
-         Sur /app/*, contenu réduit : "Gérer mes préférences" est déjà dans la NavBar. -->
+         Sur /app/*, contenu réduit : "Gérer mes préférences" est déjà dans la NavBar, mais la mention
+         « Outil non officiel » reste affichée partout où le footer l'est (Greg, 11/11/2026). -->
     <AppFooter
       v-if="route.name !== 'welcome' && !route.meta.noFooter"
       :show-preferences="!!route.meta.public"
-      :show-unofficial-tag="!!route.meta.public"
+      :show-unofficial-tag="true"
     />
 
     <CookiesBanner />

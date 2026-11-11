@@ -338,9 +338,10 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   par l'appelant le relie au `<label for>`. Rail éteint slate-500 (≥ 3:1).
 - **`AppFooter.vue`** — footer légal unique, monté dans `App.vue` **hors du cadre de contenu** de
   chaque page, sur toutes les routes sauf `welcome` (qui a le sien, fusionné avec son disclaimer).
-  Liens vers les trois pages légales ; « Gérer mes préférences » et la mention « outil non
-  officiel » n'apparaissent que sur les routes `meta.public` (sur `/app/*`, le bouton préférences
-  est déjà dans la `NavBar`).
+  Liens vers les trois pages légales ; la mention « Outil non officiel » s'affiche **partout où le
+  footer est monté**, dans l'application comme sur les pages publiques (Greg, 11/11/2026) ;
+  « Gérer mes préférences » n'apparaît que sur les routes `meta.public` (sur `/app/*`, le bouton
+  préférences est déjà dans la `NavBar`).
 - **`LoadingOverlay.vue`** — overlay GLOBAL plein écran (changement de page, envoi à l'API), monté dans `App.vue` et piloté
   par les hooks du router via `useNavigationLoading`. Contextes `office`, `chest` (module « Coffres X ») et `api`, plus une
   **couleur de module** (`navigationAccent`, posée par le router : or, rose, sarcelle). Navigation : **le portique aux torches**

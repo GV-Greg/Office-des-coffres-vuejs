@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [À compléter au merge] — Footer : « Outil non officiel » aussi dans l'application (`fix/footer-non-officiel`)
+
+### Changed
+- La mention **« Outil non officiel »** du footer s'affiche désormais **sur toutes les pages qui portent le footer**, y compris dans l'application (`/app/*`) ; elle n'apparaissait que sur les pages publiques (légales, connexion…). « Gérer mes préférences » reste réservé aux pages publiques (déjà dans la barre de navigation). Seule la page d'accueil, qui a son propre disclaimer, n'est pas concernée.
+
+### Prod
+- Aucune route, aucune dépendance, aucune clé de langue ajoutée.
+
 ## [2026-10-29] — PR #102 (accueil : la chronique défile dans son cadre)
 
 ### Fixed
