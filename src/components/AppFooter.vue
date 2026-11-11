@@ -4,9 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { useCookieStore } from '@/stores/cookieStore'
 
 // Footer légal — un seul design réutilisé partout (App.vue), en dehors du cadre de contenu de
-// chaque page (`<main>` sur /app/*, cf. Cookies #12). "Gérer mes préférences" et la mention
-// "outil non officiel" sont omis sur /app/* (déjà dans la NavBar / non pertinent une fois dans
-// l'app) et sur Welcome (contenu déjà présent dans son propre disclaimer, voir WelcomeView.vue).
+// chaque page (`<main>` sur /app/*, cf. Cookies #12). "Gérer mes préférences" est omis sur /app/*
+// (déjà dans la NavBar). La mention "Outil non officiel" s'affiche partout où le footer est monté,
+// dans l'application comme sur les pages publiques (Greg, 11/11/2026) ; seule Welcome n'a pas ce footer
+// (contenu déjà présent dans son propre disclaimer, voir WelcomeView.vue).
 const props = defineProps({
   showPreferences: { type: Boolean, default: true },
   showUnofficialTag: { type: Boolean, default: true },

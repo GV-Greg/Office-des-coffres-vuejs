@@ -6,12 +6,13 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [à dater au merge] — Grille des lots, 2ᵉ activité du module Animation (`feat/rewards-grid-ui`, non mergée)
+## [2026-11-11] — PR #106 (Grille des lots, 2ᵉ activité du module Animation ; chapitre « Animation » de la politique)
 
 ### Added
 - Activité **« Grille des lots »** (`rewards`) : une grille N×M de cases numérotées, des lots à inscrire, un tirage au sort, l'attribution des cases réclamées, la clôture. Deux modes comme Décode le code : **privé** (« Ma grille », lié au personnage) et **sans compte** (créer, retrouver sa grille, réinitialiser le mot de passe, confirmer l'email). Page publique `/public/activite/grille/:slug` (visible dès le tirage), export BBCode en liste `[list][*]` (règles et résultats).
 - Le **tirage fait passer la grille directement à « tirée »** (décision de Greg, 10/11/2026) : plus d'étape « confirmer » ; la page publique s'ouvre au tirage.
 - **Écrans communs à toutes les activités d'Animation** (`modules/animKinds.js`, `use/animApi.js`, `use/useAnimKind.js`, `AnimCreateForm`, `AnimStartPanel`, `AnimPublicShell`, `Anim{CreateAnonymous,Manage,Reset,ConfirmEmail}View`) : Décode le code et la grille en sont deux déclarations ; les vues `Decode*` ne sont plus que des enveloppes. Aucun changement de comportement pour Décode.
+- **Textes légaux** (analysés par Cowork, validés par Greg le 11/11/2026, `admin/content/policy-animation.md`) : **un seul chapitre « Animation »** aux §3, §5 et §6 de la politique de confidentialité (les engagements de Décode conservés mot pour mot, une ligne par activité), cookies Préférences (adresse mémorisée « de chaque type »), **une seule entrée « Animation »** de « Vos données » ; `privacyAnimDecode` devient `privacyAnimation`.
 - Garde-fou `tests/enforcement/anim-i18n-keys` : toute clé de texte littérale du module Animation existe en français et en anglais.
 - 100+ tests (`tests/anim/Rewards*`, `useRewardsGrid`, `rewardsBBcode`).
 
@@ -25,10 +26,18 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - Grille sans compte : l'adresse email n'était **jamais envoyée au serveur** (clé `organizer_email` au lieu de `email`) — ni lien de confirmation ni réinitialisation par email.
 - Une grille sans compte **pas encore tirée** n'était pas retrouvée à l'entrée (sa page publique répond 404) : la reprise est proposée.
 - Plateau : défile dans son cadre et rétrécit ses cases au lieu de déborder à 375 px ; `role="grid"` invalide remplacé par un groupe de boutons ; « Case » n'est plus en dur ; bouton « × » de retrait nommé ; statut de la grille remis à jour après un retrait de lot ; clés `TakenEmpty` manquantes ; couleurs hors thème (`sky`) ; refus `dimensions` du serveur désormais affiché.
-- Textes de la grille : plus de promesse de « notifications » à l'adresse confirmée ni de clôture automatique (le serveur ne ferme pas encore les grilles inactives).
+- Textes de la grille alignés sur le serveur : l'adresse confirmée sert au lien de confirmation, à la réinitialisation du mot de passe et à l'avis de changement de mot de passe ; une grille sans action depuis 30 jours est close.
 
 ### Prod
-- Dépend de back `feat/rewards-grid` (migrations `anim_rewards_*`, routes : `migrate` + `route:cache`). ⚠️ **Rien ne se déploie avant le texte légal** (politique, cookies, « Vos données », registre des traitements).
+- Dépend de back #82 (`feat/rewards-grid`) (migrations `anim_rewards_*`, routes : `migrate` + `route:cache`). ⚠️ **Rien ne se déploie avant le texte légal** (politique, cookies, « Vos données », registre des traitements).
+
+## [2026-11-11] — PR #107 (footer : « Outil non officiel » aussi dans l'application)
+
+### Changed
+- La mention **« Outil non officiel »** du footer s'affiche désormais **sur toutes les pages qui portent le footer**, y compris dans l'application (`/app/*`) ; elle n'apparaissait que sur les pages publiques (légales, connexion…). « Gérer mes préférences » reste réservé aux pages publiques (déjà dans la barre de navigation). Seule la page d'accueil, qui a son propre disclaimer, n'est pas concernée.
+
+### Prod
+- Aucune route, aucune dépendance, aucune clé de langue ajoutée.
 
 ## [2026-10-29] — PR #102 (accueil : la chronique défile dans son cadre)
 
