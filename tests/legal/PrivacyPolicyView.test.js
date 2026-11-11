@@ -44,6 +44,7 @@ const messages = {
         MineRegistry: { Title: 'Registre des mines' },
         Watch: { Title: 'Le Guet' },
         Map: { Title: 'Carte des royaumes' },
+        Animation: { Title: 'Animation' },
       },
       Privacy: {
         PageTitle: 'Politique de confidentialité',
@@ -74,11 +75,16 @@ const messages = {
           MinePricesFields: [
             { Label: 'Les prix', Text: 'avec leur date.' },
           ],
-          AnimDecodeIntro: 'Décode le code se joue de deux façons.',
-          AnimDecodeFields: [
+          AnimIntro: 'Les activités d’Animation se jouent de deux façons.',
+          AnimFields: [
             { Label: 'Un pseudo', Text: 'd’organisateur.' },
           ],
-          AnimDecodeNote: 'Les pseudos des propositions.',
+          AnimNote: 'Les noms de personnages saisis.',
+          AnimActivitiesIntro: 'Selon l’activité :',
+          AnimActivities: [
+            { Label: 'Décode le code', Text: 'les coffres.' },
+            { Label: 'Grille des lots', Text: 'les lots.' },
+          ],
           ToolsIntro: 'Outil par outil sur la page {dataLink} :',
         },
         DataPageLink: 'Vos données',
@@ -100,7 +106,7 @@ const messages = {
           Mandates: 'Postes : tout est effacé SAUF l’historique.',
           MineRegistry: 'Registre : sans limite.',
           MinePrices: 'Prix : sans limite.',
-          AnimDecode: 'Décode le code : contactez {email}.',
+          Animation: 'Animation : contactez {email}.',
           TechnicalLogs: 'Logs : 12 mois.',
         },
         Section6: {
@@ -109,7 +115,7 @@ const messages = {
           Editor: "L'éditeur.",
           MineRegistryHolders: 'Le commissaire et le bailli.',
           MinePricesHolders: 'Les trois postes des prix.',
-          AnimDecodeHolders: 'Décode le code : page visible de tous.',
+          AnimationHolders: 'Animation : page visible de tous.',
           ProvincePlayers: 'Les joueurs de la province.',
           NoOneElse: 'Personne d\'autre.',
           Hosting: 'Hébergeur : [À REMPLIR PAR GREG : hébergeur].',
@@ -262,25 +268,27 @@ describe('PrivacyPolicyView', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Registre : sans limite.')).toBe(items.indexOf('Postes : tout est effacé SAUF l’historique.') + 1)
     expect(items.indexOf('Prix : sans limite.')).toBe(items.indexOf('Registre : sans limite.') + 1)
-    expect(items.indexOf('Décode le code : page visible de tous.')).toBe(items.indexOf("Personne d'autre.") - 1)
-    expect(items.indexOf('Les trois postes des prix.')).toBe(items.indexOf('Décode le code : page visible de tous.') - 1)
+    expect(items.indexOf('Animation : page visible de tous.')).toBe(items.indexOf("Personne d'autre.") - 1)
+    expect(items.indexOf('Les trois postes des prix.')).toBe(items.indexOf('Animation : page visible de tous.') - 1)
     expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf('Les trois postes des prix.') - 1)
   })
 
-  // Décode le code (texte de Cowork, 28/10/2026) : posé AVANT l'ouverture du mode public — D40.
-  it('rend ce que conserve Décode le code (§3), sa durée (§5, avec l’adresse de contact) et ses destinataires (§6)', () => {
+  // Animation (Décode le code, Grille des lots) : UN chapitre commun (fil animation-textes-legaux, 11/11/2026).
+  it('rend ce que conserve Animation (§3, avec une ligne par activité), sa durée (§5, avec l’adresse de contact) et ses destinataires (§6)', () => {
     const wrapper = mountView()
-    expect(wrapper.findAll('[data-testid="privacy-anim-decode"] li').map(li => li.text())).toEqual(['Un pseudo — d’organisateur.'])
+    expect(wrapper.findAll('[data-testid="privacy-anim"] li').map(li => li.text())).toEqual(['Un pseudo — d’organisateur.'])
+    expect(wrapper.findAll('[data-testid="privacy-anim-activities"] li').map(li => li.text()))
+      .toEqual(['Décode le code — les coffres.', 'Grille des lots — les lots.'])
     const items = wrapper.findAll('li').map(li => li.text())
-    expect(items.indexOf(items.find(t => t.startsWith('Décode le code : contactez ')))).toBe(items.indexOf('Prix : sans limite.') + 1)
-    expect(items.find(t => t.startsWith('Décode le code : contactez '))).not.toContain('{email}')
+    expect(items.indexOf(items.find(t => t.startsWith('Animation : contactez ')))).toBe(items.indexOf('Prix : sans limite.') + 1)
+    expect(items.find(t => t.startsWith('Animation : contactez '))).not.toContain('{email}')
   })
   // Brief pages-donnees-joueur §3 : la politique porte « une ligne par outil, avec son lien ».
   it("porte une ligne par outil, chacune liée à sa section de la page « Vos données »", () => {
     const links = mountView().findAll('[data-testid="privacy-tools-links"] a')
     expect(links.map(a => a.text())).toEqual([
       'Compte et personnages', 'Postes déclarés et Ma province', 'Bilan des mines',
-      'Registre des mines', 'Le Guet', 'Carte des royaumes',
+      'Registre des mines', 'Le Guet', 'Carte des royaumes', 'Animation',
     ])
     expect(links[2].attributes('href')).toBe(JSON.stringify({ name: 'legal-data', hash: '#bilan-des-mines' }))
   })

@@ -1079,8 +1079,8 @@
         "Intro": "No third-party HTTP cookies are set on this site. We use two browser storage mechanisms, both limited to what is strictly necessary:",
         "Preferences": {
           "Title": "Local storage — Preferences",
-          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Crack the Code).",
-          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, and the address of the last Crack the Code activity you created or opened in public mode on this device.",
+          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Animation: Crack the Code, Prize Grid).",
+          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
           "Retention": "until you clear site data from your browser, or withdraw your consent via the cookies banner.",
           "LegalBasis": "your consent (GDPR art. 6.1.a, article 129 of the Belgian law of 13 June 2005 on electronic communications, transposing the ePrivacy Directive).",
           "IfDecline": "the site works normally, but your preferences and drafts are not remembered between visits."
@@ -1193,6 +1193,11 @@
         "Audience": "No one but you: this data does not leave your browser, except what you choose to publish on the game forum.",
         "Deletion": "No effect: the Watch is not tied to any account."
       },
+      "Animation": {
+        "Title": "Animation",
+        "Purpose": "Run an activity for the community and share its page on the game forum: Crack the Code (chests sealed by a secret combination that players try to crack) or the Prize Grid (a grid of prizes that is drawn, then chosen cell by cell by players). You can run it without an account (a nickname and a password are enough) or with a character, which then carries everything.",
+        "Input": "The activity's name, its location (kingdom, province or city), an organiser nickname and a password in public mode, and, if you wish, an email address, confirmed by a link. Then the activity's content: for Crack the Code, the proposals received and the names of the characters who made them; for the Prize Grid, the prizes and the names of the characters who chose a cell. What is not stored: no password in plain text (it is hashed), no IP address (only a one-way fingerprint, erased on closing), and nothing more than what is listed above."
+      },
       "Map": {
         "Title": "Kingdoms map",
         "Purpose": "Pick a town from the game's reference list of kingdoms, provinces and towns, for instance when creating a character, changing residence or requesting an office. No account is needed.",
@@ -1277,8 +1282,8 @@
             "Text": "the character who recorded the price and the one who last corrected it, with the date and time."
           }
         ],
-        "AnimDecodeIntro": "Crack the Code, an Animation module activity, can be played two ways. In private mode, the activity is linked to your character, which carries everything needed: nothing more is asked, and the activity disappears with your character or your account (see §5). In public mode, to create and manage an activity without using a character, the Office stores:",
-        "AnimDecodeFields": [
+        "AnimIntro": "The Animation module offers activities that you run for the community: Crack the Code (chests sealed by a secret combination) and the Prize Grid (a grid of prizes to draw). Each activity can be played two ways. In private mode, the activity is linked to your character, which carries everything needed: nothing more is asked, and the activity disappears with your character or your account (see §5). In public mode, to create and manage an activity without using a character, the Office stores:",
+        "AnimFields": [
           {
             "Label": "A nickname",
             "Text": "the one you choose to be identified as the organiser on the activity's public page — required, so you can be contacted if needed."
@@ -1289,14 +1294,25 @@
           },
           {
             "Label": "An email address (optional)",
-            "Text": "if you provide and confirm it via the link we send you, it lets you reset your own password, be warned each time it is changed, and receive a full report of your activity when it closes. Without a confirmed address, a reset remains possible by contacting the site administrator. An address provided but not confirmed is never used."
+            "Text": "if you provide and confirm it via the link we send you, it lets you reset your own password and be warned each time it is changed; for Crack the Code, it also lets you receive a full report of your activity when it closes. Without a confirmed address, a reset remains possible by contacting the site administrator. An address provided but not confirmed is never used. It is erased when the activity closes."
           },
           {
             "Label": "A fingerprint computed from your IP address",
-            "Text": "a one-way fingerprint (HMAC-SHA256): it lets us recognise the same connection to check that you are not creating several public activities at once, but we cannot recover the underlying address from it. It is erased as soon as your activity closes."
+            "Text": "a one-way fingerprint (HMAC-SHA256): it lets us recognise the same connection to check that you are not creating several public activities of the same type at once, but we cannot recover the underlying address from it. It is erased as soon as your activity closes."
           }
         ],
-        "AnimDecodeNote": "In both modes, the nicknames you enter for the proposals you receive — whoever attempted a combination, whoever cracked the chest — are freely typed by you, from what you receive (forum, newsletter, in-game). We do not verify them, and they are not linked to any account.",
+        "AnimNote": "In both modes, the character names you enter — whoever attempted a combination or cracked a chest (Crack the Code), whoever chose a cell (Prize Grid) — are freely typed by you, from what you receive (forum, newsletter, in-game). We do not verify them, and they are not linked to any account.",
+        "AnimActivitiesIntro": "Depending on the activity, the Office also stores its content:",
+        "AnimActivities": [
+          {
+            "Label": "Crack the Code",
+            "Text": "the chests, their secret combination (encrypted) and the proposals received."
+          },
+          {
+            "Label": "Prize Grid",
+            "Text": "the grid's dimensions and its prizes (each prize's name and the cell it sits in)."
+          }
+        ],
         "ToolsIntro": "What each tool is for, who can use it, what you put into it and what it does or does not store is explained tool by tool on the {dataLink} page:"
       },
       "Section4": {
@@ -1355,7 +1371,7 @@
         "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account).",
         "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible.",
         "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price while you hold the office, and up to 7 days after your term ends; after that it is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name.",
-        "AnimDecode": "Crack the Code (Animation module): in private mode, the activity, its chests and the proposals you entered are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, chests and proposals included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, a report including all proposals received is sent to your email address if you confirmed one; the fingerprint of your connection, your email address, your password and any pending reset request are then erased. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname, the location, the chests cracked with the nickname of who found them, and the final standings — never the proposals received, which are erased on closing. After that period, the page and the nickname are deleted. To request the removal of a nickname entered on one of these pages before that period, contact {email}."
+        "Animation": "Animation (Crack the Code, Prize Grid): in private mode, the activity and its content — the chests and the proposals you entered (Crack the Code), the prizes (Prize Grid) — are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, content included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, the fingerprint of your connection, your email address, your password and any pending reset request are erased; for Crack the Code, a report including all proposals received is first sent to your email address if you confirmed one. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname and the location, plus, for Crack the Code, the chests cracked with the nickname of who found them and the final standings — never the proposals received, which are erased on closing — and, for the Prize Grid, the dimensions, all the prizes and the names of the characters who chose a cell. After that period, the page and the nickname are deleted. To request the removal of a name entered on one of these pages before that period, contact {email}."
       },
       "Section6": {
         "Title": "6. Who can access your data",
@@ -1366,7 +1382,7 @@
         "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
         "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province.",
         "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province.",
-        "AnimDecodeHolders": "Crack the Code: an activity's public page (name, location, organiser nickname, chests cracked and standings) is visible to everyone, whether created in private or public mode — that is the point of this tool, shared on the game's forum. Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there."
+        "AnimationHolders": "Animation (Crack the Code, Prize Grid): an activity's public page is visible to everyone, whether created in private or public mode — that is the point of these tools, shared on the game's forum. It shows the name, the location and the organiser's nickname, plus, for Crack the Code, the chests cracked and the standings; for the Prize Grid, visible from the draw onwards, the cells and, for each chosen cell, the revealed prize and the name of the character who chose it (the contents of unchosen cells stay hidden until closing, when all prizes become visible). Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there."
       },
       "DataPageLink": "Your data, tool by tool",
       "Section7": {
