@@ -9,15 +9,23 @@
   const { t, locale } = useI18n()
   const authStore = useAuthStore()
 
-  function newsOfType(type) {
+  function newsOfType(...types) {
     return whatsNew
-      .filter((item) => item.type === type && (item.scope === 'public' || authStore.isLoggedIn))
+      .filter((item) => types.includes(item.type) && (item.scope === 'public' || authStore.isLoggedIn))
       .slice()
       .sort((a, b) => new Date(b.date) - new Date(a.date))
   }
 
   const visibleNews = computed(() => newsOfType('feature'))
-  const visibleFixes = computed(() => newsOfType('fix'))
+  // Le registre porte deux types dans UNE liste, distingués par un badge : « fix » (réparation) et « improvement » (amélioration d'une salle
+  // ou d'un module déjà annoncé dans les chroniques — brief admin/content/brief-registre-ameliorations.md, 11/11/2026).
+  const visibleRegistry = computed(() => newsOfType('fix', 'improvement'))
+
+  // Le sens est porté par le TEXTE du badge ; la couleur ne fait que le redoubler (carte claire dans les deux thèmes : mêmes classes en dark:).
+  const TAG = {
+    fix: { key: 'Home.TagFix', cls: 'bg-slate-200 text-slate-800 dark:bg-slate-200 dark:text-slate-800' },
+    improvement: { key: 'Home.TagImprovement', cls: 'bg-teal-100 text-teal-900 dark:bg-teal-100 dark:text-teal-900' },
+  }
 
   function formatNewsDate(dateStr) {
     return new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
@@ -78,14 +86,14 @@
           </ol>
           </div>
         </section>
-        <section v-if="visibleFixes.length" class="fixes">
+        <section v-if="visibleRegistry.length" class="fixes">
           <h3 id="home-fixes-title" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 uppercase tracking-widest text-xs font-bold mb-5">
             <v-icon name="gi-hammer-nails" scale="1.1" />
-            {{ t('Home.Fixes') }}
+            {{ t('Home.RegistryTitle') }}
           </h3>
           <div class="chronicle-scroll max-h-[max(14rem,calc(100vh-31rem))] overflow-y-auto pl-4 -ml-4 pr-3 pb-8" tabindex="0" role="region" aria-labelledby="home-fixes-title">
           <ol class="relative border-l-2 border-slate-300 dark:border-slate-300 space-y-6">
-            <li v-for="item in visibleFixes" :key="item.id" class="relative pl-6">
+            <li v-for="item in visibleRegistry" :key="item.id" class="relative pl-6" :data-testid="`registry-${item.type}`">
               <span
                 class="odc-dot absolute -left-[0.95rem] top-0"
                 :class="item.scope === 'private' ? 'odc--violet' : 'odc--blue'"
@@ -94,6 +102,13 @@
               </span>
               <div class="flex items-baseline gap-2 flex-wrap">
                 <time class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">{{ formatNewsDate(item.date) }}</time>
+                <span
+                  class="text-[0.65rem] font-semibold px-1.5 py-0.5 rounded"
+                  :class="TAG[item.type].cls"
+                  data-testid="registry-tag"
+                >
+                  {{ t(TAG[item.type].key) }}
+                </span>
                 <span
                   v-if="item.scope === 'private'"
                   class="text-[0.65rem] uppercase tracking-wide px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 dark:bg-violet-100 dark:text-violet-700"

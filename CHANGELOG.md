@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [À compléter au merge] — Registre des réparations et des améliorations
+
+### Added
+- **Nouveau type d'entrée « amélioration »** (`type: "improvement"` dans `src/data/whatsNew.json`) : annoncer ce qu'on améliore dans une salle ou un module déjà présenté dans les chroniques, sans créer une chronique pour chaque petite amélioration. Les entrées `fix` et `improvement` cohabitent dans **une liste unique** de l'accueil, triée de la plus récente à la plus ancienne, chacune avec un **badge** dont le texte porte le sens : « Réparation » (ardoise) ou « Amélioration » (teal). Les entrées `scope: "private"` n'apparaissent toujours que connecté.
+- **Annonce Discord** : une amélioration part avec le registre (même salon que les corrections, un fil par entrée), avec l'emoji ✨ (`scripts/whatsNewAnnounce.mjs`).
+
+### Changed
+- Le titre de la section devient « **Registre des réparations et des améliorations** » / « Repairs and improvements registry » (`Home.RegistryTitle`, qui remplace `Home.Fixes` ; `Home.TagFix` et `Home.TagImprovement` ajoutées, FR + EN).
+- Aucune interface d'administration (le brief n'en veut pas) : Greg publie une entrée comme aujourd'hui, en choisissant `"type": "improvement"`. Brief : `admin/content/brief-registre-ameliorations.md`.
+
+### Prod
+- Aucune route, aucune dépendance. 4 tests ajoutés (README : 1160).
+
 ## [2026-11-11] — PR #111 (Inventaires en base pour les joueurs connectés : réglages aux trois niveaux, inventaire collé, historique de la province)
 
 ### Added
