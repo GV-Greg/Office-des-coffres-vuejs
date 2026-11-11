@@ -167,7 +167,7 @@
           <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="prices-history-link">
             <v-icon name="fa-history" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}
           </RouterLink>
-          <RouterLink v-if="canManagePrices" :to="{ name: 'province' }" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" data-testid="manage-prices-link">
+          <RouterLink v-if="canManagePrices" :to="{ name: 'province', params: { section: 'prix' } }" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" data-testid="manage-prices-link">
             <v-icon name="fa-cog" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.SettingsInDesk') }}
           </RouterLink>
         </div>

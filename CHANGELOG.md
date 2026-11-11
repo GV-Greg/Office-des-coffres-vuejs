@@ -6,6 +6,20 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-11] — PR #110 (Mon bureau en sections, une à la fois ; héros violet ; catégories en deux colonnes)
+
+### Changed
+- **Mon bureau** n'empile plus trois panneaux : un **menu de sections** (Ma province · Prix des mines · Catégories d'inventaire) n'en affiche **qu'une à la fois**, chacune avec son adresse (`/app/mon-bureau/categories`…). « Prix des mines » n'existe que pour qui gère les prix d'une province. L'entrée courante est annoncée aux lecteurs d'écran.
+- **Héros** comme l'accueil d'Animation, aux couleurs de Mon bureau (violet) : grand titre, filet orné d'une plume et sous-titre sur une seule ligne.
+- **Liens directs** : « Gérer mes catégories » (Salle des comptes) ouvre l'onglet des catégories ; le lien de gestion des prix du Registre ouvre l'onglet des prix.
+- **Place gagnée** : espace réduit au-dessus du titre, bandeaux colorés pleins remplacés par des titres compacts, formulaire d'ajout de catégorie sur une ligne (champs de largeur utile), mention « Cliquez sur une catégorie… » sous la ligne séparatrice, un espace garanti sous la carte avant le menu circulaire. Chaque section prend la place de son contenu (prix en carte compacte, province en colonne bornée).
+- **Catégories d'inventaire** : un **accordéon par inventaire** (« Catégories d'inventaire — Personnel » aujourd'hui, ouvert par défaut, bandeau jaune foncé : d'autres viendront, ville, province…). Deux colonnes dès `laptop` : **gestion à gauche (3/4** : couleur des titres, ajout, puis prédéfinies | personnalisées | masquées) et **ordre d'export à droite (1/4)**, toujours visible, liste compacte (boutons ↑ ↓ de 26 px), sans phrase d'explication des flèches (leur libellé accessible reste). Les titres des blocs sont dans la couleur du module (`yellow-700`, 4,9:1).
+- Les panneaux repliables de la page et leur état mémorisé (`mon_bureau_panels`) disparaissent ; deux clés de langue inutilisées retirées, cinq ajoutées (FR + EN).
+- `docs/ARCHITECTURE.md` décrit enfin `MonBureauView` (la doc parlait encore de `ProvinceView`).
+
+### Prod
+- Aucune route serveur, aucune dépendance. Dépend de la PR front #109 (ordre des catégories), mergée et déployée le 11/11/2026.
+
 ## [2026-11-11] — PR #109 (Inventaire : ordre des catégories et encart « Consignes au scribe »)
 
 ### Added

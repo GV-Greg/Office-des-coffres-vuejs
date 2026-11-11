@@ -235,7 +235,7 @@ function updateCatConfig(newConfig) {
             </button>
           </template>
           <RouterLink
-            :to="{ name: 'province' }"
+            :to="{ name: 'province', params: { section: 'categories' } }"
             class="odc-btn odc-btn--soft odc--violet odc-btn--sm"
           >
             <v-icon name="fa-tag" aria-hidden="true" />{{ t('EconomyInventory.SettingsInDesk') }}

@@ -203,14 +203,15 @@ function doDelete() {
 
 <template>
   <div>
-    <!-- Accroche + couleur des titres -->
+    <!-- Gestion : prédéfinies | personnalisées | masquées -->
+    <!-- Deux colonnes dès laptop : la gestion des catégories à gauche (3/4, ajout en tête puis trois colonnes), l'ordre
+         d'export à droite (1/4) — Greg, 11/11/2026. -->
+    <div class="laptop:grid laptop:grid-cols-4 laptop:gap-6 laptop:items-start">
+    <div class="min-w-0 laptop:col-span-3" data-testid="cat-manage">
+    <!-- Couleur des titres : en tête de la colonne de gestion, l'ordre (à droite) démarre à la même hauteur -->
     <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-3">
-      <p class="text-xs text-slate-400 dark:text-slate-500 italic flex items-center gap-1 shrink-0">
-        <v-icon name="fa-info-circle" scale="0.75" aria-hidden="true" />
-        {{ t('EconomyInventory.ItemsHint') }}
-      </p>
       <div class="flex items-center gap-2 flex-wrap" role="radiogroup" :aria-label="t('EconomyInventory.ExportColorTitle')">
-        <span class="text-xs font-medium text-slate-600 dark:text-slate-300 shrink-0 whitespace-nowrap">
+        <span class="text-xs font-semibold text-yellow-700 dark:text-yellow-700 shrink-0 whitespace-nowrap">
           {{ t('EconomyInventory.ExportColorTitle') }} :
         </span>
         <button
@@ -227,10 +228,47 @@ function doDelete() {
       </div>
     </div>
 
-    <!-- Corps : 3 colonnes sur tablet+ -->
+    <!-- Ajout de catégorie -->
+    <div class="border-b border-slate-200 dark:border-slate-600 mb-3 pb-3">
+      <!-- Une seule ligne : le titre sert d'étiquette aux champs. Champs de largeur utile, pas étirés : un nom de catégorie est court. -->
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        <p class="text-xs font-semibold text-yellow-700 dark:text-yellow-700 shrink-0 mr-1">
+          {{ t('EconomyInventory.AddCategoryTitle') }}
+        </p>
+        <input
+          v-model="newFr"
+          type="text"
+          :placeholder="t('EconomyInventory.AddCategoryFr')"
+          class="w-full tablet:w-60 min-w-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-slate-100"
+          @keydown.enter="add"
+        />
+        <input
+          v-model="newEn"
+          type="text"
+          :placeholder="t('EconomyInventory.AddCategoryEn')"
+          class="w-full tablet:w-60 min-w-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-slate-100"
+          @keydown.enter="add"
+        />
+        <button
+          type="button"
+          class="odc-btn odc-btn--soft odc--green odc-btn--sm shrink-0"
+          @click="add"
+        >
+          <v-icon name="fa-plus" aria-hidden="true" />{{ t('EconomyInventory.AddCategoryBtn') }}
+        </button>
+      </div>
+      <p v-if="addError" class="mt-1 text-xs text-red-500 dark:text-red-400">{{ addError }}</p>
+    </div>
+
+    <!-- Mention sous la ligne séparatrice, juste au-dessus des catégories qu'elle concerne (Greg, 11/11/2026). -->
+    <p class="text-xs text-slate-400 dark:text-slate-500 italic flex items-center gap-1 mb-2">
+      <v-icon name="fa-info-circle" scale="0.75" aria-hidden="true" />
+      {{ t('EconomyInventory.ItemsHint') }}
+    </p>
+
     <div class="tablet:grid tablet:grid-cols-3 tablet:gap-5">
 
-      <!-- Colonne 1 : prédéfinies visibles -->
+      <!-- Prédéfinies visibles -->
       <div>
         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
           {{ t('EconomyInventory.BuiltInLabel') }}
@@ -270,7 +308,7 @@ function doDelete() {
         </div>
       </div>
 
-      <!-- Colonne 2 : personnalisées -->
+      <!-- Personnalisées -->
       <div class="mt-4 tablet:mt-0">
         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
           {{ t('EconomyInventory.CustomLabel') }}
@@ -335,7 +373,7 @@ function doDelete() {
         </p>
       </div>
 
-      <!-- Colonne 3 : masquées -->
+      <!-- Masquées -->
       <div class="mt-4 tablet:mt-0">
         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
           {{ t('EconomyInventory.HiddenBuiltInLabel') }}
@@ -366,25 +404,28 @@ function doDelete() {
 
     </div>
 
-    <!-- Ordre des catégories : celui du tableau d'inventaire et du BBCode exporté. Flèches plutôt que glisser-déposer :
+
+    </div><!-- fin de la colonne de gauche (gestion) -->
+
+    <!-- Colonne de droite — Ordre des catégories : celui du tableau d'inventaire et du BBCode exporté. Flèches plutôt que glisser-déposer :
          fonctionne au doigt et au clavier, et se lit au lecteur d'écran. -->
-    <div class="border-t border-slate-200 dark:border-slate-600 mt-4 pt-4" data-testid="cat-order">
-      <p class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+    <div class="mt-6 min-w-0 laptop:col-span-1 laptop:mt-0 laptop:sticky laptop:top-4" data-testid="cat-order">
+      <p class="text-xs font-semibold text-yellow-700 dark:text-yellow-700 mb-1">
         {{ t('EconomyInventory.CatOrderTitle') }}
       </p>
       <p class="text-xs text-slate-400 dark:text-slate-500 italic mb-2">{{ t('EconomyInventory.CatOrderHint') }}</p>
-      <ol class="grid gap-1 tablet:grid-cols-2 laptop:grid-cols-3">
+      <ol class="grid gap-0.5">
         <li
           v-for="(key, index) in orderedKeys"
           :key="key"
-          class="flex items-center gap-1 text-sm px-2 py-1 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600"
+          class="flex items-center gap-1 text-sm pl-2 pr-1 py-0.5 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600"
           data-testid="cat-order-item"
         >
-          <span class="shrink-0 w-5 text-xs font-semibold text-slate-400 dark:text-slate-400 tabular-nums" aria-hidden="true">{{ index + 1 }}</span>
+          <span class="shrink-0 w-4 text-[11px] font-semibold text-slate-400 dark:text-slate-400 tabular-nums" aria-hidden="true">{{ index + 1 }}</span>
           <span class="flex-1 min-w-0 truncate text-xs font-medium text-slate-800 dark:text-slate-100">{{ categoryLabel(key) }}</span>
           <button
             type="button"
-            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0"
+            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0 [--h:26px] text-[11px]"
             :disabled="index === 0"
             :aria-label="t('EconomyInventory.CatMoveUp', { cat: categoryLabel(key) })"
             :data-testid="`cat-up-${key}`"
@@ -394,7 +435,7 @@ function doDelete() {
           </button>
           <button
             type="button"
-            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0"
+            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0 [--h:26px] text-[11px]"
             :disabled="index === orderedKeys.length - 1"
             :aria-label="t('EconomyInventory.CatMoveDown', { cat: categoryLabel(key) })"
             :data-testid="`cat-down-${key}`"
@@ -406,37 +447,7 @@ function doDelete() {
       </ol>
       <p class="sr-only" role="status" data-testid="cat-order-status">{{ orderAnnouncement }}</p>
     </div>
-
-    <!-- Ajout de catégorie -->
-    <div class="border-t border-slate-200 dark:border-slate-600 mt-4 pt-4">
-      <p class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">
-        {{ t('EconomyInventory.AddCategoryTitle') }}
-      </p>
-      <div class="flex gap-2 items-center">
-        <input
-          v-model="newFr"
-          type="text"
-          :placeholder="t('EconomyInventory.AddCategoryFr')"
-          class="flex-1 min-w-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-slate-100"
-          @keydown.enter="add"
-        />
-        <input
-          v-model="newEn"
-          type="text"
-          :placeholder="t('EconomyInventory.AddCategoryEn')"
-          class="flex-1 min-w-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-slate-100"
-          @keydown.enter="add"
-        />
-        <button
-          type="button"
-          class="odc-btn odc-btn--soft odc--green odc-btn--sm shrink-0"
-          @click="add"
-        >
-          <v-icon name="fa-plus" aria-hidden="true" />{{ t('EconomyInventory.AddCategoryBtn') }}
-        </button>
-      </div>
-      <p v-if="addError" class="mt-1 text-xs text-red-500 dark:text-red-400">{{ addError }}</p>
-    </div>
+    </div><!-- fin des deux colonnes -->
 
 
     <!-- Modale items -->

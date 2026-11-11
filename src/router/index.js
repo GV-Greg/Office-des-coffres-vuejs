@@ -307,8 +307,9 @@ const router = createRouter({
       beforeEnter: redirectToHomeIfNotLoggedIn,
     },
     {
-      // « Mon bureau » : panneau de paramétrage et fiche province. Ancienne route /app/province redirigée.
-      path: '/app/mon-bureau',
+      // « Mon bureau » : une section à la fois — `province` (défaut), `prix`, `categories` — chacune avec son adresse
+      // (/app/mon-bureau/categories), pour qu'une autre page y renvoie directement. Ancienne route /app/province redirigée.
+      path: '/app/mon-bureau/:section(province|prix|categories)?',
       name: 'province',
       components: {
         Nav,

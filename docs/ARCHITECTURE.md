@@ -30,7 +30,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/app/anim` | — | enfants : `` (accueil, `animation`) ; `decode` → `animation-decode` (l'ENTRÉE des salles, publique) ; `decode/creer` → `animation-create`, `decode/gerer` → `animation-manage`, `decode/reinitialiser` → `animation-reset`, `decode/confirmer-email` → `animation-confirm-email` (publics, sans compte) ; `decode/ma-salle` → `animation-mine` (`redirectToHomeIfNotLoggedIn`) — toutes les pages propres à une activité vivent sous `decode/` (un autre type aura son propre préfixe) |
 | `/public/activite/decode/:slug` | `animation-public` | — (`meta.public`, `meta.noFooter`) — la page publique d'une activité, **à partager** (le lien de l'export BBCode). Convention de Greg (27/10) : `/app/` = pages de l'application, `/public/` = pages à partager avec la communauté ; hors `MainAnimation`, sans NavBar ni footer commun |
 | `/app/profil` | `profil` | `redirectToHomeIfNotLoggedIn` |
-| `/app/province` | `province` | `redirectToHomeIfNotLoggedIn` — « Ma province » |
+| `/app/mon-bureau/:section(province\|prix\|categories)?` | `province` | `redirectToHomeIfNotLoggedIn` — « Mon bureau », une section à la fois (`/app/province` y redirige) |
 | `/app/character/new` | `character-new` | `redirectToHomeIfNotLoggedIn` |
 | `/:pathMatch(.*)*` | `not-found` | — (`meta.public`) |
 
@@ -209,7 +209,18 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   suppression de compte self-service via
   `DeleteAccountModal.vue` : l'appel API et la redirection vivent ici, la modale ne rend que le
   verdict.
-- **`ProvinceView.vue`** (route `/app/province`, 6ᵉ bouton du menu) — « Ma province » : historique
+- **`MonBureauView.vue`** (route `province`, `/app/mon-bureau[/province|prix|categories]`, 6ᵉ bouton du menu) — « Mon bureau » en
+  **sections, une à la fois** (11/11/2026) : un menu de **liens** (pas des onglets ARIA : chaque section a son adresse, la page
+  courante porte `aria-current="page"`) — **Ma province** (défaut), **Prix des mines** (seulement pour qui gère les prix d'une
+  province ; sans ce droit, `/prix` retombe sur la province), **Catégories d'inventaire**. Le paramètre `section` est lu par la vue
+  (`activeSection`) ; les autres pages renvoient **directement** à une section (`{ name: 'province', params: { section: 'categories' } }`
+  depuis la Salle des comptes, `'prix'` depuis le Registre). Chaque section prend la place de son contenu (province `max-w-4xl`,
+  prix `max-w-xl`, catégories pleine largeur) ; les anciens panneaux repliables et leur état (`mon_bureau_panels`) n'existent plus.
+  **Héros** comme l'accueil d'Animation, en violet (couleur de Mon bureau). **Catégories** : un **accordéon par inventaire** (`<details>` natif,
+  « Personnel » aujourd'hui, ouvert par défaut ; ville et province s'y ajouteront), puis deux colonnes dès `laptop` — **gestion à gauche
+  (3/4 : couleur des titres, ajout sur une ligne, prédéfinies | personnalisées | masquées), ordre d'export à droite (1/4)**, toujours
+  visible (`InventoryCategoryPanel.vue`, `data-testid` `cat-manage` / `cat-order`). ⚠️ `ProvinceView.vue` n'est plus routée ni importée (son test subsiste).
+  Section **Ma province** : historique
   des postes de la province de **résidence** du personnage actif (fil
   `admin/echanges/mandats-historique` ; résidence seule, décision de Greg). Avertissement
   **permanent en tête** (« l'Office n'enregistre que ce que les joueurs déclarent »), conseil par

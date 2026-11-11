@@ -85,6 +85,23 @@ describe('InventoryCategoryPanel — ordre des catégories', () => {
     expect(w.find('[data-testid="cat-order-status"]').text()).toBe(`Alimentation : position 2 sur ${CATEGORY_KEYS.length}`)
   })
 
+  it("deux colonnes : la gestion des catégories à gauche, l'ordre à droite — l'ordre est toujours visible", () => {
+    const w = mountPanel()
+    const manage = w.find('[data-testid="cat-manage"]')
+    const order = w.find('[data-testid="cat-order"]')
+    expect(manage.exists()).toBe(true)
+    expect(order.exists()).toBe(true)
+    // même conteneur, gestion avant ordre ; l'ordre n'est plus replié
+    expect(manage.element.parentElement).toBe(order.element.parentElement)
+    expect(manage.element.nextElementSibling).toBe(order.element)
+    expect(w.find('details').exists()).toBe(false)
+    expect(order.text()).toContain('Ordre des catégories')
+    // la gestion (prédéfinies, personnalisées, ajout) est bien dans la colonne de gauche, pas l'ordre
+    expect(manage.text()).toContain('Ajouter une catégorie')
+    expect(manage.find('[data-testid="cat-order-item"]').exists()).toBe(false)
+    expect(order.findAll('[data-testid="cat-order-item"]')).toHaveLength(CATEGORY_KEYS.length)
+  })
+
   it('les libellés suivent la langue de l\'interface', () => {
     const w = mountPanel({ custom: [{ key: 'curiosites', fr: 'Curiosités', en: 'Curios' }] }, 'en')
     expect(w.find('[data-testid="cat-order"]').text()).toContain('Category order')
