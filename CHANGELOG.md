@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [À compléter au merge] — Mon bureau en sections, une à la fois (`feat/mon-bureau-tabs`)
+## [2026-11-11] — PR #110 (Mon bureau en sections, une à la fois ; héros violet ; catégories en deux colonnes)
 
 ### Changed
 - **Mon bureau** n'empile plus trois panneaux : un **menu de sections** (Ma province · Prix des mines · Catégories d'inventaire) n'en affiche **qu'une à la fois**, chacune avec son adresse (`/app/mon-bureau/categories`…). « Prix des mines » n'existe que pour qui gère les prix d'une province. L'entrée courante est annoncée aux lecteurs d'écran.
@@ -18,9 +18,9 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - `docs/ARCHITECTURE.md` décrit enfin `MonBureauView` (la doc parlait encore de `ProvinceView`).
 
 ### Prod
-- Aucune route serveur, aucune dépendance. ⚠️ **Dépend de la PR front #109** (ordre des catégories) : cette branche en est issue.
+- Aucune route serveur, aucune dépendance. Dépend de la PR front #109 (ordre des catégories), mergée et déployée le 11/11/2026.
 
-## [À compléter au merge] — Inventaire : ordre des catégories et encart « Consignes au scribe » (`feat/inventory-order`)
+## [2026-11-11] — PR #109 (Inventaire : ordre des catégories et encart « Consignes au scribe »)
 
 ### Added
 - **Ordre des catégories** : dans Mon bureau, une section « Ordre des catégories » liste les catégories visibles avec des flèches ↑ ↓ (adaptées au mobile et au clavier, annonce lecteur d'écran, première/dernière désactivées). L'ordre choisi (`inventory_cat_config.order`) vaut pour **le tableau d'inventaire et pour le BBCode exporté** ; une catégorie créée ou restaurée ensuite se place à la fin, une catégorie supprimée ou masquée est ignorée. Sans ordre choisi : l'ordre par défaut. Fonction pure `orderCategoryKeys()`.
