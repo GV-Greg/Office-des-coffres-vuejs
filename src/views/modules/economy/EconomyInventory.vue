@@ -12,7 +12,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useInventoryStore } from '@/stores/inventoryStore'
 
 /*
-  La Salle des comptes. Les réglages (catégories, assignations, ordre, couleur, options d'export, visibilité) et le dernier
+  La Gestion des stocks (les inventaires ; « La Salle des comptes » est l'accueil des modules d'Économie). Les réglages (catégories, assignations, ordre, couleur, options d'export, visibilité) et le dernier
   inventaire collé viennent du store des inventaires : le NAVIGATEUR sans compte, le SERVEUR avec un compte (par personnage, et
   par poste pour la ville et la province — voir stores/inventoryStore.js). Le sélecteur de niveau n'apparaît que si le
   personnage actif a un poste qui donne accès à d'autres inventaires que le sien.

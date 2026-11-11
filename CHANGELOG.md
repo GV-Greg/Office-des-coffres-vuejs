@@ -13,7 +13,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - Garde-fou `tests/legal/privacyInventory.unit.test.js` (15 cas).
 
 ### Changed
-- **Le module des inventaires s'appelle « Gestion des stocks » / « Stock Management »** (menu d'Économie, carte, titre de page, aide). « La Salle des comptes » reste le titre de l'accueil d'Économie.
+- **Le module des inventaires s'appelle « Gestion des stocks » / « Stock Management »** (menu d'Économie, carte, titre de page, aide). « La Salle des comptes » reste le titre de l'accueil d'Économie, qui regroupe ses trois modules (Bilan des mines, Registre des mines, Gestion des stocks).
 
 ### Prod
 - Aucune route, aucune dépendance. À mettre en ligne avec back `feat/inventory-legal` (entrée du journal de la politique), puis `php artisan policy:notify` par Greg (un seul email). 16 tests ajoutés (README : 1172).

@@ -12,7 +12,7 @@ import { SAVE_DELAY } from '../../src/stores/inventoryStore'
 import { http } from '../../src/api.js'
 
 /*
-  La Salle des comptes avec un COMPTE : le dernier inventaire enregistré revient dans le champ, le sélecteur de niveau n'apparaît que
+  La Gestion des stocks avec un COMPTE : le dernier inventaire enregistré revient dans le champ, le sélecteur de niveau n'apparaît que
   pour qui a un poste, l'historique de la province s'inscrit à la main, une correction de catégorie est enregistrée tout de suite.
   Fils inventaire-scopes et inventaire-bilans (Greg et Cowork, 11/11/2026).
 */
@@ -64,7 +64,7 @@ const levelButton = (w, level) => w.find(`[data-testid="inventory-level-${level}
 beforeEach(() => vi.clearAllMocks())
 afterEach(() => vi.useRealTimers())
 
-describe('Salle des comptes avec un compte', () => {
+describe('Gestion des stocks avec un compte', () => {
   it('le dernier inventaire enregistré revient dans le champ, sur n\'importe quel appareil', async () => {
     const wrapper = await mountPage()
     expect(textarea(wrapper).element.value).toBe(PERSONAL_TEXT)
