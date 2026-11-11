@@ -750,7 +750,7 @@
         "Submit": "Save the new password"
       },
       "Confirm": {
-        "Ok": "Your address is confirmed. It is only used to send you a link if you forget your password, and it will be erased when the grid is closed.",
+        "Ok": "Your address is confirmed. It is only used to send you a link if you forget your password and to warn you each time the password changes, and it will be erased when the grid is closed.",
         "Error": "This address cannot be confirmed: the link has expired or the grid no longer exists.",
         "Title": "Email address confirmation",
         "Loading": "Confirming…"
@@ -763,7 +763,7 @@
         "DoneTitle": "Your grid is created.",
         "DonePassword": "Keep your password: without it, and without a confirmed email, the grid cannot be recovered.",
         "DoneManage": "Manage my grid",
-        "EmailHelp": "To receive a link if you forget your password. It must be confirmed by a link, and it is erased when the grid is closed.",
+        "EmailHelp": "To receive a link if you forget your password, and a notice each time the password changes. It must be confirmed by a link, and it is erased when the grid is closed.",
         "DoneAddress": "Your grid address:",
         "DoneEmail": "A confirmation email has been sent to the address you provided.",
         "PreviewTitle": "Grid preview",
@@ -772,7 +772,7 @@
       },
       "Recap": {
         "Dimensions": "A grid of {width} × {height} cells: {count} prizes to enter before the draw.",
-        "EmailYes": "Your email address will be confirmed by a link. Once confirmed, it will only be used to send you a link if you forget your password. It is erased when the grid is closed.",
+        "EmailYes": "Your email address will be confirmed by a link. Once confirmed, it will only be used to send you a link if you forget your password and to warn you each time the password changes. It is erased when the grid is closed.",
         "ClosingAnonymous": "Closing is final: the grid cannot be reopened. The password, the connection fingerprint and the email are erased; the grid name, the organizer's name, the place and the prizes stay visible.",
         "ClosingPrivate": "You will be able to close the grid, reopen it, then delete it once it is closed.",
         "DeletionPrivate": "It is deleted with your character or your account, along with its prizes."

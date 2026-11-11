@@ -750,7 +750,7 @@
         "Submit": "Enregistrer le nouveau mot de passe"
       },
       "Confirm": {
-        "Ok": "Votre adresse est confirmée. Elle ne sert qu'à vous envoyer un lien si vous oubliez votre mot de passe, et sera effacée à la clôture de la grille.",
+        "Ok": "Votre adresse est confirmée. Elle ne sert qu'à vous envoyer un lien si vous oubliez votre mot de passe et à vous prévenir à chaque changement de mot de passe, et sera effacée à la clôture de la grille.",
         "Error": "Cette adresse ne peut pas être confirmée : le lien est périmé ou la grille n'existe plus.",
         "Title": "Confirmation de l'adresse email",
         "Loading": "Confirmation en cours…"
@@ -763,7 +763,7 @@
         "DoneTitle": "Votre grille est créée.",
         "DonePassword": "Gardez votre mot de passe : sans lui, et sans email confirmé, la grille ne se récupère pas.",
         "DoneManage": "Gérer ma grille",
-        "EmailHelp": "Pour recevoir un lien si vous oubliez votre mot de passe. Elle doit être confirmée par un lien, et elle est effacée à la clôture.",
+        "EmailHelp": "Pour recevoir un lien si vous oubliez votre mot de passe, et un avis à chaque changement de mot de passe. Elle doit être confirmée par un lien, et elle est effacée à la clôture.",
         "DoneAddress": "L'adresse de votre grille :",
         "DoneEmail": "Un email de confirmation vous a été envoyé à l'adresse indiquée.",
         "PreviewTitle": "Aperçu de la grille",
@@ -772,7 +772,7 @@
       },
       "Recap": {
         "Dimensions": "Grille de {width} × {height} cases : {count} lots à inscrire avant le tirage.",
-        "EmailYes": "Votre adresse email sera confirmée par un lien. Une fois confirmée, elle ne servira qu'à vous envoyer un lien si vous oubliez votre mot de passe. Elle est effacée à la clôture.",
+        "EmailYes": "Votre adresse email sera confirmée par un lien. Une fois confirmée, elle ne servira qu'à vous envoyer un lien si vous oubliez votre mot de passe et à vous prévenir à chaque changement de mot de passe. Elle est effacée à la clôture.",
         "ClosingAnonymous": "La clôture est définitive : la grille ne pourra pas être rouverte. Le mot de passe, l'empreinte de connexion et l'email sont effacés ; le nom de la grille, le pseudo de l'organisateur, le lieu et les lots restent consultables.",
         "ClosingPrivate": "Vous pourrez clore la grille, la rouvrir, puis la supprimer une fois close.",
         "DeletionPrivate": "Elle est supprimée avec votre personnage ou votre compte, avec ses lots."
