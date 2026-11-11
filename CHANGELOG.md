@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [À compléter au merge] — Registre des réparations et des améliorations
+## [2026-11-11] — PR #113 (Registre des réparations et des améliorations)
 
 ### Added
 - **Nouveau type d'entrée « amélioration »** (`type: "improvement"` dans `src/data/whatsNew.json`) : annoncer ce qu'on améliore dans une salle ou un module déjà présenté dans les chroniques, sans créer une chronique pour chaque petite amélioration. Les entrées `fix` et `improvement` cohabitent dans **une liste unique** de l'accueil, triée de la plus récente à la plus ancienne, chacune avec un **badge** dont le texte porte le sens : « Réparation » (bleu) ou « Amélioration » (teal), la pastille de la ligne reprenant la couleur de son badge en plus foncé (violet pour une entrée réservée aux membres). Les entrées `scope: "private"` n'apparaissent toujours que connecté.
@@ -17,7 +17,15 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - Aucune interface d'administration (le brief n'en veut pas) : Greg publie une entrée comme aujourd'hui, en choisissant `"type": "improvement"`. Brief : `admin/content/brief-registre-ameliorations.md`.
 
 ### Prod
-- Aucune route, aucune dépendance. 5 tests ajoutés (README : 1161).
+- Aucune route, aucune dépendance. 5 tests ajoutés (README : 1165).
+
+## [2026-11-11] — PR #112 (Fix : le poste demandé s'affiche tant que la demande est en attente)
+
+### Fixed
+- Sur la carte d'un mandat (Profil), une demande de **conseiller** en attente de vérification affichait « Conseil comtal de … — **sans poste** » au lieu du poste demandé (le maire s'affichait correctement). La carte lisait le poste **détenu**, vide tant que rien n'est validé ; elle lit désormais le poste **demandé** que l'API envoie dès l'inscription (`pending_office_label`) pendant que le statut est « en attente ». Un mandat validé garde le poste détenu, sa déclaration de poste en attente garde sa mention propre, une demande inscrite sans titre reste « sans poste ». Aucun changement backend. Signalement : `admin/content/fix-affichage-poste-demande.md`.
+
+### Prod
+- Aucune route, aucune dépendance. 4 tests ajoutés (README : 1160).
 
 ## [2026-11-11] — PR #111 (Inventaires en base pour les joueurs connectés : réglages aux trois niveaux, inventaire collé, historique de la province)
 
