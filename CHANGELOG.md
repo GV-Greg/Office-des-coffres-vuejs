@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [À compléter au merge] — Inventaires en base pour les joueurs connectés (réglages aux trois niveaux, inventaire collé, historique de la province)
+## [2026-11-11] — PR #111 (Inventaires en base pour les joueurs connectés : réglages aux trois niveaux, inventaire collé, historique de la province)
 
 ### Added
 - **Avec un compte, les réglages d'inventaire passent du navigateur au serveur**, par personnage : catégories, assignations objet → catégorie, ordre, couleur d'export, options d'export, lignes masquées, et le **dernier inventaire collé** (enregistré chiffré). On les retrouve sur n'importe quel appareil. **Sans compte, rien ne change** : tout reste dans le navigateur (mêmes clés de confort qu'avant, enregistrées seulement si les préférences sont acceptées).
@@ -25,7 +25,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - Textes FR + EN : `EconomyInventory.{Level*,ReadOnlyScope,Province*,SaveError}`, `MonBureau.{CatCityPanel,CatProvincePanel,LoadingSettings,SettingsLoadError,ImportedFromBrowser,Copy*}`.
 
 ### Prod
-- **Dépend de la PR back `feat/inventory-settings`** (quatre migrations, routes ajoutées : `migrate` puis `route:cache`) : à mettre en ligne **après** le backend.
+- **Dépend de back #83** (quatre migrations, routes ajoutées : `migrate` puis `route:cache`), mergée le 11/11/2026 : à faire **avant** que les joueurs ouvrent la Salle des comptes.
 - 🔴 **Rien ne se met en ligne avant le texte légal** (fil `admin/echanges/inventaire-scopes`, Cowork) : politique, « Vos données », registre des traitements.
 - 43 tests ajoutés (store, accordéons et modale de copie, Salle des comptes avec compte) ; décompte du README : 1156.
 
