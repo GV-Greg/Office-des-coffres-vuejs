@@ -49,12 +49,12 @@ describe('App — footer légal (Cookies #12)', () => {
     expect(footer.props('showUnofficialTag')).toBe(true)
   })
 
-  it("affiche AppFooter en contenu réduit sur une route non publique (pages /app/*) — pas de doublon avec la NavBar", async () => {
+  it("affiche AppFooter sur une route non publique (pages /app/*) : « Outil non officiel » oui, préférences non (déjà dans la NavBar)", async () => {
     const wrapper = await mountAppOnRoute('home', {})
     const footer = wrapper.findComponent(AppFooter)
     expect(footer.exists()).toBe(true)
     expect(footer.props('showPreferences')).toBe(false)
-    expect(footer.props('showUnofficialTag')).toBe(false)
+    expect(footer.props('showUnofficialTag')).toBe(true)
   })
 
   it("n'affiche pas AppFooter sur Welcome — elle a son propre footer fusionné", async () => {
