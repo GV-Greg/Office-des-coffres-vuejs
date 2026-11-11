@@ -1,40 +1,94 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useCookieStore } from '@/stores/cookieStore'
 import { parseInventoryText, resolveItems } from '@/modules/inventoryParser'
 import { suggestCategory, orderCategoryKeys, CATEGORY_KEYS, CATEGORY_LABELS_FR } from '@/modules/inventoryCategories'
 import { exportInventoryToBBCode, EXPORT_DEFAULT_COLOR } from '@/modules/inventoryBBcode'
+import { formatFieldDate } from '@/modules/playerDates'
+import { apiMessage } from '@/stores/mandateStore'
 import { push } from 'notivue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useInventoryStore } from '@/stores/inventoryStore'
 
+/*
+  La Salle des comptes. Les réglages (catégories, assignations, ordre, couleur, options d'export, visibilité) et le dernier
+  inventaire collé viennent du store des inventaires : le NAVIGATEUR sans compte, le SERVEUR avec un compte (par personnage, et
+  par poste pour la ville et la province — voir stores/inventoryStore.js). Le sélecteur de niveau n'apparaît que si le
+  personnage actif a un poste qui donne accès à d'autres inventaires que le sien.
+*/
 const { t, locale } = useI18n()
-const cookieStore = useCookieStore()
 const authStore = useAuthStore()
+const store = useInventoryStore()
 
-const COMFORT_PASTE = 'inventory_paste'
-const COMFORT_CATS = 'inventory_custom_cats'
-const COMFORT_CAT_CONFIG = 'inventory_cat_config'
-const COMFORT_VISIBILITY = 'inventory_visibility'
+const level = ref('personal')
+const levels = computed(() => store.availableLevels)
+const canWriteLevel = computed(() => store.canWrite(level.value))
 
-const pastedText = ref(cookieStore.getComfortData(COMFORT_PASTE, ''))
-const customCats = ref({ ...cookieStore.getComfortData(COMFORT_CATS, {}) })
-const catConfig = ref(cookieStore.getComfortData(COMFORT_CAT_CONFIG, { custom: [] }))
-const visibility = ref(cookieStore.getComfortData(COMFORT_VISIBILITY, { hiddenCategories: [], hiddenItems: [] }))
+// Réglages du niveau affiché ; options d'export et visibilité sont celles du JOUEUR (niveau personnel), quel que soit le niveau.
+const doc = computed(() => store.doc(level.value))
+const personalDoc = computed(() => store.doc('personal'))
 
-// Options d'export (cookies dédiés, indépendants du catConfig)
-const exportQtyFormat = ref(cookieStore.getComfortData('inventory_export_qty_format', 'prefix'))
-const exportShowEcus = ref(cookieStore.getComfortData('inventory_export_ecus', true))
-const exportWrapper = ref(cookieStore.getComfortData('inventory_export_wrapper', 'none'))
+const loadingText = ref(false)
+const pastedText = ref(store.serverMode ? '' : store.localPaste())
 
-watch(pastedText, val => cookieStore.setComfortData(COMFORT_PASTE, val))
-watch(customCats, val => cookieStore.setComfortData(COMFORT_CATS, { ...val }), { deep: true })
-watch(catConfig, val => cookieStore.setComfortData(COMFORT_CAT_CONFIG, { ...val }), { deep: true })
-watch(visibility, val => cookieStore.setComfortData(COMFORT_VISIBILITY, { ...val }), { deep: true })
-watch(exportQtyFormat, val => cookieStore.setComfortData('inventory_export_qty_format', val))
-watch(exportShowEcus, val => cookieStore.setComfortData('inventory_export_ecus', val))
-watch(exportWrapper, val => cookieStore.setComfortData('inventory_export_wrapper', val))
+watch(pastedText, val => {
+  if (!loadingText.value) store.savePaste(level.value, val)
+})
+
+/** Avec un compte : charge les niveaux, puis le dernier inventaire enregistré du niveau affiché. Sans compte, rien à attendre. */
+async function enter(lv) {
+  if (!store.serverMode) return
+  loadingText.value = true
+  try {
+    await store.loadScopes()
+    await store.load('personal')
+    if (lv !== 'personal') await store.load(lv)
+    const text = await store.loadPaste(lv)
+    if (!pastedText.value) pastedText.value = text
+  } finally {
+    await nextTick()
+    loadingText.value = false
+  }
+}
+
+onMounted(() => enter(level.value))
+onBeforeUnmount(() => store.flush())
+
+watch(level, lv => {
+  loadingText.value = true
+  pastedText.value = ''
+  enter(lv)
+})
+watch(() => store.characterId, () => {
+  if (level.value !== 'personal') {
+    level.value = 'personal'
+  } else {
+    loadingText.value = true
+    pastedText.value = ''
+    enter('personal')
+  }
+})
+
+const levelLabel = lv => {
+  if (lv === 'city') return t('EconomyInventory.LevelCity', { name: store.scopes?.city?.name ?? '' })
+  if (lv === 'province') return t('EconomyInventory.LevelProvince', { name: store.scopes?.province?.name ?? '' })
+  return t('EconomyInventory.LevelPersonal')
+}
+
+// Options d'export : celles du joueur (niveau personnel).
+const exportQtyFormat = computed({
+  get: () => personalDoc.value.exportQtyFormat,
+  set: v => store.update('personal', { exportQtyFormat: v }),
+})
+const exportShowEcus = computed({
+  get: () => personalDoc.value.exportShowEcus,
+  set: v => store.update('personal', { exportShowEcus: v }),
+})
+const exportWrapper = computed({
+  get: () => personalDoc.value.exportWrapper,
+  set: v => store.update('personal', { exportWrapper: v }),
+})
 
 const exportQtyLabel = computed(() =>
   exportQtyFormat.value === 'prefix'
@@ -54,6 +108,13 @@ const parsedResult = computed(() => {
 const parsedItems = computed(() => parsedResult.value.items)
 const totalEcus = computed(() => parsedResult.value.totalEcus)
 
+const customCats = computed(() => doc.value.itemCategories)
+const catConfig = computed(() => ({
+  custom: doc.value.custom,
+  hiddenBuiltIn: doc.value.hiddenBuiltIn,
+  order: doc.value.order,
+  exportColor: doc.value.exportColor,
+}))
 const customCatsList = computed(() => catConfig.value.custom ?? [])
 const hiddenBuiltIn = computed(() => new Set(catConfig.value.hiddenBuiltIn ?? []))
 
@@ -79,10 +140,12 @@ const getCategoryLabelFr = key => {
 
 const getCategory = name => suggestCategory(name, customCats.value) ?? 'divers'
 
-const showCategorySelect = () => true
+// Un niveau en lecture seule (le dirigeant devant l'inventaire de sa province) ne corrige rien.
+const showCategorySelect = () => canWriteLevel.value
 
+// Une correction faite ici est enregistrée tout de suite (avec un compte : sur le serveur) : Mon bureau la retrouve.
 const changeCategory = (name, catKey) => {
-  customCats.value = { ...customCats.value, [name]: catKey }
+  store.update(level.value, { itemCategories: { ...customCats.value, [name]: catKey } })
 }
 
 const groupedItems = computed(() => {
@@ -98,33 +161,32 @@ const groupedItems = computed(() => {
   return [...groups.entries()].filter(([, items]) => items.length > 0)
 })
 
-const hiddenCategoriesSet = computed(() => new Set(visibility.value.hiddenCategories ?? []))
-const hiddenItemsSet = computed(() => new Set(visibility.value.hiddenItems ?? []))
+const hiddenCategoriesSet = computed(() => new Set(personalDoc.value.visibility.hiddenCategories))
+const hiddenItemsSet = computed(() => new Set(personalDoc.value.visibility.hiddenItems))
 const hasHidden = computed(() => hiddenCategoriesSet.value.size > 0 || hiddenItemsSet.value.size > 0)
+
+const setVisibility = visibility => store.update('personal', { visibility })
 
 function toggleCategoryVisibility(catKey) {
   const hidden = new Set(hiddenCategoriesSet.value)
   if (hidden.has(catKey)) hidden.delete(catKey)
   else hidden.add(catKey)
-  visibility.value = { ...visibility.value, hiddenCategories: [...hidden] }
+  setVisibility({ hiddenCategories: [...hidden], hiddenItems: [...hiddenItemsSet.value] })
 }
 
 function toggleItemVisibility(name) {
   const hidden = new Set(hiddenItemsSet.value)
   if (hidden.has(name)) hidden.delete(name)
   else hidden.add(name)
-  visibility.value = { ...visibility.value, hiddenItems: [...hidden] }
+  setVisibility({ hiddenCategories: [...hiddenCategoriesSet.value], hiddenItems: [...hidden] })
 }
 
 function hideAll() {
-  visibility.value = {
-    hiddenCategories: groupedItems.value.map(([key]) => key),
-    hiddenItems: [],
-  }
+  setVisibility({ hiddenCategories: groupedItems.value.map(([key]) => key), hiddenItems: [] })
 }
 
 function showAll() {
-  visibility.value = { hiddenCategories: [], hiddenItems: [] }
+  setVisibility({ hiddenCategories: [], hiddenItems: [] })
 }
 
 
@@ -133,9 +195,7 @@ async function doExport() {
     if (hiddenItemsSet.value.has(item.name)) return false
     return !hiddenCategoriesSet.value.has(getCategory(item.name))
   })
-  const exportColor = authStore.isLoggedIn
-    ? (catConfig.value.exportColor ?? EXPORT_DEFAULT_COLOR)
-    : EXPORT_DEFAULT_COLOR
+  const exportColor = (authStore.isLoggedIn ? catConfig.value.exportColor : undefined) ?? EXPORT_DEFAULT_COLOR
   const bbcode = exportInventoryToBBCode(
     visibleItems,
     name => suggestCategory(name, customCats.value),
@@ -159,25 +219,37 @@ async function doExport() {
   }
 }
 
+// « Effacer » vide le CHAMP de collage (et l'état d'affichage des lignes), rien d'autre : ni l'inventaire enregistré, ni les
+// catégories et assignations, qui sont des réglages (Greg, 11/11/2026).
 function clear() {
   pastedText.value = ''
-  customCats.value = {}
-  visibility.value = { hiddenCategories: [], hiddenItems: [] }
+  setVisibility({ hiddenCategories: [], hiddenItems: [] })
 }
 
-function updateCatConfig(newConfig) {
-  // Nettoyage des mappings item→catégorie orphelins (catégorie supprimée ou masquée)
-  const hidden = new Set(newConfig.hiddenBuiltIn ?? [])
-  const validKeys = new Set([
-    ...CATEGORY_KEYS.filter(k => !hidden.has(k)),
-    ...(newConfig.custom ?? []).map(c => c.key),
-  ])
-  const cleaned = {}
-  for (const [name, cat] of Object.entries(customCats.value)) {
-    if (validKeys.has(cat)) cleaned[name] = cat
+// ─── Province : l'historique ────────────────────────────────────────────────
+const snapshots = computed(() => store.history?.snapshots ?? [])
+const snapshotDate = s => formatFieldDate('inventory_snapshot_date', s.taken_on, locale.value)
+const recording = ref(false)
+
+watch(level, lv => { if (lv === 'province') store.loadHistory() }, { immediate: true })
+
+async function recordProvince() {
+  recording.value = true
+  try {
+    const result = await store.recordProvince(pastedText.value)
+    const key = result.unchanged ? 'ProvinceUnchanged' : result.replaced ? 'ProvinceReplaced' : 'ProvinceRecorded'
+    push.success(t(`EconomyInventory.${key}`, { date: formatFieldDate('inventory_snapshot_date', result.snapshot.taken_on, locale.value) }))
+  } catch (error) {
+    push.error(apiMessage(error, locale.value, t('EconomyInventory.SaveError')))
+  } finally {
+    recording.value = false
   }
-  customCats.value = cleaned
-  catConfig.value = newConfig
+}
+
+function loadSnapshot(event) {
+  const snapshot = snapshots.value.find(s => String(s.id) === event.target.value)
+  event.target.value = ''
+  if (snapshot) pastedText.value = snapshot.raw
 }
 </script>
 
@@ -188,9 +260,25 @@ function updateCatConfig(newConfig) {
     </h2>
 
     <!-- Ligne du haut : input (moitié) + contrôles (moitié) -->
-    <div class="laptop:grid laptop:grid-cols-2 laptop:gap-6 laptop:items-start">
+    <div class="laptop:grid laptop:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] laptop:gap-6 laptop:items-start">
       <!-- Colonne gauche : saisie -->
       <div>
+        <!-- Niveau d'inventaire : seulement si le personnage actif a un poste qui en ouvre d'autres que le sien. -->
+        <div v-if="levels.length > 1" role="group" :aria-label="t('EconomyInventory.LevelNav')" class="flex flex-wrap gap-2 mb-2" data-testid="inventory-levels">
+          <button
+            v-for="lv in levels"
+            :key="lv"
+            type="button"
+            class="odc-btn odc-btn--soft odc-btn--sm"
+            :class="level === lv ? 'odc--gold' : 'odc--slate'"
+            :aria-pressed="level === lv"
+            :data-testid="`inventory-level-${lv}`"
+            @click="level = lv"
+          >{{ levelLabel(lv) }}</button>
+        </div>
+        <p v-if="!canWriteLevel" role="note" class="text-xs italic text-slate-600 dark:text-slate-400 mb-2" data-testid="inventory-readonly">
+          {{ t('EconomyInventory.ReadOnlyScope') }}
+        </p>
         <label class="block text-sm font-medium mb-1" for="inventory-paste">
           {{ t('EconomyInventory.PasteLabel') }}
         </label>
@@ -201,6 +289,32 @@ function updateCatConfig(newConfig) {
           class="textarea-autoresize w-full h-36 p-2 rounded-xl bg-white text-sm font-mono resize-y"
           data-testid="inventory-paste"
         />
+
+        <!-- Province : l'historique des inventaires du commissaire au commerce (un par jour, le second du jour remplace le premier). -->
+        <div v-if="level === 'province'" class="mt-2 flex flex-wrap items-center gap-2" data-testid="province-history-block">
+          <button
+            v-if="canWriteLevel"
+            type="button"
+            class="odc-btn odc-btn--soft odc--green odc-btn--sm"
+            :disabled="recording || parsedItems.length === 0"
+            data-testid="province-record"
+            @click="recordProvince"
+          >
+            <v-icon name="fa-save" aria-hidden="true" />{{ t('EconomyInventory.ProvinceRecord') }}
+          </button>
+          <label v-if="snapshots.length" class="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
+            <span>{{ t('EconomyInventory.ProvinceHistory', { count: snapshots.length }) }}</span>
+            <select
+              class="text-xs border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 dark:text-slate-100 py-0.5 px-1 cursor-pointer"
+              data-testid="province-history"
+              @change="loadSnapshot"
+            >
+              <option value="">{{ t('EconomyInventory.ProvinceHistoryLoad') }}</option>
+              <option v-for="snapshot in snapshots" :key="snapshot.id" :value="snapshot.id">{{ snapshotDate(snapshot) }}</option>
+            </select>
+          </label>
+          <span v-else class="text-xs italic text-slate-500 dark:text-slate-400" data-testid="province-history-empty">{{ t('EconomyInventory.ProvinceHistoryEmpty') }}</span>
+        </div>
       </div>
 
       <!-- Colonne droite : actions -->
@@ -354,8 +468,8 @@ function updateCatConfig(newConfig) {
               <span class="text-slate-400 dark:text-slate-500">{{ groupItems.length }}</span>
               <button
                 type="button"
-                class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm shrink-0"
-                :class="hiddenCategoriesSet.has(catKey) ? 'odc--yellow' : 'odc--slate'"
+                data-testid="category-visibility"
+                class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--gold shrink-0"
                 :aria-label="hiddenCategoriesSet.has(catKey) ? t('EconomyInventory.ShowCategory') : t('EconomyInventory.HideCategory')"
                 @click="toggleCategoryVisibility(catKey)"
               >

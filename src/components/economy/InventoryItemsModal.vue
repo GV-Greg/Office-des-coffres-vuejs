@@ -10,6 +10,8 @@ const props = defineProps({
   autocompleteItems: { type: Array, default: () => [] },
   catKey: { type: String, required: true },
   otherCategories: { type: Array, default: () => [] },
+  // Lecture seule (le dirigeant devant les catégories de sa province) : la liste se consulte, rien ne s'y modifie.
+  readonly: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['close', 'add', 'remove', 'move'])
@@ -82,7 +84,7 @@ defineExpose({ handleAddError })
             >
               <span class="flex-1 truncate">{{ item }}</span>
               <select
-                v-if="otherCategories.length > 0"
+                v-if="otherCategories.length > 0 && !readonly"
                 class="shrink-0 text-xs border border-slate-300 dark:border-slate-600 rounded-md px-1.5 py-1 bg-white dark:bg-slate-700 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-400 max-w-[7rem]"
                 :aria-label="t('EconomyInventory.MoveItemTo', { item })"
                 @change="e => { if (e.target.value) { emit('move', item, e.target.value); e.target.value = '' } }"
@@ -91,6 +93,7 @@ defineExpose({ handleAddError })
                 <option v-for="cat in otherCategories" :key="cat.key" :value="cat.key">{{ cat.label }}</option>
               </select>
               <button
+                v-if="!readonly"
                 type="button"
                 class="shrink-0 text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 transition-colors"
                 :aria-label="t('EconomyInventory.RemoveItem', { item })"
@@ -105,7 +108,7 @@ defineExpose({ handleAddError })
           </p>
 
           <!-- Ajout -->
-          <div class="flex gap-2 items-center">
+          <div v-if="!readonly" class="flex gap-2 items-center">
             <input
               v-model="newItemName"
               type="text"
@@ -126,7 +129,7 @@ defineExpose({ handleAddError })
               {{ t('EconomyInventory.AddItemBtn') }}
             </button>
           </div>
-          <p v-if="addItemError" class="mt-1.5 text-xs text-red-500 dark:text-red-400">{{ addItemError }}</p>
+          <p v-if="addItemError && !readonly" class="mt-1.5 text-xs text-red-500 dark:text-red-400">{{ addItemError }}</p>
         </div>
 
         <!-- Pied -->
