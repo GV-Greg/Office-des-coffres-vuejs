@@ -267,14 +267,17 @@
       const color = RESOURCE_COLOR[s.resource] || 'black'
       // Une mine = un [quote] : sur le forum, chaque bloc est visuellement encadré et
       // détaché du suivant, ce qui remplace les lignes vides qu'on insérait avant.
-      bb += `[quote][color=${color}][b][u]#${s.number} ${s.label}${s.noeud ? ' - Noeud ' + s.noeud : ''}[/u][/b][/color]\n[list]\n`
-      if (s.niveau) bb += `[*]Niveau : ${s.niveau}\n`
-      if (s.rendement) bb += `[*]Rendement : ${s.rendement}\n`
-      if (s.creneaux) bb += `[*]Créneaux horaires : ${s.creneaux}\n`
-      if (s.seuilRupture) bb += `[*]Seuil de rupture : ${s.seuilRupture}\n`
-      if (s.entretienNormal) bb += `[*]Entretien normal : ${s.entretienNormal}\n`
-      if (s.entretienAmelioration) bb += `[*]Entretien et amélioration : ${s.entretienAmelioration}\n`
-      bb += '[/list]\n'
+      bb += `[quote][color=${color}][b][u]#${s.number} ${s.label}${s.noeud ? ' - Noeud ' + s.noeud : ''}[/u][/b][/color]\n`
+      // « [list][*] » et « [*]…[/list] » collés, sans retour à la ligne entre les deux : le forum rend ce
+      // retour en ligne vide (Greg, 11/11/2026 — même principe que le bilan hebdomadaire, 06/10/2026).
+      const items = []
+      if (s.niveau) items.push(`[*]Niveau : ${s.niveau}`)
+      if (s.rendement) items.push(`[*]Rendement : ${s.rendement}`)
+      if (s.creneaux) items.push(`[*]Créneaux horaires : ${s.creneaux}`)
+      if (s.seuilRupture) items.push(`[*]Seuil de rupture : ${s.seuilRupture}`)
+      if (s.entretienNormal) items.push(`[*]Entretien normal : ${s.entretienNormal}`)
+      if (s.entretienAmelioration) items.push(`[*]Entretien et amélioration : ${s.entretienAmelioration}`)
+      bb += `[list]${items.join('\n')}[/list]\n`
 
       const mine = minesByNumber.get(s.number)
       if (mine) {
@@ -284,10 +287,10 @@
         // Pas de saut de ligne avant les intertitres : [list] pose déjà sa propre marge,
         // et le \n qu'on ajoutait en plus doublait l'espace entre les sections d'une même
         // mine. Le gras compense la hiérarchie visuelle perdue.
-        if (heures) bb += `[b]Nombre d'heures travaillées ces 7 derniers jours[/b]\n[list]\n${heures}\n[/list]\n`
-        if (production) bb += `[b]Production des 7 derniers jours[/b]\n[list]\n${production}\n[/list]\n`
+        if (heures) bb += `[b]Nombre d'heures travaillées ces 7 derniers jours[/b]\n[list]${heures}[/list]\n`
+        if (production) bb += `[b]Production des 7 derniers jours[/b]\n[list]${production}[/list]\n`
         bb += conso
-          ? `[b]Ressources consommées par la mine ces 7 derniers jours[/b]\n[list]\n${conso}\n[/list]`
+          ? `[b]Ressources consommées par la mine ces 7 derniers jours[/b]\n[list]${conso}[/list]`
           : `[b]Ressources consommées par la mine ces 7 derniers jours[/b] : /`
       }
       bb += '[/quote]\n'
@@ -332,7 +335,7 @@
       <textarea v-model="pastedText" rows="10" :placeholder="t('EconomyMines.PastePlaceholder')"
                 class="textarea-autoresize col-span-3 w-full rounded-xl p-2"></textarea>
       <div v-if="pastedText.trim()" class="flex flex-col items-center justify-start mt-7">
-        <button @click="formatDayForForum" class="odc-btn odc-btn--soft odc--slate"><v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.DayExportButton') }}</button>
+        <button @click="formatDayForForum" class="odc-btn odc-btn--soft odc--green" data-testid="day-export"><v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.DayExportButton') }}</button>
         <!-- Registre des mines : même collage, seconde destination, action du jour (brief Registre §6). -->
         <MineRegistrySave :text="pastedText" :prices="usesTable ? null : prices" :rate="usesTable ? null : rate" />
       </div>

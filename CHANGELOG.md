@@ -6,6 +6,15 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-11] — PR #108 (Bilan des mines : « Confier au scribe » et listes du rapport du jour compactes)
+
+### Changed
+- Le bouton **« Mise en forme du jour »** du Bilan des mines devient **« Confier au scribe »**, en **vert** (même libellé et même couleur que les autres exports vers le forum) ; l'aide du coffre le cite sous son nouveau nom.
+- **Rapport du jour (BBCode)** : `[list]` est collé au premier `[*]` et `[/list]` au dernier élément — le forum rendait chaque retour à la ligne en ligne vide. Même principe que le bilan hebdomadaire (06/10/2026), qui n'est pas modifié.
+
+### Prod
+- Aucune route, aucune dépendance, aucune clé de langue ajoutée.
+
 ## [2026-11-11] — PR #106 (Grille des lots, 2ᵉ activité du module Animation ; chapitre « Animation » de la politique)
 
 ### Added
