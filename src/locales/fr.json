@@ -229,7 +229,9 @@
     "UnderConstruction": "L'Office est actuellement en construction...",
     "News": "Chroniques de l'Office",
     "NewsMembers": "Membres",
-    "Fixes": "Le Registre des Réparations",
+    "RegistryTitle": "Registre des réparations et des améliorations",
+    "TagFix": "Réparation",
+    "TagImprovement": "Amélioration",
     "LoginButton": "Se connecter"
   },
   "NotFound": {

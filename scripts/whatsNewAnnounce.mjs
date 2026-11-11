@@ -39,10 +39,11 @@ export function splitByType(entries) {
   return {
     feature: entries.filter((e) => e.type === 'feature'),
     fix: entries.filter((e) => e.type === 'fix'),
+    improvement: entries.filter((e) => e.type === 'improvement'),
   }
 }
 
-const EMOJI_BY_TYPE = { feature: '📯', fix: '🔨' }
+const EMOJI_BY_TYPE = { feature: '📯', fix: '🔨', improvement: '✨' }
 const SCOPE_LABEL = { public: '🌐 Public', private: '🔒 Membres' }
 
 // Texte d'une entrée, réutilisé par buildPayload (salon Texte, message
@@ -176,10 +177,11 @@ async function main() {
   }
 
   const newEntries = diffNewEntries(previousEntries, currentEntries)
-  const { feature, fix } = splitByType(newEntries)
+  const { feature, fix, improvement } = splitByType(newEntries)
 
   const newsPayload = buildPayload(feature)
-  const fixesPayloads = buildForumPayloads(fix)
+  // Le registre des réparations ET des améliorations est UNE liste sur le site : ses deux types partent dans le même salon (« corrections »).
+  const fixesPayloads = buildForumPayloads([...fix, ...improvement])
 
   const newsWebhook = args.dryRun ? null : process.env.DISCORD_NEWS_WEBHOOK_URL
   const fixesWebhook = args.dryRun ? null : process.env.DISCORD_FIXES_WEBHOOK_URL

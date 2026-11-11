@@ -51,16 +51,24 @@ describe('whatsNewAnnounce', () => {
   })
 
   describe('splitByType', () => {
-    it('sépare feature et fix', () => {
+    it('sépare feature, fix et improvement', () => {
       const entries = [
         { id: 'a', type: 'feature' },
         { id: 'b', type: 'fix' },
         { id: 'c', type: 'feature' },
+        { id: 'd', type: 'improvement' },
       ]
       expect(splitByType(entries)).toEqual({
         feature: [{ id: 'a', type: 'feature' }, { id: 'c', type: 'feature' }],
         fix: [{ id: 'b', type: 'fix' }],
+        improvement: [{ id: 'd', type: 'improvement' }],
       })
+    })
+
+    it('une amélioration est annoncée comme un fil du registre, avec ✨', () => {
+      const payloads = buildForumPayloads([{ id: 'x', type: 'improvement', date: '2026-11-11', scope: 'public', fr: 'Mieux', en: 'Better' }])
+      expect(payloads).toHaveLength(1)
+      expect(payloads[0].content).toContain('✨')
     })
   })
 

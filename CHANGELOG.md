@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [À compléter au merge] — Texte légal de la Gestion des stocks ; le module est renommé
+## [2026-11-11] — PR #114 (Texte légal de la Gestion des stocks ; le module est renommé)
 
 ### Added
 - **Politique de confidentialité** : la « Gestion des stocks » entre aux §3 (réglages ; texte collé chiffré ; inventaire personnel, municipal, comtal avec son historique ; phrase d'accès de l'éditeur selon `donnees-utilisateur.md` §5bis), §5 (durées) et §6 (qui lit : vous seul, le maire de la ville, le commissaire au commerce et le dirigeant de la province en lecture seule, aucune interface d'administration). **« Vos données »** : une section (sans compte requis, ce qui part avec le personnage, export art. 20). **Cookies** : la finalité et les données des Préférences nomment la Gestion des stocks. Texte de Cowork, validé par Greg le 11/11/2026 (fil `admin/echanges/inventaire-scopes/`, adaptations dans `03-mise-en-oeuvre-cc.md`).
@@ -16,7 +16,28 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - **Le module des inventaires s'appelle « Gestion des stocks » / « Stock Management »** (menu d'Économie, carte, titre de page, aide). « La Salle des comptes » reste le titre de l'accueil d'Économie, qui regroupe ses trois modules (Bilan des mines, Registre des mines, Gestion des stocks).
 
 ### Prod
-- Aucune route, aucune dépendance. À mettre en ligne avec back `feat/inventory-legal` (entrée du journal de la politique), puis `php artisan policy:notify` par Greg (un seul email). 16 tests ajoutés (README : 1172).
+- Aucune route, aucune dépendance. À mettre en ligne avec back `feat/inventory-legal` (entrée du journal de la politique), puis `php artisan policy:notify` par Greg (un seul email). 16 tests ajoutés (README : 1181).
+
+## [2026-11-11] — PR #113 (Registre des réparations et des améliorations)
+
+### Added
+- **Nouveau type d'entrée « amélioration »** (`type: "improvement"` dans `src/data/whatsNew.json`) : annoncer ce qu'on améliore dans une salle ou un module déjà présenté dans les chroniques, sans créer une chronique pour chaque petite amélioration. Les entrées `fix` et `improvement` cohabitent dans **une liste unique** de l'accueil, triée de la plus récente à la plus ancienne, chacune avec un **badge** dont le texte porte le sens : « Réparation » (bleu) ou « Amélioration » (teal), la pastille de la ligne reprenant la couleur de son badge en plus foncé (violet pour une entrée réservée aux membres). Les entrées `scope: "private"` n'apparaissent toujours que connecté.
+- **Annonce Discord** : une amélioration part avec le registre (même salon que les corrections, un fil par entrée), avec l'emoji ✨ (`scripts/whatsNewAnnounce.mjs`).
+
+### Changed
+- Le titre de la section devient « **Registre des réparations et des améliorations** » / « Repairs and improvements registry » (`Home.RegistryTitle`, qui remplace `Home.Fixes` ; `Home.TagFix` et `Home.TagImprovement` ajoutées, FR + EN).
+- Aucune interface d'administration (le brief n'en veut pas) : Greg publie une entrée comme aujourd'hui, en choisissant `"type": "improvement"`. Brief : `admin/content/brief-registre-ameliorations.md`.
+
+### Prod
+- Aucune route, aucune dépendance. 5 tests ajoutés (README : 1165).
+
+## [2026-11-11] — PR #112 (Fix : le poste demandé s'affiche tant que la demande est en attente)
+
+### Fixed
+- Sur la carte d'un mandat (Profil), une demande de **conseiller** en attente de vérification affichait « Conseil comtal de … — **sans poste** » au lieu du poste demandé (le maire s'affichait correctement). La carte lisait le poste **détenu**, vide tant que rien n'est validé ; elle lit désormais le poste **demandé** que l'API envoie dès l'inscription (`pending_office_label`) pendant que le statut est « en attente ». Un mandat validé garde le poste détenu, sa déclaration de poste en attente garde sa mention propre, une demande inscrite sans titre reste « sans poste ». Aucun changement backend. Signalement : `admin/content/fix-affichage-poste-demande.md`.
+
+### Prod
+- Aucune route, aucune dépendance. 4 tests ajoutés (README : 1160).
 
 ## [2026-11-11] — PR #111 (Inventaires en base pour les joueurs connectés : réglages aux trois niveaux, inventaire collé, historique de la province)
 

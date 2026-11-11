@@ -32,7 +32,7 @@ const label = (fr, en) => ({ fr, en })
 const mandate = (overrides = {}) => ({
   id: 1, level: 'mayor', character: { id: 7, pseudo: 'Artifice' },
   status: 'active', place: { id: 100, name: 'Arras' },
-  office_key: null, office_label: null, office_change_pending: false, pending_office_label: null,
+  office_key: null, office_label: null, office_change_pending: false, pending_office_key: null, pending_office_label: null,
   office_history: [], valid_until: '2026-05-30T22:00:00+00:00', holds_until: '2026-05-30T22:00:00+00:00',
   renewable: false, decision_reason: null, decision_reason_label: null, decision_message: null,
   decision_message_locale: null, ...overrides,
@@ -61,6 +61,48 @@ function mountBlock({ locale = 'fr', mandates = [], requestable = null, char = c
 beforeEach(() => {
   vi.clearAllMocks()
   document.body.innerHTML = ''
+})
+
+// Fix du 11/11/2026 (admin/content/fix-affichage-poste-demande.md) : une demande de poste en attente de vérification affichait
+// « sans poste » au lieu du poste demandé, parce que la carte lisait le poste DÉTENU. L'API envoie le poste demandé dès l'inscription.
+describe('Titre d\'un conseiller dont la demande est en attente', () => {
+  const pendingCouncil = (overrides = {}) => mandate({
+    level: 'council', status: 'pending', place: { id: 10, name: 'Franche-Comté' },
+    office_key: null, office_label: label('sans poste', 'no office'),
+    pending_office_key: 'commissaire_commerce', pending_office_label: label('Commissaire au commerce', 'Trade Minister'), ...overrides,
+  })
+
+  it('affiche le poste DEMANDÉ, pas « sans poste », avec le badge d\'attente — en français et en anglais', () => {
+    const fr1 = mountBlock({ mandates: [pendingCouncil()] })
+    expect(fr1.find('[data-testid="mandate-row"]').text()).toContain('Conseil comtal de Franche-Comté — Commissaire au commerce')
+    expect(fr1.find('[data-testid="mandate-row"]').text()).not.toContain('sans poste')
+    expect(fr1.find('[data-testid="mandate-status"]').text()).toBe(fr.Profil.Mandates.Status.pending)
+
+    const en1 = mountBlock({ locale: 'en', mandates: [pendingCouncil()] })
+    expect(en1.find('[data-testid="mandate-row"]').text()).toContain('County council of Franche-Comté — Trade Minister')
+    expect(en1.find('[data-testid="mandate-row"]').text()).not.toContain('no office')
+  })
+
+  it('une demande sans titre (« sans poste » choisi à l\'inscription) garde « sans poste »', () => {
+    const wrapper = mountBlock({ mandates: [pendingCouncil({ pending_office_key: null, pending_office_label: null })] })
+    expect(wrapper.find('[data-testid="mandate-row"]').text()).toContain('Conseil comtal de Franche-Comté — sans poste')
+  })
+
+  it('un mandat VALIDÉ garde le poste détenu ; sa déclaration de poste en attente garde sa mention propre', () => {
+    const wrapper = mountBlock({ mandates: [pendingCouncil({
+      status: 'active', office_key: 'juge', office_label: label('Juge', 'Judge'),
+      office_change_pending: true, pending_office_key: 'connetable', pending_office_label: label('Connétable', 'Sergeant'),
+    })] })
+    const row = wrapper.find('[data-testid="mandate-row"]').text()
+    expect(row).toContain('Conseil comtal de Franche-Comté — Juge')
+    expect(row).toContain('Connétable') // la mention « poste demandé » de la déclaration en attente
+    expect(row).not.toContain('Franche-Comté — Connétable')
+  })
+
+  it('un maire en attente est inchangé', () => {
+    const wrapper = mountBlock({ mandates: [mandate({ status: 'pending', place: { id: 100, name: 'Vesoul' } })] })
+    expect(wrapper.find('[data-testid="mandate-row"]').text()).toContain('Maire de Vesoul')
+  })
 })
 
 describe('Bloc « Postes »', () => {

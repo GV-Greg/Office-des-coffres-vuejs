@@ -11,6 +11,8 @@ vi.mock('../../src/data/whatsNew.json', () => ({
     { id: 'new-public', date: '2026-08-05', scope: 'public', type: 'feature', fr: 'Nouvelle annonce publique', en: 'New public announcement' },
     { id: 'members-only', date: '2026-08-05', scope: 'private', type: 'feature', fr: 'Annonce réservée aux membres', en: 'Members-only announcement' },
     { id: 'a-fix', date: '2026-08-06', scope: 'public', type: 'fix', fr: 'Correction du bug X', en: 'Fixed bug X' },
+    { id: 'an-improvement', date: '2026-08-07', scope: 'public', type: 'improvement', fr: 'Le bilan se lit mieux', en: 'The report reads better' },
+    { id: 'private-improvement', date: '2026-08-04', scope: 'private', type: 'improvement', fr: 'Amélioration réservée aux membres', en: 'Members-only improvement' },
   ]
 }))
 
@@ -24,7 +26,9 @@ const i18n = createI18n({
         WelcomeMessage: "L'{brand} vous souhaite la bienvenue !",
         News: "Chroniques de l'Office",
         NewsMembers: 'Membres',
-        Fixes: 'Le Registre des Réparations',
+        RegistryTitle: 'Registre des réparations et des améliorations',
+        TagFix: 'Réparation',
+        TagImprovement: 'Amélioration',
         LoginButton: 'Se connecter'
       }
     }
@@ -77,6 +81,42 @@ describe('HomeView', () => {
     expect(recentIndex).toBeLessThan(oldIndex)
   })
 
+  it('le registre porte réparations ET améliorations dans une liste unique, du plus récent au plus ancien, chacune avec son badge', () => {
+    const wrapper = mountHome()
+    expect(wrapper.find('#home-fixes-title').text()).toBe('Registre des réparations et des améliorations')
+    const rows = wrapper.findAll('li').filter(r => /^registry-(fix|improvement)$/.test(r.attributes('data-testid') ?? ''))
+    expect(rows.map(r => r.attributes('data-testid'))).toEqual(['registry-improvement', 'registry-fix'])
+    expect(rows[0].find('[data-testid="registry-tag"]').text()).toBe('Amélioration')
+    expect(rows[1].find('[data-testid="registry-tag"]').text()).toBe('Réparation')
+    expect(rows[0].text()).toContain('Le bilan se lit mieux')
+    expect(rows[1].text()).toContain('Correction du bug X')
+  })
+
+  it('la pastille reprend la couleur de son badge, en plus foncé : bleu (réparation), teal (amélioration), violet (membres)', () => {
+    const wrapper = mountHome({ auth: { token: 'faketoken', user: { characters: [] } } })
+    const dots = wrapper.findAll('[data-testid^="registry-dot-"]')
+    const byText = text => dots.find(d => d.element.closest('li').textContent.includes(text))
+    expect(byText('Le bilan se lit mieux').classes()).toContain('odc--teal')
+    expect(byText('Correction du bug X').classes()).toContain('odc--blue')
+    expect(byText('Amélioration réservée aux membres').classes()).toContain('odc--violet')
+    // les badges : bleu (réparation), teal (amélioration)
+    const tags = wrapper.findAll('[data-testid="registry-tag"]')
+    expect(tags.find(t => t.text() === 'Réparation').classes()).toContain('bg-blue-100')
+    expect(tags.find(t => t.text() === 'Amélioration').classes()).toContain('bg-teal-100')
+  })
+
+  it("une amélioration réservée aux membres n'apparaît qu'une fois connecté, avec le badge « Membres »", () => {
+    expect(mountHome().text()).not.toContain('Amélioration réservée aux membres')
+    const wrapper = mountHome({ auth: { token: 'faketoken', user: { characters: [] } } })
+    const row = wrapper.findAll('[data-testid="registry-improvement"]').find(r => r.text().includes('Amélioration réservée aux membres'))
+    expect(row).toBeTruthy()
+    expect(row.text()).toContain('Membres')
+  })
+
+  it("n'affiche pas les améliorations dans la Chronique", () => {
+    expect(mountHome().find('.news').text()).not.toContain('Le bilan se lit mieux')
+  })
+
   it("n'affiche pas les correctifs dans la Chronique", () => {
     const wrapper = mountHome()
     const chronicle = wrapper.find('.news')
@@ -93,9 +133,9 @@ describe('HomeView', () => {
     expect(wrapper.text()).not.toContain('Se connecter')
   })
 
-  it('affiche les correctifs dans une section "Registre des Réparations" séparée', () => {
+  it('affiche les correctifs dans une section « Registre des réparations et des améliorations » séparée', () => {
     const wrapper = mountHome()
-    expect(wrapper.text()).toContain('Le Registre des Réparations')
+    expect(wrapper.text()).toContain('Registre des réparations et des améliorations')
     const fixes = wrapper.find('.fixes')
     expect(fixes.exists()).toBe(true)
     expect(fixes.text()).toContain('Correction du bug X')

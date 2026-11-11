@@ -49,9 +49,16 @@
   // Année d'une date : décidée par le CHAMP (modules/playerDates.js), jamais par ce composant.
   const fieldDate = (field, value) => formatFieldDate(field, value, locale.value)
 
+  // Le titre d'un conseiller. Tant que la DEMANDE est en attente de vérification, aucun poste n'est encore détenu (`office_label` = « sans
+  // poste ») : on montre le poste DEMANDÉ, que l'API envoie dans `pending_office_label` dès l'inscription (fix du 11/11/2026). Dès que
+  // le mandat est validé, c'est le poste détenu qui parle ; une déclaration de poste en attente sur un mandat validé garde sa mention propre.
+  const officeLabel = (mandate) => mandate.status === 'pending' && mandate.pending_office_key
+    ? label(mandate.pending_office_label)
+    : label(mandate.office_label)
+
   const post = (mandate) => mandate.level === 'mayor'
     ? t('Profil.Mandates.Post.mayor', { place: mandate.place.name })
-    : t('Profil.Mandates.Post.council', { place: mandate.place.name, office: label(mandate.office_label) })
+    : t('Profil.Mandates.Post.council', { place: mandate.place.name, office: officeLabel(mandate) })
 
   // Le libellé porte l'information ; la couleur ne fait que la redoubler.
   const STATUS_CLASS = {
@@ -117,7 +124,7 @@
                 <p v-if="mandate.level === 'mayor'" class="font-bold text-slate-900 dark:text-slate-900">{{ post(mandate) }}</p>
                 <i18n-t v-else keypath="Profil.Mandates.Post.council" tag="p" scope="global" class="text-slate-800 dark:text-slate-800">
                   <template #place>{{ mandate.place.name }}</template>
-                  <template #office><strong class="font-bold text-slate-900">{{ label(mandate.office_label) }}</strong></template>
+                  <template #office><strong class="font-bold text-slate-900">{{ officeLabel(mandate) }}</strong></template>
                 </i18n-t>
                 <span class="shrink-0 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="STATUS_CLASS[mandate.status]" data-testid="mandate-status">
                   {{ statusText(mandate) }}
