@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 import { push } from 'notivue'
 import { http } from '@/api.js'
 import { useAuthStore } from '@/stores/authStore'
-import { useCookieStore } from '@/stores/cookieStore'
 import { apiMessage } from '@/stores/mandateStore'
 import { formatFieldDate } from '@/modules/playerDates'
 import { provinceHistoryToBBcode } from '@/modules/provinceBBcode'
@@ -13,11 +12,10 @@ import useMineAccess from '@/use/useMineAccess.js'
 import useMinePrices from '@/use/useMinePrices.js'
 import NavMenu from '@/components/NavMenu.vue'
 import MinePricesModal from '@/components/mines/MinePricesModal.vue'
-import InventoryCategoryPanel from '@/components/economy/InventoryCategoryPanel.vue'
+import InventoryLevelsAccordion from '@/components/economy/InventoryLevelsAccordion.vue'
 
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
-const cookieStore = useCookieStore()
 const route = useRoute()
 
 // --- Province ---
@@ -82,13 +80,6 @@ watch(pricesProvince, (p) => { if (p) loadPrices() }, { immediate: true })
 const onPricesSaved = () => {
   showPricesModal.value = false
   loadPrices()
-}
-
-// --- Catégories d'inventaire personnelles ---
-const catConfig = ref(cookieStore.getComfortData('inventory_cat_config', { custom: [], hiddenBuiltIn: [] }))
-const updateCatConfig = (val) => {
-  catConfig.value = val
-  cookieStore.setComfortData('inventory_cat_config', val)
 }
 
 // --- Sections (onglets) ---
@@ -334,21 +325,10 @@ const activeSection = computed(() => {
           </div>
         </section>
 
-        <!-- Catégories d'inventaire : un accordéon par inventaire géré (Personnel aujourd'hui ; ville, province… viendront s'y
-             ajouter, d'où le repli). Ouvert par défaut. <details> natif : clavier et lecteur d'écran gratuits. -->
+        <!-- Catégories d'inventaire : un accordéon par inventaire géré (personnel ; ville si l'on est maire ; province si l'on est
+             commissaire au commerce, le dirigeant en lecture seule). Voir InventoryLevelsAccordion. -->
         <section v-if="activeSection === 'categories'" class="rounded-xl bg-white shadow-md overflow-hidden" aria-labelledby="panel-cats-perso">
-          <details open class="group" data-testid="cats-accordion">
-            <summary class="flex cursor-pointer list-none items-center gap-2 px-4 py-2 bg-yellow-800 border-b border-yellow-900 [&::-webkit-details-marker]:hidden">
-              <v-icon name="fa-tag" class="text-yellow-200 shrink-0" aria-hidden="true" />
-              <h2 id="panel-cats-perso" class="flex-1 !mt-0 !mb-0 text-base font-bold text-white dark:text-white leading-tight">
-                {{ t('MonBureau.CatPersoPanel') }}
-              </h2>
-              <v-icon name="fa-chevron-down" class="text-yellow-200 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true" />
-            </summary>
-            <div class="p-3">
-              <InventoryCategoryPanel :cat-config="catConfig" @update:catConfig="updateCatConfig" />
-            </div>
-          </details>
+          <InventoryLevelsAccordion />
         </section>
 
         </div><!-- fin de la section affichée -->

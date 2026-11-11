@@ -10,6 +10,7 @@ describe('playerDates — un calendrier par champ', () => {
       holds_until: 'game', period_started_at: 'game', period_ended_at: 'game',
       history_started_at: 'game', history_ended_at: 'game',
       price_effective_from: 'game', price_created_at: 'game', price_updated_at: 'game',
+      inventory_snapshot_date: 'game',
       processed_at: 'real', revoked_at: 'real',
     })
   })

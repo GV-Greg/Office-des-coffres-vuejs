@@ -134,7 +134,7 @@ describe('Mon bureau — une section à la fois', () => {
     expect(wrapper.html()).not.toContain('from-violet-700')
     // un accordéon par inventaire géré (d'autres viendront : ville, province), ouvert par défaut
     expect(wrapper.find('#panel-cats-perso').text()).toBe(fr.MonBureau.CatPersoPanel)
-    const accordion = wrapper.find('details[data-testid="cats-accordion"]')
+    const accordion = wrapper.find('details[data-testid="cats-accordion-personal"]')
     expect(accordion.exists()).toBe(true)
     expect(accordion.attributes('open')).toBeDefined()
     expect(accordion.find('summary #panel-cats-perso').exists()).toBe(true)

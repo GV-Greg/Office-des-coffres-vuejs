@@ -155,6 +155,15 @@ export const useCookieStore = defineStore('cookie', {
       }
     },
 
+    // Suppression : la clé disparaît de la mémoire et, si les préférences sont acceptées, du stockage. Sert quand un réglage
+    // a été REPRIS ailleurs (les réglages d'inventaire passent en base à la première connexion, puis s'effacent d'ici).
+    removeComfortData(key) {
+      delete this.comfortData[key]
+      if (this.hasAcceptedPreferences) {
+        this._saveComfortData()
+      }
+    },
+
     setTheme(theme) {
       this.setComfortData('theme', theme)
     },

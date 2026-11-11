@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CATEGORY_KEYS, orderCategoryKeys } from '@/modules/inventoryCategories'
 import { EXPORT_DEFAULT_COLOR, EXPORT_COLORS } from '@/modules/inventoryBBcode'
-import { useCookieStore } from '@/stores/cookieStore'
 import InventoryItemsModal from './InventoryItemsModal.vue'
 
 /*
@@ -15,11 +14,20 @@ const props = defineProps({
     type: Object,
     default: () => ({ custom: [], hiddenBuiltIn: [] }),
   },
+  // Assignations objet → catégorie du niveau : le parent les tient (navigateur sans compte, serveur avec un compte).
+  itemCategories: {
+    type: Object,
+    default: () => ({}),
+  },
+  // Lecture seule : le dirigeant consulte les catégories de sa province, il n'y modifie rien.
+  readonly: {
+    type: Boolean,
+    default: false,
+  },
 })
-const emit = defineEmits(['update:catConfig'])
+const emit = defineEmits(['update:catConfig', 'update:itemCategories'])
 
 const { t, locale } = useI18n()
-const cookieStore = useCookieStore()
 
 const newFr = ref('')
 const newEn = ref('')
@@ -52,6 +60,7 @@ function categoryLabel(key) {
 const orderAnnouncement = ref('')
 
 function moveCategory(key, delta) {
+  if (props.readonly) return
   const list = [...orderedKeys.value]
   const from = list.indexOf(key)
   const to = from + delta
@@ -66,11 +75,12 @@ const allKeys = computed(() => new Set([
   ...customCategories.value.map(c => c.key),
 ]))
 
-// Assignations items → catégories (cookieStore)
-const customCats = computed(() => cookieStore.getComfortData('inventory_custom_cats', {}))
+// Assignations items → catégories : fournies par le parent, renvoyées à chaque modification.
+const customCats = computed(() => props.itemCategories ?? {})
 
 function saveCustomCats(map) {
-  cookieStore.setComfortData('inventory_custom_cats', map)
+  if (props.readonly) return
+  emit('update:itemCategories', map)
 }
 
 // Items assignés à une catégorie donnée, triés alphabétiquement
@@ -149,6 +159,7 @@ function labelToKey(label) {
 }
 
 function emitConfig(partial) {
+  if (props.readonly) return
   emit('update:catConfig', { ...props.catConfig, ...partial })
 }
 
@@ -161,6 +172,7 @@ function restoreBuiltIn(key) {
 }
 
 function add() {
+  if (props.readonly) return
   const fr = newFr.value.trim()
   if (!fr) return
 
@@ -218,6 +230,7 @@ function doDelete() {
           v-for="c in EXPORT_COLORS"
           :key="c.value"
           type="button"
+          :disabled="readonly"
           class="w-6 h-6 rounded-full border-2 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
           :style="{ backgroundColor: c.hex, borderColor: selectedColor === c.value ? '#c2410c' : 'transparent' }"
           :class="selectedColor === c.value ? 'ring-2 ring-orange-600 ring-offset-1 dark:ring-offset-slate-700' : 'hover:border-slate-400 dark:hover:border-slate-300'"
@@ -238,6 +251,7 @@ function doDelete() {
         <input
           v-model="newFr"
           type="text"
+          :disabled="readonly"
           :placeholder="t('EconomyInventory.AddCategoryFr')"
           class="w-full tablet:w-60 min-w-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-slate-100"
           @keydown.enter="add"
@@ -245,6 +259,7 @@ function doDelete() {
         <input
           v-model="newEn"
           type="text"
+          :disabled="readonly"
           :placeholder="t('EconomyInventory.AddCategoryEn')"
           class="w-full tablet:w-60 min-w-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-slate-100"
           @keydown.enter="add"
@@ -252,6 +267,7 @@ function doDelete() {
         <button
           type="button"
           class="odc-btn odc-btn--soft odc--green odc-btn--sm shrink-0"
+          :disabled="readonly"
           @click="add"
         >
           <v-icon name="fa-plus" aria-hidden="true" />{{ t('EconomyInventory.AddCategoryBtn') }}
@@ -296,6 +312,7 @@ function doDelete() {
               type="button"
               class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--violet shrink-0"
               :aria-label="t('EconomyInventory.HideBuiltIn')"
+              :disabled="readonly"
               @click.stop="hideBuiltIn(key)"
             >
               <v-icon name="fa-eye-slash" aria-hidden="true" />
@@ -337,6 +354,7 @@ function doDelete() {
                 type="button"
                 class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--red shrink-0"
                 :aria-label="t('EconomyInventory.DeleteCategory')"
+                :disabled="readonly"
                 @click.stop="pendingDelete = cat.key"
               >
                 <v-icon name="fa-trash-alt" aria-hidden="true" />
@@ -391,6 +409,7 @@ function doDelete() {
               type="button"
               class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--green shrink-0"
               :aria-label="t('EconomyInventory.RestoreBuiltIn')"
+              :disabled="readonly"
               @click="restoreBuiltIn(key)"
             >
               <v-icon name="fa-undo" aria-hidden="true" />
@@ -426,7 +445,7 @@ function doDelete() {
           <button
             type="button"
             class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0 [--h:26px] text-[11px]"
-            :disabled="index === 0"
+            :disabled="readonly || index === 0"
             :aria-label="t('EconomyInventory.CatMoveUp', { cat: categoryLabel(key) })"
             :data-testid="`cat-up-${key}`"
             @click="moveCategory(key, -1)"
@@ -436,7 +455,7 @@ function doDelete() {
           <button
             type="button"
             class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0 [--h:26px] text-[11px]"
-            :disabled="index === orderedKeys.length - 1"
+            :disabled="readonly || index === orderedKeys.length - 1"
             :aria-label="t('EconomyInventory.CatMoveDown', { cat: categoryLabel(key) })"
             :data-testid="`cat-down-${key}`"
             @click="moveCategory(key, 1)"
@@ -459,6 +478,7 @@ function doDelete() {
       :items="modalCatKey ? itemsForCategory(modalCatKey) : []"
       :autocomplete-items="modalAutocompleteItems"
       :other-categories="modalOtherCategories"
+      :readonly="readonly"
       @close="closeModal"
       @add="addItem"
       @remove="removeItem"
