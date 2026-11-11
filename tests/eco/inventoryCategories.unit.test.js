@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest'
-import { suggestCategory, DEFAULT_ITEM_CATEGORIES, CATEGORY_KEYS, CATEGORY_LABELS_FR } from '../../src/modules/inventoryCategories'
+import { suggestCategory, orderCategoryKeys, DEFAULT_ITEM_CATEGORIES, CATEGORY_KEYS, CATEGORY_LABELS_FR } from '../../src/modules/inventoryCategories'
 import { exportInventoryToBBCode } from '../../src/modules/inventoryBBcode'
 
 describe('CATEGORY_KEYS', () => {
@@ -155,5 +155,49 @@ describe('exportInventoryToBBCode', () => {
     const medIdx = bbcode.indexOf('[color=darkcyan][size=18][b]Matériel médical[/b][/size][/color]')
     expect(aliIdx).toBeLessThan(matIdx)
     expect(matIdx).toBeLessThan(medIdx)
+  })
+})
+
+describe('orderCategoryKeys — ordre choisi par le joueur', () => {
+  const keys = ['alimentation', 'matieres_premieres', 'divers', 'perso']
+
+  it('sans ordre, rend les clés telles quelles (ordre par défaut)', () => {
+    expect(orderCategoryKeys(keys)).toEqual(keys)
+    expect(orderCategoryKeys(keys, [])).toEqual(keys)
+    expect(orderCategoryKeys(keys, undefined)).toEqual(keys)
+  })
+
+  it("applique l'ordre du joueur", () => {
+    expect(orderCategoryKeys(keys, ['perso', 'divers', 'matieres_premieres', 'alimentation']))
+      .toEqual(['perso', 'divers', 'matieres_premieres', 'alimentation'])
+  })
+
+  it("place d'abord les clés ordonnées, puis les nouvelles dans l'ordre d'origine", () => {
+    // « divers » et « perso » ont été créées ou restaurées depuis : elles suivent.
+    expect(orderCategoryKeys(keys, ['matieres_premieres', 'alimentation']))
+      .toEqual(['matieres_premieres', 'alimentation', 'divers', 'perso'])
+  })
+
+  it("ignore les clés d'ordre qui n'existent plus (catégorie supprimée ou masquée) et les doublons", () => {
+    expect(orderCategoryKeys(keys, ['supprimee', 'divers', 'divers', 'alimentation']))
+      .toEqual(['divers', 'alimentation', 'matieres_premieres', 'perso'])
+  })
+
+  it("ne modifie ni la liste d'origine ni l'ordre reçu, et tolère un ordre invalide", () => {
+    const order = ['divers']
+    const copy = [...keys]
+    orderCategoryKeys(keys, order)
+    expect(keys).toEqual(copy)
+    expect(order).toEqual(['divers'])
+    expect(orderCategoryKeys(keys, 'pas-un-tableau')).toEqual(keys)
+  })
+
+  it("l'export BBCode suit cet ordre", () => {
+    const items = [{ quantity: 2, name: 'Miches de pain' }, { quantity: 1, name: 'Cailloux' }]
+    const cat = name => (name === 'Cailloux' ? 'divers' : 'alimentation')
+    const label = key => ({ alimentation: 'Alimentation', divers: 'Divers' })[key]
+    const asked = orderCategoryKeys(['alimentation', 'divers'], ['divers', 'alimentation'])
+    const out = exportInventoryToBBCode(items, cat, { categoryKeys: asked, getCategoryLabel: label })
+    expect(out.indexOf('Divers')).toBeLessThan(out.indexOf('Alimentation'))
   })
 })

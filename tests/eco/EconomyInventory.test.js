@@ -5,6 +5,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import EconomyInventory from '../../src/views/modules/economy/EconomyInventory.vue'
 import { useAuthStore } from '../../src/stores/authStore'
+import { useCookieStore } from '../../src/stores/cookieStore'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -391,5 +392,95 @@ describe('EconomyInventory — select conditionnel (Phase B)', () => {
       s.attributes('aria-label')?.includes('Objet inconnu et fantaisiste'),
     )
     expect(unknownSelect).toBeDefined()
+  })
+})
+
+// Chantiers 3 et 4 du brief « inventaire — améliorations » (Cowork, 11/11/2026) : ordre des catégories pour
+// l'affichage et l'export, encart « Consignes au scribe » avec le bouton « Confier au scribe » à droite.
+function mountWithCatConfig(catConfig, locale = 'fr', customCats = {}) {
+  setActivePinia(createPinia())
+  useCookieStore().setComfortData('inventory_cat_config', catConfig)
+  useCookieStore().setComfortData('inventory_custom_cats', customCats)
+  const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
+  const router = createRouter({ history: createMemoryHistory(), routes: ROUTER_ROUTES })
+  return mount(EconomyInventory, { global: { plugins: [i18n, router] } })
+}
+
+async function exportedBBCode(wrapper) {
+  const written = []
+  Object.assign(navigator, { clipboard: { writeText: (t) => { written.push(t); return Promise.resolve() } } })
+  await wrapper.find('[data-testid="inventory-paste"]').setValue(FIXTURE)
+  await wrapper.find('[data-testid="export-btn"]').trigger('click')
+  await wrapper.vm.$nextTick()
+  return written[0]
+}
+
+const headerOrder = w => w.findAll('h3').map(h => h.text())
+
+describe('EconomyInventory — ordre des catégories', () => {
+  it("sans ordre choisi : ordre par défaut à l'écran comme dans le BBCode (Alimentation avant Divers)", async () => {
+    const w = mountWithCatConfig({ custom: [] })
+    const out = await exportedBBCode(w)
+    expect(out.indexOf('[b]Alimentation[/b]')).toBeLessThan(out.indexOf('[b]Divers[/b]'))
+    const headers = headerOrder(w)
+    expect(headers.findIndex(h => h.includes('Alimentation'))).toBeLessThan(headers.findIndex(h => h.includes('Divers')))
+  })
+
+  it("l'ordre choisi est respecté dans le BBCode exporté", async () => {
+    const w = mountWithCatConfig({ custom: [], order: ['divers', 'animaux', 'materiel_medical', 'alimentation'] })
+    const out = await exportedBBCode(w)
+    const pos = label => out.indexOf(`[b]${label}[/b]`)
+    expect(pos('Divers')).toBeGreaterThan(-1)
+    expect(pos('Divers')).toBeLessThan(pos('Animaux'))
+    expect(pos('Animaux')).toBeLessThan(pos('Matériel médical'))
+    expect(pos('Matériel médical')).toBeLessThan(pos('Alimentation'))
+  })
+
+  it("l'ordre choisi est respecté dans le tableau d'inventaire", async () => {
+    const w = mountWithCatConfig({ custom: [], order: ['divers', 'alimentation'] })
+    await w.find('[data-testid="inventory-paste"]').setValue(FIXTURE)
+    const headers = headerOrder(w)
+    expect(headers.findIndex(h => h.includes('Divers'))).toBeLessThan(headers.findIndex(h => h.includes('Alimentation')))
+  })
+
+  it("une catégorie personnalisée se place où le joueur l'a mise, une clé d'ordre périmée est ignorée", async () => {
+    const w = mountWithCatConfig(
+      { custom: [{ key: 'curiosites', fr: 'Curiosités', en: 'Curios' }], order: ['supprimee', 'curiosites', 'alimentation'] },
+      'fr',
+      { Clarabelle: 'curiosites' },
+    )
+    await w.find('[data-testid="inventory-paste"]').setValue(FIXTURE)
+    const headers = headerOrder(w)
+    expect(headers.findIndex(h => h.includes('Curiosités'))).toBe(0)
+    expect(headers.findIndex(h => h.includes('Curiosités'))).toBeLessThan(headers.findIndex(h => h.includes('Alimentation')))
+    expect(headers.some(h => h.includes('Animaux'))).toBe(false) // Clarabelle n'est plus chez les animaux
+  })
+})
+
+describe('EconomyInventory — encart « Consignes au scribe »', () => {
+  it("l'encart s'appelle « Consignes au scribe » (FR) / « Instructions for the scribe » (EN)", async () => {
+    for (const [locale, title] of [['fr', 'Consignes au scribe'], ['en', 'Instructions for the scribe']]) {
+      const w = mountPage(locale)
+      await w.find('[data-testid="inventory-paste"]').setValue(FIXTURE)
+      expect(w.find('fieldset legend').text()).toBe(title)
+    }
+  })
+
+  it("« Confier au scribe » est DANS l'encart, après les options (à leur droite)", async () => {
+    const w = mountPage()
+    await w.find('[data-testid="inventory-paste"]').setValue(FIXTURE)
+    const button = w.find('fieldset [data-testid="export-btn"]')
+    expect(button.exists()).toBe(true)
+    expect(button.text()).toContain('Confier au scribe')
+    expect(button.classes()).toContain('odc--green')
+    // Un seul bouton d'export, plus dans la rangée d'actions du haut.
+    expect(w.findAll('[data-testid="export-btn"]')).toHaveLength(1)
+    const html = w.html()
+    expect(html.indexOf('data-testid="export-wrapper"')).toBeLessThan(html.indexOf('data-testid="export-btn"'))
+  })
+
+  it("le bouton d'export garde son effet (copie du BBCode) à son nouvel emplacement", async () => {
+    const out = await exportedBBCode(mountPage())
+    expect(out).toContain('[b]Alimentation[/b]')
   })
 })

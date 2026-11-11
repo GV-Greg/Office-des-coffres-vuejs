@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { CATEGORY_KEYS } from '@/modules/inventoryCategories'
+import { CATEGORY_KEYS, orderCategoryKeys } from '@/modules/inventoryCategories'
 import { EXPORT_DEFAULT_COLOR, EXPORT_COLORS } from '@/modules/inventoryBBcode'
 import { useCookieStore } from '@/stores/cookieStore'
 import InventoryItemsModal from './InventoryItemsModal.vue'
@@ -34,6 +34,32 @@ const customCategories = computed(() => props.catConfig.custom ?? [])
 const hiddenBuiltInSet = computed(() => new Set(props.catConfig.hiddenBuiltIn ?? []))
 const visibleBuiltIn = computed(() => CATEGORY_KEYS.filter(k => !hiddenBuiltInSet.value.has(k)))
 const hiddenBuiltInList = computed(() => CATEGORY_KEYS.filter(k => hiddenBuiltInSet.value.has(k)))
+
+// Ordre d'affichage et d'export : les catégories visibles (prédéfinies non masquées + personnalisées), dans l'ordre
+// choisi par le joueur (`catConfig.order`), à défaut l'ordre par défaut.
+const orderedKeys = computed(() => orderCategoryKeys(
+  [...visibleBuiltIn.value, ...customCategories.value.map(c => c.key)],
+  props.catConfig.order,
+))
+
+function categoryLabel(key) {
+  const custom = customCategories.value.find(c => c.key === key)
+  if (custom) return locale.value === 'fr' ? custom.fr : (custom.en || custom.fr)
+  return t(`EconomyInventory.Categories.${key}`)
+}
+
+// Annonce lecteur d'écran après un déplacement (région `role="status"`).
+const orderAnnouncement = ref('')
+
+function moveCategory(key, delta) {
+  const list = [...orderedKeys.value]
+  const from = list.indexOf(key)
+  const to = from + delta
+  if (from === -1 || to < 0 || to >= list.length) return
+  list.splice(to, 0, list.splice(from, 1)[0])
+  emitConfig({ order: list })
+  orderAnnouncement.value = t('EconomyInventory.CatMovedAnnounce', { cat: categoryLabel(key), position: to + 1, total: list.length })
+}
 
 const allKeys = computed(() => new Set([
   ...CATEGORY_KEYS,
@@ -338,6 +364,47 @@ function doDelete() {
         </p>
       </div>
 
+    </div>
+
+    <!-- Ordre des catégories : celui du tableau d'inventaire et du BBCode exporté. Flèches plutôt que glisser-déposer :
+         fonctionne au doigt et au clavier, et se lit au lecteur d'écran. -->
+    <div class="border-t border-slate-200 dark:border-slate-600 mt-4 pt-4" data-testid="cat-order">
+      <p class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+        {{ t('EconomyInventory.CatOrderTitle') }}
+      </p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 italic mb-2">{{ t('EconomyInventory.CatOrderHint') }}</p>
+      <ol class="grid gap-1 tablet:grid-cols-2 laptop:grid-cols-3">
+        <li
+          v-for="(key, index) in orderedKeys"
+          :key="key"
+          class="flex items-center gap-1 text-sm px-2 py-1 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600"
+          data-testid="cat-order-item"
+        >
+          <span class="shrink-0 w-5 text-xs font-semibold text-slate-400 dark:text-slate-400 tabular-nums" aria-hidden="true">{{ index + 1 }}</span>
+          <span class="flex-1 min-w-0 truncate text-xs font-medium text-slate-800 dark:text-slate-100">{{ categoryLabel(key) }}</span>
+          <button
+            type="button"
+            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0"
+            :disabled="index === 0"
+            :aria-label="t('EconomyInventory.CatMoveUp', { cat: categoryLabel(key) })"
+            :data-testid="`cat-up-${key}`"
+            @click="moveCategory(key, -1)"
+          >
+            <v-icon name="fa-chevron-up" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0"
+            :disabled="index === orderedKeys.length - 1"
+            :aria-label="t('EconomyInventory.CatMoveDown', { cat: categoryLabel(key) })"
+            :data-testid="`cat-down-${key}`"
+            @click="moveCategory(key, 1)"
+          >
+            <v-icon name="fa-chevron-down" aria-hidden="true" />
+          </button>
+        </li>
+      </ol>
+      <p class="sr-only" role="status" data-testid="cat-order-status">{{ orderAnnouncement }}</p>
     </div>
 
     <!-- Ajout de catégorie -->
