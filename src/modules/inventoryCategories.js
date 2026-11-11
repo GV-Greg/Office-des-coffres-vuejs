@@ -212,3 +212,26 @@ export function suggestCategory(itemName, customMappings = {}) {
 
   return null
 }
+
+/**
+ * Applique l'ordre choisi par le joueur à une liste de clés de catégories (affichage ET export BBCode).
+ * - les clés de `order` qui existent dans `keys` passent en premier, dans l'ordre du joueur ;
+ * - les clés absentes de `order` (catégorie créée ou restaurée depuis) suivent, dans l'ordre d'origine ;
+ * - les clés de `order` qui n'existent plus (catégorie supprimée ou masquée) sont ignorées.
+ * Sans ordre, la liste est rendue telle quelle : l'ordre par défaut des catégories prédéfinies, puis les personnalisées.
+ *
+ * @param {string[]} keys   clés des catégories affichées, dans l'ordre par défaut
+ * @param {string[]} [order] ordre choisi (`inventory_cat_config.order`)
+ * @returns {string[]}
+ */
+export function orderCategoryKeys(keys, order = []) {
+  const known = new Set(keys)
+  const ordered = []
+  for (const key of Array.isArray(order) ? order : []) {
+    if (known.has(key) && !ordered.includes(key)) ordered.push(key)
+  }
+  for (const key of keys) {
+    if (!ordered.includes(key)) ordered.push(key)
+  }
+  return ordered
+}

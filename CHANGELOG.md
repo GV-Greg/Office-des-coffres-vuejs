@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [À compléter au merge] — Inventaire : ordre des catégories et encart « Consignes au scribe » (`feat/inventory-order`)
+
+### Added
+- **Ordre des catégories** : dans Mon bureau, une section « Ordre des catégories » liste les catégories visibles avec des flèches ↑ ↓ (adaptées au mobile et au clavier, annonce lecteur d'écran, première/dernière désactivées). L'ordre choisi (`inventory_cat_config.order`) vaut pour **le tableau d'inventaire et pour le BBCode exporté** ; une catégorie créée ou restaurée ensuite se place à la fin, une catégorie supprimée ou masquée est ignorée. Sans ordre choisi : l'ordre par défaut. Fonction pure `orderCategoryKeys()`.
+
+### Changed
+- **Encart d'export** : « Options d'export » devient **« Consignes au scribe »** (EN : « Instructions for the scribe ») et le bouton **« Confier au scribe »** y passe, à droite des options, en action principale de l'encart ; il quitte la rangée d'actions du haut.
+- `docs/ARCHITECTURE.md` documente enfin l'inventaire, et dit ce qui n'existe pas : **aucun stockage serveur** des inventaires ni des catégories (vérifié dans le backend), catégories par scope de mandat non construites.
+
+### Prod
+- Aucune route, aucune dépendance. Cinq clés de langue ajoutées (FR + EN) et le titre de l'encart d'export renommé, sans changement de politique : l'ordre vit dans le même réglage de confort que les catégories.
+
 ## [2026-11-11] — PR #108 (Bilan des mines : « Confier au scribe » et listes du rapport du jour compactes)
 
 ### Changed

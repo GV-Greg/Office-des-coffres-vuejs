@@ -292,6 +292,17 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   plaque d'enregistrement (`EconomyMines.Registry.Help*`) dit que les prix viennent de la province ; l'aide du Bilan public a une 5ᵉ étape (prix en lecture seule
   d'un gérant). ⚠️ Une aide qui cite un bouton le cite **tel qu'il s'affiche** : `tests/eco/mineModuleTexts.unit.test.js` le garde (lecture des vraies locales).
   Les textes **légaux** (politique, « Vos données ») ne sont pas dans ce lot.
+- **`modules/economy/EconomyInventory.vue`** (« Salle des comptes », public, 06/11/2026) — colle l'inventaire du jeu, le range par
+  catégorie (`modules/inventoryCategories.js` : valeurs par défaut, suggestion par nom exact puis par préfixe), permet de masquer
+  catégories et lignes, et l'exporte en BBCode (`modules/inventoryBBcode.js`, français fixe). ⚠️ **Tout est côté navigateur** : aucun
+  serveur n'enregistre d'inventaire ni de catégorie (aucune table, aucune route — vérifié le 11/11/2026) ; les réglages vivent dans le
+  cookieStore (`inventory_paste`, `inventory_custom_cats`, `inventory_cat_config`, `inventory_visibility`, `inventory_export_*`), donc
+  **sans consentement aux préférences, rien n'est mémorisé au-delà de la session**. Les catégories se gèrent dans Mon bureau
+  (`components/economy/InventoryCategoryPanel.vue`) ; les catégories **par scope de mandat** (ville, province) et leur stockage serveur
+  (briefs `inventaire-visibilite`, `assignation-items`, phase 2) **ne sont pas construits**. **Ordre des catégories** (11/11/2026) :
+  `catConfig.order` (clés dans l'ordre choisi, réglé par des flèches ↑ ↓ dans le panneau) passe par `orderCategoryKeys()`, qui
+  commande **à la fois** l'affichage du tableau et le BBCode ; une clé périmée est ignorée, une catégorie nouvelle va à la fin. L'encart
+  d'export s'intitule « Consignes au scribe » (clé `ExportOptionsTitle`) : options à gauche, « Confier au scribe » à droite.
 - **Module Animation** (27-28/10/2026, `views/modules/animation/`) — première activité : **Décode le code** (« Crack the Code »). Le serveur dit
   quelles activités sont ouvertes (`GET anim/activity-types`, sans jeton ; une panne n'en affiche aucune). Vocabulaire : « personnage » pour
   les noms inscrits (D34). ⚠️ **Aucune règle côté site** : adresse, mot de passe, lieu, notes, droits sont jugés par le serveur, ses refus

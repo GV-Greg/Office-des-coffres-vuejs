@@ -3,7 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useCookieStore } from '@/stores/cookieStore'
 import { parseInventoryText, resolveItems } from '@/modules/inventoryParser'
-import { suggestCategory, CATEGORY_KEYS, CATEGORY_LABELS_FR } from '@/modules/inventoryCategories'
+import { suggestCategory, orderCategoryKeys, CATEGORY_KEYS, CATEGORY_LABELS_FR } from '@/modules/inventoryCategories'
 import { exportInventoryToBBCode, EXPORT_DEFAULT_COLOR } from '@/modules/inventoryBBcode'
 import { push } from 'notivue'
 import { RouterLink } from 'vue-router'
@@ -57,10 +57,12 @@ const totalEcus = computed(() => parsedResult.value.totalEcus)
 const customCatsList = computed(() => catConfig.value.custom ?? [])
 const hiddenBuiltIn = computed(() => new Set(catConfig.value.hiddenBuiltIn ?? []))
 
-const allCategoryKeys = computed(() => [
+// L'ordre choisi par le joueur (flèches de Mon bureau, `catConfig.order`) vaut pour l'affichage ET pour le BBCode :
+// les deux lisent cette liste.
+const allCategoryKeys = computed(() => orderCategoryKeys([
   ...CATEGORY_KEYS.filter(k => !hiddenBuiltIn.value.has(k)),
   ...customCatsList.value.map(c => c.key),
-])
+], catConfig.value.order))
 
 const getCategoryLabel = key => {
   const custom = customCatsList.value.find(c => c.key === key)
@@ -208,14 +210,6 @@ function updateCatConfig(newConfig) {
           <template v-if="parsedItems.length > 0">
             <button
               type="button"
-              class="odc-btn odc-btn--soft odc--green odc-btn--sm"
-              data-testid="export-btn"
-              @click="doExport"
-            >
-              <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
-            </button>
-            <button
-              type="button"
               class="odc-btn odc-btn--soft odc--red odc-btn--sm"
               data-testid="clear-btn"
               @click="clear"
@@ -256,7 +250,9 @@ function updateCatConfig(newConfig) {
           <legend class="px-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 select-none">
             {{ t('EconomyInventory.ExportOptionsTitle') }}
           </legend>
-          <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 mt-1">
+          <!-- Options à gauche, « Confier au scribe » à droite : l'action principale de l'encart (Greg, 11/11/2026). -->
+          <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mt-1">
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
             <!-- Format de quantité (overlay select) -->
             <div class="relative inline-flex">
               <span class="odc-btn odc-btn--soft odc--slate odc-btn--sm pointer-events-none select-none gap-1">
@@ -309,6 +305,16 @@ function updateCatConfig(newConfig) {
                 <option value="quote">{{ t('EconomyInventory.ExportWrapperQuote') }}</option>
               </select>
             </div>
+          </div>
+
+          <button
+            type="button"
+            class="odc-btn odc-btn--soft odc--green"
+            data-testid="export-btn"
+            @click="doExport"
+          >
+            <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+          </button>
           </div>
         </fieldset>
 
