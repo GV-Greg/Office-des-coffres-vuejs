@@ -78,5 +78,13 @@
     "type": "feature",
     "fr": "La Salle des Jeux propose un nouveau coffre pour vous aider avec une grille de lots, avec ou sans compte.",
     "en": "The Games Hall offers a new chest to help you with a prize grid, with or without an account."
+  },
+  {
+    "id": "inventory-category-order",
+    "date": "2026-11-11",
+    "scope": "public",
+    "type": "improvement",
+    "fr": "Ajout de gestion de l'ordre des catégories pour les inventaires.",
+    "en": "Added category order management for inventories."
   }
 ]
