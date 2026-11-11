@@ -40,7 +40,7 @@ const i18n = createI18n({
         RateNotStored: 'Taux horaire non mémorisé pour cette semaine.',
         GenerateButton: 'Générer le bilan hebdomadaire',
         ExportButton: 'Copier en BBcode',
-        DayExportButton: 'Mise en forme du jour',
+        DayExportButton: 'Confier au scribe',
         WeekIncompleteWarning: '{count}/7 jours couverts (du {monday} au {sunday})',
         ColumnMine: 'Mine',
         ColumnHours: 'Heures',
@@ -320,7 +320,7 @@ Diminuer le niveau de la mine
 Fermer la mine
 ` + sampleText
 
-  // Monte la vue, colle le relevé complet, déclenche "Mise en forme du jour" et renvoie la
+  // Monte la vue, colle le relevé complet, déclenche « Confier au scribe » (jour) et renvoie la
   // partie visible du BBcode copié — le [spoiler] du texte brut est écarté, les assertions
   // de rendu ne doivent jamais matcher dedans par accident.
   async function copyVisibleReport() {
@@ -328,15 +328,27 @@ Fermer la mine
     Object.assign(navigator, { clipboard: { writeText } })
     const wrapper = mountView()
     await wrapper.find('textarea').setValue(textWithState)
-    await wrapper.findAll('button').find(b => b.text() === 'Mise en forme du jour').trigger('click')
+    await wrapper.find('[data-testid="day-export"]').trigger('click')
     return writeText.mock.calls[0][0].split('[spoiler]')[0]
   }
 
-  it("le bouton 'Mise en forme du jour' n'apparaît que si du texte est collé", () => {
+  // Greg, 11/11/2026 : « [list][*] » et « [*]…[/list] » collés — le forum rend un retour à la ligne
+  // en ligne vide, ce qui creusait un blanc sous chaque titre et sous chaque liste.
+  it("les listes du rapport du jour sont collées : « [list][*]… » et « …[/list] », sans retour à la ligne", async () => {
+    const visible = await copyVisibleReport()
+    expect(visible).toContain('[list][*]Niveau : 10')
+    expect(visible).toMatch(/\[\*\]Entretien et amélioration : [^\n]*\[\/list\]\n/)
+    // Les séries des 7 jours (heures, production, consommation) suivent la même forme.
+    expect(visible).toMatch(/\[list\]\[\*\]\d{4}-\d{2}-\d{2} : [^\n]*(\n\[\*\][^\n]*)*\[\/list\]/)
+    expect(visible).not.toContain('[list]\n')
+    expect(visible).not.toContain('\n[/list]')
+  })
+
+  it("le bouton du jour (« Confier au scribe ») n'apparaît que si du texte est collé", () => {
     const wrapper = mountView()
     // Les flèches de navigation de semaine restent visibles même sans texte collé.
     expect(wrapper.findAll('button')).toHaveLength(2)
-    expect(wrapper.text()).not.toContain('Mise en forme du jour')
+    expect(wrapper.find('[data-testid="day-export"]').exists()).toBe(false)
   })
 
   it("affiche une erreur si aucun bloc d'état de mine n'est reconnu", async () => {
@@ -345,7 +357,7 @@ Fermer la mine
     // sampleText n'a que les tableaux de données, pas le bloc "Niveau : ..." de config.
     await wrapper.find('textarea').setValue(sampleText)
 
-    const dayButton = wrapper.findAll('button').find(b => b.text() === 'Mise en forme du jour')
+    const dayButton = wrapper.find('[data-testid="day-export"]')
     await dayButton.trigger('click')
 
     expect(push.error).toHaveBeenCalled()
@@ -358,8 +370,11 @@ Fermer la mine
     const wrapper = mountView()
     await wrapper.find('textarea').setValue(textWithState)
 
-    const dayButton = wrapper.findAll('button').find(b => b.text() === 'Mise en forme du jour')
-    expect(dayButton).toBeTruthy()
+    const dayButton = wrapper.find('[data-testid="day-export"]')
+    expect(dayButton.exists()).toBe(true)
+    // « Confier au scribe », en vert (Greg, 11/11/2026).
+    expect(dayButton.text()).toBe('Confier au scribe')
+    expect(dayButton.classes()).toContain('odc--green')
 
     await dayButton.trigger('click')
 
