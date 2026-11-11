@@ -124,8 +124,9 @@ envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent p
   et **footer propre** fusionnant le disclaimer « outil non officiel », le copyright et les liens
   légaux — seule page exemptée d'`AppFooter` (voir `App.vue`).
 - **`HomeView.vue`** — `NavMenu` + deux rubriques alimentées par `src/data/whatsNew.json` :
-  « Chroniques de l'Office » (entrées `type: "feature"`) et « Le Registre des Réparations »
-  (`type: "fix"`), en deux colonnes, les entrées `scope: "private"` n'apparaissant que connecté.
+  « Chroniques de l'Office » (entrées `type: "feature"`) et « Registre des réparations et des
+  améliorations » (`type: "fix"` ou `"improvement"`, une liste unique, un badge « Réparation » / « Amélioration » par entrée — `Home.Tag*`),
+  en deux colonnes, les entrées `scope: "private"` n'apparaissant que connecté.
   Bouton « Se connecter » si déconnecté.
 - **`404.vue`** (route `not-found`, catch-all `meta.public`) — page introuvable : logo vertical,
   titre, texte roleplay (plus de code « 404 », 27/09/2026). **Un seul bouton** « Retour à l'Office »

@@ -229,7 +229,9 @@
     "UnderConstruction": "The Office is currently under construction...",
     "News": "Office chronicles",
     "NewsMembers": "Members",
-    "Fixes": "The Repairs Register",
+    "RegistryTitle": "Repairs and improvements registry",
+    "TagFix": "Fix",
+    "TagImprovement": "Improvement",
     "LoginButton": "Log in"
   },
   "NotFound": {
