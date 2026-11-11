@@ -22,8 +22,12 @@
   const visibleRegistry = computed(() => newsOfType('fix', 'improvement'))
 
   // Le sens est porté par le TEXTE du badge ; la couleur ne fait que le redoubler (carte claire dans les deux thèmes : mêmes classes en dark:).
+  // La pastille de la ligne reprend la couleur de SON badge, en plus foncé : bleu pour une réparation, teal pour une amélioration ; violet pour
+  // une entrée réservée aux membres, comme avant (Greg, 11/11/2026).
+  const dotClass = (item) => item.scope === 'private' ? 'odc--violet' : item.type === 'improvement' ? 'odc--teal' : 'odc--blue'
+
   const TAG = {
-    fix: { key: 'Home.TagFix', cls: 'bg-slate-200 text-slate-800 dark:bg-slate-200 dark:text-slate-800' },
+    fix: { key: 'Home.TagFix', cls: 'bg-blue-100 text-blue-900 dark:bg-blue-100 dark:text-blue-900' },
     improvement: { key: 'Home.TagImprovement', cls: 'bg-teal-100 text-teal-900 dark:bg-teal-100 dark:text-teal-900' },
   }
 
@@ -96,7 +100,8 @@
             <li v-for="item in visibleRegistry" :key="item.id" class="relative pl-6" :data-testid="`registry-${item.type}`">
               <span
                 class="odc-dot absolute -left-[0.95rem] top-0"
-                :class="item.scope === 'private' ? 'odc--violet' : 'odc--blue'"
+                :class="dotClass(item)"
+                :data-testid="`registry-dot-${item.type}`"
               >
                 <v-icon name="gi-bugle-call" />
               </span>

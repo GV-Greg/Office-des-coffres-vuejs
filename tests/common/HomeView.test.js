@@ -84,12 +84,25 @@ describe('HomeView', () => {
   it('le registre porte réparations ET améliorations dans une liste unique, du plus récent au plus ancien, chacune avec son badge', () => {
     const wrapper = mountHome()
     expect(wrapper.find('#home-fixes-title').text()).toBe('Registre des réparations et des améliorations')
-    const rows = wrapper.findAll('[data-testid^="registry-"]').filter(r => r.attributes('data-testid') !== 'registry-tag')
+    const rows = wrapper.findAll('li').filter(r => /^registry-(fix|improvement)$/.test(r.attributes('data-testid') ?? ''))
     expect(rows.map(r => r.attributes('data-testid'))).toEqual(['registry-improvement', 'registry-fix'])
     expect(rows[0].find('[data-testid="registry-tag"]').text()).toBe('Amélioration')
     expect(rows[1].find('[data-testid="registry-tag"]').text()).toBe('Réparation')
     expect(rows[0].text()).toContain('Le bilan se lit mieux')
     expect(rows[1].text()).toContain('Correction du bug X')
+  })
+
+  it('la pastille reprend la couleur de son badge, en plus foncé : bleu (réparation), teal (amélioration), violet (membres)', () => {
+    const wrapper = mountHome({ auth: { token: 'faketoken', user: { characters: [] } } })
+    const dots = wrapper.findAll('[data-testid^="registry-dot-"]')
+    const byText = text => dots.find(d => d.element.closest('li').textContent.includes(text))
+    expect(byText('Le bilan se lit mieux').classes()).toContain('odc--teal')
+    expect(byText('Correction du bug X').classes()).toContain('odc--blue')
+    expect(byText('Amélioration réservée aux membres').classes()).toContain('odc--violet')
+    // les badges : bleu (réparation), teal (amélioration)
+    const tags = wrapper.findAll('[data-testid="registry-tag"]')
+    expect(tags.find(t => t.text() === 'Réparation').classes()).toContain('bg-blue-100')
+    expect(tags.find(t => t.text() === 'Amélioration').classes()).toContain('bg-teal-100')
   })
 
   it("une amélioration réservée aux membres n'apparaît qu'une fois connecté, avec le badge « Membres »", () => {
