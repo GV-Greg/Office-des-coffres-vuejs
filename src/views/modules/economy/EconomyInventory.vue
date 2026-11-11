@@ -260,7 +260,7 @@ function loadSnapshot(event) {
     </h2>
 
     <!-- Ligne du haut : input (moitié) + contrôles (moitié) -->
-    <div class="laptop:grid laptop:grid-cols-2 laptop:gap-6 laptop:items-start">
+    <div class="laptop:grid laptop:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] laptop:gap-6 laptop:items-start">
       <!-- Colonne gauche : saisie -->
       <div>
         <!-- Niveau d'inventaire : seulement si le personnage actif a un poste qui en ouvre d'autres que le sien. -->
@@ -468,8 +468,8 @@ function loadSnapshot(event) {
               <span class="text-slate-400 dark:text-slate-500">{{ groupItems.length }}</span>
               <button
                 type="button"
-                class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm shrink-0"
-                :class="hiddenCategoriesSet.has(catKey) ? 'odc--yellow' : 'odc--slate'"
+                data-testid="category-visibility"
+                class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--gold shrink-0"
                 :aria-label="hiddenCategoriesSet.has(catKey) ? t('EconomyInventory.ShowCategory') : t('EconomyInventory.HideCategory')"
                 @click="toggleCategoryVisibility(catKey)"
               >

@@ -239,6 +239,8 @@ function doDelete() {
           @click="setExportColor(c.value)"
         />
       </div>
+      <!-- Actions du niveau (ex. copier les réglages vers un autre personnage), à droite des couleurs. -->
+      <div v-if="$slots.actions" class="ml-auto"><slot name="actions" /></div>
     </div>
 
     <!-- Ajout de catégorie -->
@@ -429,10 +431,9 @@ function doDelete() {
     <!-- Colonne de droite — Ordre des catégories : celui du tableau d'inventaire et du BBCode exporté. Flèches plutôt que glisser-déposer :
          fonctionne au doigt et au clavier, et se lit au lecteur d'écran. -->
     <div class="mt-6 min-w-0 laptop:col-span-1 laptop:mt-0 laptop:sticky laptop:top-4" data-testid="cat-order">
-      <p class="text-xs font-semibold text-yellow-700 dark:text-yellow-700 mb-1">
+      <p class="text-xs font-semibold text-yellow-700 dark:text-yellow-700 mb-2">
         {{ t('EconomyInventory.CatOrderTitle') }}
       </p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 italic mb-2">{{ t('EconomyInventory.CatOrderHint') }}</p>
       <ol class="grid gap-0.5">
         <li
           v-for="(key, index) in orderedKeys"
@@ -444,7 +445,7 @@ function doDelete() {
           <span class="flex-1 min-w-0 truncate text-xs font-medium text-slate-800 dark:text-slate-100">{{ categoryLabel(key) }}</span>
           <button
             type="button"
-            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0 [--h:26px] text-[11px]"
+            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--violet shrink-0 [--h:26px] text-[11px]"
             :disabled="readonly || index === 0"
             :aria-label="t('EconomyInventory.CatMoveUp', { cat: categoryLabel(key) })"
             :data-testid="`cat-up-${key}`"
@@ -454,7 +455,7 @@ function doDelete() {
           </button>
           <button
             type="button"
-            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate shrink-0 [--h:26px] text-[11px]"
+            class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--violet shrink-0 [--h:26px] text-[11px]"
             :disabled="readonly || index === orderedKeys.length - 1"
             :aria-label="t('EconomyInventory.CatMoveDown', { cat: categoryLabel(key) })"
             :data-testid="`cat-down-${key}`"

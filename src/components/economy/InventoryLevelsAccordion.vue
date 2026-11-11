@@ -1,11 +1,10 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { push } from 'notivue'
-import { apiMessage } from '@/stores/mandateStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useInventoryStore } from '@/stores/inventoryStore'
 import InventoryCategoryPanel from '@/components/economy/InventoryCategoryPanel.vue'
+import CopySettingsModal from '@/components/economy/CopySettingsModal.vue'
 
 /*
   « Catégories d'inventaire » de Mon bureau : UN accordéon par inventaire géré — le sien (personnage), celui de la ville dont on est
@@ -13,7 +12,7 @@ import InventoryCategoryPanel from '@/components/economy/InventoryCategoryPanel.
   peut ouvrir, le serveur le dit (`scopes`) : le site ne recalcule aucun droit. Sans compte, seul « Personnel » existe, dans le
   navigateur. Avec un compte, tout est enregistré sur le serveur, par personnage.
 */
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const store = useInventoryStore()
 
@@ -42,30 +41,10 @@ const catConfigOf = level => {
   return { custom: doc.custom, hiddenBuiltIn: doc.hiddenBuiltIn, order: doc.order, exportColor: doc.exportColor }
 }
 
-// ─── Copier les réglages personnels vers un autre personnage du compte ───────
+// ─── Copier les réglages personnels vers un autre personnage du compte (modale) ───
 const others = computed(() => authStore.getCharacters.filter(c => c.id !== store.characterId))
-const copyTarget = ref('')
-const copyBusy = ref(false)
-const pendingConfirm = ref(null) // { id, name, message } : la cible a déjà des réglages, le serveur demande confirmation
-
-async function copy(confirm = false) {
-  const target = others.value.find(c => String(c.id) === String(copyTarget.value))
-  if (!target) return
-  copyBusy.value = true
-  try {
-    await store.copyPersonalTo(target.id, confirm)
-    pendingConfirm.value = null
-    push.success(t('MonBureau.CopyDone', { name: target.pseudo }))
-  } catch (error) {
-    if (error?.response?.status === 409 && error.response.data?.code === 'copy_needs_confirmation') {
-      pendingConfirm.value = { id: target.id, name: target.pseudo, message: apiMessage(error, locale.value, '') }
-    } else {
-      push.error(apiMessage(error, locale.value, t('MonBureau.CopyError')))
-    }
-  } finally {
-    copyBusy.value = false
-  }
-}
+const showCopy = ref(false)
+const canCopy = level => level === 'personal' && store.serverMode && others.value.length > 0
 </script>
 
 <template>
@@ -102,43 +81,17 @@ async function copy(confirm = false) {
             :readonly="!store.canWrite(level)"
             @update:catConfig="config => store.update(level, config)"
             @update:itemCategories="map => store.update(level, { itemCategories: map })"
-          />
-
-          <!-- Copie vers un autre personnage du compte : le niveau personnel seulement. -->
-          <div v-if="level === 'personal' && store.serverMode && others.length" class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-600" data-testid="cats-copy">
-            <p class="text-xs font-semibold text-yellow-700 dark:text-yellow-700 mb-1">{{ t('MonBureau.CopyTitle') }}</p>
-            <p class="text-xs italic text-slate-500 dark:text-slate-500 mb-2">{{ t('MonBureau.CopyHint') }}</p>
-            <div class="flex flex-wrap items-center gap-2">
-              <select
-                v-model="copyTarget"
-                :aria-label="t('MonBureau.CopyTarget')"
-                class="text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-slate-100"
-                data-testid="cats-copy-target"
-                @change="pendingConfirm = null"
-              >
-                <option value="">{{ t('MonBureau.CopyChoose') }}</option>
-                <option v-for="c in others" :key="c.id" :value="c.id">{{ c.pseudo }}</option>
-              </select>
-              <button
-                type="button"
-                class="odc-btn odc-btn--soft odc--green odc-btn--sm"
-                :disabled="!copyTarget || copyBusy"
-                data-testid="cats-copy-button"
-                @click="copy(false)"
-              >
-                <v-icon name="fa-copy" aria-hidden="true" />{{ t('MonBureau.CopyButton') }}
+          >
+            <!-- Copie vers un autre personnage du compte : le niveau personnel seulement, à droite des couleurs. -->
+            <template v-if="canCopy(level)" #actions>
+              <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="cats-copy-open" @click="showCopy = true">
+                <v-icon name="fa-copy" aria-hidden="true" />{{ t('MonBureau.CopyOpen') }}
               </button>
-            </div>
-            <div v-if="pendingConfirm" role="alert" class="mt-2 text-sm text-slate-800 dark:text-slate-800" data-testid="cats-copy-confirm">
-              <p>{{ pendingConfirm.message }}</p>
-              <div class="mt-2 flex gap-2">
-                <button type="button" class="odc-btn odc-btn--soft odc--red odc-btn--sm" :disabled="copyBusy" data-testid="cats-copy-replace" @click="copy(true)">{{ t('MonBureau.CopyConfirm') }}</button>
-                <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" @click="pendingConfirm = null">{{ t('MonBureau.CopyCancel') }}</button>
-              </div>
-            </div>
-          </div>
+            </template>
+          </InventoryCategoryPanel>
         </template>
       </div>
     </details>
+    <CopySettingsModal :show="showCopy" @close="showCopy = false" />
   </div>
 </template>

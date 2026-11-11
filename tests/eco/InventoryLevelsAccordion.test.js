@@ -121,24 +121,36 @@ describe('avec un compte : un accordéon par inventaire que le serveur ouvre', (
   })
 })
 
-describe('copie des réglages vers un autre personnage du compte', () => {
-  it('propose les AUTRES personnages et copie ; la copie ne s\'offre qu\'au niveau personnel', async () => {
+describe('copie des réglages vers un autre personnage du compte (bouton + modale)', () => {
+  const openModal = async wrapper => {
+    await wrapper.find('[data-testid="cats-copy-open"]').trigger('click')
+    await flushPromises()
+    return document.body.querySelector('[data-testid="cats-copy"]')
+  }
+  const byId = id => document.body.querySelector(`[data-testid="${id}"]`)
+  const click = async el => { el.click(); await flushPromises() }
+  const choose = async value => { const s = byId('cats-copy-target'); s.value = value; s.dispatchEvent(new Event('change')); s.dispatchEvent(new Event('input')); await flushPromises() }
+
+  it('le bouton est à côté des couleurs, au niveau personnel seulement ; la modale propose les AUTRES personnages', async () => {
     routes()
     http.post.mockReturnValue(ok({ settings: { data: {}, version: 1 } }))
     const wrapper = await mountAccordion()
 
-    const copy = wrapper.find('[data-testid="cats-accordion-personal"] [data-testid="cats-copy"]')
-    expect(copy.exists()).toBe(true)
-    expect(wrapper.findAll('[data-testid="cats-copy"]')).toHaveLength(1)
-    expect(copy.findAll('option').map(o => o.text())).toEqual([fr.MonBureau.CopyChoose, 'Second'])
+    expect(wrapper.findAll('[data-testid="cats-copy-open"]')).toHaveLength(1)
+    expect(wrapper.find('[data-testid="cats-accordion-personal"] [data-testid="cats-copy-open"]').exists()).toBe(true)
+    expect(byId('cats-copy')).toBeNull() // la modale n'existe pas avant le clic
 
-    expect(copy.find('[data-testid="cats-copy-button"]').attributes('disabled')).toBeDefined()
-    await copy.find('select').setValue('8')
-    await copy.find('[data-testid="cats-copy-button"]').trigger('click')
-    await flushPromises()
+    expect(await openModal(wrapper)).not.toBeNull()
+    expect([...byId('cats-copy-target').querySelectorAll('option')].map(o => o.textContent.trim())).toEqual([fr.MonBureau.CopyChoose, 'Second'])
+    expect(byId('cats-copy-button').disabled).toBe(true)
+
+    await choose('8')
+    await click(byId('cats-copy-button'))
 
     expect(http.post).toHaveBeenCalledWith('characters/8/inventory-settings/personal/copy', { from_character_id: 7, confirm_replace: false }, expect.anything())
     expect(push.success).toHaveBeenCalledWith('Réglages copiés vers Second.')
+    expect(byId('cats-copy')).toBeNull() // la modale se ferme après la copie
+    wrapper.unmount()
   })
 
   it('si la cible a déjà des réglages, le serveur demande confirmation : on remplace ou on annule', async () => {
@@ -146,26 +158,45 @@ describe('copie des réglages vers un autre personnage du compte', () => {
     const needsConfirmation = {
       response: { status: 409, data: { code: 'copy_needs_confirmation', messages: { fr: 'Second a déjà des réglages : ils seront remplacés.', en: 'x' } } },
     }
-    http.post.mockRejectedValueOnce(needsConfirmation).mockReturnValueOnce(ok({ settings: { data: {}, version: 2 } }))
+    http.post.mockRejectedValueOnce(needsConfirmation).mockRejectedValueOnce(needsConfirmation).mockReturnValueOnce(ok({ settings: { data: {}, version: 2 } }))
     const wrapper = await mountAccordion()
-    const copy = () => wrapper.find('[data-testid="cats-copy"]')
+    await openModal(wrapper)
 
-    await copy().find('select').setValue('8')
-    await copy().find('[data-testid="cats-copy-button"]').trigger('click')
-    await flushPromises()
-    expect(copy().find('[data-testid="cats-copy-confirm"]').text()).toContain('Second a déjà des réglages')
+    await choose('8')
+    await click(byId('cats-copy-button'))
+    expect(byId('cats-copy-confirm').textContent).toContain('Second a déjà des réglages')
     expect(push.success).not.toHaveBeenCalled()
 
-    await copy().find('[data-testid="cats-copy-replace"]').trigger('click')
-    await flushPromises()
-    expect(http.post.mock.calls[1][1]).toEqual({ from_character_id: 7, confirm_replace: true })
-    expect(copy().find('[data-testid="cats-copy-confirm"]').exists()).toBe(false)
+    await click(byId('cats-copy-cancel')) // annuler : on revient au choix, rien n'est copié
+    expect(byId('cats-copy-confirm')).toBeNull()
+    expect(http.post).toHaveBeenCalledTimes(1)
+
+    await click(byId('cats-copy-button')) // le serveur redemande confirmation
+    await click(byId('cats-copy-replace'))
+    expect(http.post.mock.calls[2][1]).toEqual({ from_character_id: 7, confirm_replace: true })
     expect(push.success).toHaveBeenCalled()
+    expect(byId('cats-copy')).toBeNull()
+    wrapper.unmount()
   })
 
-  it('un seul personnage : rien à copier', async () => {
+  it('la croix et Échap ferment la modale sans rien copier', async () => {
+    routes()
+    const wrapper = await mountAccordion()
+    await openModal(wrapper)
+    await click(byId('modal-close'))
+    expect(byId('cats-copy')).toBeNull()
+    expect(http.post).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('un seul personnage : rien à copier, pas de bouton', async () => {
     routes()
     const wrapper = await mountAccordion({ characters: [{ id: 7, pseudo: 'Artifice' }] })
-    expect(wrapper.find('[data-testid="cats-copy"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="cats-copy-open"]').exists()).toBe(false)
+  })
+
+  it('sans compte : pas de bouton de copie', async () => {
+    const wrapper = await mountAccordion({ loggedIn: false })
+    expect(wrapper.find('[data-testid="cats-copy-open"]').exists()).toBe(false)
   })
 })

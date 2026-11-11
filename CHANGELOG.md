@@ -14,19 +14,20 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - **Trois niveaux d'inventaire** (`stores/inventoryStore.js`, `use/inventoryApi.js`) : personnel ; **ville** (le maire en fonction) ; **province** (le commissaire au commerce écrit, le dirigeant lit seulement). Ce que le personnage peut ouvrir est dit par le serveur (`inventory-scopes`) : le site ne recalcule aucun droit.
 - **Salle des comptes** : un sélecteur de niveau, visible seulement pour qui a un poste ; un niveau en lecture seule est annoncé et n'offre ni correction ni inscription. Une correction de catégorie est enregistrée tout de suite (groupée, 800 ms) et se retrouve dans Mon bureau.
 - **Province** : l'historique des inventaires s'**inscrit à la main** (bouton « Inscrire à l'historique de la province », jamais automatiquement) ; un second inventaire du jour remplace le premier, un texte identique ne change rien ; un sélecteur recharge un inventaire passé (dates en année du jeu, `inventory_snapshot_date`).
-- **Mon bureau — Catégories d'inventaire** : un accordéon par inventaire géré (`InventoryLevelsAccordion.vue`), le personnel ouvert ; en mode ville/province, titre nommant le lieu. **Copie** des réglages personnels vers un autre personnage du même compte, avec confirmation si la cible en a déjà ; le texte de l'inventaire n'est jamais copié.
+- **Mon bureau — Catégories d'inventaire** : un accordéon par inventaire géré (`InventoryLevelsAccordion.vue`), le personnel ouvert ; en mode ville/province, titre nommant le lieu. **Copie** des réglages personnels vers un autre personnage du même compte : un bouton « Copier vers un autre personnage » à droite du choix des couleurs ouvre une **modale** (`CopySettingsModal.vue`) pour choisir le personnage, avec confirmation si la cible en a déjà ; le texte de l'inventaire n'est jamais copié.
 - **Écritures à version** : un conflit (un autre appareil a écrit entre-temps) remplace l'état local par celui du serveur et le dit.
 
 ### Changed
 - « **Effacer** » vide le champ de collage et l'état d'affichage des lignes — plus ni l'inventaire enregistré ni les catégories assignées (ce sont des réglages).
 - `InventoryCategoryPanel` ne lit plus le cookieStore : il reçoit `itemCategories` et `readonly` en propriétés ; `InventoryItemsModal` accepte `readonly`.
 - `cookieStore.removeComfortData(key)`.
+- **Retouches visuelles** : flèches de l'ordre des catégories en violet (couleur de Mon bureau) ; boutons de masquage des catégories de la Salle des comptes en or (couleur d'Économie, ceux des objets inchangés) ; l'aide de l'ordre fondue dans le titre (« Ordre des catégories (modifier l'ordre pour votre inventaire) ») ; colonne de collage un peu plus étroite (5/11).
 - Textes FR + EN : `EconomyInventory.{Level*,ReadOnlyScope,Province*,SaveError}`, `MonBureau.{CatCityPanel,CatProvincePanel,LoadingSettings,SettingsLoadError,ImportedFromBrowser,Copy*}`.
 
 ### Prod
 - **Dépend de la PR back `feat/inventory-settings`** (quatre migrations, routes ajoutées : `migrate` puis `route:cache`) : à mettre en ligne **après** le backend.
 - 🔴 **Rien ne se met en ligne avant le texte légal** (fil `admin/echanges/inventaire-scopes`, Cowork) : politique, « Vos données », registre des traitements.
-- 41 tests ajoutés (store, accordéons, Salle des comptes avec compte) ; décompte du README : 1154.
+- 43 tests ajoutés (store, accordéons et modale de copie, Salle des comptes avec compte) ; décompte du README : 1156.
 
 ## [2026-11-11] — PR #110 (Mon bureau en sections, une à la fois ; héros violet ; catégories en deux colonnes)
 
