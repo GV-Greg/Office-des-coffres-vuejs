@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [À compléter au merge] — Texte légal de la Gestion des stocks ; le module est renommé
+
+### Added
+- **Politique de confidentialité** : la « Gestion des stocks » entre aux §3 (réglages ; texte collé chiffré ; inventaire personnel, municipal, comtal avec son historique ; phrase d'accès de l'éditeur selon `donnees-utilisateur.md` §5bis), §5 (durées) et §6 (qui lit : vous seul, le maire de la ville, le commissaire au commerce et le dirigeant de la province en lecture seule, aucune interface d'administration). **« Vos données »** : une section (sans compte requis, ce qui part avec le personnage, export art. 20). **Cookies** : la finalité et les données des Préférences nomment la Gestion des stocks. Texte de Cowork, validé par Greg le 11/11/2026 (fil `admin/echanges/inventaire-scopes/`, adaptations dans `03-mise-en-oeuvre-cc.md`).
+- Garde-fou `tests/legal/privacyInventory.unit.test.js` (15 cas).
+
+### Changed
+- **Le module des inventaires s'appelle « Gestion des stocks » / « Stock Management »** (menu d'Économie, carte, titre de page, aide). « La Salle des comptes » reste le titre de l'accueil d'Économie.
+
+### Prod
+- Aucune route, aucune dépendance. À mettre en ligne avec back `feat/inventory-legal` (entrée du journal de la politique), puis `php artisan policy:notify` par Greg (un seul email). 16 tests ajoutés (README : 1172).
+
 ## [2026-11-11] — PR #111 (Inventaires en base pour les joueurs connectés : réglages aux trois niveaux, inventaire collé, historique de la province)
 
 ### Added

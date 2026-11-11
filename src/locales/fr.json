@@ -338,7 +338,7 @@
     "Title": "Coffres Économie",
     "MinesLink": "Bilan des mines",
     "MineRegistryLink": "Registre des mines",
-    "InventoryLink": "Inventaires",
+    "InventoryLink": "Gestion des stocks",
     "Home": {
       "Title": "La Salle des comptes",
       "Intro": "Voici les coffres que l'Office met à disposition pour les mines, les inventaires et les marchés.",
@@ -351,7 +351,7 @@
         "Description": "Collez le relevé hebdomadaire de vos mines : l'Office en dresse le bilan et prépare le compte rendu de la semaine."
       },
       "inventory": {
-        "Name": "Inventaires",
+        "Name": "Gestion des stocks",
         "Description": "Collez un inventaire pour le classer par catégorie, le trier et en rédiger l'état pour vos marchands."
       },
       "registry": {
@@ -365,7 +365,7 @@
     }
   },
   "EconomyInventory": {
-    "PageTitle": "Inventaires économiques",
+    "PageTitle": "Gestion des stocks",
     "PasteLabel": "Inventaire",
     "PastePlaceholder": "Colle ici le texte copié depuis le jeu…",
     "Summary": "{count} article(s) · {ecus} écus",
@@ -405,7 +405,7 @@
     "NoCustomYet": "Aucune catégorie personnalisée.",
     "NoneHidden": "Aucune catégorie masquée.",
     "HelpButton": "Comment ça marche ?",
-    "HelpTitle": "Comment fonctionne le module Inventaires ?",
+    "HelpTitle": "Comment fonctionne la Gestion des stocks ?",
     "HelpPurpose": "Coller, catégoriser et exporter un inventaire de personnage ou de ville, prêt à partager sur le forum.",
     "HelpOverview": "Le module lit le texte copié depuis l'onglet Inventaire du jeu et le réorganise par catégorie. Les articles inconnus tombent en « Divers » — tu peux les déplacer ou configurer leur catégorie à l'avance dans Mon bureau.",
     "HelpStep1": "Ouvre l'onglet Inventaire de ton personnage dans le jeu et copie tout le texte de la page.",
@@ -1096,8 +1096,8 @@
         "Intro": "Aucun cookie HTTP tiers n'est déposé sur ce site. Nous utilisons deux mécanismes de stockage côté navigateur, tous deux limités au strict nécessaire :",
         "Preferences": {
           "Title": "Stockage local (localStorage) — Préférences",
-          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines, Animation : Décode le code, Grille des lots).",
-          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics, et l'adresse de votre dernière activité de chaque type d'Animation (Décode le code, Grille des lots) que vous avez créée ou ouverte en mode public sur cet appareil.",
+          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines, Gestion des stocks, Animation : Décode le code, Grille des lots).",
+          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics, vos réglages d'inventaire (catégories, assignations, ordre, options d'export) lorsque vous utilisez la Gestion des stocks sans compte, et l'adresse de votre dernière activité de chaque type d'Animation (Décode le code, Grille des lots) que vous avez créée ou ouverte en mode public sur cet appareil.",
           "Retention": "jusqu'à ce que vous effaciez vos données de site depuis votre navigateur, ou que vous retiriez votre consentement via le bandeau cookies.",
           "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques).",
           "IfDecline": "le site fonctionne normalement, mais vos préférences et brouillons ne sont pas mémorisés d'une visite à l'autre."
@@ -1200,6 +1200,12 @@
         "Title": "Registre des mines",
         "Purpose": "Garder la mémoire de gestion des mines d'une province, transmise d'un titulaire à l'autre : le commissaire aux mines et le bailli y enregistrent leurs relevés, le commissaire au commerce et le dirigeant de la province (comte, duc…) peuvent les consulter. Il faut tenir l'un de ces postes dans la province, et l'avoir fait valider dans l'Office. Sans cela, l'outil n'est pas accessible. Il tient aussi les prix des mines de la province, que fixent le commissaire au commerce, le commissaire aux mines et le bailli.",
         "Input": "Le même texte que pour le Bilan des mines : celui de l'onglet « Gestion des mines », copié depuis le jeu. Pour les prix : le prix de chaque ressource et le salaire horaire, avec leur date d'entrée en vigueur."
+      },
+      "Inventory": {
+        "Title": "Gestion des stocks",
+        "Purpose": "Coller l'inventaire de votre personnage, de votre ville ou de votre province, le ranger par catégorie, le trier et en rédiger l'état pour le forum du jeu. L'outil s'utilise sans compte ; un compte permet de retrouver vos réglages et votre dernier inventaire d'un appareil à l'autre. L'inventaire d'une ville s'ouvre au maire en fonction, celui d'une province au commissaire au commerce (qui l'écrit) et au dirigeant de la province (qui le consulte), avec un poste validé dans l'Office.",
+        "Input": "Le texte de l'onglet Inventaire du jeu, copié tel quel, et vos réglages : catégories, assignations d'objets, ordre, couleur, options d'export. Sans compte, tout reste dans votre navigateur (si vous avez accepté les préférences) et l'Office ne conserve rien.",
+        "Deletion": "Vos réglages d'inventaire et le texte de votre dernier inventaire collé sont rattachés à votre personnage. Ils font partie de votre export de données (article 20 du RGPD) et sont supprimés avec votre personnage. Les réglages et les inventaires de ville et de province sont rattachés au poste, pas à votre compte : ils ne font pas partie de votre export et restent en place quand vous quittez vos fonctions."
       },
       "Watch": {
         "Title": "Le Guet",
@@ -1330,6 +1336,30 @@
             "Text": "les dimensions de la grille et ses lots (le nom de chaque lot et la case où il se trouve)."
           }
         ],
+        "InventoryIntro": "Si vous utilisez la Gestion des stocks, l'Office conserve ce qui suit. Avec un compte, vos réglages d'inventaire sont enregistrés en base de données afin que vous les retrouviez d'un appareil à l'autre ; sans compte, ils restent dans votre navigateur et l'Office ne conserve rien.",
+        "InventoryFields": [
+          {
+            "Label": "Vos réglages d'inventaire",
+            "Text": "catégories personnalisées, catégories masquées, ordre et couleur des catégories, assignations d'objets aux catégories, options d'export et de visibilité. Ils ne sont pas chiffrés."
+          },
+          {
+            "Label": "Le texte de l'inventaire que vous collez",
+            "Text": "chiffré en base de données, et lisible seulement de ceux qui sont nommés au §6."
+          },
+          {
+            "Label": "Inventaire personnel",
+            "Text": "rattaché à votre personnage ; un seul exemplaire, remplacé à chaque nouveau collage ; supprimé avec votre personnage."
+          },
+          {
+            "Label": "Inventaire municipal",
+            "Text": "rattaché à la ville dont vous êtes le maire en fonction ; un seul exemplaire, remplacé à chaque nouveau collage ; transmis à votre successeur."
+          },
+          {
+            "Label": "Inventaire comtal",
+            "Text": "rattaché à la province dont vous êtes le commissaire au commerce ; un historique est conservé : un exemplaire par jour, un second collage le même jour remplaçant le premier (qui n'est plus consultable, mais reste conservé) ; l'historique est transmis à votre successeur."
+          }
+        ],
+        "InventoryNote": "Les réglages et les inventaires d'une ville ou d'une province sont des données du poste : ils restent en place quand leur auteur quitte ses fonctions, seul le lien vers l'auteur est coupé. Aucune interface d'administration du site ne permet de consulter vos inventaires ni vos réglages : cette restriction est inscrite dans le code, vérifiée automatiquement à chaque livraison, et le code source est public. L'éditeur conserve néanmoins un accès technique à l'hébergement, comme tout administrateur de site ; il s'engage à ne pas l'utiliser pour consulter ces données.",
         "ToolsIntro": "À quoi sert chaque outil, qui peut l'utiliser, ce que vous y mettez et ce qu'il enregistre ou non est expliqué outil par outil sur la page {dataLink} :"
       },
       "Section4": {
@@ -1388,7 +1418,8 @@
         "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte).",
         "MineRegistry": "Registre des mines : les relevés que vous enregistrez sont conservés sans limite de durée, parce qu'ils forment la mémoire de gestion d'une province, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, le relevé reste, mais le lien avec votre compte est supprimé : il garde sa date, sa province et le poste utilisé, et ne désigne plus aucun personnage. Nous écrivons « le lien est supprimé » et non « le relevé est anonymisé » : l'historique des postes de la province reste consultable, et il peut permettre de rapprocher une date et un poste d'un nom de personnage. Enfin, aucun relevé ne peut être effacé, pas même par celui qui l'a écrit : un relevé erroné est remplacé, et le remplacement reste visible.",
         "MinePrices": "Prix des mines : les prix enregistrés sont conservés sans limite de durée, parce qu'ils servent à calculer les bilans de la province, d'un titulaire au suivant. Vous pouvez corriger un prix tant que vous tenez le poste, et jusqu'à 7 jours après la fin de votre mandat ; ensuite il est verrouillé. Les jeux de prix successifs forment un historique et restent tous consultables ; en revanche, corriger un jeu remplace ses valeurs, et l'ancienne valeur n'est pas conservée. Personne ne peut effacer un prix. À la suppression de votre personnage ou de votre compte, les prix restent, mais le lien avec votre compte est supprimé : ils gardent leur date et leur province, et ne désignent plus aucun personnage. Là encore, « le lien est supprimé » et non « anonymisé » : l'historique des postes de la province peut permettre de rapprocher une date d'un nom de personnage.",
-        "Animation": "Animation (Décode le code, Grille des lots) : en mode privé, l'activité et son contenu — les coffres et les propositions que vous avez inscrites (Décode le code), les lots (Grille des lots) — sont conservés tant que vous ne supprimez ni l'activité, ni le personnage, ni le compte qui l'a créée — leur suppression supprime l'activité avec eux, contenu compris. Dans les deux modes, une activité sans action depuis 30 jours est automatiquement close ; en mode privé, vous pouvez la rouvrir et tout est conservé, alors qu'en mode public cette fermeture est définitive : aucune réouverture n'est possible. En mode public, à la clôture, qu'elle soit manuelle ou automatique, l'empreinte de votre connexion, votre adresse email, votre mot de passe et toute demande de réinitialisation en attente sont effacés ; pour Décode le code, un compte rendu incluant l'ensemble des propositions reçues est d'abord envoyé à votre adresse email si vous en avez confirmé une. Ce qui reste visible à la communauté pendant 5 ans après la clôture : le nom de l'activité, votre pseudo d'organisateur et le lieu, plus, pour Décode le code, les coffres percés avec le pseudo de qui les a trouvés et le classement final — jamais les propositions reçues, qui sont effacées à la clôture — et, pour la Grille des lots, les dimensions, tous les lots et le nom des personnages qui ont choisi une case. Passé ce délai, la page et le pseudonyme sont supprimés. Pour demander le retrait d'un nom inscrit sur une de ces pages avant ce délai, contactez {email}."
+        "Animation": "Animation (Décode le code, Grille des lots) : en mode privé, l'activité et son contenu — les coffres et les propositions que vous avez inscrites (Décode le code), les lots (Grille des lots) — sont conservés tant que vous ne supprimez ni l'activité, ni le personnage, ni le compte qui l'a créée — leur suppression supprime l'activité avec eux, contenu compris. Dans les deux modes, une activité sans action depuis 30 jours est automatiquement close ; en mode privé, vous pouvez la rouvrir et tout est conservé, alors qu'en mode public cette fermeture est définitive : aucune réouverture n'est possible. En mode public, à la clôture, qu'elle soit manuelle ou automatique, l'empreinte de votre connexion, votre adresse email, votre mot de passe et toute demande de réinitialisation en attente sont effacés ; pour Décode le code, un compte rendu incluant l'ensemble des propositions reçues est d'abord envoyé à votre adresse email si vous en avez confirmé une. Ce qui reste visible à la communauté pendant 5 ans après la clôture : le nom de l'activité, votre pseudo d'organisateur et le lieu, plus, pour Décode le code, les coffres percés avec le pseudo de qui les a trouvés et le classement final — jamais les propositions reçues, qui sont effacées à la clôture — et, pour la Grille des lots, les dimensions, tous les lots et le nom des personnages qui ont choisi une case. Passé ce délai, la page et le pseudonyme sont supprimés. Pour demander le retrait d'un nom inscrit sur une de ces pages avant ce délai, contactez {email}.",
+        "Inventory": "Gestion des stocks : vos réglages et votre inventaire personnels sont conservés tant que votre personnage existe, et supprimés avec lui. Les réglages et l'inventaire d'une ville ou d'une province sont conservés tant que cette ville ou cette province existe dans le référentiel du jeu, et restent en place quand leur auteur quitte ses fonctions. L'historique des inventaires d'une province est conservé sans limite de durée, parce qu'il forme la mémoire de gestion de la province, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, ce qui concerne une ville ou une province reste, mais le lien avec votre compte est supprimé : nous écrivons « le lien est supprimé » et non « anonymisé », comme pour le Registre des mines."
       },
       "Section6": {
         "Title": "6. À qui vos données sont accessibles",
@@ -1399,7 +1430,8 @@
         "ProvincePlayers": "Les autres joueurs dont un personnage réside dans la même province, pour l'historique des postes de cette province (noms de personnages, postes, dates, façon dont le poste a pris fin) — y compris après la suppression de votre compte, et qu'ils peuvent recopier sur le forum du jeu. Jamais votre adresse email, vos demandes en attente, vos refus ni les notes de l'administration.",
         "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, qui tiennent le Registre des mines de cette province, ainsi que son commissaire au commerce et son dirigeant (comte, duc…), qui peuvent le consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais les autres conseillers, jamais un joueur d'une autre province.",
         "MinePricesHolders": "Prix des mines : le commissaire au commerce, le commissaire aux mines et le bailli de la province, qui les gèrent, et son dirigeant (comte, duc…), qui peut les consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. Les autres titulaires de ces trois postes reçoivent aussi, une fois par jour, un email qui résume les prix modifiés et nomme le personnage qui les a modifiés. Jamais les autres conseillers, jamais un joueur d'une autre province.",
-        "AnimationHolders": "Animation (Décode le code, Grille des lots) : la page publique d'une activité est visible de tout le monde, qu'elle ait été créée en mode privé ou public — c'est le but de ces outils, partagés sur le forum du jeu. Elle montre le nom, le lieu et le pseudo de l'organisateur, plus, pour Décode le code, les coffres percés et le classement ; pour la Grille des lots, visible dès le tirage, les cases et, pour chaque case choisie, le lot révélé et le nom du personnage qui l'a choisie (le contenu des cases non choisies reste caché jusqu'à la clôture, où tous les lots deviennent visibles). Votre mot de passe n'est jamais visible de personne, pas même de l'administrateur du site. Votre adresse email, si vous en avez confirmé une, est visible de l'administrateur du site dans son panneau d'administration — pour vous aider en cas de mot de passe oublié et pour les besoins de l'administration technique du service. Votre pseudo d'organisateur et, le cas échéant, la date de la dernière réinitialisation de mot de passe y sont également visibles."
+        "AnimationHolders": "Animation (Décode le code, Grille des lots) : la page publique d'une activité est visible de tout le monde, qu'elle ait été créée en mode privé ou public — c'est le but de ces outils, partagés sur le forum du jeu. Elle montre le nom, le lieu et le pseudo de l'organisateur, plus, pour Décode le code, les coffres percés et le classement ; pour la Grille des lots, visible dès le tirage, les cases et, pour chaque case choisie, le lot révélé et le nom du personnage qui l'a choisie (le contenu des cases non choisies reste caché jusqu'à la clôture, où tous les lots deviennent visibles). Votre mot de passe n'est jamais visible de personne, pas même de l'administrateur du site. Votre adresse email, si vous en avez confirmé une, est visible de l'administrateur du site dans son panneau d'administration — pour vous aider en cas de mot de passe oublié et pour les besoins de l'administration technique du service. Votre pseudo d'organisateur et, le cas échéant, la date de la dernière réinitialisation de mot de passe y sont également visibles.",
+        "InventoryHolders": "Gestion des stocks : votre inventaire personnel, vous seul. L'inventaire et les réglages d'une ville : le maire en fonction de cette ville, y compris ceux qui vous succéderont. L'inventaire et les réglages d'une province, historique compris : le commissaire au commerce en fonction et le dirigeant de la province (comte, duc…), ce dernier en lecture seule — y compris ceux qui vous succéderont, et y compris après la suppression de votre compte. Jamais les autres conseillers, jamais un joueur d'une autre ville ou d'une autre province, et aucune interface d'administration du site (voir §3)."
       },
       "DataPageLink": "Vos données, outil par outil",
       "Section7": {

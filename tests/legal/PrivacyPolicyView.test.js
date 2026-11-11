@@ -42,6 +42,7 @@ const messages = {
         Offices: { Title: 'Postes déclarés et Ma province' },
         MinesReport: { Title: 'Bilan des mines' },
         MineRegistry: { Title: 'Registre des mines' },
+        Inventory: { Title: 'Gestion des stocks' },
         Watch: { Title: 'Le Guet' },
         Map: { Title: 'Carte des royaumes' },
         Animation: { Title: 'Animation' },
@@ -85,6 +86,12 @@ const messages = {
             { Label: 'Décode le code', Text: 'les coffres.' },
             { Label: 'Grille des lots', Text: 'les lots.' },
           ],
+          InventoryIntro: 'Si vous utilisez la Gestion des stocks, l’Office conserve :',
+          InventoryFields: [
+            { Label: 'Vos réglages', Text: 'non chiffrés.' },
+            { Label: 'Inventaire comtal', Text: 'avec un historique.' },
+          ],
+          InventoryNote: 'Aucune interface d’administration n’y donne accès.',
           ToolsIntro: 'Outil par outil sur la page {dataLink} :',
         },
         DataPageLink: 'Vos données',
@@ -107,6 +114,7 @@ const messages = {
           MineRegistry: 'Registre : sans limite.',
           MinePrices: 'Prix : sans limite.',
           Animation: 'Animation : contactez {email}.',
+          Inventory: 'Stocks : tant que le personnage existe.',
           TechnicalLogs: 'Logs : 12 mois.',
         },
         Section6: {
@@ -116,6 +124,7 @@ const messages = {
           MineRegistryHolders: 'Le commissaire et le bailli.',
           MinePricesHolders: 'Les trois postes des prix.',
           AnimationHolders: 'Animation : page visible de tous.',
+          InventoryHolders: 'Stocks : le maire et le commissaire au commerce.',
           ProvincePlayers: 'Les joueurs de la province.',
           NoOneElse: 'Personne d\'autre.',
           Hosting: 'Hébergeur : [À REMPLIR PAR GREG : hébergeur].',
@@ -268,7 +277,8 @@ describe('PrivacyPolicyView', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Registre : sans limite.')).toBe(items.indexOf('Postes : tout est effacé SAUF l’historique.') + 1)
     expect(items.indexOf('Prix : sans limite.')).toBe(items.indexOf('Registre : sans limite.') + 1)
-    expect(items.indexOf('Animation : page visible de tous.')).toBe(items.indexOf("Personne d'autre.") - 1)
+    expect(items.indexOf('Stocks : le maire et le commissaire au commerce.')).toBe(items.indexOf("Personne d'autre.") - 1)
+    expect(items.indexOf('Animation : page visible de tous.')).toBe(items.indexOf('Stocks : le maire et le commissaire au commerce.') - 1)
     expect(items.indexOf('Les trois postes des prix.')).toBe(items.indexOf('Animation : page visible de tous.') - 1)
     expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf('Les trois postes des prix.') - 1)
   })
@@ -283,12 +293,22 @@ describe('PrivacyPolicyView', () => {
     expect(items.indexOf(items.find(t => t.startsWith('Animation : contactez ')))).toBe(items.indexOf('Prix : sans limite.') + 1)
     expect(items.find(t => t.startsWith('Animation : contactez '))).not.toContain('{email}')
   })
+  // Gestion des stocks (inventaires) : texte de Cowork validé par Greg le 11/11/2026 (fil inventaire-scopes).
+  it('rend ce que conserve la Gestion des stocks (§3), sa durée juste après Animation (§5) et ses destinataires juste avant « Personne d’autre » (§6)', () => {
+    const wrapper = mountView()
+    expect(wrapper.findAll('[data-testid="privacy-inventory"] li').map(li => li.text()))
+      .toEqual(['Vos réglages — non chiffrés.', 'Inventaire comtal — avec un historique.'])
+    expect(wrapper.text()).toContain('Aucune interface d’administration n’y donne accès.')
+    const items = wrapper.findAll('li').map(li => li.text())
+    expect(items.indexOf('Stocks : tant que le personnage existe.')).toBe(items.indexOf(items.find(t => t.startsWith('Animation : contactez '))) + 1)
+  })
+
   // Brief pages-donnees-joueur §3 : la politique porte « une ligne par outil, avec son lien ».
   it("porte une ligne par outil, chacune liée à sa section de la page « Vos données »", () => {
     const links = mountView().findAll('[data-testid="privacy-tools-links"] a')
     expect(links.map(a => a.text())).toEqual([
       'Compte et personnages', 'Postes déclarés et Ma province', 'Bilan des mines',
-      'Registre des mines', 'Le Guet', 'Carte des royaumes', 'Animation',
+      'Registre des mines', 'Gestion des stocks', 'Le Guet', 'Carte des royaumes', 'Animation',
     ])
     expect(links[2].attributes('href')).toBe(JSON.stringify({ name: 'legal-data', hash: '#bilan-des-mines' }))
   })
@@ -298,7 +318,7 @@ describe('PrivacyPolicyView', () => {
   it('garde l’exception des postes juste après le compte supprimé (§5), et les joueurs de la province avant les tenants du registre et « Personne d’autre » (§6)', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Postes : tout est effacé SAUF l’historique.')).toBe(items.indexOf('Compte supprimé : effacé.') + 1)
-    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 4)
+    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 5)
   })
 
   it('affiche une date de dernière modification', () => {

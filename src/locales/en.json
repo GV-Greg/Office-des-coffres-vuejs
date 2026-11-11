@@ -338,7 +338,7 @@
     "Title": "Economy Chest",
     "MinesLink": "Mines report",
     "MineRegistryLink": "Mine Registry",
-    "InventoryLink": "Inventories",
+    "InventoryLink": "Stock Management",
     "Home": {
       "Title": "The Counting Room",
       "Intro": "These are the chests the Office holds for mines, inventories and markets.",
@@ -351,7 +351,7 @@
         "Description": "Paste your weekly mine report: the Office draws up the balance and prepares the week's account."
       },
       "inventory": {
-        "Name": "Inventories",
+        "Name": "Stock Management",
         "Description": "Paste an inventory to sort it by category and draft its statement for your merchants."
       },
       "registry": {
@@ -365,7 +365,7 @@
     }
   },
   "EconomyInventory": {
-    "PageTitle": "Economic inventories",
+    "PageTitle": "Stock Management",
     "PasteLabel": "Inventory",
     "PastePlaceholder": "Paste here the text copied from the game…",
     "Summary": "{count} item(s) · {ecus} écus",
@@ -405,7 +405,7 @@
     "NoCustomYet": "No custom category yet.",
     "NoneHidden": "No hidden category.",
     "HelpButton": "How does it work?",
-    "HelpTitle": "How does the Inventory module work?",
+    "HelpTitle": "How does Stock Management work?",
     "HelpPurpose": "Paste, categorize and export a character or city inventory, ready to share on the forum.",
     "HelpOverview": "The module reads text copied from the in-game Inventory tab and reorganizes it by category. Unknown items fall into 'Miscellaneous' — you can move them or pre-configure their category in My Office.",
     "HelpStep1": "Open your character's Inventory tab in the game and copy all the text from the page.",
@@ -1096,8 +1096,8 @@
         "Intro": "No third-party HTTP cookies are set on this site. We use two browser storage mechanisms, both limited to what is strictly necessary:",
         "Preferences": {
           "Title": "Local storage — Preferences",
-          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Animation: Crack the Code, Prize Grid).",
-          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
+          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Stock Management, Animation: Crack the Code, Prize Grid).",
+          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, your inventory settings (categories, assignments, order, export options) when you use Stock Management without an account, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
           "Retention": "until you clear site data from your browser, or withdraw your consent via the cookies banner.",
           "LegalBasis": "your consent (GDPR art. 6.1.a, article 129 of the Belgian law of 13 June 2005 on electronic communications, transposing the ePrivacy Directive).",
           "IfDecline": "the site works normally, but your preferences and drafts are not remembered between visits."
@@ -1200,6 +1200,12 @@
         "Title": "Mine Registry",
         "Purpose": "Keep a province's mine management record, handed from one office-holder to the next: the Mines Superintendent and the Sheriff save their reports to it, and the Trade Minister and the province's leader (count, duke…) may read them. You must hold one of these offices in the province, and have had it validated in the Office. Without that, the tool is not available. It also holds the province's mine prices, set by the Trade Minister, the Mines Superintendent and the Sheriff.",
         "Input": "The same text as for the Mines report: the contents of the \"Management of the mines\" tab, copied from the game. For prices: the price of each resource and the hourly wage, with the date they take effect."
+      },
+      "Inventory": {
+        "Title": "Stock Management",
+        "Purpose": "Paste the inventory of your character, your city or your province, sort it by category, order it and write up its state for the game forum. The tool works without an account; an account lets you find your settings and your last inventory from one device to another. A city's inventory opens to its acting mayor, a province's to the Trade Minister (who writes it) and to the province's leader (who may read it), with an office validated in the Office.",
+        "Input": "The text of the game's Inventory tab, copied as is, and your settings: categories, item assignments, order, colour, export options. Without an account, everything stays in your browser (if you accepted preferences) and the Office keeps nothing.",
+        "Deletion": "Your inventory settings and the text of your last pasted inventory are linked to your character. They are part of your data export (GDPR Article 20) and are deleted with your character. City and province settings and inventories are linked to the office, not to your account: they are not part of your export and stay in place when you leave office."
       },
       "Watch": {
         "Title": "Watch",
@@ -1330,6 +1336,30 @@
             "Text": "the grid's dimensions and its prizes (each prize's name and the cell it sits in)."
           }
         ],
+        "InventoryIntro": "If you use Stock Management, the Office keeps the following. With an account, your inventory settings are stored in the database so that you can find them again from one device to another; without an account, they stay in your browser and the Office keeps nothing.",
+        "InventoryFields": [
+          {
+            "Label": "Your inventory settings",
+            "Text": "custom categories, hidden categories, category order and colour, item-to-category assignments, export and display options. They are not encrypted."
+          },
+          {
+            "Label": "The inventory text you paste",
+            "Text": "encrypted in the database, and readable only by those named in §6."
+          },
+          {
+            "Label": "Personal inventory",
+            "Text": "linked to your character; a single copy, replaced each time you paste; deleted with your character."
+          },
+          {
+            "Label": "City inventory",
+            "Text": "linked to the city where you are the acting mayor; a single copy, replaced each time you paste; handed on to your successor."
+          },
+          {
+            "Label": "County inventory",
+            "Text": "linked to the province where you are the Trade Minister; a history is kept: one copy per day, a second paste on the same day replacing the first (which can no longer be viewed, but is kept); the history is handed on to your successor."
+          }
+        ],
+        "InventoryNote": "City and province settings and inventories are office data: they stay in place when their author leaves office, only the link to the author is removed. No site administration interface lets anyone view your inventories or your settings: this restriction is written into the code, checked automatically at every release, and the source code is public. The publisher nevertheless keeps technical access to the hosting, like any site administrator, and undertakes not to use it to view this data.",
         "ToolsIntro": "What each tool is for, who can use it, what you put into it and what it does or does not store is explained tool by tool on the {dataLink} page:"
       },
       "Section4": {
@@ -1388,7 +1418,8 @@
         "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account).",
         "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible.",
         "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price while you hold the office, and up to 7 days after your term ends; after that it is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name.",
-        "Animation": "Animation (Crack the Code, Prize Grid): in private mode, the activity and its content — the chests and the proposals you entered (Crack the Code), the prizes (Prize Grid) — are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, content included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, the fingerprint of your connection, your email address, your password and any pending reset request are erased; for Crack the Code, a report including all proposals received is first sent to your email address if you confirmed one. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname and the location, plus, for Crack the Code, the chests cracked with the nickname of who found them and the final standings — never the proposals received, which are erased on closing — and, for the Prize Grid, the dimensions, all the prizes and the names of the characters who chose a cell. After that period, the page and the nickname are deleted. To request the removal of a name entered on one of these pages before that period, contact {email}."
+        "Animation": "Animation (Crack the Code, Prize Grid): in private mode, the activity and its content — the chests and the proposals you entered (Crack the Code), the prizes (Prize Grid) — are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, content included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, the fingerprint of your connection, your email address, your password and any pending reset request are erased; for Crack the Code, a report including all proposals received is first sent to your email address if you confirmed one. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname and the location, plus, for Crack the Code, the chests cracked with the nickname of who found them and the final standings — never the proposals received, which are erased on closing — and, for the Prize Grid, the dimensions, all the prizes and the names of the characters who chose a cell. After that period, the page and the nickname are deleted. To request the removal of a name entered on one of these pages before that period, contact {email}.",
+        "Inventory": "Stock Management: your personal settings and inventory are kept as long as your character exists, and deleted with it. A city's or a province's settings and inventory are kept as long as that city or province exists in the game's reference data, and stay in place when their author leaves office. A province's inventory history is kept with no time limit, because it forms the province's management memory, handed from one office-holder to the next. If you delete your character or your account, what concerns a city or a province remains, but its link to your account is removed: we say \"the link is removed\" rather than \"anonymised\", as for the Mine Registry."
       },
       "Section6": {
         "Title": "6. Who can access your data",
@@ -1399,7 +1430,8 @@
         "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
         "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province.",
         "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province.",
-        "AnimationHolders": "Animation (Crack the Code, Prize Grid): an activity's public page is visible to everyone, whether created in private or public mode — that is the point of these tools, shared on the game's forum. It shows the name, the location and the organiser's nickname, plus, for Crack the Code, the chests cracked and the standings; for the Prize Grid, visible from the draw onwards, the cells and, for each chosen cell, the revealed prize and the name of the character who chose it (the contents of unchosen cells stay hidden until closing, when all prizes become visible). Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there."
+        "AnimationHolders": "Animation (Crack the Code, Prize Grid): an activity's public page is visible to everyone, whether created in private or public mode — that is the point of these tools, shared on the game's forum. It shows the name, the location and the organiser's nickname, plus, for Crack the Code, the chests cracked and the standings; for the Prize Grid, visible from the draw onwards, the cells and, for each chosen cell, the revealed prize and the name of the character who chose it (the contents of unchosen cells stay hidden until closing, when all prizes become visible). Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there.",
+        "InventoryHolders": "Stock Management: your personal inventory, you alone. A city's inventory and settings: the acting mayor of that city, including those who succeed you. A province's inventory and settings, history included: the acting Trade Minister and the province's leader (count, duke…), the latter read-only — including those who succeed you, and including after your account is deleted. Never the other councillors, never a player from another city or province, and no site administration interface (see §3)."
       },
       "DataPageLink": "Your data, tool by tool",
       "Section7": {
