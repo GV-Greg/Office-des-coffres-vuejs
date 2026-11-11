@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [À compléter au merge] — Fix : le poste demandé s'affiche tant que la demande est en attente
+
+### Fixed
+- Sur la carte d'un mandat (Profil), une demande de **conseiller** en attente de vérification affichait « Conseil comtal de … — **sans poste** » au lieu du poste demandé (le maire s'affichait correctement). La carte lisait le poste **détenu**, vide tant que rien n'est validé ; elle lit désormais le poste **demandé** que l'API envoie dès l'inscription (`pending_office_label`) pendant que le statut est « en attente ». Un mandat validé garde le poste détenu, sa déclaration de poste en attente garde sa mention propre, une demande inscrite sans titre reste « sans poste ». Aucun changement backend. Signalement : `admin/content/fix-affichage-poste-demande.md`.
+
+### Prod
+- Aucune route, aucune dépendance. 4 tests ajoutés (README : 1160).
+
 ## [2026-11-11] — PR #111 (Inventaires en base pour les joueurs connectés : réglages aux trois niveaux, inventaire collé, historique de la province)
 
 ### Added
