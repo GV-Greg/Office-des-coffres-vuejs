@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [À compléter au merge] — Bilan des mines : « Confier au scribe » et listes du rapport du jour compactes (`feat/mines-scribe`)
+## [2026-11-11] — PR #108 (Bilan des mines : « Confier au scribe » et listes du rapport du jour compactes)
 
 ### Changed
 - Le bouton **« Mise en forme du jour »** du Bilan des mines devient **« Confier au scribe »**, en **vert** (même libellé et même couleur que les autres exports vers le forum) ; l'aide du coffre le cite sous son nouveau nom.
