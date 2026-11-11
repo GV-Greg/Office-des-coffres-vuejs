@@ -41,6 +41,21 @@ describe('parseLotList — un nombre au début du nom', () => {
     expect(parseLotList('7')).toEqual(['7'])
   })
 
+  it('la valeur de l\'inventaire collée à la FIN du nom est retirée (lignes au format de l\'inventaire)', () => {
+    expect(parseLotList("6Planches de bois d'ébène12\n1Sac de blé10\n3Sacs de farine30\n34Stères de bois170\n11Supports en bois"))
+      .toEqual(["6 Planches de bois d'ébène", '1 Sac de blé', '3 Sacs de farine', '34 Stères de bois', '11 Supports en bois'])
+  })
+
+  it('une colonne de valeur seule, en dernier après une tabulation, n\'est pas un lot', () => {
+    expect(parseLotList('4\tAndouillettes\t12\n5\tMiches de pain\t3')).toEqual(['4 Andouillettes', '5 Miches de pain'])
+    // suivie d'un nom, c'est le début du lot suivant
+    expect(parseLotList('4\tPain\t5\tÉpée')).toEqual(['4 Pain', '5 Épée'])
+  })
+
+  it('une liste écrite à la main n\'est JAMAIS touchée en fin de nom : « R2D2 », « Potion 50 », « Pierre12 »', () => {
+    expect(parseLotList('R2D2\nPotion 50\nPierre12\n50 écus')).toEqual(['R2D2', 'Potion 50', 'Pierre12', '50 écus'])
+  })
+
   it('une liste écrite à la main, sans nombre, est inchangée', () => {
     expect(parseLotList('Épée en fer\nPain\nBouclier en bois')).toEqual(['Épée en fer', 'Pain', 'Bouclier en bois'])
   })
