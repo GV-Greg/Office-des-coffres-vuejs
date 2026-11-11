@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [À compléter au merge] — Inventaire : ordre des catégories et encart « Consignes au scribe » (`feat/inventory-order`)
+## [2026-11-11] — PR #109 (Inventaire : ordre des catégories et encart « Consignes au scribe »)
 
 ### Added
 - **Ordre des catégories** : dans Mon bureau, une section « Ordre des catégories » liste les catégories visibles avec des flèches ↑ ↓ (adaptées au mobile et au clavier, annonce lecteur d'écran, première/dernière désactivées). L'ordre choisi (`inventory_cat_config.order`) vaut pour **le tableau d'inventaire et pour le BBCode exporté** ; une catégorie créée ou restaurée ensuite se place à la fin, une catégorie supprimée ou masquée est ignorée. Sans ordre choisi : l'ordre par défaut. Fonction pure `orderCategoryKeys()`.
