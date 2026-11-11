@@ -30,6 +30,7 @@
   const minePricesFields = computed(() => tm('Legal.Privacy.Section3.MinePricesFields'))
   const animFields = computed(() => tm('Legal.Privacy.Section3.AnimFields'))
   const animActivities = computed(() => tm('Legal.Privacy.Section3.AnimActivities'))
+  const inventoryFields = computed(() => tm('Legal.Privacy.Section3.InventoryFields'))
   const rights = computed(() => tm('Legal.Privacy.Section7.Rights'))
   const measures = computed(() => tm('Legal.Privacy.Section8.Measures'))
 </script>
@@ -141,6 +142,17 @@
               </li>
             </ul>
 
+            <!-- Gestion des stocks (inventaires) : texte de Cowork, validé par Greg le 11/11/2026
+                 (fil admin/echanges/inventaire-scopes/02-reponse-cowork.md). Phrase d'accès de l'éditeur : la
+                 « formulation retenue » de admin/strategies/donnees-utilisateur.md §5bis. -->
+            <p class="mt-4">{{ t('Legal.Privacy.Section3.InventoryIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-inventory">
+              <li v-for="(field, index) in inventoryFields" :key="`inventory-${index}`">
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
+            <p class="mt-2">{{ t('Legal.Privacy.Section3.InventoryNote') }}</p>
+
             <!-- Une ligne par outil, avec son lien. AJOUT seulement : les énumérations de la politique
                  (§4, §5, §6) ne perdent jamais une ligne, la page porte l'usage et le contenu de
                  chaque outil et renvoie ici pour la durée et les destinataires (fil
@@ -199,6 +211,7 @@
               <li>{{ t('Legal.Privacy.Section5.MineRegistry') }}</li>
             <li>{{ t('Legal.Privacy.Section5.MinePrices') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Animation', { email: contactEmail }) }}</li>
+              <li>{{ t('Legal.Privacy.Section5.Inventory') }}</li>
               <li>{{ t('Legal.Privacy.Section5.TechnicalLogs') }}</li>
             </ul>
           </section>
@@ -213,6 +226,7 @@
               <li>{{ t('Legal.Privacy.Section6.MineRegistryHolders') }}</li>
             <li>{{ t('Legal.Privacy.Section6.MinePricesHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.AnimationHolders') }}</li>
+              <li>{{ t('Legal.Privacy.Section6.InventoryHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.NoOneElse') }}</li>
             </ul>
             <p class="mt-4">{{ t('Legal.Privacy.Section6.Hosting') }}</p>
