@@ -6,6 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-13] — PR #115 (Lint : les 9 erreurs eslint du frontend)
+
+### Fixed
+- **eslint** : `eslint .` ne signale plus rien (9 erreurs préexistantes, 0 avertissement). `MonBureauView.vue` : `catch` vide de `loadPrices` commenté (échec volontairement silencieux) ; imports inutilisés retirés de `DataExport.test.js` et `accountSelfService.test.js` ; `eslint.config.js` : globales Node pour `tests/**/*.mjs` (`process` dans `textContrast.mjs`). Aucun changement de comportement.
+
 ## [2026-11-11] — PR #114 (Texte légal de la Gestion des stocks ; le module est renommé)
 
 ### Added
