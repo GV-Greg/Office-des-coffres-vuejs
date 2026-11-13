@@ -4,7 +4,6 @@ import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import ProfilView from '../../src/views/auth/ProfilView.vue'
-import { useAuthStore } from '../../src/stores/authStore'
 
 vi.mock('../../src/api.js', () => ({
   http: { get: vi.fn() }

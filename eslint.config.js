@@ -37,6 +37,14 @@ export default [
     },
   },
 
+  // Scripts de test lancés directement par Node (mesure de contraste dans un navigateur).
+  {
+    files: ['tests/**/*.mjs'],
+    languageOptions: {
+      globals: { ...globals.node, global: 'readonly' },
+    },
+  },
+
   // Nom imposé par la route 404 : la règle « nom de composant en plusieurs
   // mots » n'a pas de sens ici.
   {

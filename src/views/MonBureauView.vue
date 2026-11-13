@@ -73,7 +73,9 @@ const loadPrices = async () => {
   if (!pricesProvince.value) return
   try {
     priceSets.value = await minePrices.list(pricesProvince.value.id)
-  } catch {}
+  } catch {
+    // Échec volontairement silencieux : sans la liste, la section Prix reste vide.
+  }
 }
 watch(pricesProvince, (p) => { if (p) loadPrices() }, { immediate: true })
 
