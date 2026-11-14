@@ -445,8 +445,16 @@
     "CatMovedAnnounce": "{cat} : position {position} sur {total}",
     "ExportQtyFormat": "Format de quantité",
     "ExportQtyPrefix": "Nombre devant (596 articles)",
+    "ExportQtyPrefixShort": "Nbre dvt (596 art.)",
     "ExportQtySuffix": "Quantité après (Article x596)",
     "ExportShowEcus": "Afficher le trésor",
+    "Icons": {
+      "With": "Avec illustration",
+      "Without": "Sans illustration",
+      "TooltipOn": "Les illustrations des objets seront incluses dans le BBCode exporté (aucune image n'est affichée ici). Cliquer pour les retirer.",
+      "TooltipOff": "Le BBCode exporté sera sans illustration. Cliquer pour les inclure.",
+      "Unavailable": "Les illustrations n'ont pas pu être demandées : le BBCode est copié sans illustration."
+    },
     "ExportWrapper": "Mise en forme",
     "ExportWrapperNone": "Sans balise",
     "ExportWrapperRp": "[rp] global",

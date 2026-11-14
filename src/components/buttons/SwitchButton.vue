@@ -14,7 +14,7 @@
         'relative inline-flex h-6 w-11 flex-none items-center rounded-full transition-colors',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
         'disabled:cursor-not-allowed disabled:opacity-60',
-        checked ? 'bg-green-600' : 'bg-slate-500 dark:bg-slate-400',
+        checked ? onClass : offClass,
         ]"
         @click="toggle"
     >
@@ -39,6 +39,16 @@ checked: {
 disabled: {
     type: Boolean,
     default: false,
+},
+// Couleurs du rail. Par défaut celles de la modale des cookies (fond blanc, ou sombre). Une carte claire dans les DEUX thèmes
+// (`.page-card` : gray-200 en sombre) passe les siennes : le slate-400 du rail éteint y tombe à ~2:1.
+onClass: {
+    type: String,
+    default: 'bg-green-600',
+},
+offClass: {
+    type: String,
+    default: 'bg-slate-500 dark:bg-slate-400',
 },
 });
 

@@ -5,6 +5,8 @@ import { parseInventoryText, resolveItems } from '@/modules/inventoryParser'
 import { suggestCategory, orderCategoryKeys, CATEGORY_KEYS, CATEGORY_LABELS_FR } from '@/modules/inventoryCategories'
 import { exportInventoryToBBCode, EXPORT_DEFAULT_COLOR } from '@/modules/inventoryBBcode'
 import { formatFieldDate } from '@/modules/playerDates'
+import { fetchItemIcons } from '@/use/itemIconsApi'
+import SwitchButton from '@/components/buttons/SwitchButton.vue'
 import { apiMessage } from '@/stores/mandateStore'
 import { push } from 'notivue'
 import { RouterLink } from 'vue-router'
@@ -85,14 +87,20 @@ const exportShowEcus = computed({
   get: () => personalDoc.value.exportShowEcus,
   set: v => store.update('personal', { exportShowEcus: v }),
 })
+// Les icônes ne servent QU'À l'export : le `[img]` du BBCode, jamais une image dans cette page (voir modules/itemIcons.js).
+const exportShowIcons = computed({
+  get: () => personalDoc.value.exportShowIcons,
+  set: v => store.update('personal', { exportShowIcons: v }),
+})
 const exportWrapper = computed({
   get: () => personalDoc.value.exportWrapper,
   set: v => store.update('personal', { exportWrapper: v }),
 })
 
+// Sur la pastille, le libellé court (Greg, 14/11/2026) ; la liste déroulante garde le libellé complet.
 const exportQtyLabel = computed(() =>
   exportQtyFormat.value === 'prefix'
-    ? t('EconomyInventory.ExportQtyPrefix')
+    ? t('EconomyInventory.ExportQtyPrefixShort')
     : t('EconomyInventory.ExportQtySuffix')
 )
 const exportWrapperLabel = computed(() => {
@@ -196,6 +204,17 @@ async function doExport() {
     return !hiddenCategoriesSet.value.has(getCategory(item.name))
   })
   const exportColor = (authStore.isLoggedIn ? catConfig.value.exportColor : undefined) ?? EXPORT_DEFAULT_COLOR
+  // Les ID d'icônes se demandent à l'Office au moment d'exporter, pour les seuls items exportés. Une panne ne bloque pas l'export :
+  // il part sans icônes, et le dit.
+  let icons = {}
+  // Connecté seulement : sans compte, aucun nom d'objet ne quitte le navigateur (l'interrupteur n'est pas affiché non plus).
+  if (store.serverMode && exportShowIcons.value) {
+    try {
+      icons = await fetchItemIcons(visibleItems.map(item => item.name))
+    } catch {
+      push.warning(t('EconomyInventory.Icons.Unavailable'))
+    }
+  }
   const bbcode = exportInventoryToBBCode(
     visibleItems,
     name => suggestCategory(name, customCats.value),
@@ -208,6 +227,7 @@ async function doExport() {
         wrapper: exportWrapper.value,
         color: exportColor,
         totalEcus: totalEcus.value,
+        icons,
       },
     },
   )
@@ -418,6 +438,26 @@ function loadSnapshot(event) {
                 <option value="rp">{{ t('EconomyInventory.ExportWrapperRp') }}</option>
                 <option value="quote">{{ t('EconomyInventory.ExportWrapperQuote') }}</option>
               </select>
+            </div>
+
+            <!-- Joueurs connectés seulement. Un interrupteur et UN seul libellé, qui dit l'état : « Sans illustration » éteint, « Avec illustration » allumé. Seulement pour
+                 le BBCode exporté (aucune image dans l'interface). Carte claire dans les deux thèmes : textes et rail foncés, sans variante `dark:`. -->
+            <div
+              v-if="store.serverMode"
+              class="inline-flex items-center gap-2 px-1 text-sm select-none"
+              :title="exportShowIcons ? t('EconomyInventory.Icons.TooltipOn') : t('EconomyInventory.Icons.TooltipOff')"
+              data-testid="export-icons-toggle"
+            >
+              <SwitchButton
+                id="export-show-icons"
+                v-model:checked="exportShowIcons"
+                on-class="bg-green-700"
+                off-class="bg-slate-600"
+                data-testid="export-show-icons"
+              />
+              <label for="export-show-icons" class="cursor-pointer font-medium text-slate-800">{{
+                exportShowIcons ? t('EconomyInventory.Icons.With') : t('EconomyInventory.Icons.Without')
+              }}</label>
             </div>
           </div>
 
