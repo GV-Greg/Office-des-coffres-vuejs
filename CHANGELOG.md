@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-16] — PR #116 (Gestion des stocks : icônes des items dans l'export BBCode, phase 2)
+
+### Added
+- **Interrupteur « Sans illustration / Avec illustration »** dans « Consignes au scribe » (à droite de la dernière liste déroulante) : ajoute `[img]…[/img]` devant chaque item de l'export BBCode. **Réservé aux joueurs connectés** (option b de Greg, 14/11/2026) : sans compte, l'interrupteur n'existe pas et rien n'est demandé au serveur, ce qui garde la promesse « tout reste dans votre navigateur » — aucun texte légal modifié. Aucune image n'est chargée dans l'interface (l'IP du joueur n'est pas transmise au CDN de Celsius).
+- `modules/itemIcons.js` (URL du CDN, découpe en lots de 200 noms et 6 000 caractères d'URL, ID entiers positifs seulement) et `use/itemIconsApi.js` (`GET item-icons` au moment d'exporter, pour les seuls items exportés ; réponse gardée pour la durée de la page). Une panne du serveur n'empêche pas l'export : il part sans icônes, avec un avertissement.
+- Réglage personnel `exportShowIcons` dans le document de réglages du personnage (`inventoryStore`), sans clé de confort dans le navigateur.
+- Entrée « improvement » (privée) au registre des réparations et des améliorations : `inventory-export-item-icons`.
+- Garde-fous : l'adresse du CDN n'existe que dans `modules/itemIcons.js` et aucune vue ne pose d'image d'item (contrôle positif vérifié). 1214 tests Vitest.
+
+### Changed
+- La pastille « Nombre devant » se lit « Nbre dvt (596 art.) ».
+
+### Prod
+- Aucune route ni config ajoutée côté site. S'appuie sur back #86 (clé `exportShowIcons`, mergée le 16/11/2026) et back #85 (`GET item-icons`, en prod).
+
 ## [2026-11-13] — PR #115 (Lint : les 9 erreurs eslint du frontend)
 
 ### Fixed

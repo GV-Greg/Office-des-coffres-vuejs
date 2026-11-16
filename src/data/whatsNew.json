@@ -86,5 +86,13 @@
     "type": "improvement",
     "fr": "Ajout de gestion de l'ordre des catégories pour les inventaires.",
     "en": "Added category order management for inventories."
+  },
+  {
+    "id": "inventory-export-item-icons",
+    "date": "2026-11-16",
+    "scope": "private",
+    "type": "improvement",
+    "fr": "Ajout de l'option d'icônes à côté des items pour l'export de votre inventaire.",
+    "en": "Added an option to show icons next to items when exporting your inventory."
   }
 ]

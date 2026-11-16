@@ -24,7 +24,7 @@ import { useCookieStore } from '@/stores/cookieStore'
 export const LEVELS = ['personal', 'city', 'province']
 
 const SHARED_KEYS = ['custom', 'hiddenBuiltIn', 'order', 'exportColor', 'itemCategories']
-const PERSONAL_ONLY_KEYS = ['exportQtyFormat', 'exportShowEcus', 'exportWrapper', 'visibility']
+const PERSONAL_ONLY_KEYS = ['exportQtyFormat', 'exportShowEcus', 'exportShowIcons', 'exportWrapper', 'visibility']
 const keysFor = (level) => (level === 'personal' ? [...SHARED_KEYS, ...PERSONAL_ONLY_KEYS] : SHARED_KEYS)
 
 /** Clés de confort du navigateur : les mêmes qu'avant ce chantier. */
@@ -55,6 +55,9 @@ export function normalizeDoc(raw = {}) {
     itemCategories: { ...obj(r.itemCategories) },
     exportQtyFormat: r.exportQtyFormat === 'suffix' ? 'suffix' : 'prefix',
     exportShowEcus: r.exportShowEcus !== false,
+    // Éteint par défaut, et réservé aux joueurs CONNECTÉS (Greg, 14/11/2026) : demander une icône envoie au serveur le nom des objets, ce que
+    // la promesse « sans compte, tout reste dans votre navigateur » exclut. Donc aucune clé de confort : le navigateur n'en garde rien.
+    exportShowIcons: r.exportShowIcons === true,
     exportWrapper: ['rp', 'quote'].includes(r.exportWrapper) ? r.exportWrapper : 'none',
     visibility: { hiddenCategories: [...arr(visibility.hiddenCategories)], hiddenItems: [...arr(visibility.hiddenItems)] },
   }

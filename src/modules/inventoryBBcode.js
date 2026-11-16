@@ -1,6 +1,9 @@
 // Export BBcode d'un inventaire pour le forum Renaissance Kingdoms.
 // Logique pure, sans dépendance Vue.
 // Le contenu forum est en FRANÇAIS FIXE, indépendant de la langue de l'interface.
+// Icônes (14/11/2026) : avec `options.icons` (`{ nom: ID }`, lu par `use/itemIconsApi`), un item qui a une icône reçoit un
+// `[img]` du CDN de Celsius DANS le gras, devant son texte ; les autres restent sans rien (pas de substitut). Le BBCode seul
+// les porte : aucune image n'est jamais chargée dans l'interface (voir modules/itemIcons.js).
 //
 // Format de sortie (suffix + quote) :
 //   [b]Trésor : 26 865,51 écus[/b]
@@ -8,6 +11,8 @@
 //   [color=darkcyan][size=18][b]Alimentation[/b][/size][/color]
 //   [quote][list][*][b]Miches de pain (x596)[/b]
 //   [*][b]Morceaux de viande (x121)[/b][/list][/quote]
+
+import { itemIconUrl } from '@/modules/itemIcons'
 
 export const EXPORT_DEFAULT_COLOR = 'darkcyan'
 
@@ -50,6 +55,7 @@ export const EXPORT_COLORS = [
  *     wrapper?: 'none'|'rp'|'quote',
  *     color?: string,
  *     totalEcus?: number|null,
+ *     icons?: Record<string, number>,
  *   }
  * }} opts
  * @returns {string}
@@ -61,6 +67,7 @@ export function exportInventoryToBBCode(items, getCategoryFn, { categoryKeys, ge
     wrapper = 'none',
     color = EXPORT_DEFAULT_COLOR,
     totalEcus = null,
+    icons = {},
   } = options
 
   const groups = new Map(categoryKeys.map(k => [k, []]))
@@ -85,7 +92,8 @@ export function exportInventoryToBBCode(items, getCategoryFn, { categoryKeys, ge
       const text = qtyFormat === 'prefix'
         ? `${item.quantity} ${item.name}`
         : `${item.name} (x${item.quantity})`
-      return `[*][b]${text}[/b]`
+      const url = itemIconUrl(icons[item.name])
+      return `[*][b]${url ? `[img]${url}[/img] ` : ''}${text}[/b]`
     })
 
     if (wrapper === 'quote') {

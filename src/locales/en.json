@@ -445,8 +445,16 @@
     "CatMovedAnnounce": "{cat}: position {position} of {total}",
     "ExportQtyFormat": "Quantity format",
     "ExportQtyPrefix": "Number first (596 items)",
+    "ExportQtyPrefixShort": "No. first (596 it.)",
     "ExportQtySuffix": "Qty after (Item x596)",
     "ExportShowEcus": "Show treasury",
+    "Icons": {
+      "With": "With illustration",
+      "Without": "Without illustration",
+      "TooltipOn": "Item illustrations will be included in the exported BBCode (no image is shown here). Click to remove them.",
+      "TooltipOff": "The exported BBCode will have no illustrations. Click to include them.",
+      "Unavailable": "The illustrations could not be fetched: the BBCode was copied without illustrations."
+    },
     "ExportWrapper": "Formatting",
     "ExportWrapperNone": "No wrapper",
     "ExportWrapperRp": "[rp] global",
