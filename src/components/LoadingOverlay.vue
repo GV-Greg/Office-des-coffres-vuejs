@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useNavigationLoading from '@/use/useNavigationLoading'
+import useMaintenance from '@/use/useMaintenance'
 import GateIllustration from '@/components/loading/GateIllustration.vue'
 
 /*
@@ -12,17 +13,25 @@ import GateIllustration from '@/components/loading/GateIllustration.vue'
 */
 const { t } = useI18n()
 const { isNavigationLoading, navigationContext, navigationAccent } = useNavigationLoading()
+// Vérification de démarrage du mode maintenance : même écran que l'entrée dans une salle, sans délai (voir maintenanceProbe.js).
+const { isChecking } = useMaintenance()
 
-const isApi = computed(() => navigationContext.value === 'api')
-const accent = computed(() => (navigationContext.value === 'chest' ? navigationAccent.value : 'office'))
-const loadingText = computed(() => t(isApi.value ? 'Common.LoadingApi' : 'Common.LoadingRoom'))
+// Pendant la vérification de démarrage, le loader est TOUJOURS celui de l'Office (halo orange, comme la page de
+// maintenance qui lui succède), jamais la couleur du module de la page d'arrivée ni le parchemin d'un envoi.
+const isApi = computed(() => !isChecking.value && navigationContext.value === 'api')
+const accent = computed(() => (!isChecking.value && navigationContext.value === 'chest' ? navigationAccent.value : 'office'))
+// À l'arrivée sur le site (vérification du mode maintenance) on entre dans l'Office ; ensuite, de salle en salle.
+const loadingText = computed(() => {
+  if (isChecking.value) return t('Common.LoadingOffice')
+  return t(isApi.value ? 'Common.LoadingApi' : 'Common.LoadingRoom')
+})
 
 </script>
 
 <template>
   <Transition name="loading-fade">
     <div
-      v-if="isNavigationLoading"
+      v-if="isNavigationLoading || isChecking"
       class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-slate-200/95 dark:bg-slate-800/95 backdrop-blur-sm"
       role="status"
       aria-live="polite"

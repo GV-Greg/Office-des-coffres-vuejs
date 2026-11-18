@@ -10,6 +10,7 @@ import App from './App.vue'
 import router from './router'
 import i18n, { setLocale, DEFAULT_LOCALE } from '@/i18n/index'
 import { useCookieStore } from '@/stores/cookieStore'
+import { probeMaintenance } from '@/use/maintenanceProbe'
 import { createNotivue } from 'notivue'
 
 // Importez le style de Notivue
@@ -204,6 +205,10 @@ app.use(notivue)
 // disponible avant le premier rendu.
 const cookieStore = useCookieStore()
 cookieStore.initializeCookies()
+
+// Mode maintenance : l'API est interrogée dès maintenant, en parallèle du chargement de la langue.
+// Le loader global couvre le site jusqu'à sa réponse (use/maintenanceProbe.js).
+probeMaintenance()
 
 setLocale(cookieStore.getComfortData('locale', DEFAULT_LOCALE))
   .finally(() => app.mount('#app'))

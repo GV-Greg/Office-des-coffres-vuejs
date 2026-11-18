@@ -32,6 +32,7 @@
     "Placeholder": "Test",
     "Retry": "Try again",
     "LoadingRoom": "You step into the room…",
+    "LoadingOffice": "You step into the Office…",
     "LoadingApi": "The clerk is handling your request…",
     "Theme": {
       "Title": "Theme",

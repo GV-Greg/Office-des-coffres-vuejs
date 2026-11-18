@@ -32,6 +32,7 @@
     "Placeholder": "Test",
     "Retry": "Réessayer",
     "LoadingRoom": "Vous entrez dans la salle…",
+    "LoadingOffice": "Vous entrez dans l'Office…",
     "LoadingApi": "Le greffe traite votre demande…",
     "Theme": {
       "Title": "Thème",
