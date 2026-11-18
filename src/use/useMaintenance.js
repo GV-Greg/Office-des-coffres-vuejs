@@ -26,6 +26,10 @@ const SECRET_PATTERN = /^[A-Za-z0-9_-]{1,128}$/
 
 const isMaintenance = ref(false)
 const retryAfter = ref(DEFAULT_RETRY_SECONDS)
+// Vérification de démarrage en cours (use/maintenanceProbe.js) : le loader global couvre le site
+// tant que l'API n'a pas dit si l'Office est ouvert, pour qu'un site fermé ne s'affiche pas une
+// seconde avant sa page de maintenance (Greg, 18/11/2026).
+const isChecking = ref(false)
 
 const readStoredBypass = () => {
   try {
@@ -48,6 +52,10 @@ export const reportMaintenance = (error) => {
   const seconds = Number(error?.response?.data?.retry_after)
   retryAfter.value = Number.isFinite(seconds) && seconds > 0 ? seconds : DEFAULT_RETRY_SECONDS
   isMaintenance.value = true
+}
+
+export const setChecking = (value) => {
+  isChecking.value = value
 }
 
 export const getBypass = () => bypass.value
@@ -77,6 +85,7 @@ export const clearBypass = () => {
 export default function useMaintenance() {
   return {
     isMaintenance,
+    isChecking,
     retryAfter,
     hasBypass: computed(() => bypass.value !== ''),
     setBypass,

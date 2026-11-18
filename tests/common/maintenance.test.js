@@ -9,6 +9,8 @@ import useMaintenance, {
   BYPASS_HEADER, DEFAULT_RETRY_SECONDS, clearBypass, getBypass, isMaintenanceError, setBypass,
 } from '../../src/use/useMaintenance.js'
 import MaintenanceNotice from '../../src/components/MaintenanceNotice.vue'
+import LoadingOverlay from '../../src/components/LoadingOverlay.vue'
+import { PROBE_TIMEOUT_MS, probeMaintenance } from '../../src/use/maintenanceProbe.js'
 
 // Mode maintenance (brief admin/content/brief-mode-maintenance.md, 18/11/2026).
 
@@ -39,6 +41,7 @@ const mountNotice = (locale = 'fr') => {
 beforeEach(() => {
   clearBypass()
   state.isMaintenance.value = false
+  state.isChecking.value = false
 })
 afterEach(() => {
   mounted.splice(0).forEach((wrapper) => wrapper.unmount())
@@ -197,5 +200,82 @@ describe('route /maintenance/:secret', () => {
     route.beforeEnter({ params: { secret: 'pas valide!' } })
 
     expect(getBypass()).toBe('')
+  })
+})
+
+describe('sonde de démarrage', () => {
+  const answer = (status, data) => (config) => Promise.resolve({ data, status, statusText: '', headers: {}, config })
+
+  it('Office fermé : la page de maintenance s\'affiche, le chargement est levé', async () => {
+    http.defaults.adapter = answer(503, { success: false, message: 'maintenance', retry_after: 300 })
+
+    await probeMaintenance()
+
+    expect(state.isMaintenance.value).toBe(true)
+    expect(state.isChecking.value).toBe(false)
+  })
+
+  it('Office ouvert : l\'API répond 401 sans jeton, c\'est la réponse normale — le site s\'ouvre', async () => {
+    http.defaults.adapter = answer(401, { message: 'Unauthenticated.' })
+
+    await probeMaintenance()
+
+    expect(state.isMaintenance.value).toBe(false)
+    expect(state.isChecking.value).toBe(false)
+  })
+
+  it('n\'envoie aucun jeton, et borne l\'attente', async () => {
+    let seen
+    http.defaults.adapter = (config) => {
+      seen = config
+      return answer(401, {})(config)
+    }
+
+    await probeMaintenance()
+
+    expect(seen.url).toBe('auth/me')
+    expect(seen.headers.Authorization).toBeUndefined()
+    expect(seen.timeout).toBe(PROBE_TIMEOUT_MS)
+  })
+
+  it('API injoignable ou trop lente : le site s\'ouvre, jamais bloqué', async () => {
+    http.defaults.adapter = () => Promise.reject(new Error('timeout of 2500ms exceeded'))
+
+    await probeMaintenance()
+
+    expect(state.isMaintenance.value).toBe(false)
+    expect(state.isChecking.value).toBe(false)
+  })
+
+  it('un 503 qui n\'est pas celui de Laravel n\'est pas une maintenance', async () => {
+    http.defaults.adapter = answer(503, '<html>Service Unavailable</html>')
+
+    await probeMaintenance()
+
+    expect(state.isMaintenance.value).toBe(false)
+  })
+
+  it('le loader global couvre le site pendant la vérification, puis se retire', async () => {
+    const wrapper = mount(LoadingOverlay, {
+      global: { plugins: [createI18n({ legacy: false, locale: 'fr', messages })] },
+    })
+    mounted.push(wrapper)
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
+
+    let release
+    http.defaults.adapter = (config) => new Promise((resolve) => {
+      release = () => resolve({ data: {}, status: 401, statusText: '', headers: {}, config })
+    })
+    const probing = probeMaintenance()
+    await flushPromises()
+
+    expect(wrapper.get('[role="status"]').text()).toContain('Vous entrez dans l\'Office')
+    expect(wrapper.get('[role="status"]').text()).not.toContain('la salle')
+
+    release()
+    await probing
+    await flushPromises()
+
+    expect(state.isChecking.value).toBe(false)
   })
 })
