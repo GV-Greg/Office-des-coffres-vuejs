@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-18] — PR #134 (Annonces du site : bandeau « Oyez, Oyez ! » défilant sur l'accueil)
+
+### Added
+- **Bandeau d'annonce** en tête de l'accueil de l'application (`AnnouncementBanner` + `use/useAnnouncement.js`) : lit `GET announcements/current` (publique) et fait **défiler le message de droite à gauche**, dans la langue de l'interface (repli sur l'autre). Aucune règle côté site : le serveur choisit l'annonce, rédige la date (« cette semaine »…) et fixe la fin de visibilité. Une panne de l'API n'affiche rien.
+- **Mouvement (WCAG 2.2.2, charte §8)** : 3 passes puis le texte reste à plat, en entier ; bouton pause / relance ; mouvement réduit = à plat d'emblée ; copie `sr-only` pour les lecteurs d'écran.
+- **Plaque « Oyez, Oyez ! »** (« Hear ye, hear ye! ») : champ d'azur cerclé de laiton, médaillon de laiton avec le cor, texte crème en empattements du système (aucune police chargée), fondu aux deux bords ; contrastes mesurés.
+- Textes `Announcement.*` FR/EN, 11 tests (1246 Vitest au total), `docs/ARCHITECTURE.md`, README.
+
+### Deploy notes
+- Dépend du backend (PR back #91, déjà mergée) : tant que `php artisan migrate` et `php artisan route:cache` n'ont pas été lancés en SSH, l'API répond 404 et le bandeau reste **absent**, sans erreur. Frontend seul : aucune commande SSH.
+
 ## [2026-11-18] — PR #127 (Mode maintenance : sonde de démarrage et loader global)
 
 ### Added
