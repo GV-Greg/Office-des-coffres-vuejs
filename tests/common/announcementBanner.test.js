@@ -103,6 +103,7 @@ describe('AnnouncementBanner', () => {
     expect(track.attributes('aria-hidden')).toBe('true')
     expect(fr.get('[data-testid="announcement-marquee"] .sr-only').text()).toBe('Maintenance prévue cette semaine.')
     expect(fr.get('[data-testid="announcement-banner"]').attributes('aria-label')).toBe("Annonce de l'Office")
+    expect(fr.get('[data-testid="announcement-heading"]').text()).toBe('Oyez, Oyez !')
 
     const en = await mountBanner('en')
     expect(en.get('[data-testid="announcement-track"]').text()).toBe('Maintenance planned this week.')

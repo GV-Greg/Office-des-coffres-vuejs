@@ -237,6 +237,7 @@
   },
   "Announcement": {
     "Label": "Office announcement",
+    "Heading": "Hear ye, hear ye!",
     "Pause": "Pause the announcement",
     "Play": "Resume the announcement scrolling"
   },

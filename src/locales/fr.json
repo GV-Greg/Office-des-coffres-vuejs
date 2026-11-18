@@ -237,6 +237,7 @@
   },
   "Announcement": {
     "Label": "Annonce de l'Office",
+    "Heading": "Oyez, Oyez !",
     "Pause": "Mettre l'annonce en pause",
     "Play": "Relancer le défilement de l'annonce"
   },
