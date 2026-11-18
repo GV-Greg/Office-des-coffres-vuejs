@@ -48,7 +48,7 @@ function mountHome(initialState = {}) {
   return mount(HomeView, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, initialState }), i18n, router],
-      stubs: { NavMenu: true }
+      stubs: { NavMenu: true, AnnouncementBanner: true }
     }
   })
 }

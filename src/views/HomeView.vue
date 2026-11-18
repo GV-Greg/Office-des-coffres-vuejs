@@ -1,5 +1,6 @@
 <script setup>
   import NavMenu from '@/components/NavMenu.vue'
+  import AnnouncementBanner from '@/components/AnnouncementBanner.vue'
   import { computed } from 'vue'
   import { RouterLink } from 'vue-router'
   import { useI18n } from 'vue-i18n'
@@ -43,6 +44,8 @@
 <template>
   <div class="page-card">
     <div class="overflow-y-auto flex flex-col flex-grow">
+      <!-- Annonce du site (maintenance à venir) : défile de droite à gauche, sert par l'API, absente sans annonce. -->
+      <AnnouncementBanner />
       <i18n-t keypath="Home.WelcomeMessage" tag="h2" scope="global">
         <template #brand>
           <span class="font-bold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-red-600">{{ t('Common.SiteName') }}</span>

@@ -235,6 +235,12 @@
     "TagImprovement": "Amélioration",
     "LoginButton": "Se connecter"
   },
+  "Announcement": {
+    "Label": "Annonce de l'Office",
+    "Heading": "Oyez, Oyez !",
+    "Pause": "Mettre l'annonce en pause",
+    "Play": "Relancer le défilement de l'annonce"
+  },
   "Maintenance": {
     "Title": "Maintenance en cours",
     "Message": "L'Office est momentanément fermé pour travaux. Revenez dans quelques instants.",

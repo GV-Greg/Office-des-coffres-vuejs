@@ -56,7 +56,7 @@ VITE_API_ENDPOINT_PROD=
 
 | Module | Route | État |
 |---|---|---|
-| Accueil | `/app/` | Fonctionnel — intègre la "Chronique de l'Office" (`whatsNew.json`), entrées publiques et privées (connecté) |
+| Accueil | `/app/` | Fonctionnel — intègre la "Chronique de l'Office" (`whatsNew.json`), entrées publiques et privées (connecté), et le **bandeau d'annonce** (plaque « Oyez, Oyez ! » : le message d'une maintenance à venir défile de droite à gauche, avec pause) |
 | Sécurité — Guet | `/app/secu/guet` | Fonctionnel (liste "d'hier" pré-remplie via cookie comfort) |
 | Économie — Bilan des mines | `/app/eco/mines` (`/app/eco` redirige) | Fonctionnel — colle le texte "mines" du jeu, bilan hebdo ou mise en forme du jour, export BBcode, mémorisation "confort", aide contextuelle. |
 | Animation | `/app/anim` | En développement |
@@ -66,6 +66,11 @@ VITE_API_ENDPOINT_PROD=
 | Profil | `/app/profil` | Fonctionnel — liste des personnages du compte, statut individuel, choix du personnage actif, suppression de compte self-service (zone dangereuse, art. 17 RGPD), FR/EN |
 | Pages légales | `/legal/cookies`, `/legal/privacy`, `/legal/mentions` | Fonctionnel — politique cookies, politique de confidentialité, mentions légales (RGPD + APD belge). Liens accessibles via `AppFooter` (bas de page, toutes routes sauf Welcome qui a son propre footer fusionné) |
 | Page introuvable | toute URL inconnue | Fonctionnel — retour à l'Office (app ou accueil public selon la connexion) et retour à la page précédente, FR/EN |
+
+**Mode maintenance** (18/11/2026) : quand l'Office est fermé, l'API répond 503 `maintenance` et le site affiche une page
+embarquée (logo, porte, message FR/EN) ; une sonde au démarrage et le loader global « Vous entrez dans l'Office… »
+évitent qu'il s'affiche avant. `/maintenance/<secret>` ouvre l'accès administrateur pour essayer une mise à jour avant la
+réouverture (secret gardé pour l'onglet seulement). Détail : `docs/ARCHITECTURE.md`.
 
 Un compte s'inscrit désormais avec seulement email + mot de passe ; la création de personnage
 (pseudo + ville) se fait ensuite via `/app/character/new`, un compte pouvant avoir plusieurs
@@ -81,7 +86,7 @@ npm run test:watch     # Mode watch — boucle de dev, ne repaie le démarrage q
 npm run test:auth      # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
-1235 tests verts au 18/11/2026, répartis par domaine dans `tests/{auth,cookies,eco,anim,security,
+1246 tests verts au 18/11/2026, répartis par domaine dans `tests/{auth,cookies,eco,anim,security,
 mandates,province,common,enforcement,legal,fixtures}` — structure, scripts et méthode ("quoi lancer, et quand")
 détaillés dans `docs/TESTS.md`.
 
