@@ -12,14 +12,15 @@ Dépôt backend : [Office-des-coffres-backend](https://github.com/GV-Greg/Office
 
 | Outil | Version | Rôle |
 |---|---|---|
-| Vue.js | 3.4 | Framework (Composition API) |
-| Vite | 6.2 | Bundler |
+| Node.js | 22 | Exécution : CI (`npm ci`, build, tests), conteneur de dev (`Dockerfile.dev`) — 18/11/2026, avant : 20 en dev, 22 en CI |
+| Vue.js | 3.5 | Framework (Composition API) |
+| Vite | 6.4 | Bundler |
 | Tailwind CSS | 3.4 | Styling utilitaire |
 | Pinia | 2.1 | État global |
 | Vue Router | 4.2 | Routage SPA |
-| vue-i18n | 9.9 | Internationalisation (FR/EN) |
+| vue-i18n | 11.4 | Internationalisation (FR/EN) — 9.14 → 11.4 le 18/11/2026 (Dependabot #133) |
 | notivue | 2.4 | Notifications toast |
-| Axios | 1.6 | Requêtes HTTP |
+| Axios | 1.20 | Requêtes HTTP |
 
 ---
 
@@ -43,6 +44,13 @@ Déploiement automatique via **GitHub Actions** sur push `main` :
 npm install
 npm run dev       # Serveur dev Vite sur http://localhost:5001 (port fixé dans vite.config.js)
 ```
+
+Le conteneur de dev reste en `NODE_ENV=development` (serveur Vite, rechargement à chaud) : **ne jamais le passer en production en local**.
+Pour contrôler ponctuellement un build de production depuis le conteneur, l'option n'est posée que pour cette commande :
+`docker exec -e NODE_ENV=production odc-frontend npm run build` (sans elle, le build suit le mode développement, produit un bundle plus gros
+et échoue au budget de taille). Ainsi construit, le build du conteneur (Node 22) donne les mêmes fichiers, à l'octet près, que ceux servis
+par le site (vérifié le 18/11/2026). Après un merge qui
+change `package-lock.json` : `docker exec odc-frontend npm install` puis `docker restart odc-frontend` (le conteneur a ses propres `node_modules`).
 
 Variables d'environnement à configurer dans `.env` (voir `.env.example`) :
 ```
