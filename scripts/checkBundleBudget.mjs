@@ -4,6 +4,7 @@
 export const BUNDLE_BUDGETS = [
   { id: 'main', pattern: /^assets\/index-.*\.js$/, label: 'bundle principal', rawMaxBytes: 300 * 1024, brotliMaxBytes: 100 * 1024 },
   { id: 'vue-vendor', pattern: /^assets\/vue-vendor-.*\.js$/, label: 'vue-vendor', rawMaxBytes: 150 * 1024, brotliMaxBytes: 50 * 1024 },
+  { id: 'i18n-vendor', pattern: /^assets\/i18n-vendor-.*\.js$/, label: 'i18n-vendor', rawMaxBytes: 100 * 1024, brotliMaxBytes: 25 * 1024 },
 ]
 
 // CSS : seuils resserrés après Performance #4 (nettoyage du safelist Tailwind) — le CSS est passé
