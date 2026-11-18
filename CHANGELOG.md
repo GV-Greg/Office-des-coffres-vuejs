@@ -10,7 +10,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 
 ### Added
 - **Sonde de démarrage** (`use/maintenanceProbe.js`, lancée par `main.js` avant le montage) : `GET auth/me` sans jeton — 503 « maintenance » → page de maintenance, sinon le site s'ouvre ; attente bornée à 2,5 s, jamais bloquante. Plus de site visible pendant une seconde avant la page de maintenance.
-- **Loader global** (`LoadingOverlay`) pendant la vérification, avec le texte « Vous entrez dans l'Office… » (`Common.LoadingOffice`, FR et EN). 6 tests ; 1234 Vitest au total.
+- **Loader global** (`LoadingOverlay`) pendant la vérification, avec le texte « Vous entrez dans l'Office… » (`Common.LoadingOffice`, FR et EN) et le **halo orange** de l'application — jamais la couleur du module d'arrivée, comme la page de maintenance qui lui succède. 7 tests ; 1235 Vitest au total.
 
 ### Deploy notes
 - Frontend seul, rien à lancer en SSH. ⚠️ **Une requête de plus par visite** : le loader s'affiche le temps d'un aller-retour à chaque chargement du site, même hors maintenance. Aucune donnée du joueur n'y voyage ; le texte de « Vos données » (outils publics « tout reste dans le navigateur ») est à faire relire par Cowork ou Greg.

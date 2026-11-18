@@ -10,6 +10,8 @@ import useMaintenance, {
 } from '../../src/use/useMaintenance.js'
 import MaintenanceNotice from '../../src/components/MaintenanceNotice.vue'
 import LoadingOverlay from '../../src/components/LoadingOverlay.vue'
+import GateIllustration from '../../src/components/loading/GateIllustration.vue'
+import useNavigationLoading from '../../src/use/useNavigationLoading.js'
 import { PROBE_TIMEOUT_MS, probeMaintenance } from '../../src/use/maintenanceProbe.js'
 
 // Mode maintenance (brief admin/content/brief-mode-maintenance.md, 18/11/2026).
@@ -277,5 +279,32 @@ describe('sonde de démarrage', () => {
     await flushPromises()
 
     expect(state.isChecking.value).toBe(false)
+  })
+})
+
+describe('loader de la vérification de démarrage', () => {
+  it('garde le halo orange de l\'Office, même si la page d\'arrivée est un module coloré', async () => {
+    const navigation = useNavigationLoading()
+    const wrapper = mount(LoadingOverlay, {
+      global: { plugins: [createI18n({ legacy: false, locale: 'fr', messages })] },
+    })
+    mounted.push(wrapper)
+
+    // Navigation vers Animation en cours (sarcelle) pendant la vérification.
+    vi.useFakeTimers()
+    navigation.startNavigationLoading('chest', { accent: 'teal' })
+    vi.advanceTimersByTime(150)
+    state.isChecking.value = true
+    await flushPromises()
+
+    expect(wrapper.findComponent(GateIllustration).props('accent')).toBe('office')
+    expect(wrapper.get('[role="status"]').text()).toContain('Vous entrez dans l\'Office')
+
+    // Sans vérification, la navigation reprend la couleur de son module.
+    state.isChecking.value = false
+    await flushPromises()
+    expect(wrapper.findComponent(GateIllustration).props('accent')).toBe('teal')
+
+    navigation.stopNavigationLoading()
   })
 })

@@ -16,12 +16,14 @@ const { isNavigationLoading, navigationContext, navigationAccent } = useNavigati
 // Vérification de démarrage du mode maintenance : même écran que l'entrée dans une salle, sans délai (voir maintenanceProbe.js).
 const { isChecking } = useMaintenance()
 
-const isApi = computed(() => navigationContext.value === 'api')
-const accent = computed(() => (navigationContext.value === 'chest' ? navigationAccent.value : 'office'))
+// Pendant la vérification de démarrage, le loader est TOUJOURS celui de l'Office (halo orange, comme la page de
+// maintenance qui lui succède), jamais la couleur du module de la page d'arrivée ni le parchemin d'un envoi.
+const isApi = computed(() => !isChecking.value && navigationContext.value === 'api')
+const accent = computed(() => (!isChecking.value && navigationContext.value === 'chest' ? navigationAccent.value : 'office'))
 // À l'arrivée sur le site (vérification du mode maintenance) on entre dans l'Office ; ensuite, de salle en salle.
 const loadingText = computed(() => {
-  if (isApi.value) return t('Common.LoadingApi')
-  return t(isChecking.value && !isNavigationLoading.value ? 'Common.LoadingOffice' : 'Common.LoadingRoom')
+  if (isChecking.value) return t('Common.LoadingOffice')
+  return t(isApi.value ? 'Common.LoadingApi' : 'Common.LoadingRoom')
 })
 
 </script>
