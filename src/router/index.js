@@ -8,6 +8,7 @@ import VerifyEmailChangeView from '@/views/auth/VerifyEmailChangeView.vue'
 import SecurityGuetView from '@/views/modules/security/SecurityGuet.vue'
 import { push } from 'notivue'
 import useNavigationLoading from '@/use/useNavigationLoading'
+import { setBypass } from '@/use/useMaintenance'
 
 export const redirectToHomeIfNotLoggedIn = async (to, from, next) => {
   const authStore = useAuthStore()
@@ -89,6 +90,19 @@ const router = createRouter({
       name: 'verify-email-change',
       component: VerifyEmailChangeView,
       meta: { public: true },
+    },
+    {
+      // Entrée de l'administrateur pendant une maintenance (use/useMaintenance.js) : retient le
+      // secret pour l'onglet puis file à l'accueil. Un secret de forme invalide est ignoré, la
+      // page ne dit rien — rien à deviner. Voir backend, docs/ARCHITECTURE.md « Mode maintenance ».
+      path: '/maintenance/:secret',
+      name: 'maintenance-bypass',
+      meta: { public: true },
+      component: { render: () => null },
+      beforeEnter: (to) => {
+        setBypass(String(to.params.secret))
+        return { name: 'home', replace: true }
+      },
     },
     {
       path: '/legal/cookies',

@@ -6,6 +6,7 @@
   import CookiesBanner from './components/CookiesBanner.vue'
   import LoadingOverlay from './components/LoadingOverlay.vue'
   import AppFooter from './components/AppFooter.vue'
+  import MaintenanceNotice from './components/MaintenanceNotice.vue'
 
   const cookieStore = useCookieStore()
   const route = useRoute()
@@ -45,6 +46,7 @@
 
     <CookiesBanner />
     <LoadingOverlay />
+    <MaintenanceNotice />
     <Notivue  v-slot="item">
       <Notification :item="item" :theme="materialTheme" />
     </Notivue>

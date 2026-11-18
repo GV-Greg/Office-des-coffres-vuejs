@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { BYPASS_HEADER, getBypass, isMaintenanceError, reportMaintenance } from '@/use/useMaintenance';
 
 let API_URL = "";
 if(import.meta.env.PROD) {
@@ -21,6 +22,24 @@ export const http = axios.create({
         'Accept': 'application/json',
     }
 })
+
+// Mode maintenance (use/useMaintenance.js) : l'API répond 503 `maintenance` à tout appel quand
+// l'Office est fermé. Le site affiche alors sa page de maintenance. Un administrateur qui a ouvert
+// `/maintenance/<secret>` présente ce secret à chaque appel pour essayer une mise à jour avant la
+// réouverture (en-tête, car aucun cookie ne part vers l'API).
+http.interceptors.request.use((config) => {
+    const secret = getBypass()
+    if (secret) config.headers[BYPASS_HEADER] = secret
+    return config
+})
+
+http.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (isMaintenanceError(error)) reportMaintenance(error)
+        return Promise.reject(error)
+    }
+)
 
 // Le panneau d'administration Blade est servi par le même backend que l'API,
 // juste sans le préfixe /api/v1 (ex. https://odc-admin.creacube.be/dashboard).

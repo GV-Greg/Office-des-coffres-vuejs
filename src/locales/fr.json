@@ -234,6 +234,14 @@
     "TagImprovement": "Amélioration",
     "LoginButton": "Se connecter"
   },
+  "Maintenance": {
+    "Title": "Maintenance en cours",
+    "Message": "L'Office est momentanément fermé pour travaux. Revenez dans quelques instants.",
+    "Intro": "Bienvenue sur l'Office des coffres, qui vous proposera des coffres afin de vous épauler dans vos tâches liées à la sécurité, à l'économie ou à l'animation de votre ville et de votre province.",
+    "Access": "Vous pourrez bientôt franchir le seuil de l'Office sans y déposer votre nom — la plupart des outils vous seront ouverts. Vous enregistrer à la réception vous ouvrira l'accès aux coffres les mieux gardés et à vos propres registres.",
+    "BypassBanner": "Accès de maintenance : vous voyez l'Office alors qu'il est fermé au public.",
+    "BypassLeave": "Quitter cet accès"
+  },
   "NotFound": {
     "Title": "Page introuvable",
     "Lead": "Ce coffre ne figure sur aucun registre de l'Office.",

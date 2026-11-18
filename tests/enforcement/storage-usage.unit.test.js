@@ -15,6 +15,7 @@ const SRC_DIR = fileURLToPath(new URL('../../src', import.meta.url))
 const ALLOWED_FILES = [
   path.join('stores', 'cookieStore.js'), // source de vérité du stockage local
   path.join('stores', 'authStore.js'),   // jeton d'auth exempté, voir commentaire dans le fichier
+  path.join('use', 'useMaintenance.js'), // secret d'administrateur du mode maintenance : onglet seul, voir commentaire dans le fichier
 ]
 
 // src/services/* est du code mort confirmé (item #15 de admin/strategies/cookies.md, PR

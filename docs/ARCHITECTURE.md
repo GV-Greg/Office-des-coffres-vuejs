@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 14/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 18/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -19,6 +19,7 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/login` | `login` | `redirectToHomeIfLoggedIn` |
 | `/register` | `register` | `redirectToHomeIfLoggedIn` |
 | `/verify-email` | `verify-email` | — |
+| `/maintenance/:secret` | `maintenance-bypass` | — (`meta.public`) — retient le secret de maintenance de l'administrateur (onglet) puis redirige vers `home` |
 | `/legal/cookies` | `legal-cookies` | — (`meta.public`) |
 | `/legal/privacy` | `legal-privacy` | — (`meta.public`) |
 | `/legal/mentions` | `legal-mentions` | — (`meta.public`) |
@@ -578,6 +579,7 @@ inline (requis/min/max/email/confirmation).
   l'échec de l'envoi le libèrent. `LoginView` ignore en plus un second envoi pendant l'attente
   (le limiteur `login` compte chaque tentative). **`use/useFormValidation.js`** — messages d'erreur inline
   des formulaires, avec `modules/Validators.js`.
+- **Mode maintenance** (18/11/2026, brief `admin/content/brief-mode-maintenance.md`) — quand l'Office est fermé, l'API répond 503 `{message: "maintenance", retry_after}` : l'intercepteur de `api.js` le signale à **`use/useMaintenance.js`** (seul un 503 de ce corps compte, jamais un 503 quelconque de l'hébergeur) et **`components/MaintenanceNotice.vue`**, monté dans `App.vue`, affiche sa page **embarquée** (aucun appel API : logo vertical, porte, message, introduction de l'accueil **au futur** — `Maintenance.*`, FR et EN —, descriptif non officiel de `Welcome.Disclaimer` sans lien ; ni lien ni navigation). Langue = celle déjà appliquée par `main.js`. Toutes les 30 s, une sonde sur `anim/activity-types` recharge la page dès que l'API répond autrement que par la maintenance. 🔴 **La page n'apparaît qu'au premier appel API** : l'accueil et `/login` n'en font aucun au chargement (un appel à chaque visite toucherait la promesse « sans compte, tout reste dans votre navigateur » : non fait). **Bypass administrateur** : `/maintenance/<secret>` (route `maintenance-bypass`) retient le secret pour l'**onglet** (`sessionStorage`, clé `maintenance_bypass`, forme `[A-Za-z0-9_-]{1,128}`) puis renvoie à l'accueil ; `api.js` le présente à chaque appel dans l'en-tête `X-Maintenance-Bypass` (un cookie n'irait pas : deux origines, axios n'en envoie pas). Un liseré jaune rappelle l'accès et permet d'en sortir. ⚠️ Stockage direct hors `cookieStore` : identifiant d'administrateur strictement nécessaire (comme le jeton d'auth), **liste blanche** de `tests/enforcement/storage-usage`. Tests : `tests/common/maintenance.test.js`. Backend : `docs/ARCHITECTURE.md`, « Mode maintenance ».
 - **`modules/goBackOrWelcome.js`** — retour arrière sûr (revient à `welcome` quand il n'y a pas
   d'historique).
 - **`public/.htaccess`** — déployé tel quel dans `dist/` : fallback SPA (`mod_rewrite`), qui
