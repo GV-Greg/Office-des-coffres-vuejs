@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-18] — PR #126 (Mode maintenance : page embarquée et bypass administrateur)
+
+### Added
+- **Page de maintenance** (`components/MaintenanceNotice.vue`, monté dans `App.vue`), affichée quand l'API répond 503 `message: "maintenance"` : logo vertical, porte, message, introduction de l'accueil mise **au futur**, descriptif non officiel ; FR et EN ; **embarquée** (aucun appel API), sans lien ni navigation, défilable sur petit écran. Une sonde toutes les 30 s recharge la page dès que l'API rouvre.
+- **Bypass administrateur** : `/maintenance/<secret>` retient le secret pour l'**onglet** (`sessionStorage`, liste blanche de `tests/enforcement/storage-usage`) ; `api.js` le présente dans `X-Maintenance-Bypass` ; liseré jaune avec « Quitter cet accès ». Permet d'essayer une mise à jour avant de rouvrir l'Office.
+- `use/useMaintenance.js`, route `maintenance-bypass`, textes `Maintenance.*`. 14 tests (`tests/common/maintenance.test.js`) — 1228 Vitest au total.
+
+### Deploy notes
+- Backend associé : back #89 et #90 (mode maintenance au déploiement), déjà en prod. Rien à lancer en SSH. La page n'apparaît qu'au premier appel API (l'accueil et `/login` n'en font aucun au chargement).
+
 ## [2026-11-16] — PR #116 (Gestion des stocks : icônes des items dans l'export BBCode, phase 2)
 
 ### Added
