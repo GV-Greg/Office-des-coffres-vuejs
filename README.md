@@ -12,7 +12,8 @@ Dépôt backend : [Office-des-coffres-backend](https://github.com/GV-Greg/Office
 
 | Outil | Version | Rôle |
 |---|---|---|
-| Node.js | 22 | Exécution : CI (`npm ci`, build, tests), conteneur de dev (`Dockerfile.dev`) — 18/11/2026, avant : 20 en dev, 22 en CI |
+| Node.js | 22.13+ | Exécution : CI (`npm ci`, build, tests), conteneur de dev (`Dockerfile.dev`) — 22 partout depuis le 18/11/2026 (avant : 20 en dev, 22 en CI) ; 22.13 est le minimum de `@intlify/unplugin-vue-i18n` 11 |
+| @intlify/unplugin-vue-i18n | 11.2 | Compile les traductions (`src/locales/*.json`) au build — 2.0 → 11.2 le 18/11/2026, aligne le compilateur sur `vue-i18n` 11.4 |
 | Vue.js | 3.5 | Framework (Composition API) |
 | Vite | 6.4 | Bundler |
 | Tailwind CSS | 3.4 | Styling utilitaire |
