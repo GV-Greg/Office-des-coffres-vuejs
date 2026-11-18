@@ -12,7 +12,7 @@ import MaintenanceNotice from '../../src/components/MaintenanceNotice.vue'
 import LoadingOverlay from '../../src/components/LoadingOverlay.vue'
 import GateIllustration from '../../src/components/loading/GateIllustration.vue'
 import useNavigationLoading from '../../src/use/useNavigationLoading.js'
-import { PROBE_TIMEOUT_MS, probeMaintenance } from '../../src/use/maintenanceProbe.js'
+import { PROBE_TIMEOUT_MS, TRY_BYPASS_TIMEOUT_MS, probeMaintenance, tryBypass } from '../../src/use/maintenanceProbe.js'
 
 // Mode maintenance (brief admin/content/brief-mode-maintenance.md, 18/11/2026).
 
@@ -141,7 +141,9 @@ describe('MaintenanceNotice', () => {
     expect(fr.get('[data-testid="maintenance-intro"]').text()).toContain("qui vous proposera des coffres")
     expect(fr.get('[data-testid="maintenance-access"]').text()).toContain('Vous pourrez bientôt franchir le seuil de l\'Office')
     expect(fr.find('a').exists()).toBe(false)
-    expect(fr.find('button').exists()).toBe(false)
+    // Aucune navigation ; le seul bouton est l'accès administrateur (Greg, 18/11/2026).
+    expect(fr.findAll('button').map((b) => b.attributes('data-testid'))).toEqual(['maintenance-admin-toggle'])
+    expect(fr.get('[data-testid="maintenance-admin-toggle"]').text()).toBe('Accès administrateur')
 
     const en = mountNotice('en')
     expect(en.get('h1').text()).toBe('Maintenance in progress')
@@ -306,5 +308,128 @@ describe('loader de la vérification de démarrage', () => {
     expect(wrapper.findComponent(GateIllustration).props('accent')).toBe('teal')
 
     navigation.stopNavigationLoading()
+  })
+})
+
+describe('accès administrateur depuis la page de maintenance', () => {
+  const answer = (status, data) => (config) => Promise.resolve({ data, status, statusText: '', headers: {}, config })
+  const maintenance503 = { success: false, message: 'maintenance', retry_after: 300 }
+
+  it('essaie le secret auprès de l\'API, sans jeton, avec l\'en-tête de contournement, avant de le garder', async () => {
+    let seen
+    http.defaults.adapter = (config) => {
+      seen = config
+      return answer(401, { message: 'Unauthenticated.' })(config)
+    }
+
+    expect(await tryBypass(`  ${SECRET} `)).toBe('ok')
+
+    expect(seen.url).toBe('auth/me')
+    expect(seen.headers[BYPASS_HEADER]).toBe(SECRET)
+    expect(seen.headers.Authorization).toBeUndefined()
+    expect(seen.timeout).toBe(TRY_BYPASS_TIMEOUT_MS)
+    expect(getBypass()).toBe(SECRET)
+  })
+
+  it('un secret refusé par l\'API (toujours 503) n\'est pas mémorisé', async () => {
+    http.defaults.adapter = answer(503, maintenance503)
+
+    expect(await tryBypass(SECRET)).toBe('refused')
+    expect(getBypass()).toBe('')
+  })
+
+  it('un secret de forme invalide n\'atteint même pas l\'API', async () => {
+    const adapter = vi.fn()
+    http.defaults.adapter = adapter
+
+    for (const bad of ['', '   ', 'a b', 'a"b', 'é', 'x'.repeat(129), undefined]) {
+      expect(await tryBypass(bad)).toBe('refused')
+    }
+    expect(adapter).not.toHaveBeenCalled()
+  })
+
+  it('un réseau coupé ou un délai dépassé est dit comme tel, rien n\'est mémorisé', async () => {
+    http.defaults.adapter = () => Promise.reject(new Error('Network Error'))
+
+    expect(await tryBypass(SECRET)).toBe('error')
+    expect(getBypass()).toBe('')
+  })
+
+  it('l\'en-tête essayé l\'emporte sur un ancien secret mémorisé (intercepteur de api.js)', async () => {
+    setBypass('ancien-secret-0123456789')
+    let seen
+    http.defaults.adapter = (config) => {
+      seen = config.headers[BYPASS_HEADER]
+      return answer(503, maintenance503)(config)
+    }
+
+    await tryBypass(SECRET)
+
+    expect(seen).toBe(SECRET)
+  })
+
+  it('le lien ouvre un champ masqué, le bon secret ouvre l\'accès et recharge le site', async () => {
+    state.isMaintenance.value = true
+    http.defaults.adapter = answer(401, { message: 'Unauthenticated.' })
+    const reload = vi.fn()
+    vi.stubGlobal('location', { ...window.location, reload })
+
+    const wrapper = mountNotice()
+    expect(wrapper.find('[data-testid="maintenance-admin-form"]').exists()).toBe(false)
+
+    await wrapper.get('[data-testid="maintenance-admin-toggle"]').trigger('click')
+    const input = wrapper.get('[data-testid="maintenance-admin-input"]')
+    expect(input.attributes('type')).toBe('password')
+    expect(wrapper.get('[data-testid="maintenance-admin-submit"]').attributes('disabled')).toBeDefined()
+
+    await input.setValue(SECRET)
+    await wrapper.get('[data-testid="maintenance-admin-form"]').trigger('submit')
+    await flushPromises()
+
+    expect(getBypass()).toBe(SECRET)
+    expect(reload).toHaveBeenCalledTimes(1)
+    vi.unstubAllGlobals()
+  })
+
+  it('un mauvais secret affiche « Secret refusé. », vide le champ, ne recharge pas', async () => {
+    state.isMaintenance.value = true
+    http.defaults.adapter = answer(503, maintenance503)
+    const reload = vi.fn()
+    vi.stubGlobal('location', { ...window.location, reload })
+
+    const wrapper = mountNotice()
+    await wrapper.get('[data-testid="maintenance-admin-toggle"]').trigger('click')
+    await wrapper.get('[data-testid="maintenance-admin-input"]').setValue(SECRET)
+    await wrapper.get('[data-testid="maintenance-admin-form"]').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.get('[data-testid="maintenance-admin-error"]').text()).toBe('Secret refusé.')
+    expect(wrapper.get('[data-testid="maintenance-admin-input"]').element.value).toBe('')
+    expect(getBypass()).toBe('')
+    expect(reload).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
+  })
+
+  it('en anglais, le lien et le message d\'erreur sont traduits', async () => {
+    state.isMaintenance.value = true
+    http.defaults.adapter = () => Promise.reject(new Error('Network Error'))
+
+    const wrapper = mountNotice('en')
+    expect(wrapper.get('[data-testid="maintenance-admin-toggle"]').text()).toBe('Administrator access')
+    await wrapper.get('[data-testid="maintenance-admin-toggle"]').trigger('click')
+    await wrapper.get('[data-testid="maintenance-admin-input"]').setValue(SECRET)
+    await wrapper.get('[data-testid="maintenance-admin-form"]').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.get('[data-testid="maintenance-admin-error"]').text()).toBe('Could not verify, please try again.')
+  })
+
+  it('le secret n\'est écrit dans aucun fichier du site', () => {
+    const dir = resolve(process.cwd(), 'src')
+    const files = []
+    const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).forEach((e) => (e.isDirectory() ? walk(resolve(d, e.name)) : files.push(resolve(d, e.name))))
+    walk(dir)
+    const offenders = files.filter((f) => /\.(js|vue|json|html)$/.test(f) && /MAINTENANCE_SECRET|VITE_MAINTENANCE/.test(fs.readFileSync(f, 'utf-8')))
+    expect(offenders, 'aucune variable de secret de maintenance côté site (le bundle est public)').toEqual([])
   })
 })

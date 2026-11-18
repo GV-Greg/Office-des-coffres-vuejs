@@ -1,5 +1,5 @@
 import { http } from '@/api'
-import { isMaintenanceError, reportMaintenance, setChecking } from '@/use/useMaintenance'
+import { BYPASS_HEADER, isMaintenanceError, isValidBypassSecret, reportMaintenance, setBypass, setChecking } from '@/use/useMaintenance'
 
 // Sonde de démarrage du mode maintenance (Greg, 18/11/2026 : « le loader global »).
 //
@@ -25,5 +25,25 @@ export async function probeMaintenance() {
     // Délai dépassé ou réseau coupé : on ouvre le site.
   } finally {
     setChecking(false)
+  }
+}
+
+// Accès administrateur depuis la page de maintenance (Greg, 18/11/2026 : « un bouton pour contourner »). Le secret saisi est ESSAYÉ
+// avant d'être gardé : même route que la sonde (`auth/me`, sans jeton), avec le secret dans l'en-tête de contournement. Fermé pour
+// lui aussi (503 « maintenance ») = secret refusé, rien n'est mémorisé ; sinon l'accès s'ouvre (setBypass le garde pour l'onglet).
+// Le secret ne vit nulle part dans le code du site : il n'existe que dans la tête de l'administrateur et sur le serveur.
+//   'ok' accès ouvert · 'refused' secret mauvais ou de forme invalide · 'error' vérification impossible (réseau, délai).
+export const TRY_BYPASS_TIMEOUT_MS = 8000
+
+export async function tryBypass(secret) {
+  const value = String(secret ?? '').trim()
+  if (!isValidBypassSecret(value)) return 'refused'
+  try {
+    const response = await http.get('auth/me', { timeout: TRY_BYPASS_TIMEOUT_MS, validateStatus: () => true, headers: { [BYPASS_HEADER]: value } })
+    if (isMaintenanceError({ response })) return 'refused'
+    setBypass(value)
+    return 'ok'
+  } catch {
+    return 'error'
   }
 }

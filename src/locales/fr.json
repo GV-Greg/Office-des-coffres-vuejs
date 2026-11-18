@@ -247,7 +247,14 @@
     "Intro": "Bienvenue sur l'Office des coffres, qui vous proposera des coffres afin de vous épauler dans vos tâches liées à la sécurité, à l'économie ou à l'animation de votre ville et de votre province.",
     "Access": "Vous pourrez bientôt franchir le seuil de l'Office sans y déposer votre nom — la plupart des outils vous seront ouverts. Vous enregistrer à la réception vous ouvrira l'accès aux coffres les mieux gardés et à vos propres registres.",
     "BypassBanner": "Accès de maintenance : vous voyez l'Office alors qu'il est fermé au public.",
-    "BypassLeave": "Quitter cet accès"
+    "BypassLeave": "Quitter cet accès",
+    "Admin": {
+      "Link": "Accès administrateur",
+      "Label": "Secret de maintenance",
+      "Submit": "Entrer",
+      "Refused": "Secret refusé.",
+      "NetworkError": "Vérification impossible, réessayez."
+    }
   },
   "NotFound": {
     "Title": "Page introuvable",

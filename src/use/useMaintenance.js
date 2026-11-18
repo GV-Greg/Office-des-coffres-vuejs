@@ -58,6 +58,8 @@ export const setChecking = (value) => {
   isChecking.value = value
 }
 
+export const isValidBypassSecret = (secret) => SECRET_PATTERN.test(secret ?? '')
+
 export const getBypass = () => bypass.value
 
 export const setBypass = (secret) => {
