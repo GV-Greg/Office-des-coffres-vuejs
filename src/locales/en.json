@@ -235,6 +235,11 @@
     "TagImprovement": "Improvement",
     "LoginButton": "Log in"
   },
+  "Announcement": {
+    "Label": "Office announcement",
+    "Pause": "Pause the announcement",
+    "Play": "Resume the announcement scrolling"
+  },
   "Maintenance": {
     "Title": "Maintenance in progress",
     "Message": "The Office is momentarily closed for maintenance. Please come back shortly.",
