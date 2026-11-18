@@ -8,6 +8,7 @@ describe('evaluateJsBudgets', () => {
     const { failures, warnings } = evaluateJsBudgets([
       { fileName: 'assets/index-abc123.js', rawSize: 250 * 1024, brotliSize: 90 * 1024 },
       { fileName: 'assets/vue-vendor-abc123.js', rawSize: 140 * 1024, brotliSize: 45 * 1024 },
+      { fileName: 'assets/i18n-vendor-abc123.js', rawSize: 60 * 1024, brotliSize: 18 * 1024 },
     ])
     expect(failures).toEqual([])
     expect(warnings).toEqual([])
@@ -30,6 +31,14 @@ describe('evaluateJsBudgets', () => {
     expect(failures[0]).toContain('vue-vendor')
   })
 
+  it('remonte un échec si le chunk i18n dépasse son budget brotli', () => {
+    const { failures } = evaluateJsBudgets([
+      { fileName: 'assets/i18n-vendor-abc123.js', rawSize: 80 * 1024, brotliSize: 26 * 1024 },
+    ])
+    expect(failures).toHaveLength(1)
+    expect(failures[0]).toContain('i18n-vendor')
+  })
+
   it('ignore les fichiers qui ne matchent aucun budget suivi', () => {
     const { failures, warnings } = evaluateJsBudgets([
       { fileName: 'assets/EconomyMines-abc123.js', rawSize: 999 * 1024, brotliSize: 999 * 1024 },
@@ -38,8 +47,8 @@ describe('evaluateJsBudgets', () => {
     expect(warnings).toEqual([])
   })
 
-  it('les budgets couvrent bien main et vue-vendor', () => {
-    expect(BUNDLE_BUDGETS.map((b) => b.id)).toEqual(['main', 'vue-vendor'])
+  it('les budgets couvrent bien main, vue-vendor et i18n-vendor', () => {
+    expect(BUNDLE_BUDGETS.map((b) => b.id)).toEqual(['main', 'vue-vendor', 'i18n-vendor'])
   })
 })
 
