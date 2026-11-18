@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-19] — PR #137 (Accès administrateur depuis la page de maintenance)
+
+### Added
+- **Lien « Accès administrateur »** (FR/EN) sur la page de maintenance, qui ouvre un champ masqué : l'administrateur n'a plus besoin de retenir l'adresse `/maintenance/<secret>` (le secret avait été perdu pendant la mise en ligne de Laravel 13).
+- **Le secret saisi est essayé avant d'être gardé** (`maintenanceProbe.tryBypass` : `auth/me` sans jeton, secret dans l'en-tête de contournement) : refusé = « Secret refusé. » et rien n'est mémorisé ; accepté = accès ouvert (onglet seulement) puis rechargement ; réseau coupé = « Vérification impossible, réessayez ».
+- `api.js` : un en-tête de contournement explicite l'emporte sur un ancien secret mémorisé.
+- 🔴 Le secret n'est écrit nulle part dans le site (ni `.env` du frontend : tout ce qui s'y trouve est copié dans le bundle public) ; garde-fou de test. 9 tests (1255 Vitest au total).
+
+### Deploy notes
+- Frontend seul : aucune commande SSH, peut se déployer sans fermer l'Office. Pendant du lien de la page 503 du panneau (back #95).
+
 ## [2026-11-18] — PR #134 (Annonces du site : bandeau « Oyez, Oyez ! » défilant sur l'accueil)
 
 ### Added
