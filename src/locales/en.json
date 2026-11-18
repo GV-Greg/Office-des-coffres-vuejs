@@ -247,7 +247,14 @@
     "Intro": "Welcome to the Office des coffres, which will offer chests to support you with your city's and province's security, economy or animation.",
     "Access": "You will soon be able to cross the threshold of the Office without giving your name — most tools will stand open to you. Registering at the reception will unlock the best-guarded coffers and your own registries.",
     "BypassBanner": "Maintenance access: you are seeing the Office while it is closed to the public.",
-    "BypassLeave": "Leave this access"
+    "BypassLeave": "Leave this access",
+    "Admin": {
+      "Link": "Administrator access",
+      "Label": "Maintenance secret",
+      "Submit": "Enter",
+      "Refused": "Secret refused.",
+      "NetworkError": "Could not verify, please try again."
+    }
   },
   "NotFound": {
     "Title": "Page not found",

@@ -29,7 +29,8 @@ export const http = axios.create({
 // réouverture (en-tête, car aucun cookie ne part vers l'API).
 http.interceptors.request.use((config) => {
     const secret = getBypass()
-    if (secret) config.headers[BYPASS_HEADER] = secret
+    // Un en-tête déjà posé (essai d'un secret saisi sur la page de maintenance) l'emporte sur le secret mémorisé.
+    if (secret && !config.headers[BYPASS_HEADER]) config.headers[BYPASS_HEADER] = secret
     return config
 })
 

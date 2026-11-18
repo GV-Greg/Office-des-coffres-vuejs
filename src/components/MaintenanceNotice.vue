@@ -1,8 +1,9 @@
 <script setup>
-  import { watch, onBeforeUnmount } from 'vue'
+  import { ref, nextTick, watch, onBeforeUnmount } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { http } from '@/api'
   import useMaintenance, { clearBypass, isMaintenanceError } from '@/use/useMaintenance'
+  import { tryBypass } from '@/use/maintenanceProbe'
   import GateIllustration from '@/components/loading/GateIllustration.vue'
   import logoVertical from '@/assets/logo/logo-vertical.svg'
 
@@ -48,6 +49,35 @@
     clearBypass()
     window.location.reload()
   }
+
+  // Accès administrateur depuis la page elle-même (Greg, 18/11/2026) : un lien discret ouvre un champ ; le secret est essayé
+  // auprès de l'API avant d'être gardé (maintenanceProbe.tryBypass), puis la page se recharge sur le site.
+  const adminOpen = ref(false)
+  const secret = ref('')
+  const busy = ref(false)
+  const error = ref('')
+  const secretInput = ref(null)
+
+  const openAdmin = async () => {
+    adminOpen.value = true
+    await nextTick()
+    secretInput.value?.focus()
+  }
+
+  const submitAdmin = async () => {
+    if (busy.value || !secret.value) return
+    busy.value = true
+    error.value = ''
+    const result = await tryBypass(secret.value)
+    busy.value = false
+    if (result === 'ok') {
+      window.location.reload()
+      return
+    }
+    error.value = result === 'error' ? 'NetworkError' : 'Refused'
+    secret.value = ''
+    secretInput.value?.focus()
+  }
 </script>
 
 <template>
@@ -73,6 +103,47 @@
       <i18n-t keypath="Welcome.Disclaimer" tag="p" scope="global" class="max-w-md text-xs text-slate-700 dark:text-slate-200" data-testid="maintenance-descriptor">
         <template #link>Renaissance Kingdoms</template>
       </i18n-t>
+
+      <!-- Accès administrateur : un lien discret, puis un champ. Le secret n'est écrit nulle part dans le site (il serait lisible de tous). -->
+      <div class="text-sm" data-testid="maintenance-admin">
+        <button
+          v-if="!adminOpen"
+          type="button"
+          class="underline text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-50"
+          aria-controls="maintenance-admin-form"
+          :aria-expanded="adminOpen"
+          data-testid="maintenance-admin-toggle"
+          @click="openAdmin"
+        >{{ t('Maintenance.Admin.Link') }}</button>
+        <form
+          v-else
+          id="maintenance-admin-form"
+          class="flex flex-col items-center gap-2"
+          data-testid="maintenance-admin-form"
+          @submit.prevent="submitAdmin"
+        >
+          <label for="maintenance-secret" class="text-slate-800 dark:text-slate-200">{{ t('Maintenance.Admin.Label') }}</label>
+          <div class="flex items-center gap-2">
+            <input
+              id="maintenance-secret"
+              ref="secretInput"
+              v-model="secret"
+              type="password"
+              autocomplete="off"
+              spellcheck="false"
+              class="w-64 rounded border border-slate-500 bg-white px-3 py-1.5 text-slate-900"
+              data-testid="maintenance-admin-input"
+            >
+            <button
+              type="submit"
+              class="odc-btn odc-btn--soft odc--slate odc-btn--sm"
+              :disabled="busy || !secret"
+              data-testid="maintenance-admin-submit"
+            >{{ t('Maintenance.Admin.Submit') }}</button>
+          </div>
+          <p v-if="error" role="alert" class="text-red-800 dark:text-red-300" data-testid="maintenance-admin-error">{{ t('Maintenance.Admin.' + error) }}</p>
+        </form>
+      </div>
     </div>
   </div>
 
