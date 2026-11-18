@@ -45,9 +45,11 @@ npm install
 npm run dev       # Serveur dev Vite sur http://localhost:5001 (port fixé dans vite.config.js)
 ```
 
-Construire dans le conteneur de dev (contrôle d'un build) : `docker exec -e NODE_ENV=production odc-frontend npm run build` — le conteneur
-fixe `NODE_ENV=development`, qui produit un bundle de développement plus gros et fait échouer le budget de taille. En production, le build
-du conteneur (Node 22) donne les mêmes fichiers, à l'octet près, que ceux servis par le site (vérifié le 18/11/2026). Après un merge qui
+Le conteneur de dev reste en `NODE_ENV=development` (serveur Vite, rechargement à chaud) : **ne jamais le passer en production en local**.
+Pour contrôler ponctuellement un build de production depuis le conteneur, l'option n'est posée que pour cette commande :
+`docker exec -e NODE_ENV=production odc-frontend npm run build` (sans elle, le build suit le mode développement, produit un bundle plus gros
+et échoue au budget de taille). Ainsi construit, le build du conteneur (Node 22) donne les mêmes fichiers, à l'octet près, que ceux servis
+par le site (vérifié le 18/11/2026). Après un merge qui
 change `package-lock.json` : `docker exec odc-frontend npm install` puis `docker restart odc-frontend` (le conteneur a ses propres `node_modules`).
 
 Variables d'environnement à configurer dans `.env` (voir `.env.example`) :
