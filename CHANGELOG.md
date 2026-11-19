@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-20] — PR #140 (La Balance des stocks : menu, phrase de reprise, boutons de niveau)
+
+### Changed
+- **Menu** : le lien s'écrit « Balance des stocks » (EN « Stock Balance »), comme « Bilan des mines » et « Gestion des stocks ». La carte de la Salle des comptes et le titre de la page gardent « La Balance… ».
+- **Phrase de reprise** : « Reprenez votre dernier inventaire de la Gestion des stocks. », sous « Récupérer » ; textes en couleur fixe, la carte restant claire dans les deux thèmes. Au niveau province, une ligne précise qu'il s'agit du dernier inventaire inscrit à l'historique.
+- **Boutons de niveau** (Personnel / Ville / Province), au-dessus des deux champs comme dans la Gestion des stocks : le niveau actif reste en or avec une **coche**, les autres passent de l'ardoise au **violet**, plus voyant. Un seul niveau : aucun groupe. Aide du module (étape 4) alignée. 6 tests (1299 Vitest au total).
+
+### Deploy notes
+- Frontend seul : aucune migration, aucune route backend, aucun `config/*.php`, aucun paquet ; rien à lancer en SSH.
+
 ## [2026-11-19] — PR #139 (La Balance des stocks : comparaison de deux inventaires)
 
 ### Added
