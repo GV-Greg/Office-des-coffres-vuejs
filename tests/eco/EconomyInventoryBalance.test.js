@@ -180,15 +180,15 @@ describe('La Balance des stocks — « Récupérer »', () => {
       scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
       snapshots,
     })
-    expect(field(w, 'level').exists()).toBe(true)
+    expect(field(w, 'levels').exists()).toBe(true)
 
-    await field(w, 'level').setValue('city')
+    await w.find('[data-testid="balance-level-city"]').trigger('click')
     await flushPromises()
     await field(w, 'fetch').trigger('click')
     await flushPromises()
     expect(field(w, 'previous').element.value).toBe('3Cailloux0')
 
-    await field(w, 'level').setValue('province')
+    await w.find('[data-testid="balance-level-province"]').trigger('click')
     await flushPromises()
     await field(w, 'fetch').trigger('click')
     await flushPromises()
@@ -196,42 +196,63 @@ describe('La Balance des stocks — « Récupérer »', () => {
     expect(field(w, 'source').text()).toContain('historique de la province')
   })
 
-  it('un seul niveau (le personnel) : aucune liste, et la phrase se termine par un point', async () => {
+  it('un seul niveau (le personnel) : aucun groupe de niveaux, la phrase est fixe', async () => {
     const w = await mountPage()
-    expect(field(w, 'level').exists()).toBe(false)
+    expect(field(w, 'levels').exists()).toBe(false)
     expect(field(w, 'fetch-hint').text()).toBe('Reprenez votre dernier inventaire de la Gestion des stocks.')
     expect(field(w, 'province-hint').exists()).toBe(false)
   })
 
-  it('au moins deux niveaux : une liste déroulante « pour personnel / municipal / provincial »', async () => {
+  it('au moins deux niveaux : le choix est AU-DESSUS, avant les deux champs, comme dans la Gestion des stocks', async () => {
     const w = await mountPage({
       scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
     })
-    const select = field(w, 'level')
-    expect(select.element.tagName).toBe('SELECT')
-    expect(select.findAll('option').map(o => o.text())).toEqual(['personnel', 'municipal', 'provincial'])
-    expect(select.element.value).toBe('personal')
-    expect(field(w, 'fetch-hint').text()).toContain('Reprenez votre dernier inventaire de la Gestion des stocks pour')
-    // Plus de boutons de niveau en haut de page : la liste les remplace.
-    expect(w.find('[data-testid="balance-levels"]').exists()).toBe(false)
+    const group = field(w, 'levels')
+    expect(group.findAll('button').map(b => b.text())).toEqual(['Personnel', 'Ville : Arras', 'Province : Artois'])
+    expect(group.find('[data-testid="balance-level-personal"]').attributes('aria-pressed')).toBe('true')
+    // Le groupe précède les champs de collage dans la page.
+    const html = w.html()
+    expect(html.indexOf('data-testid="balance-levels"')).toBeLessThan(html.indexOf('data-testid="balance-previous"'))
+    // La phrase de la plaque ne change pas avec le niveau ; la précision provinciale n'apparaît qu'au niveau province.
+    expect(field(w, 'fetch-hint').text()).toBe('Reprenez votre dernier inventaire de la Gestion des stocks.')
     expect(field(w, 'province-hint').exists()).toBe(false)
-    await select.setValue('province')
+    await w.find('[data-testid="balance-level-province"]').trigger('click')
     await flushPromises()
     expect(field(w, 'province-hint').text()).toContain('dernier inventaire inscrit à l\'historique')
+    expect(group.find('[data-testid="balance-level-province"]').attributes('aria-pressed')).toBe('true')
   })
 
-  it('deux niveaux seulement (personnel et municipal) : la liste n\'en propose que deux', async () => {
+  it('deux niveaux seulement (personnel et ville) : le groupe n\'en propose que deux', async () => {
     const w = await mountPage({ scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true } }) })
-    expect(field(w, 'level').findAll('option').map(o => o.text())).toEqual(['personnel', 'municipal'])
+    expect(field(w, 'levels').findAll('button').map(b => b.text())).toEqual(['Personnel', 'Ville : Arras'])
   })
 
-  it('en anglais : « personal / municipal / provincial »', async () => {
+  it('boutons de niveau : l\'actif est en or, les autres en violet (plus voyant que l\'ardoise)', async () => {
     const w = await mountPage({
-      locale: 'en',
       scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
     })
-    expect(field(w, 'level').findAll('option').map(o => o.text())).toEqual(['personal', 'municipal', 'provincial'])
-    expect(field(w, 'fetch-hint').text()).toContain('Load your last inventory from Stock Management for')
+    const btn = lv => w.find(`[data-testid="balance-level-${lv}"]`)
+    expect(btn('personal').classes()).toContain('odc--gold')
+    expect(btn('city').classes()).toContain('odc--violet')
+    expect(btn('province').classes()).toContain('odc--violet')
+    await btn('city').trigger('click')
+    await flushPromises()
+    expect(btn('city').classes()).toContain('odc--gold')
+    expect(btn('personal').classes()).toContain('odc--violet')
+    expect(btn('personal').classes()).not.toContain('odc--slate')
+  })
+
+  it('le bouton de niveau actif porte une coche, les autres non', async () => {
+    const w = await mountPage({
+      scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
+    })
+    const btn = lv => w.find(`[data-testid="balance-level-${lv}"]`)
+    expect(btn('personal').find('v-icon-stub[name="fa-check"]').exists()).toBe(true)
+    expect(btn('city').find('v-icon-stub[name="fa-check"]').exists()).toBe(false)
+    await btn('province').trigger('click')
+    await flushPromises()
+    expect(btn('province').find('v-icon-stub[name="fa-check"]').exists()).toBe(true)
+    expect(btn('personal').find('v-icon-stub[name="fa-check"]').exists()).toBe(false)
   })
 
   it('rien de retenu pour le niveau : message, champ intact', async () => {
@@ -252,7 +273,7 @@ describe('La Balance des stocks — « Récupérer »', () => {
   it('sans compte, avec le consentement : reprend le cache de la Gestion des stocks, sans niveau', async () => {
     const w = await mountPage({ loggedIn: false, consent: true, browserPaste: PREVIOUS })
     expect(field(w, 'fetch').attributes('disabled')).toBeUndefined()
-    expect(field(w, 'level').exists()).toBe(false)
+    expect(field(w, 'levels').exists()).toBe(false)
     await field(w, 'fetch').trigger('click')
     await flushPromises()
     expect(field(w, 'previous').element.value).toBe(PREVIOUS)

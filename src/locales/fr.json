@@ -511,10 +511,6 @@
     "CurrentPlaceholder": "Colle ici le texte copié depuis le jeu…",
     "Fetch": "Récupérer",
     "FetchHint": "Reprenez votre dernier inventaire de la Gestion des stocks",
-    "FetchFor": "pour",
-    "LevelPersonal": "personnel",
-    "LevelCity": "municipal",
-    "LevelProvince": "provincial",
     "FetchHintProvince": "Pour la province : le dernier inventaire inscrit à l'historique de la province.",
     "FetchNone": "Aucun inventaire retenu pour ce niveau.",
     "FetchNoConsent": "Sans compte, la reprise passe par le cache de votre navigateur, qui n'existe qu'avec les cookies de préférences. Vous pouvez coller l'ancien inventaire à la main.",
@@ -541,7 +537,7 @@
     "HelpStep1": "Copie un ancien inventaire depuis le jeu et colle-le dans « Ancien inventaire » — ou clique sur « Récupérer » pour reprendre ton dernier collage dans la Gestion des stocks.",
     "HelpStep2": "Colle l'inventaire d'aujourd'hui dans « Inventaire actuel ».",
     "HelpStep3": "La comparaison s'affiche d'elle-même : ▲ en hausse, ▼ en baisse, rien si la quantité est identique. Les nouveaux articles portent un badge, les disparus sont barrés dans une section à part.",
-    "HelpStep4": "Si tu tiens un poste, une liste te laisse choisir le niveau (personnel, municipal ou provincial) pour que « Récupérer » reprenne le bon inventaire.",
+    "HelpStep4": "Si tu tiens un poste, choisis le niveau (personnel, ville ou province) en haut de la page pour que « Récupérer » reprenne le bon inventaire.",
     "HelpStep5": "Clique sur « Confier au scribe » pour copier le BBCode annoté, prêt à coller sur le forum. Rien n'est enregistré."
   },
   "EconomyMines": {

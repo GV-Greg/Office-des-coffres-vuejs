@@ -511,10 +511,6 @@
     "CurrentPlaceholder": "Paste the text copied from the game here…",
     "Fetch": "Load",
     "FetchHint": "Load your last inventory from Stock Management",
-    "FetchFor": "for",
-    "LevelPersonal": "personal",
-    "LevelCity": "municipal",
-    "LevelProvince": "provincial",
     "FetchHintProvince": "For the province: the last inventory recorded in the province's history.",
     "FetchNone": "No inventory kept for this level.",
     "FetchNoConsent": "Without an account, loading goes through your browser's cache, which only exists with preference cookies. You can paste the old inventory by hand.",
@@ -541,7 +537,7 @@
     "HelpStep1": "Copy an old inventory from the game and paste it into \"Old inventory\" — or click \"Load\" to bring back your last paste in Stock Management.",
     "HelpStep2": "Paste today's inventory into \"Current inventory\".",
     "HelpStep3": "The comparison shows by itself: ▲ increased, ▼ decreased, nothing when the quantity is the same. New items carry a badge, disappeared ones are struck through in a section of their own.",
-    "HelpStep4": "If you hold an office, a list lets you choose the level (personal, municipal or provincial) so that \"Load\" brings back the right inventory.",
+    "HelpStep4": "If you hold an office, choose the level (personal, city or province) at the top of the page so that \"Load\" brings back the right inventory.",
     "HelpStep5": "Click \"Entrust it to the scribe\" to copy the annotated BBCode, ready to paste on the forum. Nothing is saved."
   },
   "EconomyMines": {

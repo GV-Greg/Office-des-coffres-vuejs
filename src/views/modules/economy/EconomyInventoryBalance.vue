@@ -43,9 +43,14 @@ onMounted(() => enter(level.value))
 watch(level, lv => { fetchedEmpty.value = false; enter(lv) })
 watch(() => store.characterId, () => { level.value = 'personal'; source.value = null; enter('personal') })
 
-// Libellés de la liste déroulante : « personnel », « municipal », « provincial » (Greg, 19/11/2026).
-const LEVEL_KEYS = { personal: 'EconomyBalance.LevelPersonal', city: 'EconomyBalance.LevelCity', province: 'EconomyBalance.LevelProvince' }
-const levelOptionLabel = lv => t(LEVEL_KEYS[lv])
+// Mêmes libellés que la Gestion des stocks : « Personnel », « Ville : Arras », « Province : Artois ».
+const levelLabel = lv => {
+  if (lv === 'city') return t('EconomyInventory.LevelCity', { name: store.scopes?.city?.name ?? '' })
+  if (lv === 'province') return t('EconomyInventory.LevelProvince', { name: store.scopes?.province?.name ?? '' })
+  return t('EconomyInventory.LevelPersonal')
+}
+
+// Niveau actif en or (la couleur d'Économie) avec une coche, les autres en violet — plus voyant que l'ardoise de la Gestion des stocks (Greg, 19/11/2026).
 
 // Sans compte, la reprise lit le cache de la Gestion des stocks : il n'existe qu'avec le consentement « Préférences ». Le bouton se
 // désactive alors, sans jamais ouvrir la bannière.
@@ -209,6 +214,22 @@ function clearAll() {
     </h2>
     <p class="text-sm italic text-slate-600 dark:text-slate-400 mb-3">{{ t('EconomyBalance.Intro') }}</p>
 
+    <!-- Niveau : au-dessus, comme dans la Gestion des stocks — seulement si le personnage actif a un poste qui en ouvre d'autres que le sien. -->
+    <div v-if="levels.length > 1" role="group" :aria-label="t('EconomyInventory.LevelNav')" class="flex flex-wrap gap-2 mb-3" data-testid="balance-levels">
+      <button
+        v-for="lv in levels"
+        :key="lv"
+        type="button"
+        class="odc-btn odc-btn--soft odc-btn--sm"
+        :class="level === lv ? 'odc--gold' : 'odc--violet'"
+        :aria-pressed="level === lv"
+        :data-testid="`balance-level-${lv}`"
+        @click="level = lv"
+      >
+        <v-icon v-if="level === lv" name="fa-check" aria-hidden="true" />{{ levelLabel(lv) }}
+      </button>
+    </div>
+
     <div class="laptop:grid laptop:grid-cols-2 laptop:gap-6 laptop:items-start">
       <!-- Ancien inventaire -->
       <div>
@@ -220,10 +241,12 @@ function clearAll() {
           class="textarea-autoresize w-full h-36 p-2 rounded-xl bg-white text-sm font-mono resize-y"
           data-testid="balance-previous"
         />
-        <div class="mt-2 flex flex-wrap items-center gap-2">
+        <!-- Le fond de la carte reste CLAIR dans les deux thèmes : textes en couleur fixe, doublée de la même variante `dark:` pour neutraliser la
+             règle globale `.dark p`. -->
+        <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <button
             type="button"
-            class="odc-btn odc-btn--soft odc--gold odc-btn--sm"
+            class="odc-btn odc-btn--soft odc--gold odc-btn--sm shrink-0"
             :disabled="fetching || fetchDisabledNoConsent"
             :title="t('EconomyBalance.FetchHint')"
             data-testid="balance-fetch"
@@ -231,27 +254,16 @@ function clearAll() {
           >
             <v-icon name="fa-sync-alt" aria-hidden="true" />{{ t('EconomyBalance.Fetch') }}
           </button>
-          <span v-if="sourceNote" class="text-xs italic text-slate-600 dark:text-slate-400" data-testid="balance-source">{{ sourceNote }}</span>
+          <p class="text-sm text-slate-700 dark:text-slate-700" data-testid="balance-fetch-hint">{{ t('EconomyBalance.FetchHint') }}.</p>
         </div>
-        <!-- « Reprenez votre dernier inventaire de la Gestion des stocks » ; avec au moins deux niveaux ouverts par un poste : « pour [liste] ».
-             Un seul niveau (le personnel) : aucune liste. -->
-        <p class="mt-2 text-sm font-medium text-yellow-800 dark:text-yellow-400" data-testid="balance-fetch-hint">
-          {{ t('EconomyBalance.FetchHint') }}<template v-if="levels.length > 1">{{ ' ' }}{{ t('EconomyBalance.FetchFor') }}{{ ' ' }}<select
-              v-model="level"
-              :aria-label="t('EconomyInventory.LevelNav')"
-              class="text-sm font-semibold border-2 border-yellow-600 dark:border-yellow-500 rounded bg-yellow-50 dark:bg-yellow-900/40 text-yellow-900 dark:text-yellow-100 py-0.5 px-1.5 cursor-pointer"
-              data-testid="balance-level"
-            >
-              <option v-for="lv in levels" :key="lv" :value="lv">{{ levelOptionLabel(lv) }}</option>
-            </select></template>.
-        </p>
-        <p v-if="level === 'province'" class="mt-1 text-sm italic text-yellow-800 dark:text-yellow-400" data-testid="balance-province-hint">
+        <p v-if="level === 'province'" class="mt-1 text-xs italic text-slate-600 dark:text-slate-600" data-testid="balance-province-hint">
           {{ t('EconomyBalance.FetchHintProvince') }}
         </p>
-        <p v-if="fetchDisabledNoConsent" role="note" class="mt-1 text-xs italic text-slate-600 dark:text-slate-400" data-testid="balance-no-consent">
+        <p v-if="sourceNote" class="mt-1 text-xs italic text-slate-600 dark:text-slate-600" data-testid="balance-source">{{ sourceNote }}</p>
+        <p v-if="fetchDisabledNoConsent" role="note" class="mt-1 text-xs italic text-slate-600 dark:text-slate-600" data-testid="balance-no-consent">
           {{ t('EconomyBalance.FetchNoConsent') }}
         </p>
-        <p v-if="fetchedEmpty" role="status" class="mt-1 text-xs italic text-slate-600 dark:text-slate-400" data-testid="balance-fetch-none">
+        <p v-if="fetchedEmpty" role="status" class="mt-1 text-xs italic text-slate-600 dark:text-slate-600" data-testid="balance-fetch-none">
           {{ t('EconomyBalance.FetchNone') }}
         </p>
       </div>
