@@ -19,598 +19,126 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/login` | `login` | `redirectToHomeIfLoggedIn` |
 | `/register` | `register` | `redirectToHomeIfLoggedIn` |
 | `/verify-email` | `verify-email` | — |
-| `/maintenance/:secret` | `maintenance-bypass` | — (`meta.public`) — retient le secret de maintenance de l'administrateur (onglet) puis redirige vers `home` |
+| `/maintenance/:secret` | `maintenance-bypass` | — (`meta.public`) — retient le secret (onglet) puis redirige vers `home` |
 | `/legal/cookies` | `legal-cookies` | — (`meta.public`) |
 | `/legal/privacy` | `legal-privacy` | — (`meta.public`) |
 | `/legal/mentions` | `legal-mentions` | — (`meta.public`) |
-| `/legal/data` | `legal-data` | — (`meta.public`) — « Vos données, outil par outil », une ancre par outil |
+| `/legal/data` | `legal-data` | — (`meta.public`) — « Vos données, outil par outil » |
 | `/app/` | `home` | — |
-| `/app/eco` | `economy` | redirige vers `economy-mines` (enfant `mines`) ; enfant `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), lien affiché à qui peut lire le registre ; enfant `registre/prix` → `economy-prices` (même garde), **sans lien de menu** : on y va par le bouton « Historique des prix » du registre |
-| `/app/secu` (enfant `/guet` → `security-guet`) | `security` | — |
+| `/app/eco` | `economy` | redirige vers `economy-mines` ; enfants `registre` → `economy-registry` (`redirectToHomeIfNotLoggedIn`), `registre/prix` → `economy-prices` (même garde, **sans lien de menu** : via bouton « Historique des prix » du registre) |
+| `/app/secu` (enfant `/guet`) | `security` | — |
 | `/app/company` | `company` | — |
-| `/app/anim` | — | enfants : `` (accueil, `animation`) ; `decode` → `animation-decode` (l'ENTRÉE des salles, publique) ; `decode/creer` → `animation-create`, `decode/gerer` → `animation-manage`, `decode/reinitialiser` → `animation-reset`, `decode/confirmer-email` → `animation-confirm-email` (publics, sans compte) ; `decode/ma-salle` → `animation-mine` (`redirectToHomeIfNotLoggedIn`) — toutes les pages propres à une activité vivent sous `decode/` (un autre type aura son propre préfixe) |
-| `/public/activite/decode/:slug` | `animation-public` | — (`meta.public`, `meta.noFooter`) — la page publique d'une activité, **à partager** (le lien de l'export BBCode). Convention de Greg (27/10) : `/app/` = pages de l'application, `/public/` = pages à partager avec la communauté ; hors `MainAnimation`, sans NavBar ni footer commun |
+| `/app/anim` | — | enfants : `` (`animation`), `decode` → `animation-decode`, `decode/creer|gerer|reinitialiser|confirmer-email` (publics, sans compte), `decode/ma-salle` → `animation-mine` (`redirectToHomeIfNotLoggedIn`), `grille[/creer|gerer|reinitialiser|confirmer-email|ma-grille]` (même schéma) |
+| `/public/activite/decode/:slug` | `animation-public` | — (`meta.public`, `meta.noFooter`) — page publique, convention `/public/` = pages à partager |
+| `/public/activite/grille/:slug` | `rewards-public` | — (idem) |
 | `/app/profil` | `profil` | `redirectToHomeIfNotLoggedIn` |
-| `/app/mon-bureau/:section(province\|prix\|categories)?` | `province` | `redirectToHomeIfNotLoggedIn` — « Mon bureau », une section à la fois (`/app/province` y redirige) |
+| `/app/mon-bureau/:section(province\|prix\|categories)?` | `province` | `redirectToHomeIfNotLoggedIn` — « Mon bureau » (`/app/province` y redirige) |
 | `/app/character/new` | `character-new` | `redirectToHomeIfNotLoggedIn` |
 | `/:pathMatch(.*)*` | `not-found` | — (`meta.public`) |
 
-Les deux guards sont **exportés** nommément (en plus du router en export par défaut) pour être
-testables isolément (`tests/auth/`). `redirectToHomeIfNotLoggedIn` vérifie `authStore.isLoggedIn`
-**puis** la validité réelle du token côté serveur (`checkAuth()`) — un token local peut survivre à
-une session expirée ou à un compte supprimé. `redirectToHomeIfLoggedIn` est son symétrique : un
-compte déjà connecté qui atterrit sur `/login` ou `/register` part directement sur `/app/`.
-`WelcomeView` (`/`) en est volontairement exemptée (voir `docs/DECISIONS.md`).
+Les deux guards sont **exportés** nommément (testables dans `tests/auth/`). `redirectToHomeIfNotLoggedIn` vérifie `authStore.isLoggedIn` **puis** la validité réelle du token (`checkAuth()`). `WelcomeView` exemptée de redirection (voir `docs/DECISIONS.md`).
 
-**Hooks globaux de navigation** : `beforeEach`/`afterEach`/`onError` pilotent `LoadingOverlay.vue`
-via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X » (`economy`,
-`economy-mines`, `security`, `security-guet`, `animation`), `office` pour tout le reste. Les
-envois à l'API lancés par l'utilisateur, que le routeur ne voit pas, passent par `trackApiCall()`
-(voir `use/useNavigationLoading.js` plus bas).
+**Hooks globaux** : `beforeEach`/`afterEach`/`onError` pilotent `LoadingOverlay.vue` via `useNavigationLoading` — contexte `chest` pour les modules « Coffres X » (`economy`, `economy-mines`, `security`, `security-guet`, `animation`), `office` pour le reste. Les envois API utilisateur passent par `trackApiCall()`.
 
 ## Stores Pinia (`src/stores/`)
 
-- **`authStore.js`** (style setup, `defineStore('auth', () => {...})`) — couple de tokens Passport.
-  State : `user` (localStorage `auth_user`), `token` = access token (localStorage `auth_token`, en
-  **string brute**, pas JSON), `refreshToken` (**localStorage si « Rester connecté » est coché,
-  sessionStorage sinon** — `auth_refresh_token`, préférence dans `auth_remember_me`).
-  `user.characters` est une **liste** (un compte peut avoir 0, 1 ou N personnages).
-  Getters : `isLoggedIn`, `getUser`, `getToken`, `getCharacters`, `hasCharacters`, `isAdmin`
-  (depuis `user.is_admin`, exposé par l'API — sert au lien vers le panneau admin Blade),
-  `activeCharacter`/`defaultCharacter`.
-  Actions : `register` (email+password uniquement, ne connecte pas — voir flux vérification email
-  ci-dessous), `resendVerification`, `login` (par **email**, avec `remember_me`), `refreshAccessToken`,
-  `logout`, `deleteAccount` (DELETE `auth/account`, art. 17 RGPD : purge la session locale **et**
-  les comfort data liées au compte — `default_character_id` devenu une référence morte,
-  `last_login_email` une donnée personnelle ; ne touche ni au consentement cookies ni au thème),
-  `checkAuth` (auto-appelée si token présent au démarrage du store ; **une seule requête
-  `auth/me` en vol par token**, rendue aux appels concurrents — sans ça, le premier garde qui crée
-  le store doublait l'hydratation, garde-fou dans `authStore.test.js`), `createCharacter`,
-  `updateCharacterCity` (PATCH `characters/{id}`, resynchronise via `checkAuth()`),
-  `setActiveCharacter`/`setDefaultCharacter`, `setToken`/`setUser`.
-  **Deux niveaux de personnage** : `defaultCharacter` est le choix persistant (comfort data
-  `default_character_id`, modifiable depuis le Profil) appliqué à chaque connexion ;
-  `activeCharacter` est le contexte de la session en cours (`SelectorCharacter.vue`), il n'écrase
-  jamais le choix par défaut.
-  **Intercepteur axios 401 avec mutex** enregistré ici (pas dans `api.js`) : un access token
-  expiré déclenche un seul appel à `auth/refresh` même si plusieurs requêtes échouent en
-  parallèle, puis rejoue la requête d'origine ; `auth/login` et `auth/refresh` en sont exclus pour
-  ne pas boucler. Seul un **refus** du refresh (400/401) purge la session avec un toast « session
-  expirée » ; un refresh resté sans réponse (délai d'`api.js` dépassé, réseau coupé) la garde, la
-  requête suivante retente. `checkAuth()` applique la même règle.
-- **`mandateStore.js`** (style setup) — mandats de maire et de conseiller comtal : `mandates`,
-  `characters` (avec `requestable` par niveau, Q6), `offices` (référentiel public avec libellés
-  FR/EN). Actions `fetchAll`, `fetchOffices`, `requestMandate`, `renew`, `cancel`, `declareOffice`.
-  ⚠️ **Le frontend ne recode aucune règle et ne traduit aucun code** : les titres, motifs et causes
-  de fin arrivent de l'API en FR et EN (Q11), les refus avec `messages[champ][langue]` (Q9) ;
-  `apiFieldErrors` / `apiMessage` choisissent la langue de l'interface. Seuls les **statuts** et le
-  texte d'interface sont dans les locales (`Profil.Mandates.*`). Arbitrages :
-  `admin/echanges/mandats-lot2/`.
-- **`cookieStore.js`** (style options) — modèle de consentement nommé et extensible :
-  `consent: { preferences: bool, choiceMadeAt: number }` (clé `cookie-consent`, migration
-  silencieuse depuis l'ancien format `cookie-comply` au chargement, sans nouvelle sollicitation
-  utilisateur). Une seule catégorie visible côté UI, **« Préférences »** — pas de catégorie
-  « Session » : le jeton d'auth est strictement nécessaire au service demandé (login), exempté
-  de consentement (voir `admin/strategies/cookies.md`). Getters `hasUserChoice`/
-  `hasAcceptedPreferences`. `comfortData` : bag générique par module (thème, langue, saisies —
-  ex. `guet_last_list`, voir `SecurityGuet.vue`) — `getComfortData(key, fallback)` /
-  `setComfortData(key, value)`, lecture/écriture en mémoire toujours possible (dégradation
-  gracieuse), persistance `localStorage['comfort-cookies']` conditionnée à
-  `hasAcceptedPreferences`. `clearConsentedStorage()` purge uniquement les préfixes
-  `cookie-*`/`comfort-*` (jamais `auth_*`). `isPreferencesModalOpen` +
-  `openPreferencesModal()`/`closePreferencesModal()` pilotent la modale (`CookiesBanner.vue`
-  la monte, `NavBar.vue`, la bannière et le footer des pages publiques l'ouvrent — plus
-  `ProfilView`, qui doublait la NavBar) sans état local par composant. Palier 3
-  "compte" (données communautaires partagées, ex. future liste rouge du module Douane) reste
-  hors scope — nécessiterait une vraie table backend, pas du cookie.
+- **`authStore.js`** (style setup) — tokens Passport. State : `user` (localStorage), `token` (string brute, localStorage), `refreshToken` (**localStorage si « Rester connecté », sessionStorage sinon**). `user.characters` = liste (0, 1 ou N personnages).
+  Getters : `isLoggedIn`, `getUser`, `getToken`, `getCharacters`, `hasCharacters`, `isAdmin`, `activeCharacter`/`defaultCharacter`.
+  Actions : `register` (email+password, ne connecte pas), `resendVerification`, `login` (par **email**, avec `remember_me`), `refreshAccessToken`, `logout`, `deleteAccount` (DELETE `auth/account`, art. 17 : purge session locale + comfort data du compte), `checkAuth` (**une seule requête `auth/me` en vol par token**, garde-fou `authStore.test.js`), `createCharacter`, `updateCharacterCity`, `setActiveCharacter`/`setDefaultCharacter`.
+  **Deux niveaux de personnage** : `defaultCharacter` = choix persistant (comfort data `default_character_id`), `activeCharacter` = session en cours.
+  🔴 **Intercepteur axios 401 avec mutex** : un seul `auth/refresh` même si plusieurs requêtes échouent, rejoue l'originale ; `auth/login` et `auth/refresh` exclus. Un **refus** du refresh purge avec toast « session expirée » ; un refresh sans réponse garde la session.
+- **`mandateStore.js`** (style setup) — mandats : `mandates`, `characters` (avec `requestable`), `offices` (référentiel FR/EN). ⚠️ **Le frontend ne recode aucune règle** : titres, motifs et causes arrivent de l'API en FR/EN (Q11), refus avec `messages[champ][langue]` (Q9) ; `apiFieldErrors` / `apiMessage` choisissent la langue. Seuls les **statuts** et le texte d'interface sont dans les locales (`Profil.Mandates.*`). Arbitrages : `admin/echanges/mandats-lot2/`.
+- **`cookieStore.js`** (style options) — consentement nommé et extensible : `consent: { preferences: bool, choiceMadeAt }` (clé `cookie-consent`, migration silencieuse depuis `cookie-comply`). Une catégorie « Préférences » — pas de « Session » (jeton d'auth exempté, voir `admin/strategies/cookies.md`). `comfortData` : bag générique par module — `getComfortData(key, fallback)` / `setComfortData(key, value)`, persistance conditionnée à `hasAcceptedPreferences`. `clearConsentedStorage()` purge `cookie-*`/`comfort-*` (jamais `auth_*`). `isPreferencesModalOpen` partagé entre composants.
+- **`inventoryStore.js`** (style setup) — **seul** lecteur/écrivain des réglages d'inventaire et du texte collé. **Sans compte** : navigateur (clés confort). **Avec compte** (`serverMode`) : serveur par personnage, trois niveaux `personal`/`city`/`province` selon `GET inventory-scopes`. Document normalisé (`normalizeDoc`, `toPayload`), écritures groupées (800 ms) avec version (409 → remplacement local). Reprise à la première connexion (`importLocalIfNeeded`) si base vide. ⚠️ Aucune règle côté site. Backend : `backend/docs/ARCHITECTURE.md`, « Inventaires ».
 
 ## Services
 
-- **`src/api.js`** — seul client HTTP du projet (`http`, instance Axios), **délai d'attente de 20 s**
-  (`HTTP_TIMEOUT_MS` ; axios n'en a aucun par défaut, une requête jamais rendue bloquait l'interface —
-  cas réel : la prod retient les 429 du limiteur Laravel). Le bearer token est
-  attaché manuellement par appel ; l'unique intercepteur (401 → refresh) est enregistré par
-  `authStore.js`, pas ici. Exporte aussi `ADMIN_ORIGIN`, dérivé de `VITE_API_ENDPOINT_*` — le
-  panneau admin Blade est servi par la même origine que l'API.
-- **`src/services/`** n'existe plus (`http-common.js`, `auth-header.js`, `auth.service.js`,
-  `user.service.js`, `anim.service.js` : code mort, jamais importé). Toute doc ou tâche qui les
-  mentionne est périmée — pour étendre les appels API, passer par `api.js`.
+- **`src/api.js`** — seul client HTTP, **délai 20 s** (`HTTP_TIMEOUT_MS`). Bearer token par appel ; intercepteur 401 dans `authStore.js`. Exporte `ADMIN_ORIGIN`.
+- **`src/services/`** n'existe plus (code mort). Toute doc les mentionnant est périmée.
 
 ## Vues (`src/views/`)
 
-- **`WelcomeView.vue`** — landing : logo vertical en guise de `<h1>`, cadenas (lien vers la
-  connexion), invite « cliquez » en **rebond fini** (`motion-safe:animate-bounce-hint`, 3 × 1 s,
-  arrêt en haut) rejoué au survol du cadenas par Web Animations (6 × 0,5 s, ignoré en mouvement
-  réduit), `SelectorMenu` en haut à droite, intro roleplay
-  et **footer propre** fusionnant le disclaimer « outil non officiel », le copyright et les liens
-  légaux — seule page exemptée d'`AppFooter` (voir `App.vue`).
-- **`HomeView.vue`** — `NavMenu` + deux rubriques alimentées par `src/data/whatsNew.json` :
-  « Chroniques de l'Office » (entrées `type: "feature"`) et « Registre des réparations et des
-  améliorations » (`type: "fix"` ou `"improvement"`, une liste unique, un badge « Réparation » / « Amélioration » par entrée — `Home.Tag*`),
-  en deux colonnes, les entrées `scope: "private"` n'apparaissant que connecté.
-  Bouton « Se connecter » si déconnecté.
-- **`404.vue`** (route `not-found`, catch-all `meta.public`) — page introuvable : logo vertical,
-  titre, texte roleplay (plus de code « 404 », 27/09/2026). **Un seul bouton** « Retour à l'Office »
-  (`odc-btn--soft odc--orange`, flèche `fa-reply`) : retour à la page précédente de l'historique
-  **du navigateur** (`window.history.length > 1` — une URL cassée tapée dans la barre recharge la
-  page et vide l'historique du routeur), sinon `home` si connecté, `welcome` sinon. Pas de hauteur
-  minimale propre : `App.vue` pousse déjà le footer en bas. Porte son propre `SelectorMenu` comme
-  Welcome et les pages légales.
-- **`legal/CookiesPolicyView.vue`**, **`legal/PrivacyPolicyView.vue`**,
-  **`legal/MentionsLegalesView.vue`** — pages légales publiques, FR + EN, contenu en i18n sous le
-  namespace `Legal` (clés de contact partagées dans `Legal.Common.Contact.*`). ⚠️ Les listes y
-  sont rendues avec `tm()` **+ `rt()`** : `tm()` seul renvoie des AST compilés, affichés tels
-  quels à l'écran mais invisibles en test (les mocks ne sont pas précompilés).
-  **Décode le code** (28/10/2026) : trois insertions (§3 ce qui est conservé en mode public, §5 durées — 30 jours d'inactivité dans les deux modes, 5 ans de page figée sans les propositions —, §6 destinataires) et l'énumération des Préférences de `Legal.Cookies` ; texte de Cowork `admin/content/policy-coffres-scelles.md`, garde-fou `tests/legal/privacyAnimDecode`. `LAST_UPDATED` des deux pages = 28/10/2026 (à ajuster à la date de mise en ligne).
-  **Registre des mines** (08/10/2026) : la politique porte ses trois insertions (§3 ce qui est
-  conservé, §5 la durée et la coupure du lien, §6 qui y accède — avant « Personne d'autre »),
-  **avant** l'ouverture de l'écriture. Texte validé par Greg le 06/10
-  (`admin/content/policy-registre-mines-draft.md`), garde-fou `tests/legal/privacyMineRegistry`.
-- **`legal/DataPageView.vue`** (route `/legal/data`, 06/10/2026) — « Vos données, outil par
-  outil » : bloc « Qui peut utiliser quoi », sommaire, une section par outil (compte, postes
-  déclarés et Ma province, Bilan des mines, Registre des mines, Guet, carte) avec un
-  **badge d'accès** à côté du titre (sans compte / compte requis / poste validé requis — pas au
-  sommaire), mêmes questions dans le même ordre partout (`Legal.Data`), date de dernière
-  modification propre. 🔴 **Version B (Greg, 06/10/2026)** : les énumérations de la politique (§4
-  bases légales, §5 durées, §6 destinataires) **ne perdent jamais une ligne**, chaque module y
-  ajoute la sienne ; la page porte l'usage, l'accès, le contenu et ce qui n'est **pas** enregistré,
-  et **renvoie** à la politique pour la durée et les destinataires d'un outil qui conserve chez nous
-  (postes, Registre). La politique gagne seulement une ligne par outil avec son lien (§3).
-  `modules/dataPageSections.js` = liste des outils, niveau d'accès **et** couleurs des badges
-  (`BADGE_CLASSES`), lus par le sommaire, les badges et les liens de la politique. Garde-fous
-  `tests/legal/dataPageSingleSource.unit.test.js` (aucune phrase des deux côtés, aucune ligne
-  retirée de la politique) et `badgeContrast.unit.test.js` (texte ≥ 4,5:1, deux thèmes). Brief
-  `admin/content/brief-pages-donnees-joueur.md`, fil `admin/echanges/pages-donnees-joueur`. Le
-  routeur porte un `scrollBehavior` limité aux ancres.
-- **`auth/LoginView.vue`** — connexion par **email** (jamais par pseudo). Structure (27/09/2026) :
-  une colonne `max-w-md` — logo horizontal en `<h1>`, « Entrez sans compte » vers `/app/`
-  (`odc-btn--soft` au dégradé orange-rouge `.enter-free`, 20 px gras : grand texte, seuil 3:1),
-  séparateur « ou », puis une **carte claire dans les deux thèmes** (`bg-slate-50`, textes répétés
-  en `dark:` à cause de `.dark p`). Dans la carte : alerte « email non vérifié » en tête
-  (`role="alert"`) + bouton de renvoi (`authStore.resendVerification`), champs, case « Rester
-  connecté » native dessinée (`.remember-check` ; préférence mémorisée entre visites via la
-  comfort data `remember_me_preference`), « Se connecter » en `odc-btn--soft odc--blue` pleine
-  largeur, lien d'inscription. Comparaison `error_message.value === 'Email non vérifié.'`
-  **volontairement pas traduite** : c'est le message brut renvoyé par l'API (backend français
-  uniquement), pas du texte UI. Après connexion réussie, redirige vers `/app/character/new` si le
-  compte n'a aucun personnage, sinon `/app/`.
-- **`auth/RegisterView.vue`** — ne demande que email + mot de passe + confirmation (pseudo/ville
-  déplacés vers `AddCharacterView`). Même structure que la connexion (logo horizontal, carte
-  claire, « S'enregistrer » en `odc-btn--soft odc--blue`, lien « Vous avez déjà un compte ?
-  Connectez-vous » au bas de la carte à la place de l'ancien bouton « Retour » isolé). Après soumission, affiche
-  un écran "vérifiez votre boîte mail" (`data-testid="check-email-message"`) au lieu de connecter
-  ou rediriger — le compte n'est utilisable qu'après confirmation du lien reçu par email.
-- **`auth/VerifyEmailView.vue`** (route `/verify-email`) — **depuis le 05/10/2026, le lien de
-  l'email pointe ici** (`?id&hash&expires&signature`, jamais le domaine de l'API, qui ferait passer
-  l'email pour de l'hameçonnage) : la page rappelle l'API en JSON (`authStore.confirmEmail`). Lit
-  aussi `token`/`error` (le backend y redirige encore pour les liens envoyés avant). Si `token` : connexion
-  automatique (`setToken` + `checkAuth`) puis redirection vers `/app/character/new` (aucun
-  personnage) ou `/app/profil`. **Tout autre cas** — `?error`, aucun paramètre, ou jeton refusé
-  par le serveur (`checkAuth()` l'efface alors) — affiche le message + mini-formulaire de renvoi
-  (avant le 27/09/2026, seul `?error` y menait : la page restait sinon bloquée sur « Vérification
-  en cours… »). Même structure
-  que la connexion (logo horizontal, carte claire, « Renvoyer le lien » en `odc-btn--soft
-  odc--blue`) ; « Vérification en cours… » annoncé en `role="status"`, lisible dans les deux thèmes.
-- **`auth/AddCharacterView.vue`** (route `/app/character/new`, gardée par
-  `redirectToHomeIfNotLoggedIn`) — sélecteur royaume → province → ville en cascade (fetch
-  `GET map` au montage, ~300 villes chargées en un seul payload, pas de pagination), pseudo,
-  soumission via `authStore.createCharacter`. Accessible aussi depuis `ProfilView` pour ajouter un
-  personnage supplémentaire à un compte qui en a déjà.
-- **`auth/ProfilView.vue`** — structure revue le 27/09/2026 : titre + email en sous-titre, puis
-  **deux colonnes à partir de laptop** (tient sans défilement sur ordinateur). À gauche (2/3) :
-  « Ajouter un personnage » en tête (lien vers `AddCharacterView`), puis la **liste** des
-  personnages (`authStore.getCharacters`) en cartes `<article>` à liseré latéral (vert validé /
-  rouge en attente). Carte : **identité en haut** (pseudo + badge de statut plat « Validé » / « En
-  attente », résidence ville → province → royaume traduite par `kingdomTranslations.js`),
-  explication du statut juste dessous, **actions groupées en bas** (« Modifier la résidence » —
-  `updateCharacterCity`, repasse le personnage en attente de validation admin — et « Définir comme
-  actif »). Le personnage **à la connexion** porte l'étoile `fa-star` sur l'avatar et le badge plat
-  « Personnage actif à la connexion » (ni coche, réservée au statut, ni heaume, déjà l'avatar). Pas
-  de bouton « Gérer mes préférences » (déjà dans la NavBar). À droite (1/3) : la **zone
-  dangereuse** (`data-testid="danger-zone"`), dépliant `<details>` natif replié par défaut, porte la
-  suppression de compte self-service via
-  `DeleteAccountModal.vue` : l'appel API et la redirection vivent ici, la modale ne rend que le
-  verdict.
-- **`MonBureauView.vue`** (route `province`, `/app/mon-bureau[/province|prix|categories]`, 6ᵉ bouton du menu) — « Mon bureau » en
-  **sections, une à la fois** (11/11/2026) : un menu de **liens** (pas des onglets ARIA : chaque section a son adresse, la page
-  courante porte `aria-current="page"`) — **Ma province** (défaut), **Prix des mines** (seulement pour qui gère les prix d'une
-  province ; sans ce droit, `/prix` retombe sur la province), **Catégories d'inventaire**. Le paramètre `section` est lu par la vue
-  (`activeSection`) ; les autres pages renvoient **directement** à une section (`{ name: 'province', params: { section: 'categories' } }`
-  depuis la Gestion des stocks, `'prix'` depuis le Registre). Chaque section prend la place de son contenu (province `max-w-4xl`,
-  prix `max-w-xl`, catégories pleine largeur) ; les anciens panneaux repliables et leur état (`mon_bureau_panels`) n'existent plus.
-  **Héros** comme l'accueil d'Animation, en violet (couleur de Mon bureau). **Catégories** : un **accordéon par inventaire** (`<details>` natif,
-  « Personnel » toujours, ouvert par défaut ; **ville et province** s'y ajoutent selon le poste — `InventoryLevelsAccordion.vue`, copie vers un autre personnage — voir « Inventaires en base » plus bas), puis deux colonnes dès `laptop` — **gestion à gauche
-  (3/4 : couleur des titres, ajout sur une ligne, prédéfinies | personnalisées | masquées), ordre d'export à droite (1/4)**, toujours
-  visible (`InventoryCategoryPanel.vue`, `data-testid` `cat-manage` / `cat-order`). ⚠️ `ProvinceView.vue` n'est plus routée ni importée (son test subsiste).
-  Section **Ma province** : historique
-  des postes de la province de **résidence** du personnage actif (fil
-  `admin/echanges/mandats-historique` ; résidence seule, décision de Greg). Avertissement
-  **permanent en tête** (« l'Office n'enregistre que ce que les joueurs déclarent »), conseil par
-  titre, maires par ville, villes sans mandat comptées (jamais masquées), export forum
-  (`modules/provinceBBcode.js` : BBcode **français fixe**, dates en **1474**). États vides : aucun
-  personnage (lien vers l'ajout), résidence inconnue. Le personnage se change par la NavBar.
-- **`modules/security/MainSecurity.vue`** — shell + lien vers `security-guet`.
-- **`modules/security/SecurityGuet.vue`** — module public (pas de compte requis), pas juste un
-  outil isolé : c'est le futur pendant public du module **Douane** (privé, compte requis,
-  fonctionnalité pas encore spécifiée — étendra le Guet avec une liste rouge par province
-  partagée entre joueurs, donc future donnée backend, pas un cookie). Parse 2 listes villageois
-  (hier/aujourd'hui) collées depuis le jeu (tabulation = ligne valide, filtre le préambule
-  descriptif), diffe pour calculer entrées/sorties, génère du BBcode à copier sur le forum du
-  jeu. **Le BBcode généré reste en français fixe** (contenu de forum francophone, indépendant de
-  la langue de l'UI) — seuls les labels/boutons autour sont traduits. La
-  liste "d'hier" est pré-remplie automatiquement à la visite suivante via
-  `cookieStore.getComfortData`/`setComfortData` (catégorie `comfort`) — dégradation gracieuse
-  sans consentement (rien n'est mémorisé, mais l'outil reste utilisable en resaisissant les deux
-  listes). ⚠️ Domaine incohérent entre le lien affiché (`renaissancekingdoms.com`) et le lien
-  inséré dans le BBcode exporté (`lesroyaumes.com`) — jamais confirmé avec Greg, à vérifier si ça
-  pose problème en usage réel.
-- **`modules/economy/MainEconomy.vue`** — shell + lien vers `EconomyMines.vue`.
-- **`modules/economy/EconomyMines.vue`** — « Bilan des mines » (public, pas de compte requis) :
-  colle un relevé de mines exporté du jeu, calcule le bilan d'une semaine sélectionnable en
-  **une table par mine** (production, valeur, heures, salaire = heures × taux horaire, entretien
-  pierre/fer et en écus, solde) avec une ligne Total, génère du BBcode. Sélecteur de semaine calé
-  sur `modules/gameCalendar.js` (dates réelles en interne, année de jeu 2026→1474 seulement à
-  l'affichage) ; **semaine proposée à l'arrivée : la semaine en cours, sauf le lundi** (semaine passée, pour
-  compléter les heures du dimanche — Greg, 08/10/2026, `defaultWeek`). Une semaine incomplète
-  s'affiche marquée « Bilan provisoire » mais **ne s'exporte pas**. Prix et taux horaire
-  **mémorisés avec chaque semaine** (confort). **Alerte de seuil à l'écran seulement** (jamais
-  dans un export), datée du jour du collage. **Registre des mines** (08/10/2026) : sous le collage,
-  `components/mines/MineRegistrySave.vue` propose « enregistrer dans le registre de {province} » au seul
-  personnage que l'API dit commissaire aux mines ou bailli (`GET characters/{id}/mine-registry`) — la
-  province du **poste** est affichée **avant** l'envoi, avec la **date qui sera inscrite** (dernier jour du collage, règle du
-  serveur depuis le 10/10/2026 : un ancien collage rattrape un jour) ; un 409 ouvre une confirmation qui nomme
-  l'auteur remplacé (« remplacé, pas effacé ») ; aucun refus n'est traduit côté site (`apiMessage`).
-  Brief `admin/content/brief-bilan-mines.md`, fil
-  `admin/echanges/bilan-mines`. `HelpModal.vue` pour l'aide contextuelle. Futur pendant privé
-  (backend, compte requis) : « Registre des mines », pas encore développé.
-- **`modules/economy/EconomyRegistry.vue`** (route `economy-registry`, 09-10/10/2026) — page de **lecture** du
-  Registre des mines, pour le commissaire aux mines, le bailli et le dirigeant
-  (`GET characters/{id}/mine-registry/reports`). Le serveur sert les faits ; les lectures se calculent dans
-  `modules/mineRegistry.js` (logique pure, sur `computePeriodBilan` — le bilan hebdomadaire n'en est que le
-  cas « 7 jours »). Mise en page arrêtée avec Greg :
-  - en tête, le titre et l'**âge du dernier relevé** (à droite, en italique, orange dès deux jours) ;
-  - le **bilan en cours du mois de mandat** (1er mois depuis l'entrée en fonction, 2e depuis la mi-mandat,
-    jusqu'à hier), titré « provisoire », couverture dite — il remplace l'état des seuils, retiré du registre ;
-  - colonne « mandat » : **bilans de mi-mandat et de fin de mandat** (avant la date : « dans N jours »,
-    jamais un bilan partiel), **jours sans données** (un collage couvre 7 jours ; périodes « du … au … »),
-    relevés écrits par d'autres avant l'entrée en fonction, dits comme des faits ;
-  - colonne « mémoire » : **historique des niveaux** (+1 amélioration ; −1 sans entretien relevé après un
-    seuil atteint = échec **constaté** ; autre −1 = choix assumé) et **relevés inscrits**, remplacements compris.
-  Relevés inscrits avant back #58 : libellé et ressource repris de l'état de la mine. Le lien du menu
-  d'Économie (et son aide `HelpModal`) n'apparaît qu'à qui peut lire (`MainEconomy`, via `GET …/mine-registry`).
-- **Prix des mines par période** (lot 2, 15/10/2026 ; brief `admin/content/brief-prix-registre.md`, backend
-  `province_mine_prices`). Le serveur sert les jeux de prix (`GET provinces/{id}/mine-prices`, via
-  `use/useMinePrices.js`) ; `modules/minePrices.js` (logique pure) en tire le jeu **en vigueur ce jour-là**
-  (`setForDay`, `priceResolver`). `computePeriodBilan` accepte désormais une **fonction de prix**
-  `jour => {prices, rate}` (en plus de l'objet unique du Bilan public) : chaque jour de travail se valorise au
-  jeu de SON jour ; un jour sans prix compte zéro et se dit (`unpricedDays`), `rate` vaut `null` si le taux a
-  varié. **Repli** quand aucun jeu n'est en base : les prix du dernier relevé (bilans du mois et de mandat,
-  comme avant) ou du relevé le plus proche (bilan d'une semaine). Écrans : `EconomyPrices.vue`
-  (`/app/eco/registre/prix` : historique, ajout, correction en place, alerte des semaines non couvertes),
-  `MinePricesModal.vue` (« Gérer les prix » dans le registre, jeu du jour pré-rempli, bouton « Mettre à jour »
-  seulement si un champ a changé ; un jeu déjà daté d'aujourd'hui est corrigé, pas doublé) et
-  `MinePriceForm.vue`. Dans le registre, **un seul tableau de bilan** (Greg, 15/10) : par défaut le bilan en cours du mois de
-  mandat (« Période en cours »), que ◀ ▶ **remplacent** par une semaine du mandat (`weekRange`, `weeklyBilan`) dans le
-  même emplacement, sous le même sélecteur ; **« Exporter en BBCode »** (semaine complète
-  seulement, comme le Bilan public) passe par `modules/mineBBcode.js`, gabarit **partagé** avec `EconomyMines`.
-  ⚠️ Aucune règle côté site : `access.prices.{write,read}` dit où l'on gère/lit, `editable` dit quel jeu se
-  corrige. **Bilan public** : un personnage qui gère le registre voit les prix de sa province **sans pouvoir les
-  modifier** (sans aucun jeu en base, la saisie reste en repli, avec un avertissement) ; les autres saisissent
-  les leurs, gardés en confort. `MineRegistrySave` n'envoie plus de prix à un gérant : le serveur fige ceux de
-  la table dans le relevé. **Dates en année du jeu** (1474) partout, saisie du champ date comprise (`toGameDateIso` / `toRealDateIso`, comme la date
-  de début d'un mandat) ; boutons : voir `CHARTE-GRAPHIQUE.md` §6.7. Textes sous `EconomyMines.RegistryPage.{Prices,Navigation,Export}` et
-  `EconomyMines.ManagedPrices` (le brief proposait `Eco.MineRegistry.*`, qui n'existe pas).
-  **Aides** (lot 3, 16/10/2026) : l'aide du registre (`MainEconomy`, `EconomyMines.RegistryPage.HelpStep1…9`) dit ce que le module permet de faire — bilan et
-  navigation par semaine, niveaux, relevés, **prix** (qui les fixe, « Gérer les prix », « Historique des prix », grâce de 7 jours), **export** ; l'aide de la
-  plaque d'enregistrement (`EconomyMines.Registry.Help*`) dit que les prix viennent de la province ; l'aide du Bilan public a une 5ᵉ étape (prix en lecture seule
-  d'un gérant). ⚠️ Une aide qui cite un bouton le cite **tel qu'il s'affiche** : `tests/eco/mineModuleTexts.unit.test.js` le garde (lecture des vraies locales).
-  Les textes **légaux** (politique, « Vos données ») ne sont pas dans ce lot.
-- **Gestion des stocks = le module des inventaires** (renommé le 11/11/2026 ; « La Salle des comptes » reste le titre de l'accueil d'Économie, qui regroupe ses trois modules : Bilan des mines, Registre des mines, Gestion des stocks). Son texte légal : `Legal.Privacy.Section3.Inventory*` / `Section5.Inventory` / `Section6.InventoryHolders`, `Legal.Data.Inventory` (liste `dataPageSections.js`), Préférences de `Legal.Cookies` ; garde-fou `tests/legal/privacyInventory`.
-- **Inventaires en base (11/11/2026, front #111 mergée)** — `stores/inventoryStore.js` (Pinia, style setup) est le **seul** lecteur/écrivain des réglages d'inventaire et du texte collé, pour `EconomyInventory`, `InventoryLevelsAccordion` (Mon bureau) et `InventoryCategoryPanel`. **Sans compte** : le navigateur, par les clés de confort d'avant (`inventory_cat_config`, `inventory_custom_cats`, `inventory_visibility`, `inventory_export_*`, `inventory_paste`). **Avec un compte et un personnage actif** (`serverMode`) : le serveur, par personnage — trois niveaux `personal` / `city` / `province`, ce que le personnage peut ouvrir étant dit par `GET inventory-scopes` (`availableLevels`, `canWrite`). Un même **document** de réglages vit des deux côtés (`normalizeDoc` : défauts, `itemCategories` `[]` → `{}` car PHP sérialise un objet vide en tableau ; `toPayload` n'envoie que les clés du niveau — les options d'export et la visibilité sont **personnelles**). Écritures **groupées** (`SAVE_DELAY` = 800 ms) portant la version lue ; un 409 remplace l'état local par `current`. **Reprise à la première connexion** (`importLocalIfNeeded`, collage compris) : seulement si la base est vide, puis `removeComfortData`, **après** la réussite. Changement de personnage ou de connexion → `reset()`. Le collage de la **province** ne s'enregistre jamais seul : son historique s'inscrit à la main (`recordProvince`). `use/inventoryApi.js` = client HTTP (jeton par appel). ⚠️ Aucune règle côté site : refus affichés tels quels (`apiMessage`). Les catégories **assignées dans la Salle des comptes** passent par `store.update(niveau, { itemCategories })` : Mon bureau les retrouve. Backend : `backend/docs/ARCHITECTURE.md`, « Inventaires ».
-- **Icônes d'items dans l'export (14/11/2026, phase 2 de `admin/content/brief-icones-items.md`)** — un **interrupteur**, **à droite de la dernière liste déroulante** et **réservé aux joueurs connectés** (`store.serverMode` ; option b de Greg, 14/11/2026), (`buttons/SwitchButton`, `role="switch"`) à **un seul libellé** qui dit l'état : « Sans illustration » éteint (défaut), « Avec illustration » allumé (`EconomyInventory.Icons.*`, `data-testid="export-show-icons"` ; rail foncé et texte foncé passés en props `on-class`/`off-class`, car la carte est claire dans les deux thèmes) dans l'encart « Consignes au scribe ». 🔴 **Il ne commande que le BBCode** : aucune image n'est jamais chargée dans l'interface (Greg, 13/11/2026 — le navigateur transmettrait l'IP du joueur au CDN de Celsius, ce que `/legal/privacy` §6 exclut). `modules/itemIcons.js` (pur) construit l'URL (`ITEM_ICON_URL_PATTERN`, ⚠️ **jumeau** de `ItemIcon::CDN_URL_PATTERN` du backend), découpe les noms en lots (200 au plus **et** ≤ 6 000 caractères d'URL : les noms voyagent dans une requête `GET`, qu'un serveur coupe vers 8 Ko) et **n'accepte de la réponse que des ID entiers positifs** ; `use/itemIconsApi.js` appelle `GET item-icons?names[]=…` (public, sans jeton) **au moment d'exporter**, pour les seuls items exportés (jamais un item masqué), et garde la réponse pour la durée de la page (un nom sans icône aussi) en plus du cache HTTP de 24 h du serveur. `exportInventoryToBBCode` reçoit `options.icons` (`{ nom: ID }`, clé = nom demandé) et pose `[img]…[/img] ` **dans le gras**, devant le texte ; sans icône pour un item, rien n'est ajouté. Une panne du serveur ne bloque pas l'export : il part sans icônes et un avertissement le dit. Réglage **personnel** `exportShowIcons` (booléen), gardé dans le document de réglages du personnage (`inventoryStore`, `PERSONAL_ONLY_KEYS`) : **aucune clé de confort** dans le navigateur. Garde-fous : `tests/eco/itemIcons.unit.test.js` (l'adresse du CDN n'existe que dans `modules/itemIcons.js`, aucune vue ne pose d'image d'item) et `EconomyInventoryIcons.test.js`. 🔴 **Sans compte, l'interrupteur n'existe pas et `doExport` ne demande rien** : demander une icône envoie au serveur le **nom des objets** exportés (dans l'URL), ce que la promesse « sans compte, tout reste dans votre navigateur » (`/legal/data`, Gestion des stocks) exclut. Un joueur connecté a déjà son inventaire enregistré chez nous : ces noms ne révèlent rien de plus. Le texte légal n'a donc pas changé.
-- **`modules/economy/EconomyInventory.vue`** (« Gestion des stocks », ex-« Inventaires », public, 06/11/2026) — colle l'inventaire du jeu, le range par
-  catégorie (`modules/inventoryCategories.js` : valeurs par défaut, suggestion par nom exact puis par préfixe), permet de masquer
-  catégories et lignes, et l'exporte en BBCode (`modules/inventoryBBcode.js`, français fixe). ⚠️ **Tout est côté navigateur** : aucun
-  serveur n'enregistre d'inventaire ni de catégorie (aucune table, aucune route — vérifié le 11/11/2026) ; les réglages vivent dans le
-  cookieStore (`inventory_paste`, `inventory_custom_cats`, `inventory_cat_config`, `inventory_visibility`, `inventory_export_*`), donc
-  **sans consentement aux préférences, rien n'est mémorisé au-delà de la session**. Les catégories se gèrent dans Mon bureau
-  (`components/economy/InventoryCategoryPanel.vue`) ; les catégories **par scope de mandat** (ville, province) et leur stockage serveur
-  (briefs `inventaire-visibilite`, `assignation-items`, phase 2) **ne sont pas construits**. **Ordre des catégories** (11/11/2026) :
-  `catConfig.order` (clés dans l'ordre choisi, réglé par des flèches ↑ ↓ dans le panneau) passe par `orderCategoryKeys()`, qui
-  commande **à la fois** l'affichage du tableau et le BBCode ; une clé périmée est ignorée, une catégorie nouvelle va à la fin. L'encart
-  d'export s'intitule « Consignes au scribe » (clé `ExportOptionsTitle`) : options à gauche, « Confier au scribe » à droite.
-- **Module Animation** (27-28/10/2026, `views/modules/animation/`) — première activité : **Décode le code** (« Crack the Code »). Le serveur dit
-  quelles activités sont ouvertes (`GET anim/activity-types`, sans jeton ; une panne n'en affiche aucune). Vocabulaire : « personnage » pour
-  les noms inscrits (D34). ⚠️ **Aucune règle côté site** : adresse, mot de passe, lieu, notes, droits sont jugés par le serveur, ses refus
-  s'affichent tels quels (`apiMessage` / `apiFieldErrors`, FR et EN). Spécification : fil `admin/echanges/animation-coffres-scelles/12-synthese-cc.md`.
-  - **`MainAnimation.vue`** — coquille : menu à gauche (**un lien par activité ouverte**, `TYPE_ROUTES` : ajouter une activité = une ligne) et `RouterView`.
-    Charge la liste des types **une fois** et la passe par `provide` (`animationTypes`, `animationTypesReady`). Aucun autre lien dans le menu.
-  - **`AnimationHomeView.vue`** (route `animation`, `/app/anim`) — « La Salle des Jeux » : titre centré, une carte par activité (`ModuleHomeCards`,
-    modèle **réutilisable pour tout module** : slot `visual-<clé>`, couleur du module), chargement par `ChestLoader`. Le visuel de Décode le code
-    (`anim/DecodeCodeVisual.vue`, cinq cases « ? ») vit à côté du titre de la carte et de la page de l'activité.
-  - **`DecodePublicView.vue`** (`animation-public`) — l'enveloppe de la page publique : menu (logo centré, « Organiser ma propre activité » discret vers `welcome`, thème et langue), `page-card` pleine largeur, pas de footer.
-  - **`DecodeActivityView.vue`** — avec une adresse (sous `DecodePublicView`) : l'activité en **trois quarts / un quart** (encadré `DecodeHero`, tentatives et coffres ouverts côte à côte ; règles et classement à droite ; **jamais le code d'un coffre scellé**), chargement par la porte (`ChestLoader illustration="gate"`, « Ouverture de la salle… ») ; une activité sans compte close se lit sur sa **photo figée**. Sans adresse (route `animation-decode`) : le panneau « Votre activité » puis les règles.
-  - **`anim/DecodeStartPanel.vue`** — scénarios de l'entrée : connecté sans personnage / avec activité (**redirige vers « Ma salle »**) / sans
-    activité ; déconnecté avec adresse mémorisée et encore ouverte (**redirige vers « Retrouver ma salle »**, adresse préremplie) ou rien de
-    mémorisé (créer, retrouver). Pas de redirection si l'on vient de l'intérieur du module. Aucune invitation à se connecter dans la page.
-    L'adresse mémorisée est la comfort data `anim_decode_slug` (préférences acceptées seulement, D4/D22), **vérifiée auprès du serveur**.
-  - **`MyDecodeActivities.vue`** (`animation-mine`, `redirectToHomeIfNotLoggedIn`) — mode **privé** : création (`DecodeCreateForm`), puis `DecodeActivityCard`.
-  - **`DecodeCreateAnonymousView.vue`** (`animation-create`, `creer`), **`DecodeManageView.vue`** (`animation-manage`, `gerer`),
-    **`DecodeResetView.vue`** (`animation-reset`, `reinitialiser`), **`DecodeEmailConfirmView.vue`** (`animation-confirm-email`, `confirmer-email`) — mode **sans compte**.
-    Le mot de passe va dans le **corps** des requêtes, n'est jamais mémorisé ; seule l'adresse peut l'être.
-  - **`anim/DecodeCreateForm.vue`** — formulaire puis écran de confirmation (D25, D39 : récapitulatif selon les choix, **un seul** bouton « Je confirme »).
-    Sans compte : **deux colonnes** (la salle / l'identité) ; privé : une colonne à 3/4. Nom, adresse, **lieu** (royaume, province OU ville, `CityCascadeSelect`
-    `inline`), pseudo et mot de passe sont **obligatoires** (étoile + note) ; plus de description. `SlugField` (aperçu et disponibilité par le serveur),
-    `PasswordField` (barre de force **indicative** via `modules/passwordStrength.js`, conseils, œil « Afficher » toujours visible ; l'œil natif d'Edge est masqué dans `base.css`).
-  - **Blocs partagés page publique / organisateur** : `anim/DecodeHero.vue` (cases + titre + badge, slot d'actions à droite), `DecodeAttemptsTable.vue`, `DecodeOpenedChests.vue`, `DecodeRankingCard.vue` ; `DecodeCodeVisual.vue` accepte `digits`, `size` et `tone`.
-  - **`anim/DecodeActivityCard.vue`** — l'écran de l'organisateur (« Ma salle « … » », même mise en page que la page publique ; le coffre en cours reste **scellé, l'organisateur ne connaît jamais le code** ; saisie du pseudo et de la combinaison — pseudos déjà inscrits proposés —, gestes), **le même** pour les deux modes (elle reçoit des `gestures`) : sceller, proposer, clore (**confirmation
-    sans compte**, la clôture est définitive), rouvrir et supprimer (**privé seulement**), exports BBCode, état de l'email.
-  - **`use/useDecodeActivities.js`** — tous les appels (`anim/*` sans jeton, le reste avec) ; `asOrganizer()` / `asAnonymous(slug, mot de passe)`. Pas de store Pinia.
-  - Textes sous `Animation.{Home,Start,Types,Status,Public,Slug,Password,Create,Recap,Manage,Reset,Confirm,Mine}.*`. Le **texte des règles**
-    (`Animation.Types.decode.Rules`, version **site**, rédigée par Cowork le 28/10/2026) n'est PAS le jumeau de `types.decode.rules` du backend, qui est la version **export forum** (deux textes voulus distincts) ; affiché avec `whitespace-pre-line` (ses retours à la ligne comptent).
-- **Écrans communs à toutes les activités d'Animation** (10/11/2026, factorisation faite AVANT le premier merge de la Grille des lots) — un type d'activité ne copie
-  plus les écrans de Décode : il se déclare dans **`modules/animKinds.js`** (`ANIM_KINDS` : noms de routes API, clé comfort data de l'adresse, espace de textes `ns`,
-  routes, titre/icônes, `autoClose` = peut-on promettre la clôture automatique à 30 jours) et les écrans lisent cette entrée. Pièces : `use/animApi.js` (socle API : lecture
-  publique, slug, mode privé, mode sans compte, réinitialisation, confirmation d'email — `useDecodeActivities` et `useRewardsGrid` n'y ajoutent que leurs gestes),
-  `use/useAnimKind.js` (`kt('Section.Clé')` lit `Animation.{ns}.Section.Clé`, à défaut `Animation.Section.Clé` : un type ne redéfinit que ce qu'il dit autrement),
-  `components/anim/AnimCreateForm.vue` (formulaire + récapitulatif, slot `extra` et props `extraDefaults/extraValid/extraRecap` pour les champs propres à un type ;
-  `DecodeCreateForm` et `RewardsCreateForm` en sont des enveloppes), `AnimStartPanel.vue` (les six scénarios de l'entrée ; `DecodeStartPanel`/`RewardsStartPanel`),
-  `AnimPublicShell.vue` (coquille des pages publiques `/public/activite/<type>/<adresse>`), `animHeroes.js` (l'encadré sombre de chaque type), et les vues
-  `views/modules/animation/Anim{CreateAnonymous,Manage,Reset,ConfirmEmail}View.vue` (les `Decode*View` et `RewardsGrid*View` correspondantes sont des enveloppes d'une
-  ligne : `<AnimManageView kind="…" />`). ⚠️ Les testids sont ceux de Décode pour tous les types (une seule page à la fois) ; les cartes d'organisateur restent nommées
-  explicitement dans les vues (elles se remplacent par leur nom dans les tests). Ajouter un type : voir `admin/strategies/animation.md`.
-- **Grille des lots** (`rewards`, 2ᵉ activité, brief `admin/content/brief-grille-des-lots.md`) — routes `/app/anim/grille[/creer|/gerer|/reinitialiser|/confirmer-email|/ma-grille]`
-  et `/public/activite/grille/:slug`. Pièces propres : `RewardsGridBoard.vue` (plateau : cases numérotées en groupe de boutons, ✕ si réclamée, cliquables pour l'organisateur
-  d'une grille **tirée** seulement ; défile dans son cadre et rétrécit ses cases au-delà de 8 puis 12 colonnes), `RewardsGridCard.vue` (écran de l'organisateur, mêmes
-  `gestures` privé/sans compte), `RewardsGridAside.vue` (lots attribués, exports BBCode règles/résultats, état de l'email — écrit une fois), `RewardsCreateForm.vue` (dimensions),
-  `RewardsGridHero.vue`/`RewardsGridVisual.vue`, `modules/rewardsBBcode.js` (BBCode en français fixe, format liste `[list][*]`). 🔴 **Le tirage fait passer la grille directement
-  à `confirmed`** (décision de Greg, 10/11/2026 : l'étape « confirmer » ne laissait rien à modifier) : `drawed` n'est jamais affiché et il n'y a aucun geste `confirm`.
-  Une grille n'a **pas de page publique avant son tirage** (le serveur répond 404) : l'entrée retrouve pourtant une grille sans compte mémorisée en interrogeant l'aperçu du
-  slug (`taken`). Les bornes des dimensions sont au serveur (le site ne vérifie que deux entiers) ; l'email part sous la clé `email`.
-- **`modules/company/MainCompany.vue`** — squelette vide, placeholder "Test" i18n minimal
-  (`Common.Placeholder`). Voir `roadmap.md` pour ce qui est prévu.
+- **`WelcomeView.vue`** — landing : logo vertical `<h1>`, cadenas, invite « cliquez » en rebond fini (`bounce-hint`), `SelectorMenu`, intro roleplay, **footer propre** (disclaimer + copyright + liens légaux, exemptée d'`AppFooter`).
+- **`HomeView.vue`** — `NavMenu` + deux rubriques de `whatsNew.json` : « Chroniques » (`feature`) et « Registre des réparations » (`fix`/`improvement`), entrées `scope: "private"` connecté seulement.
+- **`404.vue`** — logo, texte roleplay, un bouton retour (historique navigateur ou `home`/`welcome`). Pas de hauteur minimale propre.
+- **Pages légales** (`legal/`) — FR + EN, contenu i18n `Legal.*`. ⚠️ Listes rendues avec `tm()` **+ `rt()`** (sinon AST invisibles en test). Insertions par module (Décode, Registre des mines, Inventaires) avec gardes-fous `tests/legal/privacy*`.
+- **`legal/DataPageView.vue`** — « Vos données, outil par outil » : badge d'accès par outil, `modules/dataPageSections.js` = source unique. 🔴 **Version B** : les énumérations de la politique ne perdent jamais une ligne, la page renvoie à la politique pour durée/destinataires. Gardes-fous `dataPageSingleSource` et `badgeContrast`.
+- **`LoginView.vue`** — connexion par **email**. Carte claire deux thèmes, alerte « email non vérifié » + renvoi, case « Rester connecté » (comfort data `remember_me_preference`). Comparaison `error_message === 'Email non vérifié.'` **volontairement pas traduite** (message brut API).
+- **`RegisterView.vue`** — email + mot de passe + confirmation seulement (pseudo/ville dans `AddCharacterView`). Après soumission : écran « vérifiez votre boîte mail ».
+- **`VerifyEmailView.vue`** — le lien email pointe ici (`?id&hash&expires&signature`). Rappelle l'API en JSON. Si `token` : connexion auto puis redirection. Tout autre cas : message + mini-formulaire de renvoi.
+- **`AddCharacterView.vue`** — sélecteur cascade royaume→province→ville (fetch `GET map`, ~300 villes en un seul payload), pseudo.
+- **`ProfilView.vue`** — deux colonnes laptop : à gauche personnages en cartes (liseré vert validé / rouge en attente, identité, actions, étoile = personnage par défaut) ; à droite zone dangereuse (`<details>` replié, `DeleteAccountModal`).
+- **`MonBureauView.vue`** — « Mon bureau », **sections une à la fois** via param `section` : Ma province (défaut), Prix des mines (si droit), Catégories d'inventaire. Menu de liens (`aria-current="page"`). Héros violet. **Catégories** : accordéon par inventaire (`InventoryLevelsAccordion`), deux colonnes (gestion 3/4, ordre d'export 1/4). ⚠️ `ProvinceView.vue` n'est plus routée. Section Ma province : historique des postes (résidence seule), avertissement permanent, export BBCode français fixe (`provinceBBcode.js`, dates 1474).
+- **`SecurityGuet.vue`** — module public, parse 2 listes (hier/aujourd'hui), diffe, génère BBCode français fixe. Liste d'hier pré-remplie via comfort data. ⚠️ Incohérence domaine lien affiché vs BBCode exporté.
+- **`EconomyMines.vue`** — « Bilan des mines » (public) : colle un relevé, bilan par mine/semaine, BBCode. Semaine proposée : en cours sauf le lundi. Alerte de seuil **à l'écran seulement**. `MineRegistrySave` : enregistrement au registre pour le commissaire aux mines/bailli ; 409 → confirmation avec auteur remplacé. Brief `admin/content/brief-bilan-mines.md`.
+- **`EconomyRegistry.vue`** — lecture du Registre des mines (commissaire, bailli, dirigeant). Bilans de mi-mandat et fin de mandat, jours sans données, historique des niveaux, relevés inscrits. Lien menu conditionné à `GET …/mine-registry`. Logique pure dans `modules/mineRegistry.js`.
+- **Prix des mines** (lot 2, brief `admin/content/brief-prix-registre.md`) — `EconomyPrices.vue` (historique, ajout, correction), `MinePricesModal.vue`, `MinePriceForm.vue`. Le serveur sert les prix (`GET provinces/{id}/mine-prices`) ; `modules/minePrices.js` tire le jeu en vigueur par jour. `computePeriodBilan` accepte une fonction `jour => {prices, rate}`. Repli sur prix du relevé si aucun jeu en base. Dans le registre : un seul tableau navigable par semaine, export BBCode partagé (`mineBBcode.js`). ⚠️ Aucune règle côté site. Dates en année du jeu (1474), saisie comprise. Aides lot 3 : `EconomyMines.RegistryPage.HelpStep1…9`. Tests `mineModuleTexts.unit.test.js`.
+- **Gestion des stocks** (ex-« Inventaires ») — `EconomyInventory.vue` : colle l'inventaire, range par catégorie (`inventoryCategories.js`), masque, exporte en BBCode (`inventoryBBcode.js`, français fixe). Catégories gérées dans Mon bureau (`InventoryCategoryPanel`). Ordre via `catConfig.order` → `orderCategoryKeys()`. Encart « Consignes au scribe ». Texte légal : `Legal.Privacy.Section3.Inventory*` etc., garde-fou `tests/legal/privacyInventory`.
+  - **Inventaires en base** (front #111) : `inventoryStore.js` gère serveur/navigateur (voir Stores).
+  - **Icônes d'items** (phase 2) : interrupteur `SwitchButton` **réservé aux connectés** (`store.serverMode`). 🔴 **Ne commande que le BBCode** : aucune image chargée dans l'interface (IP du joueur → CDN Celsius exclu par `/legal/privacy` §6). `modules/itemIcons.js` construit l'URL (⚠️ **jumeau** de `ItemIcon::CDN_URL_PATTERN` backend), lots ≤ 200 noms et ≤ 6000 chars URL. Export avec `[img]` devant le texte dans le gras. Réglage personnel `exportShowIcons` (booléen, dans le document serveur). 🔴 **Sans compte, l'interrupteur n'existe pas** (les noms voyageraient au serveur). Tests : `itemIcons.unit.test.js`, `EconomyInventoryIcons.test.js`.
+- **Module Animation** (`views/modules/animation/`) — première activité : **Décode le code**. Le serveur dit les activités ouvertes (`GET anim/activity-types`, sans jeton). ⚠️ **Aucune règle côté site** : refus affichés tels quels (`apiMessage`/`apiFieldErrors`). Spéc. : `admin/echanges/animation-coffres-scelles/12-synthese-cc.md`.
+  - `MainAnimation.vue` : menu à gauche (un lien par activité ouverte, `TYPE_ROUTES`), `RouterView`, types chargés une fois et `provide`.
+  - `AnimationHomeView.vue` : « La Salle des Jeux », une carte par activité (`ModuleHomeCards`, slot `visual-<clé>`).
+  - Pages publiques : `DecodePublicView.vue` / `AnimPublicShell.vue` (menu, logo, pas de footer).
+  - Organisateur : `DecodeActivityCard.vue` / `RewardsGridCard.vue` (**même composant** pour les deux modes via `gestures`).
+  - Création : `AnimCreateForm.vue` (formulaire + récapitulatif, slot `extra` pour champs propres), `DecodeCreateForm` et `RewardsCreateForm` = enveloppes.
+  - Entrée : `AnimStartPanel.vue` (six scénarios), `DecodeStartPanel`/`RewardsStartPanel` = enveloppes.
+  - Écrans sans compte : `Anim{CreateAnonymous,Manage,Reset,ConfirmEmail}View.vue` partagés, les `Decode*View`/`RewardsGrid*View` = enveloppes d'une ligne.
+  - `use/animApi.js` (socle API partagé), `use/useAnimKind.js` (`kt('Section.Clé')` lit le namespace du type puis le fallback commun).
+  - **`animKinds.js`** (`ANIM_KINDS`) : déclarer un type = une entrée. Voir `admin/strategies/animation.md`.
+- **Grille des lots** (`rewards`) : `RewardsGridBoard.vue` (plateau : cases numérotées, ✕ réclamée, rétrécit au-delà de 8/12 colonnes), `RewardsGridAside.vue` (lots attribués, exports BBCode). 🔴 **Le tirage passe directement à `confirmed`** (pas de `drawed`). Pas de page publique avant tirage (404). Bornes de dimensions au serveur. Email sous la clé `email`.
+- **`MainCompany.vue`** — squelette vide, placeholder i18n.
 
 ## Composants (`src/components/`)
 
-- **`CookiesBanner.vue`** / **`CookiesModal.vue`** — bannière de consentement (première visite)
-  et modale des préférences, montées une seule fois dans `App.vue`. Boutons `odc-*` (27/09/2026) :
-  dans la bannière, « Refuser » et « Accepter » ont **exactement le même style** (standard
-  ardoise — la CNIL demande un refus aussi simple et visible que l'acceptation ; l'ancien rouge
-  « danger » le présentait comme une faute), « Gérer mes préférences » en discret avec l'icône
-  `fa-sliders-h` ; dans la modale, « Annuler » discret, « Enregistrer » standard vert. Gardé par
-  un test (`CookiesBanner.test.js`).
-- **`buttons/SwitchButton.vue`** — interrupteur de la modale cookies : `type="button"`,
-  `role="switch"` + `aria-checked`, `disabled` natif pour un choix obligatoire ; un `id` passé
-  par l'appelant le relie au `<label for>`. Rail éteint slate-500 (≥ 3:1).
-- **`AppFooter.vue`** — footer légal unique, monté dans `App.vue` **hors du cadre de contenu** de
-  chaque page, sur toutes les routes sauf `welcome` (qui a le sien, fusionné avec son disclaimer).
-  Liens vers les trois pages légales ; la mention « Outil non officiel » s'affiche **partout où le
-  footer est monté**, dans l'application comme sur les pages publiques (Greg, 11/11/2026) ;
-  « Gérer mes préférences » n'apparaît que sur les routes `meta.public` (sur `/app/*`, le bouton
-  préférences est déjà dans la `NavBar`).
-- **`LoadingOverlay.vue`** — overlay GLOBAL plein écran (changement de page, envoi à l'API), monté dans `App.vue` et piloté
-  par les hooks du router via `useNavigationLoading`. Contextes `office`, `chest` (module « Coffres X ») et `api`, plus une
-  **couleur de module** (`navigationAccent`, posée par le router : or, rose, sarcelle). Navigation : **le portique aux torches**
-  (`loading/GateIllustration.vue`, `gi-dungeon-gate`, « Vous entrez dans la salle… ») ; envoi : **parchemin déroulé**
-  (`gi-scroll-unfurled`, dévoilés de haut en bas, « Le greffe traite votre demande… »). Mouvement fini, `role="status"` +
-  `aria-live`. ⚠️ Le coffre n'est plus l'image de l'overlay : il est réservé au chargement INTERNE d'une page (ci-dessous).
-- **`loading/ChestLoader.vue`** (19/10/2026) — chargement interne d'une page, **dans la carte** : il entoure le contenu
-  (`<ChestLoader :loading :error accent block-class @retry>`). Rien avant 150 ms ; le coffre du logo
-  (`loading/ChestIllustration.vue`, couvercle qui se retourne, lueur 2 pulsations puis fixe) s'ouvre, sans étapes ni changement
-  de texte ; prêt (et ouverture finie) → lueur, le coffre s'efface, **puis** le contenu apparaît. Échec ou > 10 s : coffre refermé, message, « Réessayer » (`retry`). `block-class` cale le coffre sur la zone qu'il
-  remplace (le Registre : la colonne du tableau, pas la page). Durées : `modules/chestTiming.js` (instantanées en test via
-  `tests/setup.js`, et en mouvement réduit). Utilisé par `EconomyRegistry`, `EconomyPrices` et `ProvinceView` (accent violet).
-- **`loading/AccessLoader.vue`** — attente EN LIGNE d'une zone qui dépend d'un droit (cadenas + squelette, place réservée).
-  Le Bilan des mines ne montre la saisie des prix ou les prix de la province qu'une fois l'accès connu.
-- **`use/useSharedResource.js`** (générique) + **`use/useMineAccess.js`** — une ressource chargée par clé avec `ready`
-  (succès ou échec) ; les appels simultanés partagent UNE requête, aucun cache dans la durée. `useMineAccess` = `GET
-  characters/{id}/mine-registry`, partagé par le menu d'Économie, le Bilan, la plaque d'enregistrement et les prix.
-- **`AnnouncementBanner.vue`** + **`use/useAnnouncement.js`** (18/11/2026, `feat/announcement-banner`) — bandeau d'annonce en tête de l'**accueil de l'application** (`HomeView`, `/app/`) : l'administrateur prévient d'une maintenance à venir (backend, `docs/ARCHITECTURE.md`, « Annonces du site »), le site lit `GET announcements/current` (publique, sans jeton) et fait **défiler le message de droite à gauche**. ⚠️ **Aucune règle côté site** : le serveur choisit l'annonce, rédige la date (« cette semaine », « le 24 novembre à 22 h 00 »…, `{quand}` déjà remplacé, FR et EN) et fixe la fin de visibilité ; le site ne fait que choisir la langue (`pickMessage`, repli sur l'autre langue) et respecter `visible_until`. Une panne de l'API n'affiche rien. **Mouvement (WCAG 2.2.2, charte §8 : aucune animation sans fin)** : 3 passes puis le texte **reste à plat, en entier** ; bouton pause / relance (`aria-pressed`) ; en **mouvement réduit** le texte est à plat d'emblée ; la piste qui bouge est `aria-hidden`, une copie `sr-only` est lue aux lecteurs d'écran. Durée d'un passage : 12 à 45 s selon la longueur. **Plaque de proclamation** (Greg, 18/11/2026 : « un style plus médiéval ») : champ d'**azur** (blue-900 → blue-950) cerclé de **laiton** (charte §3.1), **médaillon de laiton** à gauche (cor `gi-bugle-call` + « Oyez, Oyez ! » / « Hear ye, hear ye! », masqué sous 640 px), texte crème en **empattements du système** (aucune police chargée, charte §4) qui sort de l'ombre aux deux bords (fondu), bouton pause `odc--slate` ; mêmes couleurs dans les deux thèmes, contrastes mesurés (crème sur azur ≥ 9:1, texte du médaillon ≥ 6:1). Textes `Announcement.*` (FR et EN). Tests : `tests/common/announcementBanner.test.js`. Backend en prod d'abord (`migrate`, `route:cache`), sinon l'API répond 404 et le bandeau reste absent.
-- **`NavBar.vue`** — header `/app/*` (named view `Nav`, donc partagé par home, éco, sécu, company,
-  anim, profil). Contient `SelectorMenu`, `SelectorCharacter`, le bouton de déconnexion, le bouton
-  « Gérer mes préférences » (cookies) à côté d'Accueil, et le lien vers le panneau d'administration
-  Blade (`ADMIN_ORIGIN`), visible seulement si `authStore.isAdmin`. Colonne centrale : le **logo**
-  (`assets/logo/logo-horizontal.svg`, texte vectorisé, aucune police chargée), lien vers `home`,
-  `alt` = `Common.SiteName`, visible sur toutes les pages `/app/*` accueil compris ; sous
-  `tablet`, l'écu seul (`assets/logo/ecu.svg`) via `<picture>`. Tous ses boutons sont des
-  `odc-btn odc-btn--rect` de 44 px (voir `assets/odc-buttons.css`).
-- **`SelectorCharacter.vue`** — bascule de personnage **pour la session en cours**, monté
-  directement dans `NavBar.vue` (jamais dans `SelectorMenu`, partagé avec les pages publiques) et
-  visible seulement si connecté avec plus d'un personnage. Depuis le 03/10/2026, **liste dessinée
-  par le site** (la liste native d'un `<select>` est dessinée par le système, impossible à
-  habiller) au motif **listbox de l'APG W3C** : bouton `aria-haspopup="listbox"`, liste focalisée,
-  `aria-activedescendant`, ↑ ↓ Début Fin Entrée Espace Échap Tab, clic extérieur. Coche = personnage
-  de la session, étoile = personnage par défaut. L'option active porte un liseré orange-700
-  (5,18:1, WCAG 1.4.11) : un simple fond pâle (1,06:1) était invisible.
-- **`DeleteAccountModal.vue`** — confirmation de suppression de compte en **deux étapes** (art. 17
-  RGPD) : la première nomme ce qui va disparaître (email, personnages cités par leur pseudo,
-  préférences), la seconde redemande le mot de passe, le bouton restant désactivé tant qu'il est
-  vide. Rouvrir la modale repart toujours de l'étape 1, sans conserver la saisie. Elle ne connaît
-  ni le store ni le routeur : elle émet `confirm(password, { onError })`, `ProfilView` fait
-  l'appel et lui renvoie l'erreur — un mot de passe refusé laisse l'étape 2 ouverte pour
-  réessayer.
-- **`HelpModal.vue`** — modale d'aide contextuelle générique (props `show`/`title`/`purpose`/
-  `overview`/`steps`, emit `close`), réutilisable par n'importe quel module. Consommée par
-  `EconomyMines.vue`.
-- **`forms/CityCascadeSelect.vue`** — sélecteur royaume → province → ville en cascade, alimenté
-  par `GET map`. Prop `stopAt="province"` (mandats, demande de siège au conseil) : la cascade
-  s'arrête à la province, `initialCityId` présélectionne depuis la résidence.
-- **`mandates/CharacterMandates.vue`** — bloc « Postes » de chaque carte du Profil (mandats, lot 2) :
-  mandats et demandes avec un badge de statut **lisible sans la couleur**, motif d'un refus ou
-  d'une révocation, actions (annuler, renouveler, « Déclarer mon poste » sur un conseiller en
-  fonction), historique des postes replié, bouton « Demander un poste » piloté par `requestable`
-  de l'API. **`mandates/MandateRequestModal.vue`** (demande ou renouvellement : niveau et lieu
-  verrouillés, jamais de titre au renouvellement) et **`mandates/DeclareOfficeModal.vue`**
-  (avertissement en trois temps : perte immédiate, gain après validation, aucun poste entre les
-  deux). Les deux modales ont le focus piégé et Échap via `use/useDialogFocus.js`.
-- **`NavMenu.vue`** — menu circulaire, variante **X3** (mix M1 + D2, 27/09/2026) : anneau laiton
-  lumineux et états de D2, biseau fin et icône gravée de M1, plaque ardoise bordée d'ambre (Accueil/
-  Économie/Sécurité/Animation/Profil). Tout en CSS scopé, sans image, 5 éléments sous le lien.
-  Labels réactifs au changement de langue (`computed()` + `t()`, jamais un tableau JS figé).
-  **Couleurs dans `navMenuPalette.js`** : `PALETTE` (disque repos/survol/page courante + icône,
-  convertis en `--c*`/`--h*`/`--k*` par `paletteVars()`) et `PLATES` (plaques par état, passées en
-  `--plate-*`) — une seule source pour le rendu et pour le garde-fou `navmenu-plate-contrast`.
-  Plus aucune classe construite, donc plus de safelist Tailwind (garde-fou
-  `tests/enforcement/tailwind-safelist.unit.test.js`). Page courante via le slot `custom` de
-  `RouterLink` (`aria-current="page"`, correspondance **exacte** pour Accueil : `/app/` préfixe
-  toutes les pages). 88 px (72 sous `tablet`), cotes en `--u` = 1 px de la référence D2 (116 px).
-- **`SelectorMenu.vue`** = `SelectorTheme` + `SelectorLanguage` uniquement. Présent sur
-  Welcome/Login/Register et sur toutes les pages `/app/*` via `NavBar`.
-- **`buttons/*`**, **`forms/*`** — génériques, texte/label passés en props par l'appelant (donc
-  pas de texte en dur *dans* ces composants ; le texte en dur était côté appelant, corrigé).
+- **`CookiesBanner.vue`** / **`CookiesModal.vue`** — bannière + modale, montées une fois dans `App.vue`. « Refuser » et « Accepter » **même style** (exigence CNIL). Gardé par test.
+- **`SwitchButton.vue`** — `role="switch"` + `aria-checked`, `disabled` natif, relié à `<label for>`.
+- **`AppFooter.vue`** — footer légal, hors `welcome`. « Outil non officiel » **partout**. « Gérer mes préférences » sur `meta.public` seulement.
+- **`LoadingOverlay.vue`** — overlay plein écran (navigation + API), piloté par `useNavigationLoading`. Contextes `office` (portique aux torches), `chest`, `api` (parchemin déroulé). Couleur de module via `navigationAccent`. `role="status"` + `aria-live`.
+- **`ChestLoader.vue`** — chargement interne d'une page, **dans la carte**. Rien avant 150 ms, coffre qui s'ouvre, puis contenu. Échec/> 10 s : coffre refermé + « Réessayer ». Durées dans `chestTiming.js` (instantanées en test).
+- **`AccessLoader.vue`** — attente en ligne d'un droit (cadenas + squelette).
+- **`useSharedResource.js`** + **`useMineAccess.js`** — ressource par clé avec `ready`, appels simultanés partagés, pas de cache.
+- **`AnnouncementBanner.vue`** + **`useAnnouncement.js`** — bandeau d'annonce sur `HomeView`, défile 3 passes puis reste à plat. `GET announcements/current` (public). Pause/relance. En mouvement réduit : à plat d'emblée. `aria-hidden` sur la piste mobile, copie `sr-only`. Plaque d'azur cerclée de laiton, médaillon « Oyez ». Tests `announcementBanner.test.js`.
+- **`NavBar.vue`** — header `/app/*`. Contient `SelectorMenu`, `SelectorCharacter`, déconnexion, préférences, lien admin (si `isAdmin`). Logo horizontal (écu seul sous `tablet`). Boutons `odc-btn odc-btn--rect` 44 px.
+- **`SelectorCharacter.vue`** — bascule de personnage session, **listbox APG W3C** (clavier complet). Coche = session, étoile = défaut. Liseré orange-700 (5,18:1).
+- **`DeleteAccountModal.vue`** — deux étapes (art. 17 RGPD), redemande le mot de passe. Émet `confirm(password, { onError })`.
+- **`HelpModal.vue`** — aide contextuelle générique (props `show`/`title`/`steps`).
+- **`CityCascadeSelect.vue`** — cascade royaume→province→ville. Prop `stopAt="province"`.
+- **`CharacterMandates.vue`** — mandats du Profil (badges lisibles sans couleur, actions, historique replié). `MandateRequestModal`, `DeclareOfficeModal` (focus piégé via `useDialogFocus`).
+- **`NavMenu.vue`** — menu circulaire X3 (anneau laiton, biseau, 5 éléments). Couleurs dans `navMenuPalette.js` (source unique). `aria-current="page"` exact pour Accueil. 88 px (72 sous `tablet`).
+- **`SelectorMenu.vue`** = `SelectorTheme` + `SelectorLanguage`.
 
 ## i18n (`src/locales/fr.json` + `en.json`)
 
-**Couverture complète** — tout texte UI visible passe par vue-i18n, sans
-exception hors BBcode `SecurityGuet` (voir plus haut) et le nom de marque `Common.SiteName`
-(identique dans les deux langues, routé par i18n quand même pour cohérence). **Une seule instance i18n**, créée dans `src/i18n/index.js` et utilisée à la fois par les
-composants (via `app.use(i18n)` dans `main.js`) et par les consommateurs hors contexte composant
-qui ne peuvent pas appeler `useI18n()` — `Validators.js` et `authStore.js`, via `i18n.global.t`.
-⚠️ Il y en avait **deux** jusqu'au 20/09/2026, et personne ne changeait la locale de la seconde :
-messages d'erreur de formulaire et toasts d'authentification restaient en français après un
-passage en anglais. Ne pas réintroduire d'instance séparée.
+Couverture complète. **Une seule instance i18n** (`src/i18n/index.js`), utilisée par composants et hors contexte (`Validators.js`, `authStore.js` via `i18n.global.t`). ⚠️ Il y en avait **deux** avant le 20/09/2026, ne pas réintroduire.
 
-**Le français est embarqué, l'anglais chargé à la demande** (chunk `en-*`) : les deux fichiers
-partaient dans le bundle d'entrée alors qu'un visiteur n'en lit qu'un. Le français n'est
-volontairement **pas** découpé : une requête de locale en échec (réseau, chunk absent après un
-déploiement) ferait sinon afficher les clés brutes. `setLocale()` charge le fichier cible puis
-bascule — jamais l'inverse — et **ne rejette jamais** : en cas d'échec, l'interface reste dans la
-langue courante (avertissement console) et `SelectorLanguage` ne mémorise pas la préférence.
-La langue mémorisée est appliquée dans `main.js` **avant `app.mount()`** (elle l'était dans un
-`onMounted` de `SelectorLanguage`, donc après un premier rendu en français). `fallbackLocale:
-'fr'` est gratuit puisque le français est toujours présent ;
-`tests/enforcement/i18n-parity.unit.test.js` échoue en plus sur toute clé présente d'un côté et
-absente de l'autre. Repli testé dans `tests/common/i18nLocaleLoading.test.js`.
+**Français embarqué, anglais chargé à la demande** (chunk). `setLocale()` charge puis bascule, **ne rejette jamais**. Langue appliquée dans `main.js` **avant `app.mount()`**. `fallbackLocale: 'fr'`. Parité gardée par `i18n-parity.unit.test.js`.
 
-Namespaces principaux : `Cookies`, `Common`, `Profil`, `Validation`, `Welcome`, `Home`,
-`NotFound`, `Auth` (partagé Login/Register), `Login`, `Register`, `NavBar`, `NavMenu`,
-`Security`, `Economy`, `Animation`, `Company`, `Legal` (pages légales + footer) + clés plates
-`username`/`password`/`email`/`confirmation` (réutilisées à la fois comme labels de champs et pour
-l'interpolation des messages de validation, ex. `Validation.Required`).
+Namespaces : `Cookies`, `Common`, `Profil`, `Validation`, `Welcome`, `Home`, `NotFound`, `Auth`, `Login`, `Register`, `NavBar`, `NavMenu`, `Security`, `Economy`, `EconomyMines`, `Animation`, `Announcement`, `Company`, `Legal`, `Maintenance` + clés plates `username`/`password`/`email`/`confirmation`.
 
-⚠️ **Deux pièges vue-i18n déjà rencontrés sur ce projet** : un `@` littéral dans une valeur de
-`fr.json`/`en.json` (adresse email, mention) casse la compilation — vérifier au `npm run build` ;
-et `tm()` sans `rt()` affiche des AST compilés à l'écran, invisibles en test.
-
-`src/modules/Validators.js` + `src/use/useFormValidation.js` — génèrent les messages d'erreur
-inline (requis/min/max/email/confirmation).
+⚠️ **Pièges** : `@` littéral dans JSON casse la compilation ; `tm()` sans `rt()` = AST à l'écran.
 
 ## Modules transverses (`src/modules/`) et autres
 
-- **`mineParser.js`** — logique pure (testée isolément, sans DOM) : parsing du relevé de mines
-  collé depuis le jeu, calcul du bilan par mine, filtrage/complétude par semaine, alerte de seuil
-  (`thresholdAlert` : atteint dès l'égalité, prévention à 2 unités ou moins). Consommé par
-  `EconomyMines.vue`. 🔴 **Décalage d'un jour** : pour le jour D, production[D], consommation[D]
-  et **heures[D+1]** ; un jour dont une moitié manque est écarté, et une semaine n'est complète
-  qu'avec les heures du lundi suivant. La synthèse par ressource (salaire entier sur l'or) a été
-  supprimée le 05/10/2026 : elle inversait la lecture. **Fusion clavetée sur le nœud** de la mine (`mineKey`), jamais sur le
-  numéro « Mine N », qui glisse quand une mine ouvre ou ferme (le numéro ne reste qu'en repli ;
-  les semaines mémorisées sans nœud se rattachent une fois par leur numéro). `todayIso()` donne la
-  date **de Paris**. Le futur Registre héritera de cette clé.
-  **Bilingue** (07/10/2026, brief §5 bis) : lit l'écran français **ou anglais** (« Management of
-  the mines », libellés relevés par Greg dans `admin/jeu/mines.md` §7.12), selon la langue du
-  **texte collé**, jamais celle de l'interface. 🔴 **Aucune conversion d'unité** : *tons of stone* /
-  *ounces of iron* portent les mêmes nombres que les quintaux et les kilos ; un test jumeau FR/EN le
-  fige.
-- **`gameCalendar.js`** — table d'ancrages année réelle ↔ année de jeu (2026 → 1474), transverse
-  à tout module manipulant des dates de jeu (Économie aujourd'hui, futur Guet/Douane). ⚠️
-  **Jumeau** de `app/Support/GameCalendar.php` (backend, emails) : `tests/common/gameCalendarTwin`
-  fige la table **et** des conversions, son jumeau backend aussi.
-- **`playerDates.js`** — **la seule déclaration** de l'année affichée pour chaque champ de date
-  (`game` → 1474, `real` → 2026) : le calendrier appartient au champ, jamais à l'écran (fil
-  `mandats-historique`, 06 et 09). Un champ non classé lève une erreur.
-- **`kingdomTranslations.js`** — traduction FR des noms de royaumes (l'API renvoie les noms dans
-  leur langue d'origine), alignée sur `lang/fr.json` côté backend.
-- **`data/whatsNew.json`** — entrées de la « Chronique de l'Office » (`HomeView.vue`), scope
-  public/privé par entrée.
-- **`assets/style.css`** — styles globaux Tailwind (`@layer components`). Plus aucune classe de
-  bouton (`.btn`, `.btn-primary`, `.btn-grad-*`… supprimées le 17/10/2026, toutes les vues sont en `odc-*`). Les classes plates
-  `.btn-blue`/`.btn-yellow`/`.btn-rose`/`.btn-teal`/`.btn-slate`/`.btn-menu-rounded` ont été
-  **supprimées** le 27/09/2026 : leur seul consommateur, `NavMenu.vue`, passe par des variables
-  CSS.
-  Garde-fou `tests/enforcement/no-quiet-button.unit.test.js` : aucune vue ne repose `odc-btn--quiet` ni une ancienne classe.
-  **`.page-card`** = carte de contenu des pages `/app/*` (ex-sélecteur d'élément `main`). ⚠️ Ne
-  jamais styler l'élément `main` : `App.vue` porte l'**unique** repère `<main>` de chaque page ;
-  les vues n'en déclarent pas. **`.page-container`** ne déclare aucune couleur de texte (elle
-  imposait `text-white`, cause du texte invisible des pages légales en clair) — chaque bloc
-  déclare la sienne, par thème.
-- **`assets/odc-buttons.css`** — boutons « relief 3D » de l'identité visuelle du 27/09/2026
-  (copie de `logo/boutons/`, hors dépôt), importés dans `main.js` après `style.css`, hors
-  Tailwind (classes préfixées `odc-`). **Cible pour tout nouveau bouton** : `odc-btn` (+ `--rect`,
-  `--icon`, `--sm`/`--lg`) et une couleur `odc--{orange|green|red|blue|gold|teal|rose|violet|
-  slate|dark}` ; `odc-dot` pour les pastilles (chronique de `HomeView`). Migrés à ce jour : la
-  `NavBar` (et `SelectorTheme`/`SelectorLanguage`, donc aussi sur les pages publiques), les
-  pastilles de la chronique, `ProfilView`, les pages publiques (connexion, inscription,
-  vérification d'email, 404, bannière et modale cookies), et les boutons de génération d'`EconomyMines`
-  (mise en forme du jour, bilan hebdomadaire) et de `SecurityGuet` (entrées/sorties) ;
-  tout le reste est migré (17/10/2026). Pilules pour les actions de page (`--sm` dans les cartes), rectangles pour la
-  barre de navigation et les formulaires.
-  **Trois niveaux** (voir `logo/boutons/README.md`) : **signature** `odc-btn` seul (laiton
-  complet, réservé au menu M1), **standard** `odc-btn--soft` (face colorée sans laiton : barre de
-  navigation, actions principales et actions des cartes), **discret** `odc-btn--quiet` (fond
-  teinté clair, sans relief : Annuler, Gérer mes préférences). Ne jamais poser le relief complet
-  sur une action ordinaire : tout crierait au même niveau.
-  ⚠️ Trois écarts avec la source, consignés dans `logo/boutons/README.md` (« Retouches
-  validées ») : police héritée du site (Manrope n'est pas chargée), **aucun éclaircissement au
-  survol d'un bouton texte** (`brightness(1.08)` passait 6 couleurs sur 9 sous 4,5:1), et pas de
-  liseré foncé extérieur autour du laiton. Contraste des `--b1` gardé par `tests/enforcement/odc-buttons-contrast.unit.test.js`.
-- **`assets/base.css`** — jetons de base alignés sur `CHARTE-GRAPHIQUE.md` (27/09/2026) : ne
-  restent que les jetons utilisés (l'ancien bloc de 45 variables `--odc-*`, dont un bleu primaire
-  contraire à la charte, en comptait 35 sans usage). **Focus clavier par défaut à deux tons** — or
-  `#fde68a` contre l'élément (`box-shadow`), brun `#451a03` autour (`outline`) : l'or seul tombe à
-  1,2:1 sur une carte claire. Les composants `odc-*` et le menu gardent leur propre anneau doré.
-  Sélection de texte or sur quasi-noir, barre de défilement ardoise. Fond et couleur du `body`
-  portés par `style.css`/`App.vue`, plus par ce fichier.
-- **Mouvement (WCAG 2.2.2, PR #58)** — `assets/base.css` porte une règle **globale**
-  `@media (prefers-reduced-motion: reduce)` : durées d'animation et de transition à `0.01ms`
-  `!important` (pas `none` : `animationend`/`transitionend` se déclenchent encore), une seule
-  itération, `scroll-behavior: auto`. Toute animation automatique est **finie** : jamais
-  `animate-bounce`/`spin`/`ping`/`pulse` (infinies) dans une vue ; une animation maison se déclare
-  dans `tailwind.config.js` (`extend.animation`, ex. `bounce-hint`) et s'emploie derrière
-  `motion-safe:`. Deux nombres : **budget de conception 3 s**, **plafond réglementaire 5 s**
-  jamais approché. Gardé par `tests/enforcement/motion.unit.test.js`. Un composant qui déplace un
-  élément au survol neutralise aussi la translation en mouvement réduit (ex. `NavMenu`).
-- **`use/useNavigationLoading.js`** — état partagé de l'overlay de navigation (délai anti-flash de
-  150 ms, contexte `office`/`chest`/`api`). `trackApiCall(promesse, { context, navigates })`
-  couvre un envoi à l'API : sans lui, rien ne bougeait pendant l'attente, jusqu'aux 20 s du
-  délai d'`api.js`. Branché sur la connexion (contexte `office`, même écran que la navigation),
-  l'inscription, les renvois de lien, l'ajout de personnage, la résidence, la suppression de
-  compte et la déconnexion. `navigates: true` **tient** l'écran : la navigation qui suit n'en
-  change ni la phrase ni le délai, un seul écran du clic à l'arrivée ; `afterEach`/`onError` ou
-  l'échec de l'envoi le libèrent. `LoginView` ignore en plus un second envoi pendant l'attente
-  (le limiteur `login` compte chaque tentative). **`use/useFormValidation.js`** — messages d'erreur inline
-  des formulaires, avec `modules/Validators.js`.
-- **Mode maintenance** (18/11/2026, brief `admin/content/brief-mode-maintenance.md`) — quand l'Office est fermé, l'API répond 503 `{message: "maintenance", retry_after}` : l'intercepteur de `api.js` le signale à **`use/useMaintenance.js`** (seul un 503 de ce corps compte, jamais un 503 quelconque de l'hébergeur) et **`components/MaintenanceNotice.vue`**, monté dans `App.vue`, affiche sa page **embarquée** (aucun appel API : logo vertical, porte, message, introduction de l'accueil **au futur** — `Maintenance.*`, FR et EN —, descriptif non officiel de `Welcome.Disclaimer` sans lien ; ni lien ni navigation). Langue = celle déjà appliquée par `main.js`. Toutes les 30 s, une sonde sur `anim/activity-types` recharge la page dès que l'API répond autrement que par la maintenance. 🔴 **Sonde de démarrage** (`use/maintenanceProbe.js`, lancée par `main.js` avant le montage ; choix de Greg, 18/11/2026, pour qu'un site fermé ne s'affiche pas une seconde avant sa page) : `GET auth/me` **sans jeton** (401 immédiat sans toucher la base ; fermé : 503), `validateStatus` ouvert pour ne pas passer par l'intercepteur 401 d'`authStore`, attente bornée à 2,5 s — **jamais bloquante** (délai dépassé ou réseau coupé : le site s'ouvre). Pendant la vérification, le **loader global** (`LoadingOverlay`, `isChecking`) couvre le site, avec le texte « Vous entrez dans l'Office… » (`Common.LoadingOffice`) ; ensuite il reste « dans la salle ». ⚠️ **Coût assumé** : une requête de plus par visite, et le loader s'affiche le temps d'un aller-retour à chaque chargement du site (même hors maintenance) ; aucune donnée du joueur n'y voyage. À faire relire par Cowork : la page « Vos données » dit que les outils publics gardent tout dans le navigateur. **Bypass administrateur** : `/maintenance/<secret>` (route `maintenance-bypass`) retient le secret pour l'**onglet** (`sessionStorage`, clé `maintenance_bypass`, forme `[A-Za-z0-9_-]{1,128}`) puis renvoie à l'accueil ; `api.js` le présente à chaque appel dans l'en-tête `X-Maintenance-Bypass` (un cookie n'irait pas : deux origines, axios n'en envoie pas). Un liseré jaune rappelle l'accès et permet d'en sortir. **Accès administrateur depuis la page de maintenance** (Greg, 18/11/2026 : secret perdu, « un bouton pour contourner ») : un lien discret « Accès administrateur » ouvre un champ masqué ; `maintenanceProbe.tryBypass` **essaie** le secret auprès de l'API (`auth/me`, sans jeton, secret dans l'en-tête ; l'en-tête explicite l'emporte sur un ancien secret mémorisé) et ne le garde (`setBypass`) que si l'API n'est plus fermée **pour lui**, puis recharge ; refusé (toujours 503) ou de forme invalide : « Secret refusé. » et rien n'est mémorisé ; réseau coupé : « Vérification impossible ». 🔴 **Le secret n'est écrit nulle part dans le site** (ni `.env` du frontend : tout ce qui s'y trouve est copié dans le bundle public) — garde-fou de test sur `MAINTENANCE_SECRET` / `VITE_MAINTENANCE`. ⚠️ Stockage direct hors `cookieStore` : identifiant d'administrateur strictement nécessaire (comme le jeton d'auth), **liste blanche** de `tests/enforcement/storage-usage`. Tests : `tests/common/maintenance.test.js`. Backend : `docs/ARCHITECTURE.md`, « Mode maintenance ».
-- **`modules/goBackOrWelcome.js`** — retour arrière sûr (revient à `welcome` quand il n'y a pas
-  d'historique).
-- **`public/.htaccess`** — déployé tel quel dans `dist/` : fallback SPA (`mod_rewrite`), qui
-  exclut `/assets/`, `/.well-known/` et tout chemin contenant `/api/` (02/10/2026 : un scanner
-  obtenait 200 sur `/access/api/v1/system/ping`) — garde-fou
-  `tests/enforcement/htaccess-spa-fallback.unit.test.js`,
-  `Cache-Control: public, max-age=31536000, immutable` sur `/assets/*.js|css`, `no-cache` sur
-  `index.html`. **Origine canonique** (29/09/2026) : `www` et `http://` redirigent vers
-  `https://officedescoffres.creacube.be` (chemin et paramètres conservés, `/.well-known/` exclu),
-  avant le fallback SPA — une seule origine peut être autorisée par CORS côté API. Garde-fous :
-  `tests/enforcement/htaccess-canonical-origin.unit.test.js` et l'étape de `deploy.yml` qui sonde
-  les quatre variantes en prod. Pas de HSTS (décision séparée). ⚠️ À traiter avec la stratégie
-  `admin/strategies/performance.md`.
-- **`public/images/email/logo-horizontal.png`** (05/10/2026) — logo des emails du backend, servi par le
-  site des joueurs et non par l'admin (un domaine « admin » dans un email ressemble à de
-  l'hameçonnage). PNG 480 px (Gmail n'affiche pas le SVG). Hors bundle ; garde-fou
-  `tests/enforcement/email-logo.unit.test.js`. Ne pas le renommer : les emails déjà envoyés le chargent.
-- **`scripts/`** (hors bundle) — `vite-bundle-budget.mjs` + `checkBundleBudget.mjs` (budget de
-  taille : le brotli bloque le build, le brut avertit), `docs-sync-check.sh` (CI : un seul
-  décompte de tests dans le repo, `ARCHITECTURE.md` pas périmée de plus de 30 jours sur le dernier
-  commit `src/`), `whatsNewAnnounce.mjs` (annonces Discord à partir du diff de `whatsNew.json`).
+- **`mineParser.js`** — logique pure : parsing relevé, bilan, semaine, seuils. 🔴 **Décalage d'un jour** (production[D], heures[D+1]). Fusion sur `mineKey` (nœud), jamais sur numéro. `todayIso()` = date de Paris. **Bilingue** (lit FR ou EN selon le texte collé). 🔴 **Aucune conversion d'unité**.
+- **`gameCalendar.js`** — 2026 → 1474, transverse. ⚠️ **Jumeau** de `GameCalendar.php` backend, gardé par `gameCalendarTwin`.
+- **`playerDates.js`** — **seule déclaration** de l'année par champ (`game` → 1474, `real` → 2026).
+- **`kingdomTranslations.js`** — traduction FR des noms de royaumes.
+- **`data/whatsNew.json`** — chronique de l'Office, scope public/privé.
+- **`assets/style.css`** — Tailwind `@layer components`. Plus aucune classe `.btn*` (toutes en `odc-*` depuis 17/10/2026). `.page-card` = carte des pages `/app/*`. ⚠️ Ne jamais styler `main` : `App.vue` porte l'unique `<main>`. `.page-container` sans couleur de texte.
+- **`assets/odc-buttons.css`** — boutons relief 3D, classes `odc-btn` + `odc--{couleur}`. Trois niveaux : **signature** (laiton complet, menu M1), **standard** `--soft` (actions principales), **discret** `--quiet` (Annuler). Garde-fou contrast `odc-buttons-contrast.unit.test.js`.
+- **`assets/base.css`** — jetons alignés sur `CHARTE-GRAPHIQUE.md`. Focus clavier deux tons (or + brun). Sélection or sur quasi-noir.
+- 🔴 **Mouvement (WCAG 2.2.2)** — règle globale `prefers-reduced-motion: reduce` dans `base.css`. Jamais `animate-bounce`/`spin`/`ping`/`pulse` dans une vue. Budget 3 s, plafond 5 s. Gardé par `motion.unit.test.js`.
+- **`useNavigationLoading.js`** — état partagé de l'overlay (délai 150 ms, contextes). `trackApiCall(promesse, { context, navigates })` : `navigates: true` tient l'écran du clic à l'arrivée.
+- **Mode maintenance** — 503 `{message: "maintenance"}` → `useMaintenance.js` → `MaintenanceNotice.vue` (page embarquée, aucun appel API). Sonde toutes les 30 s. 🔴 **Sonde de démarrage** (`maintenanceProbe.js`, avant montage) : `GET auth/me` sans jeton (401 immédiat), bornée à 2,5 s, **jamais bloquante**. Bypass : `/maintenance/<secret>` → `sessionStorage` → header `X-Maintenance-Bypass`. Accès admin depuis la page maintenance (essai du secret auprès de l'API). 🔴 **Le secret n'est jamais dans `.env` frontend** (garde-fou de test). Tests `maintenance.test.js`.
+- **`goBackOrWelcome.js`** — retour sûr (welcome si pas d'historique).
+- **`.htaccess`** — SPA fallback (exclut `/assets/`, `/.well-known/`, `/api/`), cache immutable assets, `no-cache` index.html. **Origine canonique** : www et http → `https://officedescoffres.creacube.be`. Gardes-fous + sonde prod dans `deploy.yml`.
+- **`public/images/email/logo-horizontal.png`** — logo emails backend, PNG 480 px, ne pas renommer.
+- **`scripts/`** — `vite-bundle-budget.mjs` (budget taille), `docs-sync-check.sh` (CI), `whatsNewAnnounce.mjs` (Discord).
 
 ## Tests (`frontend/tests/`)
 
-Décompte à jour dans `README.md` (source unique, pas dupliqué ici — `npm test` lance la suite en
-one-shot, le mode watch vit sous `npm run test:watch`). Structure détaillée dans `docs/TESTS.md` :
-dossier = domaine (`auth/`, `cookies/`, `eco/`, `legal/`, `mandates/`, `province/`, `security/`, `common/`, `enforcement/`,
-`fixtures/`). Toute vue utilisant `useI18n()` doit recevoir un
-plugin `createI18n({ legacy: false, ... })` dans `global.plugins` du test (miroir de la config
-`main.js`) — sinon `useI18n()` lève une erreur au montage.
+Décompte à jour dans `README.md` (source unique). Structure dans `docs/TESTS.md` : dossier = domaine (`auth/`, `cookies/`, `eco/`, `legal/`, `mandates/`, `province/`, `security/`, `common/`, `enforcement/`, `fixtures/`). Toute vue `useI18n()` → plugin `createI18n({ legacy: false })` dans `global.plugins` du test.
 
 ## Contraintes projet
 
