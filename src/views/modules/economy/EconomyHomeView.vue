@@ -27,6 +27,13 @@ const items = computed(() => {
       to: { name: 'economy-inventory' },
       icon: 'gi-tied-scroll',
     },
+    {
+      key: 'balance',
+      title: t('Economy.Cards.balance.Name'),
+      description: t('Economy.Cards.balance.Description'),
+      to: { name: 'economy-inventory-balance' },
+      icon: 'gi-scales',
+    },
   ]
 
   if (canAccessMandateTools.value) {

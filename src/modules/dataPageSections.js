@@ -28,6 +28,8 @@ export const DATA_PAGE_SECTIONS = [
   // Gestion des stocks (les inventaires) : sans compte tout reste dans le navigateur ; avec un compte, en base ; la ville et la province
   // exigent un poste, mais l'outil lui-même s'ouvre à tous — le badge dit l'accès à l'outil (fil inventaire-scopes, 11/11/2026).
   { id: 'gestion-des-stocks', key: 'Inventory', access: 'none' },
+  // La Balance des stocks compare deux inventaires collés ; elle ne conserve rien (fil inventaire-comparaison, 19/11/2026).
+  { id: 'balance-des-stocks', key: 'InventoryBalance', access: 'none' },
   { id: 'guet', key: 'Watch', access: 'none' },
   { id: 'carte', key: 'Map', access: 'none' },
   // Une seule entrée pour toutes les activités d'Animation (Décode le code, Grille des lots) : une activité de plus

@@ -363,6 +363,7 @@
     "MinesLink": "Mines report",
     "MineRegistryLink": "Mine Registry",
     "InventoryLink": "Stock Management",
+    "BalanceLink": "The Stock Balance",
     "Home": {
       "Title": "The Counting Room",
       "Intro": "These are the chests the Office holds for mines, inventories and markets.",
@@ -377,6 +378,10 @@
       "inventory": {
         "Name": "Stock Management",
         "Description": "Paste an inventory to sort it by category and draft its statement for your merchants."
+      },
+      "balance": {
+        "Name": "The Stock Balance",
+        "Description": "Place the old inventory and the new one on the scales: the Office weighs what gained, lost or vanished."
       },
       "registry": {
         "Name": "Mine Registry",
@@ -496,6 +501,44 @@
       "animaux": "Animals",
       "divers": "Miscellaneous"
     }
+  },
+  "EconomyBalance": {
+    "PageTitle": "The Stock Balance",
+    "Intro": "Place the old inventory and the new one on the scales: the Office weighs what gained, lost or vanished.",
+    "PreviousLabel": "Old inventory",
+    "CurrentLabel": "Current inventory",
+    "PreviousPlaceholder": "Paste an older inventory here, or load the last one kept…",
+    "CurrentPlaceholder": "Paste the text copied from the game here…",
+    "Fetch": "Load",
+    "FetchHint": "Loads your last paste in Stock Management, for the chosen level.",
+    "FetchHintProvince": "Loads the last inventory recorded in the province's history in Stock Management.",
+    "FetchNone": "No inventory kept for this level.",
+    "FetchNoConsent": "Without an account, loading goes through your browser's cache, which only exists with preference cookies. You can paste the old inventory by hand.",
+    "FetchError": "Could not load the last inventory kept.",
+    "FromSaved": "Old inventory loaded: pasted in Stock Management on {date}",
+    "FromTaken": "Old inventory loaded: recorded in the province's history on {date}",
+    "FromBrowser": "Old inventory loaded: last paste of Stock Management in this browser",
+    "ComparisonTitle": "Comparison with previous",
+    "NoPrevious": "No previous inventory to compare",
+    "NoCurrent": "Paste the current inventory to start the comparison.",
+    "Summary": "Increased: {up} · Decreased: {down} · New: {added} · Disappeared: {gone}",
+    "Treasury": "Treasury: {ecus} écus",
+    "Increased": "Increased",
+    "Decreased": "Decreased",
+    "Unchanged": "Unchanged",
+    "Disappeared": "Disappeared",
+    "New": "New",
+    "NoChange": "No change between the two inventories.",
+    "ExportHint": "The BBCode follows the scribe's instructions of Stock Management (quantity format, treasury, layout). Nothing is saved.",
+    "HelpButton": "How does it work?",
+    "HelpTitle": "How does the Stock Balance work?",
+    "HelpPurpose": "Compare two inventories to see what increased, decreased, disappeared or appeared, and write up the result for the forum.",
+    "HelpOverview": "The Balance keeps nothing: both texts disappear when you leave or reload the page. It follows the scribe's instructions of your Stock Management (categories, quantity format, treasury, layout).",
+    "HelpStep1": "Copy an old inventory from the game and paste it into \"Old inventory\" — or click \"Load\" to bring back your last paste in Stock Management.",
+    "HelpStep2": "Paste today's inventory into \"Current inventory\".",
+    "HelpStep3": "The comparison shows by itself: ▲ increased, ▼ decreased, nothing when the quantity is the same. New items carry a badge, disappeared ones are struck through in a section of their own.",
+    "HelpStep4": "If you hold an office, choose the level (personal, city or province) so that \"Load\" brings back the right inventory.",
+    "HelpStep5": "Click \"Entrust it to the scribe\" to copy the annotated BBCode, ready to paste on the forum. Nothing is saved."
   },
   "EconomyMines": {
     "Title": "Mines report",
@@ -1238,6 +1281,13 @@
         "Purpose": "Paste the inventory of your character, your city or your province, sort it by category, order it and write up its state for the game forum. The tool works without an account; an account lets you find your settings and your last inventory from one device to another. A city's inventory opens to its acting mayor, a province's to the Trade Minister (who writes it) and to the province's leader (who may read it), with an office validated in the Office.",
         "Input": "The text of the game's Inventory tab, copied as is, and your settings: categories, item assignments, order, colour, export options. Without an account, everything stays in your browser (if you accepted preferences) and the Office keeps nothing.",
         "Deletion": "Your inventory settings and the text of your last pasted inventory are linked to your character. They are part of your data export (GDPR Article 20) and are deleted with your character. City and province settings and inventories are linked to the office, not to your account: they are not part of your export and stay in place when you leave office."
+      },
+      "InventoryBalance": {
+        "Title": "The Stock Balance",
+        "Purpose": "Compare two inventories copied from the game, the old one and the new one, to see what increased, decreased, disappeared or appeared, and write up the result for the game forum. The tool works without an account. A button lets you load, as the old inventory, the last inventory that Stock Management kept for the chosen level (your character, your city or your province, depending on your office).",
+        "Input": "The text of the game's Inventory tab, copied as is, twice: the old inventory and the current one.",
+        "Stored": "Nothing is stored, neither on our servers nor in your browser: the comparison happens in your browser, and both texts disappear when you leave or reload the page. The load button only re-reads what Stock Management already keeps for you, under the rules described for that tool; it writes nothing.",
+        "Audience": "No one but you: the two texts do not leave your browser, except what you choose to publish on the game forum."
       },
       "Watch": {
         "Title": "Watch",

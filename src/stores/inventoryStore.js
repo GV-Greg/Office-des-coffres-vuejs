@@ -322,6 +322,30 @@ export const useInventoryStore = defineStore('inventory', () => {
     }, SAVE_DELAY)
   }
 
+  /**
+   * LECTURE PURE du dernier inventaire retenu d'un niveau, pour La Balance des stocks (fil inventaire-comparaison, 02 et 03). Contrairement
+   * à `loadPaste`, aucun effet de bord : jamais de reprise du navigateur en base, jamais d'effacement, rien d'écrit, rien de gardé ici.
+   * Sans compte : le cache de la Gestion des stocks (vide sans le consentement « Préférences »). Avec un compte : le dernier collage
+   * enregistré (personnel, ville) ou le plus récent exemplaire inscrit de l'historique (province).
+   * Renvoie `{ raw, savedAt, takenOn }` (`raw` vide s'il n'y a rien), ou `null` si le serveur a refusé (le refus est affiché).
+   */
+  async function readLastPaste(level) {
+    if (!serverMode.value) return { raw: cookies.getComfortData(LOCAL.paste, '') ?? '', savedAt: null, takenOn: null }
+    const id = characterId.value
+    try {
+      if (level === 'province') {
+        const data = await api.provinceHistory(id)
+        const latest = data?.snapshots?.[0]
+        return { raw: latest?.raw ?? '', savedAt: null, takenOn: latest?.taken_on ?? null }
+      }
+      const inventory = await api.getText(id, level)
+      return { raw: inventory?.raw ?? '', savedAt: inventory?.saved_at ?? null, takenOn: null }
+    } catch (error) {
+      push.error(apiMessage(error, locale(), t('EconomyBalance.FetchError')))
+      return null
+    }
+  }
+
   // ─── Province : l'historique ─────────────────────────────────────────────────
   async function loadHistory(force = false) {
     if (!serverMode.value) return
@@ -362,6 +386,6 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   return {
     scopes, history, imported, serverMode, characterId, availableLevels,
-    canWrite, doc, status, loadScopes, load, update, flush, localPaste, loadPaste, savePaste, loadHistory, recordProvince, copyPersonalTo, reset,
+    canWrite, doc, status, loadScopes, load, update, flush, localPaste, loadPaste, readLastPaste, savePaste, loadHistory, recordProvince, copyPersonalTo, reset,
   }
 })
