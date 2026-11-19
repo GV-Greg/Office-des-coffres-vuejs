@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-19] — PR #139 (La Balance des stocks : comparaison de deux inventaires)
+
+### Added
+- **La Balance des stocks**, 4ᵉ module de la Salle des comptes (`/app/eco/balance`, public, `EconomyInventoryBalance.vue`) : on colle un ancien inventaire et l'inventaire actuel, la comparaison s'affiche d'elle-même — hausse `▲ +3`, baisse `▼ -2`, items **nouveaux** (badge « Nouveau » à l'écran seulement), items **disparus** (section séparée, lignes barrées), écart du trésor. Une quantité identique n'affiche **rien** (pas de tiret, décision de Greg). Tableau groupé par les catégories de la Gestion des stocks.
+- **« Récupérer »** : relit, en lecture pure (`inventoryStore.readLastPaste`), le dernier inventaire retenu par la Gestion des stocks pour le niveau choisi (personnel, ville, province = plus récent exemplaire de l'historique). Désactivé sans compte ni consentement « Préférences », sans ouvrir la bannière.
+- **« Confier au scribe »** exporte le BBCode annoté (`▲` vert, `▼` rouge, disparus en section finale, options d'export de la Gestion des stocks) et **n'enregistre rien**. 🔴 Le module **ne stocke rien** (ni cookie, ni stockage local, ni serveur) : gardé par des tests avec espions et contrôle positif.
+- **Texte légal** : section `Legal.Data.InventoryBalance` (FR/EN) dans « Vos données, outil par outil » (source unique `dataPageSections.js`, reprise par la politique §3). Pas de `policy:notify` (aucun traitement nouveau). Nom anglais : « The Stock Balance ».
+- Entrée `whatsNew.json` (Chroniques) : « Dans la Salle des comptes, faites maintenant votre balance des stocks. » 38 tests (1293 Vitest au total).
+
+### Deploy notes
+- Frontend seul : aucune migration, aucune route backend, aucun `config/*.php`, aucun paquet ; rien à lancer en SSH. Le déploiement annonce l'entrée `whatsNew` sur Discord.
+
 ## [2026-11-19] — PR #137 (Accès administrateur depuis la page de maintenance)
 
 ### Added
