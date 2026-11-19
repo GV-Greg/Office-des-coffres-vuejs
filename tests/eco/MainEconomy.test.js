@@ -31,6 +31,18 @@ async function mountPage(locale = 'fr') {
 
 beforeEach(() => vi.clearAllMocks())
 
+describe('MainEconomy — menu', () => {
+  it('le lien de la Balance des stocks s\'écrit sans « La », comme « Bilan des mines » et « Gestion des stocks »', async () => {
+    const w = await mountPage()
+    expect(w.find('[data-testid="balance-link"]').text()).toBe('Balance des stocks')
+  })
+
+  it('en anglais : « Stock Balance »', async () => {
+    const w = await mountPage('en')
+    expect(w.find('[data-testid="balance-link"]').text()).toBe('Stock Balance')
+  })
+})
+
 describe('MainEconomy — aides', () => {
   it('l\'aide du registre déroule ses neuf étapes, dont les prix et l\'export', async () => {
     const w = await mountPage()

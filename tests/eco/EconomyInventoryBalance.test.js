@@ -180,15 +180,15 @@ describe('La Balance des stocks — « Récupérer »', () => {
       scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
       snapshots,
     })
-    expect(w.find('[data-testid="balance-levels"]').exists()).toBe(true)
+    expect(field(w, 'level').exists()).toBe(true)
 
-    await w.find('[data-testid="balance-level-city"]').trigger('click')
+    await field(w, 'level').setValue('city')
     await flushPromises()
     await field(w, 'fetch').trigger('click')
     await flushPromises()
     expect(field(w, 'previous').element.value).toBe('3Cailloux0')
 
-    await w.find('[data-testid="balance-level-province"]').trigger('click')
+    await field(w, 'level').setValue('province')
     await flushPromises()
     await field(w, 'fetch').trigger('click')
     await flushPromises()
@@ -196,9 +196,42 @@ describe('La Balance des stocks — « Récupérer »', () => {
     expect(field(w, 'source').text()).toContain('historique de la province')
   })
 
-  it('sans niveau ouvert par un poste, pas de sélecteur de niveau', async () => {
+  it('un seul niveau (le personnel) : aucune liste, et la phrase se termine par un point', async () => {
     const w = await mountPage()
+    expect(field(w, 'level').exists()).toBe(false)
+    expect(field(w, 'fetch-hint').text()).toBe('Reprenez votre dernier inventaire de la Gestion des stocks.')
+    expect(field(w, 'province-hint').exists()).toBe(false)
+  })
+
+  it('au moins deux niveaux : une liste déroulante « pour personnel / municipal / provincial »', async () => {
+    const w = await mountPage({
+      scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
+    })
+    const select = field(w, 'level')
+    expect(select.element.tagName).toBe('SELECT')
+    expect(select.findAll('option').map(o => o.text())).toEqual(['personnel', 'municipal', 'provincial'])
+    expect(select.element.value).toBe('personal')
+    expect(field(w, 'fetch-hint').text()).toContain('Reprenez votre dernier inventaire de la Gestion des stocks pour')
+    // Plus de boutons de niveau en haut de page : la liste les remplace.
     expect(w.find('[data-testid="balance-levels"]').exists()).toBe(false)
+    expect(field(w, 'province-hint').exists()).toBe(false)
+    await select.setValue('province')
+    await flushPromises()
+    expect(field(w, 'province-hint').text()).toContain('dernier inventaire inscrit à l\'historique')
+  })
+
+  it('deux niveaux seulement (personnel et municipal) : la liste n\'en propose que deux', async () => {
+    const w = await mountPage({ scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true } }) })
+    expect(field(w, 'level').findAll('option').map(o => o.text())).toEqual(['personnel', 'municipal'])
+  })
+
+  it('en anglais : « personal / municipal / provincial »', async () => {
+    const w = await mountPage({
+      locale: 'en',
+      scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
+    })
+    expect(field(w, 'level').findAll('option').map(o => o.text())).toEqual(['personal', 'municipal', 'provincial'])
+    expect(field(w, 'fetch-hint').text()).toContain('Load your last inventory from Stock Management for')
   })
 
   it('rien de retenu pour le niveau : message, champ intact', async () => {
@@ -219,7 +252,7 @@ describe('La Balance des stocks — « Récupérer »', () => {
   it('sans compte, avec le consentement : reprend le cache de la Gestion des stocks, sans niveau', async () => {
     const w = await mountPage({ loggedIn: false, consent: true, browserPaste: PREVIOUS })
     expect(field(w, 'fetch').attributes('disabled')).toBeUndefined()
-    expect(w.find('[data-testid="balance-levels"]').exists()).toBe(false)
+    expect(field(w, 'level').exists()).toBe(false)
     await field(w, 'fetch').trigger('click')
     await flushPromises()
     expect(field(w, 'previous').element.value).toBe(PREVIOUS)
