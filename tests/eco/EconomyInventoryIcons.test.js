@@ -54,6 +54,7 @@ function serve({ settings = {}, icons = {}, iconsError = null } = {}) {
 
 async function mountPage({ locale = 'fr', loggedIn = true, ...serverOptions } = {}) {
   setActivePinia(createPinia())
+  track(useInventoryStore())
   if (loggedIn) useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
   serve(serverOptions)
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
@@ -74,10 +75,19 @@ async function exportBBCode(w) {
 
 const iconCalls = () => http.get.mock.calls.filter(([url]) => url === 'item-icons')
 
+// Chaque changement de réglage programme une écriture différée (SAVE_DELAY, 800 ms, minuterie RÉELLE). Sans nettoyage, celles d'un test
+// précédent partent PENDANT un test suivant et s'ajoutent à `http.put` : « called 1 times, but got 2 » selon la charge de la machine
+// (constaté le 19/11/2026, intermittent sur main). Chaque test enregistre donc son store, et `afterEach` annule ses écritures en attente.
+const stores = []
+const track = store => { stores.push(store); return store }
+
 beforeEach(() => {
   vi.clearAllMocks()
   clearItemIconCache()
   localStorage.clear()
+})
+afterEach(() => {
+  for (const store of stores.splice(0)) store.reset()
 })
 
 describe('l\'interrupteur « Sans illustration / Avec illustration »', () => {
@@ -188,7 +198,7 @@ describe('le réglage « exportShowIcons » — personnel, éteint par défaut',
   const setup = ({ loggedIn }) => {
     setActivePinia(createPinia())
     if (loggedIn) useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
-    return { store: useInventoryStore(), cookies: useCookieStore() }
+    return { store: track(useInventoryStore()), cookies: useCookieStore() }
   }
 
   beforeEach(() => vi.useFakeTimers())
