@@ -363,6 +363,7 @@
     "MinesLink": "Bilan des mines",
     "MineRegistryLink": "Registre des mines",
     "InventoryLink": "Gestion des stocks",
+    "BalanceLink": "La Balance des stocks",
     "Home": {
       "Title": "La Salle des comptes",
       "Intro": "Voici les coffres que l'Office met à disposition pour les mines, les inventaires et les marchés.",
@@ -377,6 +378,10 @@
       "inventory": {
         "Name": "Gestion des stocks",
         "Description": "Collez un inventaire pour le classer par catégorie, le trier et en rédiger l'état pour vos marchands."
+      },
+      "balance": {
+        "Name": "La Balance des stocks",
+        "Description": "Posez l'ancien inventaire et le nouveau sur les plateaux : l'Office pèse ce qui a gagné, perdu ou disparu."
       },
       "registry": {
         "Name": "Registre des mines",
@@ -496,6 +501,44 @@
       "animaux": "Animaux",
       "divers": "Divers"
     }
+  },
+  "EconomyBalance": {
+    "PageTitle": "La Balance des stocks",
+    "Intro": "Posez l'ancien inventaire et le nouveau sur les plateaux : l'Office pèse ce qui a gagné, perdu ou disparu.",
+    "PreviousLabel": "Ancien inventaire",
+    "CurrentLabel": "Inventaire actuel",
+    "PreviousPlaceholder": "Colle ici un inventaire plus ancien, ou reprends le dernier retenu…",
+    "CurrentPlaceholder": "Colle ici le texte copié depuis le jeu…",
+    "Fetch": "Récupérer",
+    "FetchHint": "Reprend votre dernier collage dans la Gestion des stocks, pour le niveau choisi.",
+    "FetchHintProvince": "Reprend le dernier inventaire inscrit à l'historique de la province dans la Gestion des stocks.",
+    "FetchNone": "Aucun inventaire retenu pour ce niveau.",
+    "FetchNoConsent": "Sans compte, la reprise passe par le cache de votre navigateur, qui n'existe qu'avec les cookies de préférences. Vous pouvez coller l'ancien inventaire à la main.",
+    "FetchError": "Impossible de récupérer le dernier inventaire retenu.",
+    "FromSaved": "Ancien inventaire repris : collé dans la Gestion des stocks le {date}",
+    "FromTaken": "Ancien inventaire repris : inscrit à l'historique de la province le {date}",
+    "FromBrowser": "Ancien inventaire repris : dernier collage de la Gestion des stocks dans ce navigateur",
+    "ComparisonTitle": "Comparaison avec le précédent",
+    "NoPrevious": "Aucun inventaire précédent à comparer",
+    "NoCurrent": "Colle l'inventaire actuel pour lancer la comparaison.",
+    "Summary": "En hausse : {up} · En baisse : {down} · Nouveaux : {added} · Disparus : {gone}",
+    "Treasury": "Trésor : {ecus} écus",
+    "Increased": "En hausse",
+    "Decreased": "En baisse",
+    "Unchanged": "Identique",
+    "Disappeared": "Disparus",
+    "New": "Nouveau",
+    "NoChange": "Aucun changement entre les deux inventaires.",
+    "ExportHint": "Le BBCode suit les consignes au scribe de la Gestion des stocks (format des quantités, trésor, mise en forme). Rien n'est enregistré.",
+    "HelpButton": "Comment ça marche ?",
+    "HelpTitle": "Comment fonctionne la Balance des stocks ?",
+    "HelpPurpose": "Comparer deux inventaires pour voir ce qui a augmenté, diminué, disparu ou apparu, et en rédiger l'état pour le forum.",
+    "HelpOverview": "La Balance ne garde rien : les deux textes disparaissent quand tu quittes ou recharges la page. Elle suit les consignes au scribe de ta Gestion des stocks (catégories, format des quantités, trésor, mise en forme).",
+    "HelpStep1": "Copie un ancien inventaire depuis le jeu et colle-le dans « Ancien inventaire » — ou clique sur « Récupérer » pour reprendre ton dernier collage dans la Gestion des stocks.",
+    "HelpStep2": "Colle l'inventaire d'aujourd'hui dans « Inventaire actuel ».",
+    "HelpStep3": "La comparaison s'affiche d'elle-même : ▲ en hausse, ▼ en baisse, rien si la quantité est identique. Les nouveaux articles portent un badge, les disparus sont barrés dans une section à part.",
+    "HelpStep4": "Si tu tiens un poste, choisis le niveau (personnel, ville ou province) pour que « Récupérer » reprenne le bon inventaire.",
+    "HelpStep5": "Clique sur « Confier au scribe » pour copier le BBCode annoté, prêt à coller sur le forum. Rien n'est enregistré."
   },
   "EconomyMines": {
     "Title": "Bilan des mines",
@@ -1238,6 +1281,13 @@
         "Purpose": "Coller l'inventaire de votre personnage, de votre ville ou de votre province, le ranger par catégorie, le trier et en rédiger l'état pour le forum du jeu. L'outil s'utilise sans compte ; un compte permet de retrouver vos réglages et votre dernier inventaire d'un appareil à l'autre. L'inventaire d'une ville s'ouvre au maire en fonction, celui d'une province au commissaire au commerce (qui l'écrit) et au dirigeant de la province (qui le consulte), avec un poste validé dans l'Office.",
         "Input": "Le texte de l'onglet Inventaire du jeu, copié tel quel, et vos réglages : catégories, assignations d'objets, ordre, couleur, options d'export. Sans compte, tout reste dans votre navigateur (si vous avez accepté les préférences) et l'Office ne conserve rien.",
         "Deletion": "Vos réglages d'inventaire et le texte de votre dernier inventaire collé sont rattachés à votre personnage. Ils font partie de votre export de données (article 20 du RGPD) et sont supprimés avec votre personnage. Les réglages et les inventaires de ville et de province sont rattachés au poste, pas à votre compte : ils ne font pas partie de votre export et restent en place quand vous quittez vos fonctions."
+      },
+      "InventoryBalance": {
+        "Title": "La Balance des stocks",
+        "Purpose": "Comparer deux inventaires copiés depuis le jeu, l'ancien et le nouveau, pour voir ce qui a augmenté, diminué, disparu ou apparu, et en rédiger l'état pour le forum du jeu. L'outil s'utilise sans compte. Un bouton permet de reprendre, comme ancien inventaire, le dernier inventaire que la Gestion des stocks a retenu pour le niveau choisi (votre personnage, votre ville ou votre province, selon votre poste).",
+        "Input": "Le texte de l'onglet Inventaire du jeu, copié tel quel, deux fois : l'ancien inventaire et l'inventaire actuel.",
+        "Stored": "Rien n'est enregistré, ni sur nos serveurs ni dans votre navigateur : la comparaison se fait dans votre navigateur, et les deux textes disparaissent quand vous quittez ou rechargez la page. Le bouton de reprise ne fait que relire ce que la Gestion des stocks conserve déjà pour vous, selon les règles décrites pour cet outil ; il n'écrit rien.",
+        "Audience": "Personne d'autre que vous : les deux textes ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu."
       },
       "Watch": {
         "Title": "Le Guet",

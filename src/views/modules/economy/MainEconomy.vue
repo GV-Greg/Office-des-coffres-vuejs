@@ -13,7 +13,9 @@
   const showHelp = ref(false)
   const showInventoryHelp = ref(false)
   const showRegistryHelp = ref(false)
+  const showBalanceHelp = ref(false)
   const inventoryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventory.HelpStep${n}`)))
+  const balanceHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyBalance.HelpStep${n}`)))
   const registryHelpSteps = computed(() => [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => t(`EconomyMines.RegistryPage.HelpStep${n}`)))
   const helpSteps = computed(() => [
     t('EconomyMines.HelpStep1'),
@@ -72,6 +74,23 @@
           </button>
         </div>
 
+        <div class="inline-flex items-center gap-1.5 mt-2">
+          <RouterLink :to="{ name: 'economy-inventory-balance' }" class="inline-flex items-center font-bold" data-testid="balance-link">
+            <v-icon name="gi-chest" scale="2" class="mr-1"/>
+            {{ t('Economy.BalanceLink') }}
+          </RouterLink>
+          <button
+            type="button"
+            @click="showBalanceHelp = true"
+            class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
+            :aria-label="t('EconomyBalance.HelpButton')"
+            :title="t('EconomyBalance.HelpButton')"
+            data-testid="balance-help"
+          >
+            <v-icon name="fa-info-circle" scale="0.9" />
+          </button>
+        </div>
+
         <div v-if="canReadRegistry" class="inline-flex items-center gap-1.5 mt-2">
           <RouterLink :to="{ name: 'economy-registry' }" class="inline-flex items-center font-bold" data-testid="registry-link">
             <v-icon name="gi-chest" scale="2" class="mr-1"/>
@@ -112,6 +131,15 @@
       :overview="t('EconomyInventory.HelpOverview')"
       :steps="inventoryHelpSteps"
       @close="showInventoryHelp = false"
+    />
+
+    <HelpModal
+      :show="showBalanceHelp"
+      :title="t('EconomyBalance.HelpTitle')"
+      :purpose="t('EconomyBalance.HelpPurpose')"
+      :overview="t('EconomyBalance.HelpOverview')"
+      :steps="balanceHelpSteps"
+      @close="showBalanceHelp = false"
     />
 
     <HelpModal

@@ -94,5 +94,13 @@
     "type": "improvement",
     "fr": "Ajout de l'option d'icônes à côté des items pour l'export de votre inventaire.",
     "en": "Added an option to show icons next to items when exporting your inventory."
+  },
+  {
+    "id": "inventory-balance",
+    "date": "2026-11-19",
+    "scope": "public",
+    "type": "feature",
+    "fr": "Dans la Salle des comptes, faites maintenant votre balance des stocks.",
+    "en": "In the Counting Room, you can now weigh your stocks with the Stock Balance."
   }
 ]
