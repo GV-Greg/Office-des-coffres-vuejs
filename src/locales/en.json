@@ -363,7 +363,7 @@
     "MinesLink": "Mines report",
     "MineRegistryLink": "Mine Registry",
     "InventoryLink": "Stock Management",
-    "BalanceLink": "The Stock Balance",
+    "BalanceLink": "Stock Balance",
     "Home": {
       "Title": "The Counting Room",
       "Intro": "These are the chests the Office holds for mines, inventories and markets.",
@@ -510,8 +510,8 @@
     "PreviousPlaceholder": "Paste an older inventory here, or load the last one kept…",
     "CurrentPlaceholder": "Paste the text copied from the game here…",
     "Fetch": "Load",
-    "FetchHint": "Loads your last paste in Stock Management, for the chosen level.",
-    "FetchHintProvince": "Loads the last inventory recorded in the province's history in Stock Management.",
+    "FetchHint": "Load your last inventory from Stock Management",
+    "FetchHintProvince": "For the province: the last inventory recorded in the province's history.",
     "FetchNone": "No inventory kept for this level.",
     "FetchNoConsent": "Without an account, loading goes through your browser's cache, which only exists with preference cookies. You can paste the old inventory by hand.",
     "FetchError": "Could not load the last inventory kept.",
@@ -537,7 +537,7 @@
     "HelpStep1": "Copy an old inventory from the game and paste it into \"Old inventory\" — or click \"Load\" to bring back your last paste in Stock Management.",
     "HelpStep2": "Paste today's inventory into \"Current inventory\".",
     "HelpStep3": "The comparison shows by itself: ▲ increased, ▼ decreased, nothing when the quantity is the same. New items carry a badge, disappeared ones are struck through in a section of their own.",
-    "HelpStep4": "If you hold an office, choose the level (personal, city or province) so that \"Load\" brings back the right inventory.",
+    "HelpStep4": "If you hold an office, choose the level (personal, city or province) at the top of the page so that \"Load\" brings back the right inventory.",
     "HelpStep5": "Click \"Entrust it to the scribe\" to copy the annotated BBCode, ready to paste on the forum. Nothing is saved."
   },
   "EconomyMines": {
