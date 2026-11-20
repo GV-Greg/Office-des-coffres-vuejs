@@ -362,7 +362,7 @@
     "Title": "Economy Chest",
     "MinesLink": "Mines report",
     "MineRegistryLink": "Mine Registry",
-    "InventoryLink": "Stock Management",
+    "InventoryLink": "Stock Report",
     "BalanceLink": "Stock Balance",
     "Home": {
       "Title": "The Counting Room",
@@ -376,12 +376,12 @@
         "Description": "Paste your weekly mine report: the Office draws up the balance and prepares the week's account."
       },
       "inventory": {
-        "Name": "Stock Management",
+        "Name": "Stock Report",
         "Description": "Paste an inventory to sort it by category and draft its statement for your merchants."
       },
       "balance": {
         "Name": "The Stock Balance",
-        "Description": "Place the old inventory and the new one on the scales: the Office weighs what gained, lost or vanished."
+        "Description": "Place your new inventory on the scales: the Office weighs what gained, lost or vanished compared with an older inventory."
       },
       "registry": {
         "Name": "Mine Registry",
@@ -393,8 +393,12 @@
       }
     }
   },
+  "EconomyMenu": {
+    "MinesGroup": "Mines",
+    "InventoriesGroup": "Inventories"
+  },
   "EconomyInventory": {
-    "PageTitle": "Stock Management",
+    "PageTitle": "Stock Report",
     "PasteLabel": "Inventory",
     "PastePlaceholder": "Paste here the text copied from the game…",
     "Summary": "{count} item(s) · {ecus} écus",
@@ -434,7 +438,7 @@
     "NoCustomYet": "No custom category yet.",
     "NoneHidden": "No hidden category.",
     "HelpButton": "How does it work?",
-    "HelpTitle": "How does Stock Management work?",
+    "HelpTitle": "How does Stock Report work?",
     "HelpPurpose": "Paste, categorize and export a character or city inventory, ready to share on the forum.",
     "HelpOverview": "The module reads text copied from the in-game Inventory tab and reorganizes it by category. Unknown items fall into 'Miscellaneous' — you can move them or pre-configure their category in My Office.",
     "HelpStep1": "Open your character's Inventory tab in the game and copy all the text from the page.",
@@ -504,20 +508,20 @@
   },
   "EconomyBalance": {
     "PageTitle": "The Stock Balance",
-    "Intro": "Place the old inventory and the new one on the scales: the Office weighs what gained, lost or vanished.",
+    "Intro": "Place your new inventory on the scales: the Office weighs what gained, lost or vanished compared with an older inventory.",
     "PreviousLabel": "Old inventory",
     "CurrentLabel": "Current inventory",
     "PreviousPlaceholder": "Paste an older inventory here, or load the last one kept…",
     "CurrentPlaceholder": "Paste the text copied from the game here…",
     "Fetch": "Load",
-    "FetchHint": "Load your last inventory from Stock Management",
+    "FetchHint": "Load your last inventory from Stock Report",
     "FetchHintProvince": "For the province: the last inventory recorded in the province's history.",
     "FetchNone": "No inventory kept for this level.",
     "FetchNoConsent": "Without an account, loading goes through your browser's cache, which only exists with preference cookies. You can paste the old inventory by hand.",
     "FetchError": "Could not load the last inventory kept.",
-    "FromSaved": "Old inventory loaded: pasted in Stock Management on {date}",
+    "FromSaved": "Old inventory loaded: pasted in Stock Report on {date}",
     "FromTaken": "Old inventory loaded: recorded in the province's history on {date}",
-    "FromBrowser": "Old inventory loaded: last paste of Stock Management in this browser",
+    "FromBrowser": "Old inventory loaded: last paste of Stock Report in this browser",
     "ComparisonTitle": "Comparison with previous",
     "NoPrevious": "No previous inventory to compare",
     "NoCurrent": "Paste the current inventory to start the comparison.",
@@ -529,12 +533,12 @@
     "Disappeared": "Disappeared",
     "New": "New",
     "NoChange": "No change between the two inventories.",
-    "ExportHint": "The BBCode follows the scribe's instructions of Stock Management (quantity format, treasury, layout). Nothing is saved.",
+    "ExportHint": "The BBCode follows the scribe's instructions of Stock Report (quantity format, treasury, layout). Nothing is saved.",
     "HelpButton": "How does it work?",
     "HelpTitle": "How does the Stock Balance work?",
     "HelpPurpose": "Compare two inventories to see what increased, decreased, disappeared or appeared, and write up the result for the forum.",
-    "HelpOverview": "The Balance keeps nothing: both texts disappear when you leave or reload the page. It follows the scribe's instructions of your Stock Management (categories, quantity format, treasury, layout).",
-    "HelpStep1": "Copy an old inventory from the game and paste it into \"Old inventory\" — or click \"Load\" to bring back your last paste in Stock Management.",
+    "HelpOverview": "The Balance keeps nothing: both texts disappear when you leave or reload the page. It follows the scribe's instructions of your Stock Report (categories, quantity format, treasury, layout).",
+    "HelpStep1": "Copy an old inventory from the game and paste it into \"Old inventory\" — or click \"Load\" to bring back your last paste in Stock Report.",
     "HelpStep2": "Paste today's inventory into \"Current inventory\".",
     "HelpStep3": "The comparison shows by itself: ▲ increased, ▼ decreased, nothing when the quantity is the same. New items carry a badge, disappeared ones are struck through in a section of their own.",
     "HelpStep4": "If you hold an office, choose the level (personal, city or province) at the top of the page so that \"Load\" brings back the right inventory.",
@@ -1171,8 +1175,8 @@
         "Intro": "No third-party HTTP cookies are set on this site. We use two browser storage mechanisms, both limited to what is strictly necessary:",
         "Preferences": {
           "Title": "Local storage — Preferences",
-          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Stock Management, Animation: Crack the Code, Prize Grid).",
-          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, your inventory settings (categories, assignments, order, export options) when you use Stock Management without an account, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
+          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Stock Report, Animation: Crack the Code, Prize Grid).",
+          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, your inventory settings (categories, assignments, order, export options) when you use Stock Report without an account, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
           "Retention": "until you clear site data from your browser, or withdraw your consent via the cookies banner.",
           "LegalBasis": "your consent (GDPR art. 6.1.a, article 129 of the Belgian law of 13 June 2005 on electronic communications, transposing the ePrivacy Directive).",
           "IfDecline": "the site works normally, but your preferences and drafts are not remembered between visits."
@@ -1277,16 +1281,16 @@
         "Input": "The same text as for the Mines report: the contents of the \"Management of the mines\" tab, copied from the game. For prices: the price of each resource and the hourly wage, with the date they take effect."
       },
       "Inventory": {
-        "Title": "Stock Management",
+        "Title": "Stock Report",
         "Purpose": "Paste the inventory of your character, your city or your province, sort it by category, order it and write up its state for the game forum. The tool works without an account; an account lets you find your settings and your last inventory from one device to another. A city's inventory opens to its acting mayor, a province's to the Trade Minister (who writes it) and to the province's leader (who may read it), with an office validated in the Office.",
         "Input": "The text of the game's Inventory tab, copied as is, and your settings: categories, item assignments, order, colour, export options. Without an account, everything stays in your browser (if you accepted preferences) and the Office keeps nothing.",
         "Deletion": "Your inventory settings and the text of your last pasted inventory are linked to your character. They are part of your data export (GDPR Article 20) and are deleted with your character. City and province settings and inventories are linked to the office, not to your account: they are not part of your export and stay in place when you leave office."
       },
       "InventoryBalance": {
         "Title": "The Stock Balance",
-        "Purpose": "Compare two inventories copied from the game, the old one and the new one, to see what increased, decreased, disappeared or appeared, and write up the result for the game forum. The tool works without an account. A button lets you load, as the old inventory, the last inventory that Stock Management kept for the chosen level (your character, your city or your province, depending on your office).",
+        "Purpose": "Compare two inventories copied from the game, the old one and the new one, to see what increased, decreased, disappeared or appeared, and write up the result for the game forum. The tool works without an account. A button lets you load, as the old inventory, the last inventory that Stock Report kept for the chosen level (your character, your city or your province, depending on your office).",
         "Input": "The text of the game's Inventory tab, copied as is, twice: the old inventory and the current one.",
-        "Stored": "Nothing is stored, neither on our servers nor in your browser: the comparison happens in your browser, and both texts disappear when you leave or reload the page. The load button only re-reads what Stock Management already keeps for you, under the rules described for that tool; it writes nothing.",
+        "Stored": "Nothing is stored, neither on our servers nor in your browser: the comparison happens in your browser, and both texts disappear when you leave or reload the page. The load button only re-reads what Stock Report already keeps for you, under the rules described for that tool; it writes nothing.",
         "Audience": "No one but you: the two texts do not leave your browser, except what you choose to publish on the game forum."
       },
       "Watch": {
@@ -1418,7 +1422,7 @@
             "Text": "the grid's dimensions and its prizes (each prize's name and the cell it sits in)."
           }
         ],
-        "InventoryIntro": "If you use Stock Management, the Office keeps the following. With an account, your inventory settings are stored in the database so that you can find them again from one device to another; without an account, they stay in your browser and the Office keeps nothing.",
+        "InventoryIntro": "If you use Stock Report, the Office keeps the following. With an account, your inventory settings are stored in the database so that you can find them again from one device to another; without an account, they stay in your browser and the Office keeps nothing.",
         "InventoryFields": [
           {
             "Label": "Your inventory settings",
@@ -1501,7 +1505,7 @@
         "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible.",
         "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price while you hold the office, and up to 7 days after your term ends; after that it is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name.",
         "Animation": "Animation (Crack the Code, Prize Grid): in private mode, the activity and its content — the chests and the proposals you entered (Crack the Code), the prizes (Prize Grid) — are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, content included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, the fingerprint of your connection, your email address, your password and any pending reset request are erased; for Crack the Code, a report including all proposals received is first sent to your email address if you confirmed one. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname and the location, plus, for Crack the Code, the chests cracked with the nickname of who found them and the final standings — never the proposals received, which are erased on closing — and, for the Prize Grid, the dimensions, all the prizes and the names of the characters who chose a cell. After that period, the page and the nickname are deleted. To request the removal of a name entered on one of these pages before that period, contact {email}.",
-        "Inventory": "Stock Management: your personal settings and inventory are kept as long as your character exists, and deleted with it. A city's or a province's settings and inventory are kept as long as that city or province exists in the game's reference data, and stay in place when their author leaves office. A province's inventory history is kept with no time limit, because it forms the province's management memory, handed from one office-holder to the next. If you delete your character or your account, what concerns a city or a province remains, but its link to your account is removed: we say \"the link is removed\" rather than \"anonymised\", as for the Mine Registry."
+        "Inventory": "Stock Report: your personal settings and inventory are kept as long as your character exists, and deleted with it. A city's or a province's settings and inventory are kept as long as that city or province exists in the game's reference data, and stay in place when their author leaves office. A province's inventory history is kept with no time limit, because it forms the province's management memory, handed from one office-holder to the next. If you delete your character or your account, what concerns a city or a province remains, but its link to your account is removed: we say \"the link is removed\" rather than \"anonymised\", as for the Mine Registry."
       },
       "Section6": {
         "Title": "6. Who can access your data",
@@ -1513,7 +1517,7 @@
         "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province.",
         "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province.",
         "AnimationHolders": "Animation (Crack the Code, Prize Grid): an activity's public page is visible to everyone, whether created in private or public mode — that is the point of these tools, shared on the game's forum. It shows the name, the location and the organiser's nickname, plus, for Crack the Code, the chests cracked and the standings; for the Prize Grid, visible from the draw onwards, the cells and, for each chosen cell, the revealed prize and the name of the character who chose it (the contents of unchosen cells stay hidden until closing, when all prizes become visible). Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there.",
-        "InventoryHolders": "Stock Management: your personal inventory, you alone. A city's inventory and settings: the acting mayor of that city, including those who succeed you. A province's inventory and settings, history included: the acting Trade Minister and the province's leader (count, duke…), the latter read-only — including those who succeed you, and including after your account is deleted. Never the other councillors, never a player from another city or province, and no site administration interface (see §3)."
+        "InventoryHolders": "Stock Report: your personal inventory, you alone. A city's inventory and settings: the acting mayor of that city, including those who succeed you. A province's inventory and settings, history included: the acting Trade Minister and the province's leader (count, duke…), the latter read-only — including those who succeed you, and including after your account is deleted. Never the other councillors, never a player from another city or province, and no site administration interface (see §3)."
       },
       "DataPageLink": "Your data, tool by tool",
       "Section7": {

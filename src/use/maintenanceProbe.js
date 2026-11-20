@@ -16,8 +16,11 @@ import { BYPASS_HEADER, isMaintenanceError, isValidBypassSecret, reportMaintenan
 //   le site s'ouvre (une API qui ne répond pas n'est pas une maintenance annoncée).
 export const PROBE_TIMEOUT_MS = 2500
 
-export async function probeMaintenance() {
-  setChecking(true)
+//
+// `cover: false` — arrivée sur le portail d'accueil (`/`, voir main.js) : on n'est pas encore « entré » dans l'Office, aucun loader
+// ne doit le dire (Greg, 20/11/2026). La sonde tourne quand même : fermé, la page de maintenance prend la place du portail.
+export async function probeMaintenance({ cover = true } = {}) {
+  if (cover) setChecking(true)
   try {
     const response = await http.get('auth/me', { timeout: PROBE_TIMEOUT_MS, validateStatus: () => true })
     if (isMaintenanceError({ response })) reportMaintenance({ response })

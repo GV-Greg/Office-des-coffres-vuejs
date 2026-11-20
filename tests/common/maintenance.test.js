@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
+import { watch } from 'vue'
 import fs from 'node:fs'
 import { resolve } from 'node:path'
 import { http } from '../../src/api.js'
@@ -128,6 +129,11 @@ describe('MaintenanceNotice', () => {
     const wrapper = mountNotice()
     expect(wrapper.find('[data-testid="maintenance-page"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="maintenance-bypass-banner"]').exists()).toBe(false)
+  })
+
+  it('le portique de la page de maintenance est violet, comme les autres loaders globaux', () => {
+    state.isMaintenance.value = true
+    expect(mountNotice().findComponent(GateIllustration).props('accent')).toBe('violet')
   })
 
   it('affiche la page, en français puis en anglais, sans lien ni navigation', async () => {
@@ -259,6 +265,18 @@ describe('sonde de démarrage', () => {
     expect(state.isMaintenance.value).toBe(false)
   })
 
+  it('arrivée sur le portail d\'accueil (cover: false) : aucun loader, mais la maintenance est bien détectée', async () => {
+    http.defaults.adapter = answer(503, { success: false, message: 'maintenance', retry_after: 300 })
+    const seen = []
+    const stop = watch(state.isChecking, v => seen.push(v), { flush: 'sync' })
+
+    await probeMaintenance({ cover: false })
+    stop()
+
+    expect(seen).not.toContain(true)
+    expect(state.isMaintenance.value).toBe(true)
+  })
+
   it('le loader global couvre le site pendant la vérification, puis se retire', async () => {
     const wrapper = mount(LoadingOverlay, {
       global: { plugins: [createI18n({ legacy: false, locale: 'fr', messages })] },
@@ -285,7 +303,7 @@ describe('sonde de démarrage', () => {
 })
 
 describe('loader de la vérification de démarrage', () => {
-  it('garde le halo orange de l\'Office, même si la page d\'arrivée est un module coloré', async () => {
+  it('garde le halo violet de l\'Office, même si la page d\'arrivée est un module coloré', async () => {
     const navigation = useNavigationLoading()
     const wrapper = mount(LoadingOverlay, {
       global: { plugins: [createI18n({ legacy: false, locale: 'fr', messages })] },
@@ -299,7 +317,7 @@ describe('loader de la vérification de démarrage', () => {
     state.isChecking.value = true
     await flushPromises()
 
-    expect(wrapper.findComponent(GateIllustration).props('accent')).toBe('office')
+    expect(wrapper.findComponent(GateIllustration).props('accent')).toBe('violet')
     expect(wrapper.get('[role="status"]').text()).toContain('Vous entrez dans l\'Office')
 
     // Sans vérification, la navigation reprend la couleur de son module.
