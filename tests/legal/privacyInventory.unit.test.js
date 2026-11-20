@@ -47,6 +47,25 @@ describe('Politique — Gestion des stocks', () => {
     expect(all).toContain('without an account, they stay in your browser')
   })
 
+  // Registre des stocks (fil admin/echanges/registre-stocks, texte de Cowork du 20/11/2026) : instantanés datés de la ville et de la
+  // province, et pseudo du rédacteur remplacé visible dans l'historique. Rien sur le niveau personnel (reporté) ni sur le bailli.
+  it.each([
+    ['fr', 'Registre des stocks', 'instantané daté', 'instantanés datés', 'le pseudo du rédacteur précédent reste visible'],
+    ['en', 'Stock Registry', 'dated snapshot', 'dated snapshots', 'the previous author\'s character name remains visible'],
+  ])('%s : le Registre des stocks (instantanés ville et province, pseudo du rédacteur remplacé) est écrit au §3', (lang, name, citySnapshot, provinceSnapshots, replacedAuthor) => {
+    const { Section3 } = locale(lang).Legal.Privacy
+    const [, , personal, city, province] = Section3.InventoryFields
+    expect(city.Text).toContain(name)
+    expect(city.Text).toContain(citySnapshot)
+    expect(province.Text).toContain(name)
+    expect(province.Text).toContain(provinceSnapshots)
+    expect(Section3.InventoryNote).toContain(replacedAuthor)
+    // le niveau personnel reste « un seul exemplaire » : aucun historique personnel n'est promis (Q4 du fil, reporté)
+    expect(personal.Text).not.toContain(name)
+    // les droits ne changent pas : le bailli n'écrit pas (Q2 du fil)
+    expect(`${city.Text} ${province.Text} ${Section3.InventoryNote}`.toLowerCase()).not.toMatch(/bailli|bailiff/)
+  })
+
   it.each([
     ['fr', 'Aucune interface d\'administration du site ne permet de consulter vos inventaires ni vos réglages', 'vérifiée automatiquement', 'accès technique à l\'hébergement', 's\'engage à ne pas l\'utiliser'],
     ['en', 'No site administration interface lets anyone view your inventories or your settings', 'checked automatically', 'technical access to the hosting', 'undertakes not to use it'],

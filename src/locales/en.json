@@ -1434,14 +1434,14 @@
           },
           {
             "Label": "City inventory",
-            "Text": "linked to the city where you are the acting mayor; a single copy, replaced each time you paste; handed on to your successor."
+            "Text": "linked to the city where you are the acting mayor; a single copy, replaced each time you paste; handed on to your successor. The inventory is also saved as a dated snapshot (Stock Registry); a history is kept."
           },
           {
             "Label": "County inventory",
-            "Text": "linked to the province where you are the Trade Minister; a history is kept: one copy per day, a second paste on the same day replacing the first (which can no longer be viewed, but is kept); the history is handed on to your successor."
+            "Text": "linked to the province where you are the Trade Minister; a history is kept: one copy per day, a second paste on the same day replacing the first (which can no longer be viewed, but is kept); the history is handed on to your successor. County inventories are also saved as dated snapshots (Stock Registry)."
           }
         ],
-        "InventoryNote": "City and province settings and inventories are office data: they stay in place when their author leaves office, only the link to the author is removed. No site administration interface lets anyone view your inventories or your settings: this restriction is written into the code, checked automatically at every release, and the source code is public. The publisher nevertheless keeps technical access to the hosting, like any site administrator, and undertakes not to use it to view this data.",
+        "InventoryNote": "City and province settings and inventories are office data: they stay in place when their author leaves office, only the link to the author is removed. If an inventory is replaced by another officer, the previous author's character name remains visible in the stock registry history, to ensure traceability of office data. No site administration interface lets anyone view your inventories or your settings: this restriction is written into the code, checked automatically at every release, and the source code is public. The publisher nevertheless keeps technical access to the hosting, like any site administrator, and undertakes not to use it to view this data.",
         "ToolsIntro": "What each tool is for, who can use it, what you put into it and what it does or does not store is explained tool by tool on the {dataLink} page:"
       },
       "Section4": {
