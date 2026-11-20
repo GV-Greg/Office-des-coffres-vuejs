@@ -32,7 +32,7 @@ async function mountPage(locale = 'fr') {
 beforeEach(() => vi.clearAllMocks())
 
 describe('MainEconomy — menu', () => {
-  it('le lien de la Balance des stocks s\'écrit sans « La », comme « Bilan des mines » et « Gestion des stocks »', async () => {
+  it('le lien de la Balance des stocks s\'écrit sans « La », comme « Bilan des mines » et « Bilan des stocks »', async () => {
     const w = await mountPage()
     expect(w.find('[data-testid="balance-link"]').text()).toBe('Balance des stocks')
   })
@@ -40,6 +40,28 @@ describe('MainEconomy — menu', () => {
   it('en anglais : « Stock Balance »', async () => {
     const w = await mountPage('en')
     expect(w.find('[data-testid="balance-link"]').text()).toBe('Stock Balance')
+  })
+
+  it('deux étiquettes non cliquables : Mines, puis Inventaires', async () => {
+    const w = await mountPage()
+    const mines = w.find('[data-testid="menu-group-mines"]')
+    const inventories = w.find('[data-testid="menu-group-inventories"]')
+    expect(mines.text()).toBe('Mines')
+    expect(inventories.text()).toBe('Inventaires')
+    expect(mines.element.tagName).toBe('SPAN')
+  })
+
+  it('le Registre des mines est dans le groupe Mines, le Bilan et la Balance des stocks dans le groupe Inventaires', async () => {
+    const w = await mountPage()
+    const labels = w.findAll('a, [data-testid^="menu-group-"]').map(n => n.text())
+    expect(labels).toEqual(['Coffres Économie', 'Mines', 'Bilan des mines', 'Registre des mines', 'Inventaires', 'Bilan des stocks', 'Balance des stocks'])
+  })
+
+  it('en anglais : « Inventories » et « Stock Report », plus aucun « Stock Management »', async () => {
+    const w = await mountPage('en')
+    expect(w.find('[data-testid="menu-group-inventories"]').text()).toBe('Inventories')
+    expect(w.text()).toContain('Stock Report')
+    expect(w.text()).not.toContain('Stock Management')
   })
 })
 

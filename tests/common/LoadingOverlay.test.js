@@ -8,7 +8,7 @@ const i18n = createI18n({
   legacy: false,
   locale: 'fr',
   messages: {
-    fr: { Common: { LoadingRoom: 'Vous entrez dans la salle…', LoadingApi: 'Le greffe traite votre demande…' } },
+    fr: { Common: { LoadingRoom: 'Vous entrez dans la salle…', LoadingOffice: 'Vous entrez dans l\'Office…', LoadingApi: 'Le greffe traite votre demande…' } },
     en: { Common: { LoadingRoom: 'You step into the room…', LoadingApi: 'The clerk is handling your request…' } }
   }
 })
@@ -45,6 +45,17 @@ describe('LoadingOverlay', () => {
     expect(wrapper.text()).toContain('Vous entrez dans la salle')
   })
 
+  it('du portail d\'accueil vers l\'Accueil (contexte « entry ») : « Vous entrez dans l\'Office », portique violet (Mon bureau)', async () => {
+    const { startNavigationLoading } = useNavigationLoading()
+    const wrapper = mountOverlay()
+    startNavigationLoading('entry')
+    vi.advanceTimersByTime(150)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.gate').attributes('style')).toContain('--gate-ink: #7c3aed')
+    expect(wrapper.text()).toContain('Vous entrez dans l\'Office')
+    expect(wrapper.text()).not.toContain('la salle')
+  })
+
   it('le portique d\'un module « Coffres X » prend la couleur du module', async () => {
     const { startNavigationLoading } = useNavigationLoading()
     const wrapper = mountOverlay()
@@ -55,13 +66,13 @@ describe('LoadingOverlay', () => {
     expect(wrapper.text()).toContain('Vous entrez dans la salle')
   })
 
-  it('hors module, le portique reste neutre même si une couleur est passée', async () => {
+  it('hors module, le portique reste violet (Mon bureau) même si une couleur est passée', async () => {
     const { startNavigationLoading } = useNavigationLoading()
     const wrapper = mountOverlay()
     startNavigationLoading('office', { accent: 'rose' })
     vi.advanceTimersByTime(150)
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.gate').attributes('style')).toContain('--gate-ink: #f97316')
+    expect(wrapper.find('.gate').attributes('style')).toContain('--gate-ink: #7c3aed')
   })
 
   it('affiche le registre du greffe, pas le portique, pendant un envoi à l\'API', async () => {

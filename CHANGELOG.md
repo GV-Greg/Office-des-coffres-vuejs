@@ -6,6 +6,32 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-20] — PR #143 (Politique §3 et §5 : Registre des stocks)
+
+### Changed
+- **Texte légal** (FR/EN, texte de Cowork validé par Greg, fil `admin/echanges/registre-stocks/`) : `Legal.Privacy.Section3.InventoryFields[3]` (inventaire municipal : « un seul exemplaire du dernier collage » ; l'inventaire peut aussi être enregistré, **à l'initiative du maire**, comme un **instantané daté** — Registre des stocks — dont l'historique est conservé et transmis au successeur), `[4]` (inventaire comtal : instantanés datés aussi) et `InventoryNote` (le **pseudo du rédacteur précédent reste visible** dans l'historique quand un inventaire est remplacé).
+- **§5 (durée)** : l'historique des inventaires **d'une province ou d'une ville** est conservé sans limite de durée (mémoire de gestion du poste).
+- Garde-fous dans `privacyInventory.unit.test.js` : ni historique personnel (reporté) ni accès du bailli promis ; §5 ville ; distinction « dernier collage » / registre.
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Entrée de journal de politique : back #99 ; `policy:notify` à la main, **seulement une fois ce texte en ligne**. L'écriture du registre (back #100) ne se merge qu'après.
+
+## [2026-11-20] — PR #142 (Salle des comptes : Bilan des stocks, groupes Mines / Inventaires, loaders globaux violets)
+
+### Changed
+- **Renommage cosmétique** « Gestion des stocks » → **« Bilan des stocks »** (EN « Stock Report ») : pages, aides, `/legal/data`, politique de confidentialité et page cookies. Route (`/app/eco/inventaire`), fichiers, namespace `EconomyInventory` et cookies inchangés.
+- **Salle des comptes** : étiquettes de groupe **Mines** / **Inventaires** dans le menu ; accueil en deux colonnes de groupes, cartes empilées dans chacun (`ModuleHomeCards`, prop `layout="single"`), pour accueillir un troisième ensemble. Clés `EconomyMenu.*`.
+- **Balance des stocks** : carte et intro — « Posez votre nouvel inventaire sur les balances : l'Office pèse ce qui a gagné, perdu ou disparu par rapport à un ancien inventaire. »
+- **Loaders globaux** : violets (couleur de Mon bureau) hors salles de module, page de maintenance comprise — l'ambre était trop proche de l'or d'Économie. Les loaders de module gardent leur couleur.
+
+### Fixed
+- **Welcome → Accueil** : « Vous entrez dans l'Office » de bout en bout (contexte `entry`) ; avant, « la salle » pendant le passage par `/login`, puis « l'Office » après la redirection d'un connecté.
+- **Portail `/`** : plus de loader « Vous entrez dans l'Office » avant même d'être entré ; la sonde de maintenance tourne sans recouvrir (`cover: false`), la page de maintenance s'affiche si l'API est fermée.
+
+### Deploy notes
+- Frontend seul : aucune migration, aucune route backend, aucun `config/*.php`, aucun paquet ; rien à lancer en SSH.
+- Première PR du brief `brief-registre-et-reorganisation-sdc` (fil `admin/echanges/registre-stocks/`).
+
 ## [2026-11-20] — PR #140 (La Balance des stocks : menu, phrase de reprise, boutons de niveau)
 
 ### Changed

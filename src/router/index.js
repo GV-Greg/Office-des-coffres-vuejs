@@ -379,7 +379,12 @@ const MODULE_ACCENT_BY_ROUTE = {
 const { startNavigationLoading, stopNavigationLoading } = useNavigationLoading()
 
 router.beforeEach((to, from, next) => {
-  startNavigationLoading(CHEST_MODULE_ROUTE_NAMES.has(to.name) ? 'chest' : 'office', { accent: MODULE_ACCENT_BY_ROUTE[to.name] ?? 'office' })
+  // Du portail d'accueil (le cadenas « Entrer dans l'Office ») vers l'Accueil ou la connexion : on entre dans l'Office, pas dans
+  // « la salle » — contexte 'entry', même portique que 'office', autre phrase. `login` compte aussi : pour un connecté, /login
+  // redirige vers `home` APRÈS le délai d'affichage ; sans cela le loader dirait « la salle » puis, la redirection faite, « l'Office ».
+  const entering = from.name === 'welcome' && ['home', 'login'].includes(to.name)
+  const context = entering ? 'entry' : (CHEST_MODULE_ROUTE_NAMES.has(to.name) ? 'chest' : 'office')
+  startNavigationLoading(context, { accent: MODULE_ACCENT_BY_ROUTE[to.name] ?? 'office' })
   next()
 })
 

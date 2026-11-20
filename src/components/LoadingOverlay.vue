@@ -16,13 +16,16 @@ const { isNavigationLoading, navigationContext, navigationAccent } = useNavigati
 // Vérification de démarrage du mode maintenance : même écran que l'entrée dans une salle, sans délai (voir maintenanceProbe.js).
 const { isChecking } = useMaintenance()
 
-// Pendant la vérification de démarrage, le loader est TOUJOURS celui de l'Office (halo orange, comme la page de
-// maintenance qui lui succède), jamais la couleur du module de la page d'arrivée ni le parchemin d'un envoi.
+// Pendant la vérification de démarrage, le loader est TOUJOURS celui de l'Office (halo violet), jamais la couleur du module de la page d'arrivée ni le parchemin d'un envoi.
 const isApi = computed(() => !isChecking.value && navigationContext.value === 'api')
-const accent = computed(() => (!isChecking.value && navigationContext.value === 'chest' ? navigationAccent.value : 'office'))
-// À l'arrivée sur le site (vérification du mode maintenance) on entre dans l'Office ; ensuite, de salle en salle.
+// Couleur : celle du module seulement quand on ouvre la salle d'un module (contexte 'chest'). Tout autre loader global (navigation
+// générale, entrée dans l'Office, envoi à l'API, vérification de démarrage) est violet, la couleur de Mon bureau : l'ambre neutre
+// d'avant était trop proche de l'or d'Économie.
+const accent = computed(() => (!isChecking.value && navigationContext.value === 'chest' ? navigationAccent.value : 'violet'))
+// À l'arrivée sur le site (vérification du mode maintenance, ou du portail d'accueil vers l'Accueil : contexte 'entry') on entre
+// dans l'Office ; ensuite, de salle en salle.
 const loadingText = computed(() => {
-  if (isChecking.value) return t('Common.LoadingOffice')
+  if (isChecking.value || navigationContext.value === 'entry') return t('Common.LoadingOffice')
   return t(isApi.value ? 'Common.LoadingApi' : 'Common.LoadingRoom')
 })
 
@@ -40,7 +43,7 @@ const loadingText = computed(() => {
         v-if="isApi"
         name="gi-scroll-unfurled"
         scale="6"
-        class="greffe-in text-orange-500 dark:text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.5)]"
+        class="greffe-in text-violet-600 dark:text-violet-400 drop-shadow-[0_0_12px_rgba(167,139,250,0.5)]"
         aria-hidden="true"
       />
       <GateIllustration v-else :accent="accent" />

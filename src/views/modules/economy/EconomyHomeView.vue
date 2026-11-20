@@ -11,8 +11,9 @@ const ready = inject('economyAccessReady', true)
 
 const canAccessMandateTools = computed(() => !!(access?.value?.read || access?.value?.write))
 
-const items = computed(() => {
-  const cards = [
+// Deux groupes, comme le menu de gauche : Mines, puis Inventaires. Un groupe sans carte n'est pas affiché.
+const groups = computed(() => {
+  const mines = [
     {
       key: 'mines',
       title: t('Economy.Cards.mines.Name'),
@@ -20,6 +21,19 @@ const items = computed(() => {
       to: { name: 'economy-mines' },
       icon: 'gi-chest',
     },
+  ]
+
+  if (canAccessMandateTools.value) {
+    mines.push({
+      key: 'registry',
+      title: t('Economy.Cards.registry.Name'),
+      description: t('Economy.Cards.registry.Description'),
+      to: { name: 'economy-registry' },
+      icon: 'gi-scroll-unfurled',
+    })
+  }
+
+  const inventories = [
     {
       key: 'inventory',
       title: t('Economy.Cards.inventory.Name'),
@@ -36,17 +50,10 @@ const items = computed(() => {
     },
   ]
 
-  if (canAccessMandateTools.value) {
-    cards.push({
-      key: 'registry',
-      title: t('Economy.Cards.registry.Name'),
-      description: t('Economy.Cards.registry.Description'),
-      to: { name: 'economy-registry' },
-      icon: 'gi-scroll-unfurled',
-    })
-  }
-
-  return cards
+  return [
+    { key: 'mines', title: t('EconomyMenu.MinesGroup'), items: mines },
+    { key: 'inventories', title: t('EconomyMenu.InventoriesGroup'), items: inventories },
+  ].filter(g => g.items.length > 0)
 })
 </script>
 
@@ -63,13 +70,23 @@ const items = computed(() => {
     </header>
 
     <ChestLoader :loading="!ready" accent="gold" illustration="gate">
-      <ModuleHomeCards
-        v-if="items.length > 0"
-        :items="items"
-        accent="gold"
-        testid="economy-home-cards"
-      />
-      <p v-else class="text-center text-sm text-slate-400 dark:text-slate-500 italic py-6">
+      <!-- Les groupes se rangent en deux colonnes (un troisième ensemble passera à la ligne) ; les cartes sont empilées dans chacun. -->
+      <div class="grid gap-x-8 gap-y-6 tablet:grid-cols-2 items-start" data-testid="economy-groups">
+        <section
+          v-for="group in groups"
+          :key="group.key"
+          class="min-w-0"
+          :aria-labelledby="`economy-group-${group.key}`"
+          :data-testid="`economy-group-${group.key}`"
+        >
+          <h3
+            :id="`economy-group-${group.key}`"
+            class="!mt-0 !mb-3 border-b border-yellow-700/40 pb-1 text-sm font-bold uppercase tracking-wider text-yellow-800 dark:text-yellow-800"
+          >{{ group.title }}</h3>
+          <ModuleHomeCards :items="group.items" accent="gold" layout="single" :testid="`economy-home-cards-${group.key}`" />
+        </section>
+      </div>
+      <p v-if="groups.length === 0" class="text-center text-sm text-slate-400 dark:text-slate-500 italic py-6">
         {{ t('Economy.Home.Empty') }}
       </p>
     </ChestLoader>

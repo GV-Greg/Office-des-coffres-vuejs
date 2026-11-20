@@ -19,7 +19,7 @@ const localesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/l
 const locale = lang => JSON.parse(readFileSync(resolve(localesDir, `${lang}.json`), 'utf-8'))
 const fieldsText = fields => fields.map(f => `${f.Label} ${f.Text}`).join(' ')
 
-describe('Politique — Gestion des stocks', () => {
+describe('Politique — Bilan des stocks', () => {
   it.each(['fr', 'en'])('%s : les insertions existent (§3, §5, §6)', (lang) => {
     const { Section3, Section5, Section6 } = locale(lang).Legal.Privacy
     expect(Section3.InventoryIntro).toBeTruthy()
@@ -32,7 +32,7 @@ describe('Politique — Gestion des stocks', () => {
   it('FR : les engagements du §3 sont écrits tels quels', () => {
     const { Section3 } = locale('fr').Legal.Privacy
     const all = `${Section3.InventoryIntro} ${fieldsText(Section3.InventoryFields)} ${Section3.InventoryNote}`
-    for (const term of ['Gestion des stocks', 'chiffré', 'commissaire au commerce', 'historique', 'un seul exemplaire', 'supprimé avec votre personnage', 'transmis à votre successeur', 'maire en fonction'])
+    for (const term of ['Bilan des stocks', 'chiffré', 'commissaire au commerce', 'historique', 'un seul exemplaire', 'supprimé avec votre personnage', 'transmis à votre successeur', 'maire en fonction'])
       expect(all).toContain(term)
     expect(Section3.InventoryIntro).toContain('sans compte, ils restent dans votre navigateur')
     // les réglages ne sont PAS chiffrés : le texte le dit, il ne laisse pas croire le contraire
@@ -42,7 +42,7 @@ describe('Politique — Gestion des stocks', () => {
   it('EN : les engagements du §3 sont écrits tels quels', () => {
     const { Section3 } = locale('en').Legal.Privacy
     const all = `${Section3.InventoryIntro} ${fieldsText(Section3.InventoryFields)} ${Section3.InventoryNote}`.toLowerCase()
-    for (const term of ['stock management', 'encrypted', 'trade minister', 'history', 'a single copy', 'deleted with your character', 'handed on to your successor', 'acting mayor'])
+    for (const term of ['stock report', 'encrypted', 'trade minister', 'history', 'a single copy', 'deleted with your character', 'handed on to your successor', 'acting mayor'])
       expect(all).toContain(term)
     expect(all).toContain('without an account, they stay in your browser')
   })
@@ -112,14 +112,14 @@ describe('Politique — Gestion des stocks', () => {
   })
 })
 
-describe('« Vos données » — Gestion des stocks', () => {
+describe('« Vos données » — Bilan des stocks', () => {
   it('l\'outil figure à la liste unique, sans compte requis', () => {
     expect(DATA_PAGE_SECTIONS.find(s => s.key === 'Inventory')).toEqual({ id: 'gestion-des-stocks', key: 'Inventory', access: 'none' })
   })
 
   it.each(['fr', 'en'])('%s : titre, usage, contenu, et ce qui part avec le personnage (export art. 20)', (lang) => {
     const { Inventory } = locale(lang).Legal.Data
-    expect(Inventory.Title).toBe(lang === 'fr' ? 'Gestion des stocks' : 'Stock Management')
+    expect(Inventory.Title).toBe(lang === 'fr' ? 'Bilan des stocks' : 'Stock Report')
     expect(Inventory.Purpose).toBeTruthy()
     expect(Inventory.Input).toBeTruthy()
     expect(Inventory.Deletion).toMatch(lang === 'fr' ? /article 20/ : /Article 20/)
@@ -128,16 +128,16 @@ describe('« Vos données » — Gestion des stocks', () => {
   })
 })
 
-describe('Cookies — Préférences nomment la Gestion des stocks', () => {
-  it.each([['fr', 'Gestion des stocks'], ['en', 'Stock Management']])('%s : finalité et données', (lang, name) => {
+describe('Cookies — Préférences nomment le Bilan des stocks', () => {
+  it.each([['fr', 'Bilan des stocks'], ['en', 'Stock Report']])('%s : finalité et données', (lang, name) => {
     const pref = locale(lang).Legal.Cookies.Section3.Preferences
     expect(pref.Purpose).toContain(name)
     expect(pref.Data).toContain(name)
   })
 })
 
-describe('Renommage — le module s\'appelle Gestion des stocks', () => {
-  it.each([['fr', 'Gestion des stocks'], ['en', 'Stock Management']])('%s : menu d\'Économie, carte, titre de page', (lang, name) => {
+describe('Renommage — le module s\'appelle Bilan des stocks', () => {
+  it.each([['fr', 'Bilan des stocks'], ['en', 'Stock Report']])('%s : menu d\'Économie, carte, titre de page', (lang, name) => {
     const d = locale(lang)
     expect(d.Economy.InventoryLink).toBe(name)
     expect(d.Economy.Cards.inventory.Name).toBe(name)

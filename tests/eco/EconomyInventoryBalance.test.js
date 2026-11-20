@@ -199,11 +199,11 @@ describe('La Balance des stocks — « Récupérer »', () => {
   it('un seul niveau (le personnel) : aucun groupe de niveaux, la phrase est fixe', async () => {
     const w = await mountPage()
     expect(field(w, 'levels').exists()).toBe(false)
-    expect(field(w, 'fetch-hint').text()).toBe('Reprenez votre dernier inventaire de la Gestion des stocks.')
+    expect(field(w, 'fetch-hint').text()).toBe('Reprenez votre dernier inventaire du Bilan des stocks.')
     expect(field(w, 'province-hint').exists()).toBe(false)
   })
 
-  it('au moins deux niveaux : le choix est AU-DESSUS, avant les deux champs, comme dans la Gestion des stocks', async () => {
+  it('au moins deux niveaux : le choix est AU-DESSUS, avant les deux champs, comme dans le Bilan des stocks', async () => {
     const w = await mountPage({
       scopes: SCOPES({ city: { id: 1, name: 'Arras', can_write: true, can_read: true }, province: { id: 3, name: 'Artois', can_write: true, can_read: true } }),
     })
@@ -214,7 +214,7 @@ describe('La Balance des stocks — « Récupérer »', () => {
     const html = w.html()
     expect(html.indexOf('data-testid="balance-levels"')).toBeLessThan(html.indexOf('data-testid="balance-previous"'))
     // La phrase de la plaque ne change pas avec le niveau ; la précision provinciale n'apparaît qu'au niveau province.
-    expect(field(w, 'fetch-hint').text()).toBe('Reprenez votre dernier inventaire de la Gestion des stocks.')
+    expect(field(w, 'fetch-hint').text()).toBe('Reprenez votre dernier inventaire du Bilan des stocks.')
     expect(field(w, 'province-hint').exists()).toBe(false)
     await w.find('[data-testid="balance-level-province"]').trigger('click')
     await flushPromises()
