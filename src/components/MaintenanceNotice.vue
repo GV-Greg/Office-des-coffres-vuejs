@@ -90,7 +90,7 @@
     <!-- Défilement possible (petit écran, texte long) : le centrage est porté par ce conteneur, qui prend au moins la hauteur de l'écran. -->
     <div class="min-h-full flex flex-col items-center justify-center gap-6 px-4 py-8 text-center">
       <img :src="logoVertical" :alt="t('Common.SiteName')" class="h-32 tablet:h-40 w-auto" data-testid="maintenance-logo">
-      <GateIllustration />
+      <GateIllustration accent="violet" />
       <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-50">{{ t('Maintenance.Title') }}</h1>
       <!-- dark: répété sur chaque <p>, la règle globale `.dark p` écraserait la couleur. -->
       <p class="max-w-md text-lg text-slate-700 dark:text-slate-200">{{ t('Maintenance.Message') }}</p>

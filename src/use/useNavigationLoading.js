@@ -7,7 +7,8 @@ const SHOW_DELAY_MS = 150
 const isNavigationLoading = ref(false)
 // 'office' = navigation générale (Accueil, compte, pages publiques) ; 'chest' = un module
 // "Coffres X" (Économie, Sécurité, Animation) — reflète la métaphore Office/Coffres du site ;
-// 'api' = un envoi à l'API sans navigation (inscription, renvoi de lien, résidence...) : même
+// 'entry' = du portail d'accueil (welcome) vers l'Accueil de l'application : même portique que 'office', phrase « Vous
+// entrez dans l'Office » ; 'api' = un envoi à l'API sans navigation (inscription, renvoi de lien, résidence...) : même
 // écran, autre phrase. Le routeur ne voit pas ces requêtes, voir trackApiCall() plus bas.
 const navigationContext = ref('office')
 // Couleur du module d'arrivée (porte de l'overlay) : or, rose, sarcelle… ; neutre hors module.

@@ -42,6 +42,7 @@
         <RouterLink :to="{ name: 'economy-home' }" class="block text-center hover:opacity-80 transition-opacity">
           <h3>{{ t('Economy.Title') }}</h3>
         </RouterLink>
+        <span class="block mt-3 mb-1 border-b border-slate-300 dark:border-slate-600 pb-0.5 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400" data-testid="menu-group-mines">{{ t('EconomyMenu.MinesGroup') }}</span>
         <div class="inline-flex items-center gap-1.5">
           <RouterLink :to="{ name: 'economy-mines' }" class="inline-flex items-center font-bold">
             <v-icon name="gi-chest" scale="2" class="mr-1"/>
@@ -58,6 +59,25 @@
           </button>
         </div>
 
+        <div v-if="canReadRegistry" class="inline-flex items-center gap-1.5 mt-2">
+          <RouterLink :to="{ name: 'economy-registry' }" class="inline-flex items-center font-bold" data-testid="registry-link">
+            <v-icon name="gi-chest" scale="2" class="mr-1"/>
+            {{ t('Economy.MineRegistryLink') }}
+          </RouterLink>
+          <!-- Même icône d'aide que le Bilan des mines, juste au-dessus. -->
+          <button
+            type="button"
+            @click="showRegistryHelp = true"
+            class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
+            :aria-label="t('EconomyMines.RegistryPage.HelpButton')"
+            :title="t('EconomyMines.RegistryPage.HelpButton')"
+            data-testid="registry-help"
+          >
+            <v-icon name="fa-info-circle" scale="0.9" />
+          </button>
+        </div>
+
+        <span class="block mt-3 mb-1 border-b border-slate-300 dark:border-slate-600 pb-0.5 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400" data-testid="menu-group-inventories">{{ t('EconomyMenu.InventoriesGroup') }}</span>
         <div class="inline-flex items-center gap-1.5 mt-2">
           <RouterLink :to="{ name: 'economy-inventory' }" class="inline-flex items-center font-bold">
             <v-icon name="gi-chest" scale="2" class="mr-1"/>
@@ -86,24 +106,6 @@
             :aria-label="t('EconomyBalance.HelpButton')"
             :title="t('EconomyBalance.HelpButton')"
             data-testid="balance-help"
-          >
-            <v-icon name="fa-info-circle" scale="0.9" />
-          </button>
-        </div>
-
-        <div v-if="canReadRegistry" class="inline-flex items-center gap-1.5 mt-2">
-          <RouterLink :to="{ name: 'economy-registry' }" class="inline-flex items-center font-bold" data-testid="registry-link">
-            <v-icon name="gi-chest" scale="2" class="mr-1"/>
-            {{ t('Economy.MineRegistryLink') }}
-          </RouterLink>
-          <!-- Même icône d'aide que le Bilan des mines, juste au-dessus. -->
-          <button
-            type="button"
-            @click="showRegistryHelp = true"
-            class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
-            :aria-label="t('EconomyMines.RegistryPage.HelpButton')"
-            :title="t('EconomyMines.RegistryPage.HelpButton')"
-            data-testid="registry-help"
           >
             <v-icon name="fa-info-circle" scale="0.9" />
           </button>

@@ -214,7 +214,8 @@ cookieStore.initializeCookies()
 
 // Mode maintenance : l'API est interrogée dès maintenant, en parallèle du chargement de la langue.
 // Le loader global couvre le site jusqu'à sa réponse (use/maintenanceProbe.js).
-probeMaintenance()
+// Arrivée sur le portail (`/`) : pas de loader « Vous entrez dans l'Office » avant même d'être entré — la sonde tourne sans recouvrir.
+probeMaintenance({ cover: window.location.pathname !== '/' })
 
 setLocale(cookieStore.getComfortData('locale', DEFAULT_LOCALE))
   .finally(() => app.mount('#app'))
