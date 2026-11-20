@@ -489,7 +489,7 @@
     "LevelProvince": "Province: {name}",
     "ReadOnlyScope": "Read-only: only the office-holder changes this inventory.",
     "RegistryTarget": "Will be recorded in the registry: {place}.",
-    "RegistryRecord": "Record in the registry",
+    "RegistryRecord": "Save to registry",
     "RegistryRecording": "Recording…",
     "RegistryRecorded": "Inventory of {date} recorded in the registry ({place}).",
     "RegistryReplaced": "It replaces the one by {pseudo}; the old one is kept.",
@@ -1325,6 +1325,13 @@
         "Input": "The text of the game's Inventory tab, copied as is, twice: the old inventory and the current one.",
         "Stored": "Nothing is stored, neither on our servers nor in your browser: the comparison happens in your browser, and both texts disappear when you leave or reload the page. The load button only re-reads what Stock Report already keeps for you, under the rules described for that tool; it writes nothing.",
         "Audience": "No one but you: the two texts do not leave your browser, except what you choose to publish on the game forum."
+      },
+      "InventoryRegistry": {
+        "Title": "Stock Registry",
+        "Purpose": "Keep the management memory of a city's or province's stock, handed from one office-holder to the next: the mayor saves the city's inventory, the Trade Minister saves the province's. The province's ruler can view the province's entries. You must hold one of these offices and have it validated in the Office. Without that, the tool is not accessible.",
+        "Input": "No specific input: the registry records the inventory you have already pasted in the Stock Report. You click 'Save to registry' to create a dated snapshot of that inventory.",
+        "Stored": "The inventory text, encrypted in the database, with the date, level (city or province) and the author's office. If you replace an existing entry on the same day, the previous author's character name remains visible in the history.",
+        "Deletion": "Registry entries are linked to the office, not to your account: they are not part of your data export and stay in place when you leave office. The link between the entry and your account is removed."
       },
       "Watch": {
         "Title": "Watch",

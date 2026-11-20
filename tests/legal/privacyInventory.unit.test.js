@@ -128,6 +128,28 @@ describe('« Vos données » — Bilan des stocks', () => {
   })
 })
 
+describe('« Vos données » — Registre des stocks', () => {
+  it('l\'outil figure à la liste unique, poste validé requis', () => {
+    expect(DATA_PAGE_SECTIONS.find(s => s.key === 'InventoryRegistry')).toEqual({ id: 'registre-des-stocks', key: 'InventoryRegistry', access: 'office' })
+  })
+
+  it.each(['fr', 'en'])('%s : titre, usage, saisie, enregistré, suppression — et NI durée NI destinataires (version B : la politique §5 et §6 les portent)', (lang) => {
+    const { InventoryRegistry } = locale(lang).Legal.Data
+    expect(InventoryRegistry.Title).toBe(lang === 'fr' ? 'Registre des stocks' : 'Stock Registry')
+    for (const key of ['Purpose', 'Input', 'Stored', 'Deletion']) expect(InventoryRegistry[key], key).toBeTruthy()
+    expect(InventoryRegistry.Duration).toBeUndefined()
+    expect(InventoryRegistry.Audience).toBeUndefined()
+    expect(InventoryRegistry.Deletion).toContain(lang === 'fr' ? 'ne font pas partie de votre export' : 'not part of your data export')
+  })
+
+  // Le texte légal nomme le bouton : l'interface doit porter les mêmes mots, dans les deux langues.
+  it.each([['fr', 'Inscrire au registre'], ['en', 'Save to registry']])('%s : le bouton de l\'interface porte le nom que le texte légal annonce', (lang, label) => {
+    const d = locale(lang)
+    expect(d.EconomyInventory.RegistryRecord).toBe(label)
+    expect(d.Legal.Data.InventoryRegistry.Input).toContain(label)
+  })
+})
+
 describe('Cookies — Préférences nomment le Bilan des stocks', () => {
   it.each([['fr', 'Bilan des stocks'], ['en', 'Stock Report']])('%s : finalité et données', (lang, name) => {
     const pref = locale(lang).Legal.Cookies.Section3.Preferences

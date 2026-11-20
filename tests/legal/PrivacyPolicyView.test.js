@@ -44,6 +44,7 @@ const messages = {
         MineRegistry: { Title: 'Registre des mines' },
         Inventory: { Title: 'Gestion des stocks' },
         InventoryBalance: { Title: 'La Balance des stocks' },
+        InventoryRegistry: { Title: 'Registre des stocks' },
         Watch: { Title: 'Le Guet' },
         Map: { Title: 'Carte des royaumes' },
         Animation: { Title: 'Animation' },
@@ -309,7 +310,7 @@ describe('PrivacyPolicyView', () => {
     const links = mountView().findAll('[data-testid="privacy-tools-links"] a')
     expect(links.map(a => a.text())).toEqual([
       'Compte et personnages', 'Postes déclarés et Ma province', 'Bilan des mines',
-      'Registre des mines', 'Gestion des stocks', 'La Balance des stocks', 'Le Guet', 'Carte des royaumes', 'Animation',
+      'Registre des mines', 'Gestion des stocks', 'La Balance des stocks', 'Registre des stocks', 'Le Guet', 'Carte des royaumes', 'Animation',
     ])
     expect(links[2].attributes('href')).toBe(JSON.stringify({ name: 'legal-data', hash: '#bilan-des-mines' }))
   })

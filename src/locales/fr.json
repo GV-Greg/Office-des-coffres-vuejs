@@ -1326,6 +1326,13 @@
         "Stored": "Rien n'est enregistré, ni sur nos serveurs ni dans votre navigateur : la comparaison se fait dans votre navigateur, et les deux textes disparaissent quand vous quittez ou rechargez la page. Le bouton de reprise ne fait que relire ce que le Bilan des stocks conserve déjà pour vous, selon les règles décrites pour cet outil ; il n'écrit rien.",
         "Audience": "Personne d'autre que vous : les deux textes ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu."
       },
+      "InventoryRegistry": {
+        "Title": "Registre des stocks",
+        "Purpose": "Garder la mémoire de gestion des stocks d'une ville ou d'une province, transmise d'un titulaire à l'autre : le maire y inscrit l'inventaire de sa ville, le commissaire au commerce celui de sa province. Le dirigeant de la province peut consulter les inscriptions de la province. Il faut tenir l'un de ces postes et l'avoir fait valider dans l'Office. Sans cela, l'outil n'est pas accessible.",
+        "Input": "Aucune saisie spécifique : le registre enregistre l'inventaire que vous avez déjà collé dans le Bilan des stocks. Vous cliquez sur « Inscrire au registre » pour créer un instantané daté de cet inventaire.",
+        "Stored": "Le texte de l'inventaire, chiffré en base de données, avec la date, le niveau (ville ou province) et le poste du rédacteur. Si vous remplacez une inscription existante le même jour, le pseudo du rédacteur précédent reste visible dans l'historique.",
+        "Deletion": "Les inscriptions du registre sont rattachées au poste, pas à votre compte : elles ne font pas partie de votre export de données et restent en place quand vous quittez vos fonctions. Le lien entre l'inscription et votre compte est supprimé."
+      },
       "Watch": {
         "Title": "Le Guet",
         "Purpose": "Comparer deux listes des villageois de votre ville copiées depuis le jeu, pour voir qui est entré et qui est sorti, et préparer le message du forum. Aucun compte n'est nécessaire.",
