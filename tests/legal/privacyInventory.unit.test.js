@@ -47,6 +47,25 @@ describe('Politique — Bilan des stocks', () => {
     expect(all).toContain('without an account, they stay in your browser')
   })
 
+  // Registre des stocks (fil admin/echanges/registre-stocks, texte de Cowork du 20/11/2026) : instantanés datés de la ville et de la
+  // province, et pseudo du rédacteur remplacé visible dans l'historique. Rien sur le niveau personnel (reporté) ni sur le bailli.
+  it.each([
+    ['fr', 'Registre des stocks', 'instantané daté', 'instantanés datés', 'le pseudo du rédacteur précédent reste visible'],
+    ['en', 'Stock Registry', 'dated snapshot', 'dated snapshots', 'the previous author\'s character name remains visible'],
+  ])('%s : le Registre des stocks (instantanés ville et province, pseudo du rédacteur remplacé) est écrit au §3', (lang, name, citySnapshot, provinceSnapshots, replacedAuthor) => {
+    const { Section3 } = locale(lang).Legal.Privacy
+    const [, , personal, city, province] = Section3.InventoryFields
+    expect(city.Text).toContain(name)
+    expect(city.Text).toContain(citySnapshot)
+    expect(province.Text).toContain(name)
+    expect(province.Text).toContain(provinceSnapshots)
+    expect(Section3.InventoryNote).toContain(replacedAuthor)
+    // le niveau personnel reste « un seul exemplaire » : aucun historique personnel n'est promis (Q4 du fil, reporté)
+    expect(personal.Text).not.toContain(name)
+    // les droits ne changent pas : le bailli n'écrit pas (Q2 du fil)
+    expect(`${city.Text} ${province.Text} ${Section3.InventoryNote}`.toLowerCase()).not.toMatch(/bailli|bailiff/)
+  })
+
   it.each([
     ['fr', 'Aucune interface d\'administration du site ne permet de consulter vos inventaires ni vos réglages', 'vérifiée automatiquement', 'accès technique à l\'hébergement', 's\'engage à ne pas l\'utiliser'],
     ['en', 'No site administration interface lets anyone view your inventories or your settings', 'checked automatically', 'technical access to the hosting', 'undertakes not to use it'],
@@ -54,6 +73,26 @@ describe('Politique — Bilan des stocks', () => {
     const note = locale(lang).Legal.Privacy.Section3.InventoryNote
     for (const term of terms) expect(note).toContain(term)
     expect(note.toLowerCase()).not.toMatch(/techniquement (impossible|inaccessible)|cannot technically|technically impossible/)
+  })
+
+  // Registre des stocks (fil registre-stocks R1) : l'historique de la VILLE a la même durée que celui de la province, dite au §5.
+  it.each([
+    ['fr', 'une province ou d\'une ville est conservé sans limite de durée', 'mémoire de gestion du poste'],
+    ['en', 'province\'s or city\'s inventory history is kept with no time limit', 'office\'s management memory'],
+  ])('%s : le §5 dit la durée de l\'historique de la ville comme celle de la province', (lang, duration, memory) => {
+    const { Section5 } = locale(lang).Legal.Privacy
+    expect(Section5.Inventory).toContain(duration)
+    expect(Section5.Inventory).toContain(memory)
+  })
+
+  // R2 : la ville garde « un seul exemplaire » du DERNIER COLLAGE ; le registre est une inscription volontaire, jamais automatique.
+  it.each([
+    ['fr', 'un seul exemplaire du dernier collage', 'à votre initiative'],
+    ['en', 'a single copy of the last paste', 'at your initiative'],
+  ])('%s : l\'inventaire municipal distingue le dernier collage du registre, inscrit à l\'initiative du maire', (lang, lastPaste, initiative) => {
+    const city = locale(lang).Legal.Privacy.Section3.InventoryFields[3].Text
+    expect(city).toContain(lastPaste)
+    expect(city).toContain(initiative)
   })
 
   it('FR : la durée (§5) et les destinataires (§6) sont écrits tels quels', () => {

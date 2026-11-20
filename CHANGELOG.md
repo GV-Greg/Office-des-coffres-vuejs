@@ -6,6 +6,16 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-20] — PR #143 (Politique §3 et §5 : Registre des stocks)
+
+### Changed
+- **Texte légal** (FR/EN, texte de Cowork validé par Greg, fil `admin/echanges/registre-stocks/`) : `Legal.Privacy.Section3.InventoryFields[3]` (inventaire municipal : « un seul exemplaire du dernier collage » ; l'inventaire peut aussi être enregistré, **à l'initiative du maire**, comme un **instantané daté** — Registre des stocks — dont l'historique est conservé et transmis au successeur), `[4]` (inventaire comtal : instantanés datés aussi) et `InventoryNote` (le **pseudo du rédacteur précédent reste visible** dans l'historique quand un inventaire est remplacé).
+- **§5 (durée)** : l'historique des inventaires **d'une province ou d'une ville** est conservé sans limite de durée (mémoire de gestion du poste).
+- Garde-fous dans `privacyInventory.unit.test.js` : ni historique personnel (reporté) ni accès du bailli promis ; §5 ville ; distinction « dernier collage » / registre.
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Entrée de journal de politique : back #99 ; `policy:notify` à la main, **seulement une fois ce texte en ligne**. L'écriture du registre (back #100) ne se merge qu'après.
+
 ## [2026-11-20] — PR #142 (Salle des comptes : Bilan des stocks, groupes Mines / Inventaires, loaders globaux violets)
 
 ### Changed
