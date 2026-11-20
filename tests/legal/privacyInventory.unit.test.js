@@ -75,6 +75,26 @@ describe('Politique — Gestion des stocks', () => {
     expect(note.toLowerCase()).not.toMatch(/techniquement (impossible|inaccessible)|cannot technically|technically impossible/)
   })
 
+  // Registre des stocks (fil registre-stocks R1) : l'historique de la VILLE a la même durée que celui de la province, dite au §5.
+  it.each([
+    ['fr', 'une province ou d\'une ville est conservé sans limite de durée', 'mémoire de gestion du poste'],
+    ['en', 'province\'s or city\'s inventory history is kept with no time limit', 'office\'s management memory'],
+  ])('%s : le §5 dit la durée de l\'historique de la ville comme celle de la province', (lang, duration, memory) => {
+    const { Section5 } = locale(lang).Legal.Privacy
+    expect(Section5.Inventory).toContain(duration)
+    expect(Section5.Inventory).toContain(memory)
+  })
+
+  // R2 : la ville garde « un seul exemplaire » du DERNIER COLLAGE ; le registre est une inscription volontaire, jamais automatique.
+  it.each([
+    ['fr', 'un seul exemplaire du dernier collage', 'à votre initiative'],
+    ['en', 'a single copy of the last paste', 'at your initiative'],
+  ])('%s : l\'inventaire municipal distingue le dernier collage du registre, inscrit à l\'initiative du maire', (lang, lastPaste, initiative) => {
+    const city = locale(lang).Legal.Privacy.Section3.InventoryFields[3].Text
+    expect(city).toContain(lastPaste)
+    expect(city).toContain(initiative)
+  })
+
   it('FR : la durée (§5) et les destinataires (§6) sont écrits tels quels', () => {
     const { Section5, Section6 } = locale('fr').Legal.Privacy
     for (const term of ['tant que votre personnage existe', 'supprimés avec lui', 'sans limite de durée', 'mémoire de gestion', 'le lien est supprimé'])
