@@ -90,7 +90,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   const api = inventoryApi()
 
   const scopes = ref(null) // { personal, city, province } — null tant que non chargé, ou sans compte
-  const history = ref(null) // historique de la province : { province, snapshots, can_write }
+  const history = ref(null) // registre de la province : { province, snapshots, can_write }
+  const cityHistory = ref(null) // registre de la ville : { city, snapshots, can_write }
   const docs = reactive({}) // niveau → { data, version, status, saving, dirty, timer }
   const texts = reactive({}) // niveau → { raw, status, timer }
   const imported = ref(false) // les réglages du navigateur viennent d'être repris en base
@@ -360,9 +361,35 @@ export const useInventoryStore = defineStore('inventory', () => {
   }
 
   /** Inscrit l'inventaire du jour dans l'historique de la province. Renvoie la réponse du serveur (`replaced`, `unchanged`). */
-  async function recordProvince(raw) {
-    const result = await api.recordProvince(characterId.value, raw)
-    await loadHistory(true)
+  async function recordProvince(raw, confirmReplace = false) {
+    return recordRegistry('province', raw, confirmReplace)
+  }
+
+  // ─── Registre des stocks : ville et province ─────────────────────────────────
+  /** Le registre d'un niveau (`city` ou `province`), déjà chargé ou null. */
+  const registryOf = (level) => (level === 'city' ? cityHistory.value : history.value)
+
+  /** Charge le registre d'un niveau (une fois, sauf `force`). Un refus s'affiche tel quel ; le registre reste null. */
+  async function loadRegistry(level, force = false) {
+    if (level === 'province') return loadHistory(force)
+    if (!serverMode.value || (cityHistory.value && !force)) return
+    const id = characterId.value
+    try {
+      const data = await api.registry(id, 'city')
+      if (id === characterId.value) cityHistory.value = data
+    } catch (error) {
+      push.error(apiMessage(error, locale(), t('MonBureau.SettingsLoadError')))
+    }
+  }
+
+  /**
+   * Inscrit l'inventaire du jour au registre d'un niveau, puis le relit. Renvoie la réponse du serveur ({ snapshot, replaced, unchanged }).
+   * LÈVE l'erreur du serveur — dont le 409 « un autre texte existe déjà ce jour-là » (`error.response.data.existing` nomme l'auteur de
+   * l'inscription à remplacer) : l'appelant demande confirmation puis rappelle avec `confirmReplace`.
+   */
+  async function recordRegistry(level, raw, confirmReplace = false) {
+    const result = await api.recordRegistry(characterId.value, level, raw, confirmReplace)
+    await loadRegistry(level, true)
     return result
   }
 
@@ -380,12 +407,13 @@ export const useInventoryStore = defineStore('inventory', () => {
     for (const key of Object.keys(texts)) delete texts[key]
     scopes.value = null
     history.value = null
+    cityHistory.value = null
     imported.value = false
   }
   watch([characterId, serverMode], reset)
 
   return {
-    scopes, history, imported, serverMode, characterId, availableLevels,
-    canWrite, doc, status, loadScopes, load, update, flush, localPaste, loadPaste, readLastPaste, savePaste, loadHistory, recordProvince, copyPersonalTo, reset,
+    scopes, history, cityHistory, imported, serverMode, characterId, availableLevels,
+    canWrite, doc, status, loadScopes, load, update, flush, localPaste, loadPaste, readLastPaste, savePaste, loadHistory, recordProvince, registryOf, loadRegistry, recordRegistry, copyPersonalTo, reset,
   }
 })

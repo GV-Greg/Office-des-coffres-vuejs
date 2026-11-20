@@ -35,24 +35,27 @@ const SCOPES = (province = { id: 3, name: 'Artois', can_write: true, can_read: t
   province,
 })
 
-function serve({ scopes = SCOPES(), snapshots = [{ id: 2, taken_on: '2026-05-17', raw: PROVINCE_TEXT, by_me: true }, { id: 1, taken_on: '2026-05-10', raw: 'ancien', by_me: false }] } = {}) {
+const CITY_SNAPSHOTS = [{ id: 9, taken_on: '2026-05-17', raw: '8Cailloux0', by_me: true, replaced: null }]
+
+function serve({ scopes = SCOPES(), snapshots = [{ id: 2, taken_on: '2026-05-17', raw: PROVINCE_TEXT, by_me: true }, { id: 1, taken_on: '2026-05-10', raw: 'ancien', by_me: false }], citySnapshots = CITY_SNAPSHOTS } = {}) {
   http.get.mockImplementation(url => {
     if (url.endsWith('inventory-scopes')) return ok(scopes)
     if (url.includes('inventory-settings/')) return ok({ settings: { data: { itemCategories: { 'Miches de pain': 'alimentation' } }, version: 1, scope: {} } })
     if (url.endsWith('inventory/personal')) return ok({ inventory: { raw: PERSONAL_TEXT } })
     if (url.endsWith('inventory/city')) return ok({ inventory: { raw: '3Cailloux0' } })
+    if (url.endsWith('inventory/city/registry')) return ok({ city: { id: 1, name: 'Arras' }, can_write: true, snapshots: citySnapshots })
     if (url.endsWith('inventory/province')) return ok({ province: { id: 3, name: 'Artois' }, can_write: true, snapshots })
     return ok({})
   })
   http.put.mockImplementation((url, body) => ok(url.includes('inventory-settings') ? { settings: { data: body.data, version: body.version + 1, scope: {} } } : { inventory: {} }))
 }
 
-async function mountPage({ scopes, snapshots, loggedIn = true } = {}) {
+async function mountPage({ scopes, snapshots, citySnapshots, loggedIn = true } = {}) {
   setActivePinia(createPinia())
   if (loggedIn) useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
-  serve({ scopes, snapshots })
+  serve({ scopes, snapshots, citySnapshots })
   const i18n = createI18n({ legacy: false, locale: 'fr', messages: { fr, en } })
-  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/app/mon-bureau/:section?', name: 'province', component: { template: '<div/>' } }] })
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/app/mon-bureau/:section?', name: 'province', component: { template: '<div/>' } }, { path: '/app/eco/registre-stocks', name: 'economy-inventory-registry', component: { template: '<div/>' } }] })
   const wrapper = mount(EconomyInventory, { global: { plugins: [i18n, router], stubs: { 'v-icon': true } } })
   await flushPromises()
   return wrapper
@@ -134,17 +137,27 @@ describe('Gestion des stocks avec un compte', () => {
   })
 })
 
-describe('Province : l\'historique du commissaire au commerce', () => {
-  async function provinceView(options) {
+describe('Registre des stocks : la ville et la province, depuis le Bilan', () => {
+  async function levelView(level, options) {
     const wrapper = await mountPage(options)
-    await levelButton(wrapper, 'province').trigger('click')
+    await levelButton(wrapper, level).trigger('click')
     await flushPromises()
     return wrapper
   }
+  const conflict = existing => Promise.reject({
+    response: { status: 409, data: { success: false, code: 'registry_needs_confirmation', message: 'Un inventaire existe déjà au registre pour le 10/05/2026 (Artois).', messages: { fr: 'Un inventaire existe déjà au registre pour le 10/05/2026 (Artois). Il sera remplacé, pas effacé.', en: 'An inventory is already in the registry for 10/05/2026 (Artois).' }, existing } },
+  })
 
-  it('le commissaire au commerce inscrit l\'inventaire du jour à la main (jamais automatiquement)', async () => {
-    const wrapper = await provinceView()
-    http.post.mockReturnValue(ok({ snapshot: { id: 3, taken_on: '2026-05-24' }, replaced: false, unchanged: false }))
+  it('au niveau personnel : aucun registre (pas d\'inscription, pas d\'historique)', async () => {
+    const wrapper = await mountPage()
+    expect(wrapper.find('[data-testid="registry-block"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="registry-record"]').exists()).toBe(false)
+  })
+
+  it('le commissaire au commerce inscrit l\'inventaire du jour à la main (jamais automatiquement) ; l\'écran dit où AVANT l\'envoi', async () => {
+    const wrapper = await levelView('province')
+    http.post.mockReturnValue(ok({ snapshot: { id: 3, taken_on: '2026-05-24' }, replaced: null, unchanged: false }))
+    expect(wrapper.find('[data-testid="registry-target"]').text()).toBe('Sera inscrit au registre : Province : Artois.')
 
     vi.useFakeTimers()
     await textarea(wrapper).setValue('900Miches de pain4500')
@@ -152,46 +165,103 @@ describe('Province : l\'historique du commissaire au commerce', () => {
     expect(http.put.mock.calls.some(c => c[0].includes('/inventory/province'))).toBe(false) // pas d'enregistrement automatique
     vi.useRealTimers()
 
-    await wrapper.find('[data-testid="province-record"]').trigger('click')
+    await wrapper.find('[data-testid="registry-record"]').trigger('click')
     await flushPromises()
     expect(http.post).toHaveBeenCalledWith('characters/7/inventory/province', { raw: '900Miches de pain4500' }, expect.anything())
-    expect(push.success).toHaveBeenCalledWith(expect.stringContaining('inscrit dans l\'historique de la province'))
+    expect(push.success).toHaveBeenCalledWith(expect.stringContaining('inscrit au registre (Province : Artois)'))
   })
 
-  it('un second collage du jour est dit « remplacé », un texte identique « rien à changer »', async () => {
-    const wrapper = await provinceView()
-    http.post.mockReturnValueOnce(ok({ snapshot: { id: 4, taken_on: '2026-05-24' }, replaced: true, unchanged: false }))
-      .mockReturnValueOnce(ok({ snapshot: { id: 4, taken_on: '2026-05-24' }, replaced: false, unchanged: true }))
-    await wrapper.find('[data-testid="province-record"]').trigger('click')
+  it('le maire inscrit au registre de SA ville : route et message propres au niveau', async () => {
+    const wrapper = await levelView('city')
+    http.post.mockReturnValue(ok({ snapshot: { id: 10, taken_on: '2026-05-24' }, replaced: null, unchanged: false }))
+    expect(wrapper.find('[data-testid="registry-target"]').text()).toBe('Sera inscrit au registre : Ville : Arras.')
+    await textarea(wrapper).setValue('900Cailloux0')
+    await wrapper.find('[data-testid="registry-record"]').trigger('click')
     await flushPromises()
-    expect(push.success.mock.calls[0][0]).toContain('remplacé')
-    await wrapper.find('[data-testid="province-record"]').trigger('click')
+    expect(http.post).toHaveBeenCalledWith('characters/7/inventory/city/registry', { raw: '900Cailloux0' }, expect.anything())
+    expect(push.success).toHaveBeenCalledWith(expect.stringContaining('inscrit au registre (Ville : Arras)'))
+  })
+
+  it('un autre texte le même jour : le serveur répond 409, l\'écran nomme le rédacteur et demande confirmation — rien n\'est écrit sans elle', async () => {
+    const wrapper = await levelView('province')
+    http.post.mockReturnValueOnce(conflict({ id: 2, pseudo: 'Marchand', office_key: 'commissaire_commerce', office_label: { fr: 'Commissaire au commerce', en: 'Trade Minister' } }))
+    await wrapper.find('[data-testid="registry-record"]').trigger('click')
     await flushPromises()
-    expect(push.success.mock.calls[1][0]).toContain('rien à changer')
+
+    const box = wrapper.find('[data-testid="registry-confirm"]')
+    expect(box.exists()).toBe(true)
+    expect(box.text()).toContain('Il sera remplacé, pas effacé.')
+    expect(wrapper.find('[data-testid="registry-confirm-author"]').text()).toBe('L\'inventaire en place a été inscrit par Marchand (Commissaire au commerce).')
+    expect(push.error).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="registry-record"]').exists()).toBe(false) // le bouton cède la place à la confirmation
+
+    http.post.mockReturnValueOnce(ok({ snapshot: { id: 4, taken_on: '2026-05-24' }, replaced: { id: 2, pseudo: 'Marchand' }, unchanged: false }))
+    await wrapper.find('[data-testid="registry-confirm-yes"]').trigger('click')
+    await flushPromises()
+    expect(http.post).toHaveBeenLastCalledWith('characters/7/inventory/province', { raw: PROVINCE_TEXT, confirm_replace: true }, expect.anything())
+    expect(push.success.mock.calls[0][0]).toContain('Il remplace celui de Marchand')
+    expect(wrapper.find('[data-testid="registry-confirm"]').exists()).toBe(false)
+  })
+
+  it('« Annuler » referme la confirmation sans rien écrire ; un rédacteur disparu se dit', async () => {
+    const wrapper = await levelView('province')
+    http.post.mockReturnValueOnce(conflict({ id: 2, pseudo: null, office_key: 'commissaire_commerce', office_label: { fr: 'Commissaire au commerce', en: 'Trade Minister' } }))
+    await wrapper.find('[data-testid="registry-record"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="registry-confirm-author"]').text()).toContain('un personnage disparu')
+    await wrapper.find('[data-testid="registry-confirm-no"]').trigger('click')
+    expect(wrapper.find('[data-testid="registry-confirm"]').exists()).toBe(false)
+    expect(http.post).toHaveBeenCalledTimes(1)
+  })
+
+  it('un texte identique à celui du jour : « rien à changer »', async () => {
+    const wrapper = await levelView('province')
+    http.post.mockReturnValueOnce(ok({ snapshot: { id: 4, taken_on: '2026-05-24' }, replaced: null, unchanged: true }))
+    await wrapper.find('[data-testid="registry-record"]').trigger('click')
+    await flushPromises()
+    expect(push.success.mock.calls[0][0]).toContain('rien à changer')
+  })
+
+  it('un autre refus du serveur (403…) s\'affiche tel quel, sans confirmation', async () => {
+    const wrapper = await levelView('province')
+    http.post.mockReturnValueOnce(Promise.reject({ response: { status: 403, data: { success: false, message: 'Refusé', messages: { fr: 'Refusé par l\'Office.', en: 'Refused.' } } } }))
+    await wrapper.find('[data-testid="registry-record"]').trigger('click')
+    await flushPromises()
+    expect(push.error).toHaveBeenCalledWith('Refusé par l\'Office.')
+    expect(wrapper.find('[data-testid="registry-confirm"]').exists()).toBe(false)
   })
 
   it('l\'historique se charge dans le champ, daté en année du jeu', async () => {
-    const wrapper = await provinceView()
-    const select = wrapper.find('[data-testid="province-history"]')
+    const wrapper = await levelView('province')
+    const select = wrapper.find('[data-testid="registry-history"]')
     const options = select.findAll('option')
-    expect(options[0].text()).toBe(fr.EconomyInventory.ProvinceHistoryLoad)
+    expect(options[0].text()).toBe(fr.EconomyInventory.RegistryHistoryLoad)
     expect(options).toHaveLength(3)
     expect(options[1].text()).toMatch(/1474/) // 17/05/2026 → année du jeu
     await select.setValue('1')
     expect(textarea(wrapper).element.value).toBe('ancien')
   })
 
-  it('le dirigeant (lecture seule) : l\'inventaire se consulte, rien ne s\'inscrit ni ne se corrige', async () => {
-    const wrapper = await provinceView({ scopes: SCOPES({ id: 3, name: 'Artois', can_write: false, can_read: true }) })
-    expect(wrapper.find('[data-testid="inventory-readonly"]').text()).toBe(fr.EconomyInventory.ReadOnlyScope)
-    expect(wrapper.find('[data-testid="province-record"]').exists()).toBe(false)
-    expect(wrapper.find('select[aria-label*="Miches de pain"]').exists()).toBe(false) // pas de correction de catégorie
-    expect(wrapper.find('[data-testid="province-history"]').exists()).toBe(true)
+  it('l\'historique de la ville se charge de même', async () => {
+    const wrapper = await levelView('city')
+    const select = wrapper.find('[data-testid="registry-history"]')
+    expect(select.findAll('option')).toHaveLength(2)
+    await select.setValue('9')
+    expect(textarea(wrapper).element.value).toBe('8Cailloux0')
   })
 
-  it('une province sans historique le dit', async () => {
-    const wrapper = await provinceView({ snapshots: [] })
-    expect(wrapper.find('[data-testid="province-history-empty"]').text()).toBe(fr.EconomyInventory.ProvinceHistoryEmpty)
+  it('le dirigeant (lecture seule) : l\'inventaire se consulte, rien ne s\'inscrit ni ne se corrige', async () => {
+    const wrapper = await levelView('province', { scopes: SCOPES({ id: 3, name: 'Artois', can_write: false, can_read: true }) })
+    expect(wrapper.find('[data-testid="inventory-readonly"]').text()).toBe(fr.EconomyInventory.ReadOnlyScope)
+    expect(wrapper.find('[data-testid="registry-record"]').exists()).toBe(false)
+    expect(wrapper.find('select[aria-label*="Miches de pain"]').exists()).toBe(false) // pas de correction de catégorie
+    expect(wrapper.find('[data-testid="registry-history"]').exists()).toBe(true)
+  })
+
+  it('un registre sans inscription le dit, et le lien ouvre le Registre des stocks', async () => {
+    const wrapper = await levelView('province', { snapshots: [] })
+    expect(wrapper.find('[data-testid="registry-history-empty"]').text()).toBe(fr.EconomyInventory.RegistryHistoryEmpty)
     expect(textarea(wrapper).element.value).toBe('')
+    expect(wrapper.find('[data-testid="registry-open"]').text()).toBe('Ouvrir le Registre des stocks')
   })
 })

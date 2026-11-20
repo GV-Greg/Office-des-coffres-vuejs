@@ -364,6 +364,7 @@
     "MineRegistryLink": "Registre des mines",
     "InventoryLink": "Bilan des stocks",
     "BalanceLink": "Balance des stocks",
+    "RegistryStocksLink": "Registre des stocks",
     "Home": {
       "Title": "La Salle des comptes",
       "Intro": "Voici les coffres que l'Office met à disposition pour les mines, les inventaires et les marchés.",
@@ -383,6 +384,10 @@
         "Name": "La Balance des stocks",
         "Description": "Posez votre nouvel inventaire sur les balances : l'Office pèse ce qui a gagné, perdu ou disparu par rapport à un ancien inventaire."
       },
+      "inventoryRegistry": {
+        "Name": "Registre des stocks",
+        "Description": "Feuilletez le livre des stocks de votre province ou de votre ville : inventaires successifs, comparaison et bilans de mandat."
+      },
       "registry": {
         "Name": "Registre des mines",
         "Description": "Feuilletez le livre des mines de votre province : relevés, bilans de mandat et niveaux au fil des semaines."
@@ -396,6 +401,27 @@
   "EconomyMenu": {
     "MinesGroup": "Mines",
     "InventoriesGroup": "Inventaires"
+  },
+  "EconomyInventoryRegistry": {
+    "PageTitle": "Le Registre des stocks",
+    "Intro": "Feuilletez le livre des stocks de votre province ou de votre ville : chaque inventaire inscrit y reste, d'un titulaire au suivant.",
+    "NoAccess": "Le registre s'ouvre au maire de la ville, au commissaire au commerce et au dirigeant de la province. L'Office ne connaît pas un tel poste pour ce personnage.",
+    "Loading": "Le registre s'ouvre…",
+    "LoadError": "Impossible d'ouvrir le registre.",
+    "Empty": "Aucun inventaire inscrit pour l'instant. Inscrivez-le depuis le Bilan des stocks.",
+    "ListTitle": "Inscriptions",
+    "EntryOf": "Inventaire du {date}",
+    "ByMe": "Inscrit par vous",
+    "Replaced": "Remplace l'inscription de {pseudo} ({office})",
+    "DeletedCharacter": "un personnage disparu",
+    "Older": "Plus ancien",
+    "Newer": "Plus récent",
+    "Summary": "{count} article(s) · {ecus} écus",
+    "SummaryNoEcus": "{count} article(s)",
+    "ContentsTitle": "Contenu",
+    "CompareLabel": "Comparer avec",
+    "CompareNone": "Aucune comparaison",
+    "CompareTitle": "Du {from} au {to}"
   },
   "EconomyInventory": {
     "PageTitle": "Bilan des stocks",
@@ -462,13 +488,20 @@
     "LevelCity": "Ville : {name}",
     "LevelProvince": "Province : {name}",
     "ReadOnlyScope": "Lecture seule : seul le titulaire du poste modifie cet inventaire.",
-    "ProvinceRecord": "Inscrire à l'historique de la province",
-    "ProvinceRecorded": "Inventaire du {date} inscrit dans l'historique de la province.",
-    "ProvinceReplaced": "Inventaire du {date} remplacé (l'ancien reste dans l'historique).",
-    "ProvinceUnchanged": "Cet inventaire est déjà inscrit pour le {date} : rien à changer.",
-    "ProvinceHistory": "Historique ({count})",
-    "ProvinceHistoryLoad": "Charger un inventaire passé…",
-    "ProvinceHistoryEmpty": "Aucun inventaire inscrit pour cette province.",
+    "RegistryTarget": "Sera inscrit au registre : {place}.",
+    "RegistryRecord": "Inscrire au registre",
+    "RegistryRecording": "Inscription…",
+    "RegistryRecorded": "Inventaire du {date} inscrit au registre ({place}).",
+    "RegistryReplaced": "Il remplace celui de {pseudo} ; l'ancien reste conservé.",
+    "RegistryUnchanged": "Cet inventaire est déjà inscrit pour le {date} : rien à changer.",
+    "RegistryRecordedBy": "L'inventaire en place a été inscrit par {pseudo} ({office}).",
+    "RegistryDeletedCharacter": "un personnage disparu",
+    "RegistryConfirm": "Remplacer",
+    "RegistryCancel": "Annuler",
+    "RegistryHistory": "Registre ({count})",
+    "RegistryHistoryLoad": "Charger un inventaire inscrit…",
+    "RegistryHistoryEmpty": "Aucun inventaire inscrit pour ce niveau.",
+    "RegistryOpen": "Ouvrir le Registre des stocks",
     "SaveError": "Impossible d'enregistrer vos réglages d'inventaire.",
     "CatOrderTitle": "Ordre des catégories (modifier l'ordre pour votre inventaire)",
     "CatMoveUp": "Monter la catégorie {cat}",

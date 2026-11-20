@@ -13,12 +13,12 @@ const localesDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 const readLocale = lang => JSON.parse(fs.readFileSync(path.join(localesDir, `${lang}.json`), 'utf8'))
 const messages = { fr: readLocale('fr'), en: readLocale('en') }
 
-function mountHome({ locale = 'fr', read = false } = {}) {
+function mountHome({ locale = 'fr', read = false, stockRegistry = false } = {}) {
   const i18n = createI18n({ legacy: false, locale, messages })
   return mount(EconomyHomeView, {
     global: {
       plugins: [i18n],
-      provide: { economyAccess: ref(read ? { read: { id: 1 } } : null), economyAccessReady: ref(true) },
+      provide: { economyAccess: ref(read ? { read: { id: 1 } } : null), economyAccessReady: ref(true), economyStockRegistryAccess: ref(stockRegistry) },
       stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true },
     },
   })
@@ -36,6 +36,14 @@ describe('EconomyHomeView — groupes de cartes', () => {
   it('le Registre des mines rejoint le groupe Mines pour qui peut le lire', () => {
     const w = mountHome({ read: true })
     expect(w.findAll('[data-testid="economy-group-mines"] article').map(a => a.attributes('data-testid'))).toEqual(['card-mines', 'card-registry'])
+  })
+
+  it('la carte du Registre des stocks rejoint le groupe Inventaires pour qui peut le lire (maire, commissaire au commerce, dirigeant)', () => {
+    expect(mountHome().find('[data-testid="card-inventoryRegistry"]').exists()).toBe(false)
+    const w = mountHome({ stockRegistry: true })
+    expect(w.findAll('[data-testid="economy-group-inventories"] article').map(x => x.attributes('data-testid'))).toEqual(['card-inventory', 'card-balance', 'card-inventoryRegistry'])
+    expect(w.find('[data-testid="card-inventoryRegistry"]').text()).toContain('Feuilletez le livre des stocks de votre province ou de votre ville')
+    expect(mountHome({ locale: 'en', stockRegistry: true }).find('[data-testid="card-inventoryRegistry"]').text()).toContain('Stock Registry')
   })
 
   it('les groupes sont en deux colonnes, les cartes empilées dans chacun', () => {

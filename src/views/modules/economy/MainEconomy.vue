@@ -1,11 +1,12 @@
 <script setup>
-  import { ref, computed, provide } from 'vue'
+  import { ref, computed, provide, watch } from 'vue'
   import { RouterLink, RouterView } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import NavMenu from '../../../components/NavMenu.vue'
   import HelpModal from '@/components/HelpModal.vue'
   import { useAuthStore } from '@/stores/authStore'
   import useMineAccess from '@/use/useMineAccess'
+  import { useInventoryStore } from '@/stores/inventoryStore'
 
   const { t } = useI18n()
   const authStore = useAuthStore()
@@ -30,9 +31,16 @@
   const { access, ready } = useMineAccess(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null))
   const canReadRegistry = computed(() => !!access.value?.read)
 
+  // Registre des stocks : le lien n'apparaît qu'à qui peut le lire (maire, commissaire au commerce, dirigeant) — la règle vient de l'API
+  // (GET characters/{id}/inventory-scopes), jamais recalculée ici. Charge les niveaux une fois par personnage (inventoryStore).
+  const inventoryStore = useInventoryStore()
+  watch(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null), id => { if (id) inventoryStore.loadScopes() }, { immediate: true })
+  const canReadStockRegistry = computed(() => inventoryStore.serverMode && !!(inventoryStore.scopes?.city || inventoryStore.scopes?.province))
+
   // EconomyHomeView injecte ces valeurs pour éviter un double appel API (même pattern qu'Animation).
   provide('economyAccess', access)
   provide('economyAccessReady', ready)
+  provide('economyStockRegistryAccess', canReadStockRegistry)
 </script>
 
 <template>
@@ -109,6 +117,13 @@
           >
             <v-icon name="fa-info-circle" scale="0.9" />
           </button>
+        </div>
+
+        <div v-if="canReadStockRegistry" class="inline-flex items-center gap-1.5 mt-2">
+          <RouterLink :to="{ name: 'economy-inventory-registry' }" class="inline-flex items-center font-bold" data-testid="stock-registry-link">
+            <v-icon name="gi-chest" scale="2" class="mr-1"/>
+            {{ t('Economy.RegistryStocksLink') }}
+          </RouterLink>
         </div>
       </div>
       <div class="w-full laptop:w-auto laptop:flex-1 laptop:min-w-0 mt-2 laptop:mt-0 laptop:ml-2 p-1">

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
+import { createPinia, setActivePinia } from 'pinia'
 import { reactive } from 'vue'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -19,8 +20,16 @@ const readLocale = lang => JSON.parse(fs.readFileSync(path.join(localesDir, `${l
 const fr = readLocale('fr')
 const en = readLocale('en')
 
-async function mountPage(locale = 'fr') {
-  http.get.mockResolvedValue({ data: { success: true, read: { id: 1, name: 'Artois' }, write: null, prices: { write: null, read: null } } })
+// `scopes` : ce que l'API des inventaires répond (niveaux ouverts au personnage) ; sans ville ni province, pas de Registre des stocks.
+const NO_SCOPES = { success: true, personal: { id: 7, can_write: true }, city: null, province: null }
+
+async function mountPage(locale = 'fr', scopes = NO_SCOPES) {
+  setActivePinia(createPinia())
+  http.get.mockImplementation(url => Promise.resolve({
+    data: url.endsWith('inventory-scopes')
+      ? scopes
+      : { success: true, read: { id: 1, name: 'Artois' }, write: null, prices: { write: null, read: null } },
+  }))
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
   const wrapper = mount(MainEconomy, {
     global: { plugins: [i18n], stubs: { NavMenu: true, RouterView: true, RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } },
@@ -55,6 +64,23 @@ describe('MainEconomy — menu', () => {
     const w = await mountPage()
     const labels = w.findAll('a, [data-testid^="menu-group-"]').map(n => n.text())
     expect(labels).toEqual(['Coffres Économie', 'Mines', 'Bilan des mines', 'Registre des mines', 'Inventaires', 'Bilan des stocks', 'Balance des stocks'])
+  })
+
+  it('le Registre des stocks : lien sous Inventaires, seulement pour le maire, le commissaire au commerce ou le dirigeant', async () => {
+    expect((await mountPage()).find('[data-testid="stock-registry-link"]').exists()).toBe(false)
+
+    const mayor = await mountPage('fr', { ...NO_SCOPES, city: { id: 1, name: 'Arras', can_write: true, can_read: true } })
+    expect(mayor.find('[data-testid="stock-registry-link"]').text()).toBe('Registre des stocks')
+    const labels = mayor.findAll('a, [data-testid^="menu-group-"]').map(n => n.text())
+    expect(labels.slice(-4)).toEqual(['Inventaires', 'Bilan des stocks', 'Balance des stocks', 'Registre des stocks'])
+
+    const leader = await mountPage('fr', { ...NO_SCOPES, province: { id: 3, name: 'Artois', can_write: false, can_read: true } })
+    expect(leader.find('[data-testid="stock-registry-link"]').exists()).toBe(true)
+  })
+
+  it('en anglais : « Stock Registry »', async () => {
+    const w = await mountPage('en', { ...NO_SCOPES, city: { id: 1, name: 'Arras', can_write: true, can_read: true } })
+    expect(w.find('[data-testid="stock-registry-link"]').text()).toBe('Stock Registry')
   })
 
   it('en anglais : « Inventories » et « Stock Report », plus aucun « Stock Management »', async () => {

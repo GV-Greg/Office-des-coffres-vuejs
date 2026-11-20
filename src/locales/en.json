@@ -364,6 +364,7 @@
     "MineRegistryLink": "Mine Registry",
     "InventoryLink": "Stock Report",
     "BalanceLink": "Stock Balance",
+    "RegistryStocksLink": "Stock Registry",
     "Home": {
       "Title": "The Counting Room",
       "Intro": "These are the chests the Office holds for mines, inventories and markets.",
@@ -383,6 +384,10 @@
         "Name": "The Stock Balance",
         "Description": "Place your new inventory on the scales: the Office weighs what gained, lost or vanished compared with an older inventory."
       },
+      "inventoryRegistry": {
+        "Name": "Stock Registry",
+        "Description": "Browse the stock ledger of your province or city: successive inventories, comparison and term reports."
+      },
       "registry": {
         "Name": "Mine Registry",
         "Description": "Browse the mine book of your province: reports, mandate summaries and level changes over time."
@@ -396,6 +401,27 @@
   "EconomyMenu": {
     "MinesGroup": "Mines",
     "InventoriesGroup": "Inventories"
+  },
+  "EconomyInventoryRegistry": {
+    "PageTitle": "The Stock Registry",
+    "Intro": "Browse the stock ledger of your province or city: every recorded inventory stays there, from one office-holder to the next.",
+    "NoAccess": "The registry is open to a city's mayor, and to a province's Trade Minister and leader. The Office knows of no such office for this character.",
+    "Loading": "The registry is opening…",
+    "LoadError": "Unable to open the registry.",
+    "Empty": "No inventory recorded yet. Record one from the Stock Report.",
+    "ListTitle": "Entries",
+    "EntryOf": "Inventory of {date}",
+    "ByMe": "Recorded by you",
+    "Replaced": "Replaces the entry by {pseudo} ({office})",
+    "DeletedCharacter": "a character who has since vanished",
+    "Older": "Older",
+    "Newer": "Newer",
+    "Summary": "{count} item(s) · {ecus} écus",
+    "SummaryNoEcus": "{count} item(s)",
+    "ContentsTitle": "Contents",
+    "CompareLabel": "Compare with",
+    "CompareNone": "No comparison",
+    "CompareTitle": "From {from} to {to}"
   },
   "EconomyInventory": {
     "PageTitle": "Stock Report",
@@ -462,13 +488,20 @@
     "LevelCity": "City: {name}",
     "LevelProvince": "Province: {name}",
     "ReadOnlyScope": "Read-only: only the office-holder changes this inventory.",
-    "ProvinceRecord": "Record in the province history",
-    "ProvinceRecorded": "Inventory of {date} recorded in the province history.",
-    "ProvinceReplaced": "Inventory of {date} replaced (the previous one stays in the history).",
-    "ProvinceUnchanged": "This inventory is already recorded for {date}: nothing to change.",
-    "ProvinceHistory": "History ({count})",
-    "ProvinceHistoryLoad": "Load a past inventory…",
-    "ProvinceHistoryEmpty": "No inventory recorded for this province yet.",
+    "RegistryTarget": "Will be recorded in the registry: {place}.",
+    "RegistryRecord": "Record in the registry",
+    "RegistryRecording": "Recording…",
+    "RegistryRecorded": "Inventory of {date} recorded in the registry ({place}).",
+    "RegistryReplaced": "It replaces the one by {pseudo}; the old one is kept.",
+    "RegistryUnchanged": "This inventory is already recorded for {date}: nothing to change.",
+    "RegistryRecordedBy": "The inventory in place was recorded by {pseudo} ({office}).",
+    "RegistryDeletedCharacter": "a character who has since vanished",
+    "RegistryConfirm": "Replace",
+    "RegistryCancel": "Cancel",
+    "RegistryHistory": "Registry ({count})",
+    "RegistryHistoryLoad": "Load a recorded inventory…",
+    "RegistryHistoryEmpty": "No inventory recorded for this level yet.",
+    "RegistryOpen": "Open the Stock Registry",
     "SaveError": "Could not save your inventory settings.",
     "CatOrderTitle": "Category order (change the order for your inventory)",
     "CatMoveUp": "Move category {cat} up",

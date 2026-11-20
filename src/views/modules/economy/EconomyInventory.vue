@@ -246,21 +246,45 @@ function clear() {
   setVisibility({ hiddenCategories: [], hiddenItems: [] })
 }
 
-// ─── Province : l'historique ────────────────────────────────────────────────
-const snapshots = computed(() => store.history?.snapshots ?? [])
+// ─── Registre des stocks : la ville (maire) et la province (commissaire au commerce) ─────────────────────────────
+// Le même collage sert le Bilan (ici) et le Registre (l'historique de la ville ou de la province, fil admin/echanges/registre-stocks).
+// Jamais au niveau personnel (pas de registre personnel). L'inscription est un geste volontaire, jamais automatique ; un autre texte le même jour
+// REMPLACE l'ancien (qui reste conservé) après confirmation : le serveur répond 409 en nommant l'auteur de l'inscription à remplacer.
+const hasRegistry = computed(() => level.value !== 'personal')
+const registry = computed(() => store.registryOf(level.value))
+const snapshots = computed(() => registry.value?.snapshots ?? [])
 const snapshotDate = s => formatFieldDate('inventory_snapshot_date', s.taken_on, locale.value)
 const recording = ref(false)
+const pendingReplace = ref(null) // 409 : { message, existing }
 
-watch(level, lv => { if (lv === 'province') store.loadHistory() }, { immediate: true })
+watch(level, lv => {
+  pendingReplace.value = null
+  if (lv !== 'personal') store.loadRegistry(lv)
+}, { immediate: true })
+watch(pastedText, () => { pendingReplace.value = null })
 
-async function recordProvince() {
+async function recordRegistry(confirmReplace = false) {
+  if (recording.value) return
   recording.value = true
+  const lv = level.value
   try {
-    const result = await store.recordProvince(pastedText.value)
-    const key = result.unchanged ? 'ProvinceUnchanged' : result.replaced ? 'ProvinceReplaced' : 'ProvinceRecorded'
-    push.success(t(`EconomyInventory.${key}`, { date: formatFieldDate('inventory_snapshot_date', result.snapshot.taken_on, locale.value) }))
+    const result = await store.recordRegistry(lv, pastedText.value, confirmReplace)
+    pendingReplace.value = null
+    const date = formatFieldDate('inventory_snapshot_date', result.snapshot.taken_on, locale.value)
+    if (result.unchanged) {
+      push.success(t('EconomyInventory.RegistryUnchanged', { date }))
+    } else {
+      const done = t('EconomyInventory.RegistryRecorded', { date, place: levelLabel(lv) })
+      push.success(result.replaced
+        ? `${done} ${t('EconomyInventory.RegistryReplaced', { pseudo: result.replaced.pseudo ?? t('EconomyInventory.RegistryDeletedCharacter') })}`
+        : done)
+    }
   } catch (error) {
-    push.error(apiMessage(error, locale.value, t('EconomyInventory.SaveError')))
+    if (error?.response?.status === 409 && error.response.data?.existing) {
+      pendingReplace.value = { message: apiMessage(error, locale.value, ''), existing: error.response.data.existing }
+    } else {
+      push.error(apiMessage(error, locale.value, t('EconomyInventory.SaveError')))
+    }
   } finally {
     recording.value = false
   }
@@ -310,30 +334,54 @@ function loadSnapshot(event) {
           data-testid="inventory-paste"
         />
 
-        <!-- Province : l'historique des inventaires du commissaire au commerce (un par jour, le second du jour remplace le premier). -->
-        <div v-if="level === 'province'" class="mt-2 flex flex-wrap items-center gap-2" data-testid="province-history-block">
-          <button
-            v-if="canWriteLevel"
-            type="button"
-            class="odc-btn odc-btn--soft odc--green odc-btn--sm"
-            :disabled="recording || parsedItems.length === 0"
-            data-testid="province-record"
-            @click="recordProvince"
-          >
-            <v-icon name="fa-save" aria-hidden="true" />{{ t('EconomyInventory.ProvinceRecord') }}
-          </button>
-          <label v-if="snapshots.length" class="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
-            <span>{{ t('EconomyInventory.ProvinceHistory', { count: snapshots.length }) }}</span>
-            <select
-              class="text-xs border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 dark:text-slate-100 py-0.5 px-1 cursor-pointer"
-              data-testid="province-history"
-              @change="loadSnapshot"
+        <!-- Registre des stocks (ville : le maire ; province : le commissaire au commerce) : l'écran DIT où l'inventaire sera inscrit AVANT l'envoi. -->
+        <div v-if="hasRegistry" class="mt-2" data-testid="registry-block">
+          <p class="text-xs text-slate-600 dark:text-slate-400" data-testid="registry-target">{{ t('EconomyInventory.RegistryTarget', { place: levelLabel(level) }) }}</p>
+          <div class="mt-1 flex flex-wrap items-center gap-2">
+            <button
+              v-if="canWriteLevel && !pendingReplace"
+              type="button"
+              class="odc-btn odc-btn--soft odc--green odc-btn--sm"
+              :disabled="recording || parsedItems.length === 0"
+              :aria-busy="recording"
+              data-testid="registry-record"
+              @click="recordRegistry(false)"
             >
-              <option value="">{{ t('EconomyInventory.ProvinceHistoryLoad') }}</option>
-              <option v-for="snapshot in snapshots" :key="snapshot.id" :value="snapshot.id">{{ snapshotDate(snapshot) }}</option>
-            </select>
-          </label>
-          <span v-else class="text-xs italic text-slate-500 dark:text-slate-400" data-testid="province-history-empty">{{ t('EconomyInventory.ProvinceHistoryEmpty') }}</span>
+              <v-icon name="fa-save" aria-hidden="true" />{{ recording ? t('EconomyInventory.RegistryRecording') : t('EconomyInventory.RegistryRecord') }}
+            </button>
+            <label v-if="snapshots.length" class="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
+              <span>{{ t('EconomyInventory.RegistryHistory', { count: snapshots.length }) }}</span>
+              <select
+                class="text-xs border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 dark:text-slate-100 py-0.5 px-1 cursor-pointer"
+                data-testid="registry-history"
+                @change="loadSnapshot"
+              >
+                <option value="">{{ t('EconomyInventory.RegistryHistoryLoad') }}</option>
+                <option v-for="snapshot in snapshots" :key="snapshot.id" :value="snapshot.id">{{ snapshotDate(snapshot) }}</option>
+              </select>
+            </label>
+            <span v-else class="text-xs italic text-slate-500 dark:text-slate-400" data-testid="registry-history-empty">{{ t('EconomyInventory.RegistryHistoryEmpty') }}</span>
+            <RouterLink :to="{ name: 'economy-inventory-registry' }" class="text-xs underline text-slate-600 dark:text-slate-400" data-testid="registry-open">{{ t('EconomyInventory.RegistryOpen') }}</RouterLink>
+          </div>
+
+          <!-- 409 : un autre inventaire est déjà inscrit ce jour-là. Rien ne s'efface : l'ancien reste, l'écran nomme son rédacteur. -->
+          <div v-if="pendingReplace" role="alert" class="mt-2 rounded-lg border border-yellow-600 bg-yellow-50 p-2 text-sm text-slate-800" data-testid="registry-confirm">
+            <p class="font-semibold">{{ pendingReplace.message }}</p>
+            <p class="mt-1 text-xs" data-testid="registry-confirm-author">
+              {{ t('EconomyInventory.RegistryRecordedBy', {
+                pseudo: pendingReplace.existing.pseudo ?? t('EconomyInventory.RegistryDeletedCharacter'),
+                office: pendingReplace.existing.office_label?.[locale] ?? '',
+              }) }}
+            </p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :disabled="recording" data-testid="registry-confirm-yes" @click="recordRegistry(true)">
+                {{ t('EconomyInventory.RegistryConfirm') }}
+              </button>
+              <button type="button" class="odc-btn odc-btn--soft odc--red odc-btn--sm" data-testid="registry-confirm-no" @click="pendingReplace = null">
+                {{ t('EconomyInventory.RegistryCancel') }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
