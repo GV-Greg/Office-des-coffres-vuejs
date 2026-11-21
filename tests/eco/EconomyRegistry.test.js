@@ -138,10 +138,18 @@ describe('EconomyRegistry', () => {
       .toBe('Le 09/05 : niveau 10 → 9. Aucun entretien relevé depuis le 07/05, alors que le seuil était atteint ce jour-là.')
   })
 
-  it('un refus de l\'API (pas de poste de lecture) s\'affiche tel quel, dans la langue de l\'interface', async () => {
+  it('un refus de l\'API (pas de poste de lecture) : le cadenas fermé et le message, dans la langue de l\'interface — pas un coffre en panne', async () => {
     const wrapper = await mountPage({ locale: 'en', reject: Object.assign(new Error('403'), { response: { status: 403, data: {
       code: 'mine_not_reader', messages: { fr: 'Seuls le commissaire…', en: 'Only the province\'s Mines Superintendent…' },
     } } }) })
-    expect(wrapper.find('[data-testid="registry-error"]').text()).toBe('Only the province\'s Mines Superintendent…')
+    expect(wrapper.find('[data-testid="registry-denied"]').text()).toBe('Only the province\'s Mines Superintendent…')
+    expect(wrapper.find('[data-testid="registry-denied"] [name="gi-padlock"], [data-testid="registry-denied"] v-icon-stub').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="registry-error"]').exists()).toBe(false) // aucun « Réessayer » pour un refus
+  })
+
+  it('une vraie panne (réseau, 500) reste un coffre refermé avec « Réessayer »', async () => {
+    const wrapper = await mountPage({ reject: Object.assign(new Error('500'), { response: { status: 500, data: {} } }) })
+    expect(wrapper.find('[data-testid="registry-denied"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="registry-error"]').exists()).toBe(true)
   })
 })

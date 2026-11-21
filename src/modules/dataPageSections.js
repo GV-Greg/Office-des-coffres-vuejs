@@ -30,6 +30,9 @@ export const DATA_PAGE_SECTIONS = [
   { id: 'gestion-des-stocks', key: 'Inventory', access: 'none' },
   // La Balance des stocks compare deux inventaires collés ; elle ne conserve rien (fil inventaire-comparaison, 19/11/2026).
   { id: 'balance-des-stocks', key: 'InventoryBalance', access: 'none' },
+  // Le Registre des stocks : l'historique d'inventaires d'une ville (maire) ou d'une province (commissaire au commerce, dirigeant) ; un poste
+  // validé est requis (fil registre-stocks, texte de Cowork du 20/11/2026).
+  { id: 'registre-des-stocks', key: 'InventoryRegistry', access: 'office' },
   { id: 'guet', key: 'Watch', access: 'none' },
   { id: 'carte', key: 'Map', access: 'none' },
   // Une seule entrée pour toutes les activités d'Animation (Décode le code, Grille des lots) : une activité de plus

@@ -364,6 +364,7 @@
     "MineRegistryLink": "Mine Registry",
     "InventoryLink": "Stock Report",
     "BalanceLink": "Stock Balance",
+    "RegistryStocksLink": "Stock Registry",
     "Home": {
       "Title": "The Counting Room",
       "Intro": "These are the chests the Office holds for mines, inventories and markets.",
@@ -380,8 +381,12 @@
         "Description": "Paste an inventory to sort it by category and draft its statement for your merchants."
       },
       "balance": {
-        "Name": "The Stock Balance",
+        "Name": "Stock Balance",
         "Description": "Place your new inventory on the scales: the Office weighs what gained, lost or vanished compared with an older inventory."
+      },
+      "inventoryRegistry": {
+        "Name": "Stock Registry",
+        "Description": "Browse the stock ledger of your province or city: successive inventories, comparison and term reports."
       },
       "registry": {
         "Name": "Mine Registry",
@@ -396,6 +401,41 @@
   "EconomyMenu": {
     "MinesGroup": "Mines",
     "InventoriesGroup": "Inventories"
+  },
+  "EconomyInventoryRegistry": {
+    "PageTitle": "Stock Registry: {name}",
+    "NoAccess": "The registry is open to a city's mayor, and to a province's Trade Minister and leader. The Office knows of no such office for this character.",
+    "Loading": "The registry is opening…",
+    "LoadError": "Unable to open the registry.",
+    "Empty": "No inventory recorded yet. Record one from the Stock Report.",
+    "ListTitle": "Entries",
+    "LastEntry": "Last entry: {age}, on {date}.",
+    "NoEntry": "No entry yet",
+    "EntryOf": "Inventory of {date}",
+    "ByMe": "Recorded by you",
+    "Replaced": "Replaces the entry by {pseudo} ({office})",
+    "DeletedCharacter": "a character who has since vanished",
+    "Older": "Older entry",
+    "Newer": "Newer entry",
+    "ItemsLabel": "item | items",
+    "EcusLabel": "écus in the treasury",
+    "ColumnItem": "Item",
+    "ColumnBefore": "Before",
+    "ColumnAfter": "After",
+    "ColumnDiff": "Change",
+    "CompareLabel": "Compare with",
+    "CompareNone": "No comparison",
+    "CompareUnavailable": "At least two entries are needed to compare.",
+    "CompareTitle": "From {from} to {to}",
+    "HelpButton": "How does it work?",
+    "HelpTitle": "How does the Stock Registry work?",
+    "HelpPurpose": "Keep the memory of your city's or province's stock, from one office-holder to the next, and compare two entries.",
+    "HelpOverview": "The registry is open to a city's mayor, a province's Trade Minister and its leader (read-only). Nothing enters it without your action, and nothing is deleted: a replaced entry is kept.",
+    "HelpStep1": "Paste your city's or province's inventory into the Stock Report, after choosing the level at the top of the page.",
+    "HelpStep2": "Click \"Save to registry\": the inventory is dated with the game day. If another inventory is already saved for that day, the screen names its author and asks for confirmation before replacing it.",
+    "HelpStep3": "Open the Stock Registry: entries are browsed with the chevrons, from the newest to the oldest.",
+    "HelpStep4": "Compare the open entry with another: ▲ up, ▼ down, new items and items that disappeared.",
+    "HelpStep5": "A new office-holder finds the whole history of their predecessors; the character name of the author of a replaced entry stays visible."
   },
   "EconomyInventory": {
     "PageTitle": "Stock Report",
@@ -462,13 +502,23 @@
     "LevelCity": "City: {name}",
     "LevelProvince": "Province: {name}",
     "ReadOnlyScope": "Read-only: only the office-holder changes this inventory.",
-    "ProvinceRecord": "Record in the province history",
-    "ProvinceRecorded": "Inventory of {date} recorded in the province history.",
-    "ProvinceReplaced": "Inventory of {date} replaced (the previous one stays in the history).",
-    "ProvinceUnchanged": "This inventory is already recorded for {date}: nothing to change.",
-    "ProvinceHistory": "History ({count})",
-    "ProvinceHistoryLoad": "Load a past inventory…",
-    "ProvinceHistoryEmpty": "No inventory recorded for this province yet.",
+    "RegistryTarget": "This inventory will be recorded in the registry: {place}.",
+    "RegistryRecord": "Save to registry",
+    "RegistryRecording": "Recording…",
+    "RegistryRecorded": "Inventory of {date} recorded in the registry ({place}).",
+    "RegistryReplaced": "It replaces the one by {pseudo}; the old one is kept.",
+    "RegistryUnchanged": "This inventory is already recorded for {date}: nothing to change.",
+    "RegistryRecordedBy": "The inventory in place was recorded by {pseudo} ({office}).",
+    "RegistryDeletedCharacter": "a character who has since vanished",
+    "RegistryConfirm": "Replace",
+    "RegistryCancel": "Cancel",
+    "RegistryHistory": "Reopen an entry ({count})",
+    "RegistryHistoryLoad": "Pick a date…",
+    "RegistryHistoryEmpty": "No inventory recorded for this level yet.",
+    "RegistryOpen": "Open the registry",
+    "RegistryBlockTitle": "Stock Registry",
+    "RegistryHistoryAria": "Reopen a past registry entry",
+    "RegistryHistoryHint": "Reopening puts the entry in the field; the registry stays untouched.",
     "SaveError": "Could not save your inventory settings.",
     "CatOrderTitle": "Category order (change the order for your inventory)",
     "CatMoveUp": "Move category {cat} up",
@@ -1292,6 +1342,13 @@
         "Input": "The text of the game's Inventory tab, copied as is, twice: the old inventory and the current one.",
         "Stored": "Nothing is stored, neither on our servers nor in your browser: the comparison happens in your browser, and both texts disappear when you leave or reload the page. The load button only re-reads what Stock Report already keeps for you, under the rules described for that tool; it writes nothing.",
         "Audience": "No one but you: the two texts do not leave your browser, except what you choose to publish on the game forum."
+      },
+      "InventoryRegistry": {
+        "Title": "Stock Registry",
+        "Purpose": "Keep the management memory of a city's or province's stock, handed from one office-holder to the next: the mayor saves the city's inventory, the Trade Minister saves the province's. The province's ruler can view the province's entries. You must hold one of these offices and have it validated in the Office. Without that, the tool is not accessible.",
+        "Input": "No specific input: the registry records the inventory you have already pasted in the Stock Report. You click 'Save to registry' to create a dated snapshot of that inventory.",
+        "Stored": "The inventory text, encrypted in the database, with the date, level (city or province) and the author's office. If you replace an existing entry on the same day, the previous author's character name remains visible in the history.",
+        "Deletion": "Registry entries are linked to the office, not to your account: they are not part of your data export and stay in place when you leave office. The link between the entry and your account is removed."
       },
       "Watch": {
         "Title": "Watch",

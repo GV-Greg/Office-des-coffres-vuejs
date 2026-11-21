@@ -12,6 +12,7 @@ import { fetchItemIcons } from '@/use/itemIconsApi'
 import { useAuthStore } from '@/stores/authStore'
 import { useCookieStore } from '@/stores/cookieStore'
 import { useInventoryStore } from '@/stores/inventoryStore'
+import AccessLoader from '@/components/loading/AccessLoader.vue'
 
 /*
   La Balance des stocks (4ᵉ module de la Salle des comptes ; fil admin/echanges/inventaire-comparaison/, décisions de Greg du 19/11/2026) :
@@ -28,20 +29,29 @@ const store = useInventoryStore()
 
 const level = ref('personal')
 const levels = computed(() => store.availableLevels)
+// Les niveaux ouverts viennent du serveur : tant qu'il n'a pas répondu, la place du sélecteur est réservée (cadenas + squelette, comme le Bilan des mines).
+const scopesReady = ref(!store.serverMode)
 
 const previousText = ref('')
 const currentText = ref('')
 
 // ─── Niveau et « Récupérer » ─────────────────────────────────────────────────
 async function enter(lv) {
-  if (!store.serverMode) return
-  await store.loadScopes()
-  await store.load('personal')
-  if (lv !== 'personal') await store.load(lv)
+  if (!store.serverMode) {
+    scopesReady.value = true
+    return
+  }
+  try {
+    await store.loadScopes()
+    await store.load('personal')
+    if (lv !== 'personal') await store.load(lv)
+  } finally {
+    scopesReady.value = true
+  }
 }
 onMounted(() => enter(level.value))
 watch(level, lv => { fetchedEmpty.value = false; enter(lv) })
-watch(() => store.characterId, () => { level.value = 'personal'; source.value = null; enter('personal') })
+watch(() => store.characterId, () => { level.value = 'personal'; source.value = null; scopesReady.value = !store.serverMode; enter('personal') })
 
 // Mêmes libellés que la Gestion des stocks : « Personnel », « Ville : Arras », « Province : Artois ».
 const levelLabel = lv => {
@@ -215,7 +225,8 @@ function clearAll() {
     <p class="text-sm italic text-slate-600 dark:text-slate-400 mb-3">{{ t('EconomyBalance.Intro') }}</p>
 
     <!-- Niveau : au-dessus, comme dans la Gestion des stocks — seulement si le personnage actif a un poste qui en ouvre d'autres que le sien. -->
-    <div v-if="levels.length > 1" role="group" :aria-label="t('EconomyInventory.LevelNav')" class="flex flex-wrap gap-2 mb-3" data-testid="balance-levels">
+    <AccessLoader v-if="!scopesReady" min-height="3.5rem" class="mb-3" />
+    <div v-else-if="levels.length > 1" role="group" :aria-label="t('EconomyInventory.LevelNav')" class="flex flex-wrap gap-2 mb-3" data-testid="balance-levels">
       <button
         v-for="lv in levels"
         :key="lv"

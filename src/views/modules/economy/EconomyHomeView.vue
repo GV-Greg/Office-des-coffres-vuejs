@@ -8,6 +8,7 @@ const { t } = useI18n()
 
 const access = inject('economyAccess', null)
 const ready = inject('economyAccessReady', true)
+const stockRegistryAccess = inject('economyStockRegistryAccess', null)
 
 const canAccessMandateTools = computed(() => !!(access?.value?.read || access?.value?.write))
 
@@ -49,6 +50,17 @@ const groups = computed(() => {
       icon: 'gi-scales',
     },
   ]
+
+  // Le Registre des stocks : seulement pour qui peut le lire (maire, commissaire au commerce, dirigeant) — le serveur le dit.
+  if (stockRegistryAccess?.value) {
+    inventories.push({
+      key: 'inventoryRegistry',
+      title: t('Economy.Cards.inventoryRegistry.Name'),
+      description: t('Economy.Cards.inventoryRegistry.Description'),
+      to: { name: 'economy-inventory-registry' },
+      icon: 'gi-scroll-unfurled',
+    })
+  }
 
   return [
     { key: 'mines', title: t('EconomyMenu.MinesGroup'), items: mines },

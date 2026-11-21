@@ -364,6 +364,7 @@
     "MineRegistryLink": "Registre des mines",
     "InventoryLink": "Bilan des stocks",
     "BalanceLink": "Balance des stocks",
+    "RegistryStocksLink": "Registre des stocks",
     "Home": {
       "Title": "La Salle des comptes",
       "Intro": "Voici les coffres que l'Office met à disposition pour les mines, les inventaires et les marchés.",
@@ -380,8 +381,12 @@
         "Description": "Collez un inventaire pour le classer par catégorie, le trier et en rédiger l'état pour vos marchands."
       },
       "balance": {
-        "Name": "La Balance des stocks",
+        "Name": "Balance des stocks",
         "Description": "Posez votre nouvel inventaire sur les balances : l'Office pèse ce qui a gagné, perdu ou disparu par rapport à un ancien inventaire."
+      },
+      "inventoryRegistry": {
+        "Name": "Registre des stocks",
+        "Description": "Feuilletez le livre des stocks de votre province ou de votre ville : inventaires successifs, comparaison et bilans de mandat."
       },
       "registry": {
         "Name": "Registre des mines",
@@ -396,6 +401,41 @@
   "EconomyMenu": {
     "MinesGroup": "Mines",
     "InventoriesGroup": "Inventaires"
+  },
+  "EconomyInventoryRegistry": {
+    "PageTitle": "Registre des stocks : {name}",
+    "NoAccess": "Le registre s'ouvre au maire de la ville, au commissaire au commerce et au dirigeant de la province. L'Office ne connaît pas un tel poste pour ce personnage.",
+    "Loading": "Le registre s'ouvre…",
+    "LoadError": "Impossible d'ouvrir le registre.",
+    "Empty": "Aucun inventaire inscrit pour l'instant. Inscrivez-le depuis le Bilan des stocks.",
+    "ListTitle": "Inscriptions",
+    "LastEntry": "Dernière inscription : {age}, le {date}.",
+    "NoEntry": "Aucune inscription pour l'instant",
+    "EntryOf": "Inventaire du {date}",
+    "ByMe": "Inscrit par vous",
+    "Replaced": "Remplace l'inscription de {pseudo} ({office})",
+    "DeletedCharacter": "un personnage disparu",
+    "Older": "Inscription plus ancienne",
+    "Newer": "Inscription plus récente",
+    "ItemsLabel": "article | articles",
+    "EcusLabel": "écus au trésor",
+    "ColumnItem": "Article",
+    "ColumnBefore": "Avant",
+    "ColumnAfter": "Après",
+    "ColumnDiff": "Écart",
+    "CompareLabel": "Comparer avec",
+    "CompareNone": "Aucune comparaison",
+    "CompareUnavailable": "Il faut au moins deux inscriptions pour comparer.",
+    "CompareTitle": "Du {from} au {to}",
+    "HelpButton": "Comment ça marche ?",
+    "HelpTitle": "Comment fonctionne le Registre des stocks ?",
+    "HelpPurpose": "Garder la mémoire des stocks de votre ville ou de votre province, d'un titulaire au suivant, et comparer deux inscriptions.",
+    "HelpOverview": "Le registre s'ouvre au maire de la ville, au commissaire au commerce de la province et au dirigeant, ce dernier en lecture seule. Rien n'y entre sans votre geste, et rien ne s'efface : une inscription remplacée reste conservée.",
+    "HelpStep1": "Collez l'inventaire de votre ville ou de votre province dans le Bilan des stocks, après avoir choisi le niveau en haut de la page.",
+    "HelpStep2": "Cliquez sur « Inscrire au registre » : l'inventaire est daté du jour du jeu. Si un autre inventaire est déjà inscrit ce jour-là, l'écran nomme son rédacteur et demande confirmation avant de le remplacer.",
+    "HelpStep3": "Ouvrez le Registre des stocks : les inscriptions se parcourent avec les chevrons, de la plus récente à la plus ancienne.",
+    "HelpStep4": "Comparez l'inscription ouverte à une autre : ▲ en hausse, ▼ en baisse, les nouveautés et les articles disparus.",
+    "HelpStep5": "Un nouveau titulaire du poste retrouve toute l'histoire de ses prédécesseurs ; le pseudo du rédacteur d'une inscription remplacée y reste visible."
   },
   "EconomyInventory": {
     "PageTitle": "Bilan des stocks",
@@ -462,13 +502,23 @@
     "LevelCity": "Ville : {name}",
     "LevelProvince": "Province : {name}",
     "ReadOnlyScope": "Lecture seule : seul le titulaire du poste modifie cet inventaire.",
-    "ProvinceRecord": "Inscrire à l'historique de la province",
-    "ProvinceRecorded": "Inventaire du {date} inscrit dans l'historique de la province.",
-    "ProvinceReplaced": "Inventaire du {date} remplacé (l'ancien reste dans l'historique).",
-    "ProvinceUnchanged": "Cet inventaire est déjà inscrit pour le {date} : rien à changer.",
-    "ProvinceHistory": "Historique ({count})",
-    "ProvinceHistoryLoad": "Charger un inventaire passé…",
-    "ProvinceHistoryEmpty": "Aucun inventaire inscrit pour cette province.",
+    "RegistryTarget": "Cet inventaire sera inscrit au registre : {place}.",
+    "RegistryRecord": "Inscrire au registre",
+    "RegistryRecording": "Inscription…",
+    "RegistryRecorded": "Inventaire du {date} inscrit au registre ({place}).",
+    "RegistryReplaced": "Il remplace celui de {pseudo} ; l'ancien reste conservé.",
+    "RegistryUnchanged": "Cet inventaire est déjà inscrit pour le {date} : rien à changer.",
+    "RegistryRecordedBy": "L'inventaire en place a été inscrit par {pseudo} ({office}).",
+    "RegistryDeletedCharacter": "un personnage disparu",
+    "RegistryConfirm": "Remplacer",
+    "RegistryCancel": "Annuler",
+    "RegistryHistory": "Rouvrir une inscription ({count})",
+    "RegistryHistoryLoad": "Choisir une date…",
+    "RegistryHistoryEmpty": "Aucun inventaire inscrit pour ce niveau.",
+    "RegistryOpen": "Ouvrir le registre",
+    "RegistryBlockTitle": "Registre des stocks",
+    "RegistryHistoryAria": "Rouvrir une inscription passée du registre",
+    "RegistryHistoryHint": "Rouvrir place l'inscription dans le champ ; le registre reste intact.",
     "SaveError": "Impossible d'enregistrer vos réglages d'inventaire.",
     "CatOrderTitle": "Ordre des catégories (modifier l'ordre pour votre inventaire)",
     "CatMoveUp": "Monter la catégorie {cat}",
@@ -1292,6 +1342,13 @@
         "Input": "Le texte de l'onglet Inventaire du jeu, copié tel quel, deux fois : l'ancien inventaire et l'inventaire actuel.",
         "Stored": "Rien n'est enregistré, ni sur nos serveurs ni dans votre navigateur : la comparaison se fait dans votre navigateur, et les deux textes disparaissent quand vous quittez ou rechargez la page. Le bouton de reprise ne fait que relire ce que le Bilan des stocks conserve déjà pour vous, selon les règles décrites pour cet outil ; il n'écrit rien.",
         "Audience": "Personne d'autre que vous : les deux textes ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu."
+      },
+      "InventoryRegistry": {
+        "Title": "Registre des stocks",
+        "Purpose": "Garder la mémoire de gestion des stocks d'une ville ou d'une province, transmise d'un titulaire à l'autre : le maire y inscrit l'inventaire de sa ville, le commissaire au commerce celui de sa province. Le dirigeant de la province peut consulter les inscriptions de la province. Il faut tenir l'un de ces postes et l'avoir fait valider dans l'Office. Sans cela, l'outil n'est pas accessible.",
+        "Input": "Aucune saisie spécifique : le registre enregistre l'inventaire que vous avez déjà collé dans le Bilan des stocks. Vous cliquez sur « Inscrire au registre » pour créer un instantané daté de cet inventaire.",
+        "Stored": "Le texte de l'inventaire, chiffré en base de données, avec la date, le niveau (ville ou province) et le poste du rédacteur. Si vous remplacez une inscription existante le même jour, le pseudo du rédacteur précédent reste visible dans l'historique.",
+        "Deletion": "Les inscriptions du registre sont rattachées au poste, pas à votre compte : elles ne font pas partie de votre export de données et restent en place quand vous quittez vos fonctions. Le lien entre l'inscription et votre compte est supprimé."
       },
       "Watch": {
         "Title": "Le Guet",

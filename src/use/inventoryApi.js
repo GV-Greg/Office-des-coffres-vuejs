@@ -7,6 +7,9 @@ import { useAuthStore } from '@/stores/authStore'
   Trois niveaux : `personal` (le personnage), `city` (le maire), `province` (le commissaire au commerce, le dirigeant lit).
   Les jetons sont attachés à la main, comme partout (api.js).
 */
+/** Routes du registre : la province garde sa route d'origine, la ville a la sienne. */
+const registryPath = (level) => (level === 'city' ? 'inventory/city/registry' : 'inventory/province')
+
 export default function inventoryApi() {
   const authStore = useAuthStore()
   const auth = () => ({ headers: { Authorization: `Bearer ${authStore.getToken}` } })
@@ -27,9 +30,21 @@ export default function inventoryApi() {
     /** Le dernier inventaire collé (personnel ou ville) : { raw, saved_at, scope }. */
     getText: (characterId, level) => http.get(`${base(characterId)}/inventory/${level}`, auth()).then(({ data }) => data.inventory),
     putText: (characterId, level, raw) => http.put(`${base(characterId)}/inventory/${level}`, { raw }, auth()).then(({ data }) => data.inventory),
-    /** L'historique des inventaires de la province : { province, snapshots: [{ id, taken_on, raw, by_me }], can_write }. */
-    provinceHistory: (characterId) => http.get(`${base(characterId)}/inventory/province`, auth()).then(({ data }) => data),
-    /** Inscrit l'inventaire du jour dans l'historique : { snapshot, replaced, unchanged }. */
-    recordProvince: (characterId, raw) => http.post(`${base(characterId)}/inventory/province`, { raw }, auth()).then(({ data }) => data),
+    /**
+     * Le REGISTRE d'un niveau (fil admin/echanges/registre-stocks) : `province` (commissaire au commerce ; le dirigeant lit) ou `city` (le maire).
+     * { province|city: { id, name }, snapshots: [{ id, taken_on, saved_at, office_key, by_me, replaced, raw }], can_write }.
+     * `replaced` = le rédacteur de l'inscription que celle-ci a remplacée ({ pseudo, office_label: { fr, en }, … }) ou null ; l'auteur d'une
+     * inscription en vigueur n'est jamais nommé (`by_me` seulement).
+     */
+    registry: (characterId, level) => http.get(`${base(characterId)}/${registryPath(level)}`, auth()).then(({ data }) => data),
+    /**
+     * Inscrit l'inventaire du jour au registre : { snapshot, replaced, unchanged }. Un AUTRE texte le même jour répond 409 (+ `existing`, l'auteur
+     * de l'inscription à remplacer) tant que `confirmReplace` n'est pas vrai ; l'ancienne inscription reste, rien ne s'efface.
+     */
+    recordRegistry: (characterId, level, raw, confirmReplace = false) =>
+      http.post(`${base(characterId)}/${registryPath(level)}`, confirmReplace ? { raw, confirm_replace: true } : { raw }, auth()).then(({ data }) => data),
+    /** Historique et inscription de la province (alias de `registry`/`recordRegistry`). */
+    provinceHistory: (characterId) => http.get(`${base(characterId)}/${registryPath('province')}`, auth()).then(({ data }) => data),
+    recordProvince: (characterId, raw) => http.post(`${base(characterId)}/${registryPath('province')}`, { raw }, auth()).then(({ data }) => data),
   }
 }

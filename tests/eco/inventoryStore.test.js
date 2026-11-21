@@ -289,6 +289,56 @@ describe('province : l\'historique', () => {
   })
 })
 
+describe('registre des stocks : ville et province', () => {
+  const CITY = { city: { id: 1, name: 'Arras' }, can_write: true, snapshots: [{ id: 9, taken_on: '2026-05-17', raw: 'ville', by_me: true, replaced: null }] }
+
+  it('charge le registre de la ville à sa propre route, une seule fois, et la province garde la sienne', async () => {
+    const { store } = setup()
+    http.get.mockReturnValue(ok(CITY))
+    await store.loadRegistry('city')
+    await store.loadRegistry('city')
+    expect(http.get).toHaveBeenCalledTimes(1)
+    expect(http.get).toHaveBeenCalledWith('characters/7/inventory/city/registry', expect.anything())
+    expect(store.registryOf('city').snapshots[0].raw).toBe('ville')
+
+    http.get.mockReturnValue(ok({ province: { id: 3, name: 'Artois' }, can_write: true, snapshots: [] }))
+    await store.loadRegistry('province')
+    expect(http.get).toHaveBeenLastCalledWith('characters/7/inventory/province', expect.anything())
+    expect(store.registryOf('province').snapshots).toEqual([])
+  })
+
+  it('inscrit au registre du niveau, sans confirmation d\'abord (corps { raw } seul), puis relit le registre', async () => {
+    const { store } = setup()
+    http.get.mockReturnValue(ok(CITY))
+    http.post.mockReturnValue(ok({ snapshot: { id: 10, taken_on: '2026-05-24' }, replaced: null, unchanged: false }))
+    const result = await store.recordRegistry('city', 'nouveau')
+    expect(http.post).toHaveBeenCalledWith('characters/7/inventory/city/registry', { raw: 'nouveau' }, expect.anything())
+    expect(result.snapshot.id).toBe(10)
+    expect(http.get).toHaveBeenCalledTimes(1) // le registre est relu après l'inscription
+  })
+
+  it('un 409 est LEVÉ tel quel (l\'appelant demande confirmation), rien n\'est relu ; avec confirmation le corps porte confirm_replace', async () => {
+    const { store } = setup()
+    const conflict = { response: { status: 409, data: { existing: { pseudo: 'Marchand' } } } }
+    http.post.mockReturnValueOnce(Promise.reject(conflict))
+    await expect(store.recordRegistry('province', 'autre')).rejects.toBe(conflict)
+    expect(http.get).not.toHaveBeenCalled()
+
+    http.get.mockReturnValue(ok({ province: { id: 3, name: 'Artois' }, can_write: true, snapshots: [] }))
+    http.post.mockReturnValueOnce(ok({ snapshot: { id: 4, taken_on: '2026-05-24' }, replaced: { pseudo: 'Marchand' }, unchanged: false }))
+    await store.recordRegistry('province', 'autre', true)
+    expect(http.post).toHaveBeenLastCalledWith('characters/7/inventory/province', { raw: 'autre', confirm_replace: true }, expect.anything())
+  })
+
+  it('changer de personnage vide aussi le registre de la ville', async () => {
+    const { store } = setup()
+    http.get.mockReturnValue(ok(CITY))
+    await store.loadRegistry('city')
+    store.reset()
+    expect(store.registryOf('city')).toBeNull()
+  })
+})
+
 describe('copie vers un autre personnage', () => {
   it('copie les réglages du personnage actif vers la cible, sans confirmation par défaut', async () => {
     const { store } = setup()
