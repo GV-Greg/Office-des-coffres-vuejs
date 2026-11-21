@@ -38,11 +38,12 @@ const PROVINCE_SNAPSHOTS = [
 const CITY_SNAPSHOTS = [{ id: 20, taken_on: '2026-05-20', by_me: true, office_key: 'mayor', replaced: null, raw: '30Poissons900' }]
 
 // `today` : le jour du jeu en cours, dit par le serveur (bascule à 04:00).
-function serve({ scopes = SCOPES(), province = PROVINCE_SNAPSHOTS, city = CITY_SNAPSHOTS, canWrite = true, today = '2026-05-26' } = {}) {
+function serve({ scopes = SCOPES(), province = PROVINCE_SNAPSHOTS, city = CITY_SNAPSHOTS, canWrite = true, today = '2026-05-26', mandate = null } = {}) {
   http.get.mockImplementation(url => {
     if (url.endsWith('inventory-scopes')) return ok(scopes)
-    if (url.endsWith('inventory/province')) return ok({ province: { id: 3, name: 'Artois' }, can_write: canWrite, snapshots: province, today })
-    if (url.endsWith('inventory/city/registry')) return ok({ city: { id: 1, name: 'Arras' }, can_write: true, snapshots: city, today })
+    if (url.includes('inventory-settings/')) return ok({ settings: { data: { itemCategories: {} }, version: 1, scope: {} } })
+    if (url.endsWith('inventory/province')) return ok({ province: { id: 3, name: 'Artois' }, can_write: canWrite, snapshots: province, today, mandate })
+    if (url.endsWith('inventory/city/registry')) return ok({ city: { id: 1, name: 'Arras' }, can_write: true, snapshots: city, today, mandate })
     return ok({})
   })
 }
@@ -164,19 +165,21 @@ describe('Registre des stocks — historique navigable', () => {
     expect(find(w, 'registry-entry-2').attributes('aria-current')).toBe('true')
   })
 
-  it('mise en page : la comparaison est à droite, AU-DESSUS des inscriptions ; le contenu reste à gauche', async () => {
+  it('mise en page : le contenu à gauche, la comparaison au milieu, les inscriptions dans une petite colonne tout à droite', async () => {
     const w = await mountPage({ scopes: SCOPES({ city: null }) })
     await find(w, 'registry-compare').setValue('2')
     const side = find(w, 'registry-side').element
     const detail = find(w, 'registry-detail').element
+    const list = find(w, 'registry-list').element
     expect(side.contains(find(w, 'registry-compare').element)).toBe(true)
     expect(side.contains(find(w, 'registry-compare-result').element)).toBe(true)
-    expect(side.contains(find(w, 'registry-list').element)).toBe(true)
+    expect(side.contains(list)).toBe(false) // les inscriptions ne sont plus dans la colonne de la comparaison
     expect(detail.contains(find(w, 'registry-compare').element)).toBe(false)
     expect(detail.contains(find(w, 'registry-contents').element)).toBe(true)
-    // au-dessus : le sélecteur précède la liste des inscriptions dans la colonne
-    const order = [...side.querySelectorAll('[data-testid="registry-compare"], [data-testid="registry-list"]')].map(n => n.getAttribute('data-testid'))
-    expect(order).toEqual(['registry-compare', 'registry-list'])
+    // même grille, dans l'ordre : inscription, comparaison, inscriptions (colonne tout à droite au large)
+    expect([...detail.parentElement.children].map(el => el.getAttribute('data-testid'))).toEqual(['registry-detail', 'registry-side', 'registry-list'])
+    expect(list.className).toContain('desktop:col-start-3')
+    expect(detail.parentElement.className).toContain('desktop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)_11rem]')
   })
 
   it('les infos de l\'inscription (rédacteur, remplacement, nombre d\'articles) sont sur la ligne du titre, après le chevron de droite', async () => {
@@ -254,6 +257,159 @@ describe('Registre des stocks — ne stocke rien', () => {
     const w = await mountPage({ scopes: SCOPES({ city: null }) })
     await find(w, 'registry-older').trigger('click')
     await find(w, 'registry-compare').setValue('1')
+    expect(http.post).not.toHaveBeenCalled()
+    expect(http.put).not.toHaveBeenCalled()
+    expect(setItem.mock.calls.filter(([key]) => /inventory|registry/i.test(String(key)))).toEqual([])
+    setItem.mockRestore()
+  })
+})
+
+// ─── PR 3b : prise de poste, bilans de mandat, jours sans inscription, exports BBCode (réponses de Cowork 12) ───────────────────────────────
+// Entré en fonction le 10/05 ; mi-mandat le 20/05, fin le 09/06 ; fenêtre « prédécesseurs » dès le 10/04 ; le serveur dit aujourd'hui : le 26/05.
+const MANDATE = { in_office_from: '2026-05-10', mid_at: '2026-05-20', end_at: '2026-06-09', predecessor_from: '2026-04-10' }
+const READ_SNAPSHOTS = [
+  { id: 4, taken_on: '2026-05-24', by_me: true, office_key: 'commissaire_commerce', replaced: null, raw: '#NomEnc.Actions possibles2000,00 écus\n20Miches de pain100' },
+  { id: 3, taken_on: '2026-05-17', by_me: true, office_key: 'commissaire_commerce', replaced: null, raw: '#NomEnc.Actions possibles1500,00 écus\n16Miches de pain80\n2Sel6' },
+  { id: 2, taken_on: '2026-05-08', by_me: false, office_key: 'commissaire_commerce', replaced: null, raw: '#NomEnc.Actions possibles1000,00 écus\n10Miches de pain50' },
+  { id: 1, taken_on: '2026-04-28', by_me: false, office_key: 'commissaire_commerce', replaced: null, raw: '#NomEnc.Actions possibles900,00 écus\n8Miches de pain40' },
+]
+const mountRead = (options = {}) => mountPage({ scopes: SCOPES({ city: null }), mandate: MANDATE, province: READ_SNAPSHOTS, ...options })
+const clipboard = () => {
+  const writeText = vi.fn().mockResolvedValue()
+  Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+  return writeText
+}
+
+describe('Registre des stocks — prise de poste (PR 3b)', () => {
+  it('l\'inventaire HÉRITÉ (dernière inscription au plus tard le jour d\'entrée en fonction) et ce que d\'autres ont inscrit juste avant, sans nommer personne', async () => {
+    const w = await mountRead()
+    expect(plain(find(w, 'registry-takeover-start').text())).toContain('Inventaire hérité : celui du 08/05, 2 jours avant votre entrée en fonction.')
+    expect(plain(find(w, 'registry-takeover-start').text())).toContain('1 article, 1 000 écus au trésor')
+    expect(plain(find(w, 'registry-predecessors').text())).toContain('Inscrit par vos prédécesseurs dans les 30 jours avant le 10/05 : 2 inscriptions')
+    expect(w.findAll('[data-testid^="registry-predecessor-"]').map(b => b.text())).toEqual(['08/05', '28/04']) // du plus récent au plus ancien
+    expect(find(w, 'registry-takeover').text()).not.toMatch(/Marchand|Artifice|prédécesseur[^s]/) // personne n'est nommé
+  })
+
+  it('les dates sont cliquables : elles ouvrent l\'inscription', async () => {
+    const w = await mountRead()
+    await find(w, 'registry-predecessor-1').trigger('click')
+    expect(find(w, 'registry-entry-1').attributes('aria-current')).toBe('true')
+    await find(w, 'registry-takeover-open').trigger('click')
+    expect(find(w, 'registry-entry-2').attributes('aria-current')).toBe('true')
+  })
+
+  it('sans inscription antérieure : la première inscription du mandat ; sans rien de connu : la section n\'existe pas', async () => {
+    const onlyMine = [READ_SNAPSHOTS[0]]
+    const w = await mountRead({ province: onlyMine })
+    expect(plain(find(w, 'registry-takeover-start').text())).toContain('Première inscription de votre mandat : celle du 24/05.')
+    expect(find(w, 'registry-predecessors').exists()).toBe(false)
+    // aucune lecture du tout si le serveur ne donne pas de repères de mandat
+    expect(find(await mountPage({ scopes: SCOPES({ city: null }) }), 'registry-readings').exists()).toBe(false)
+  })
+})
+
+describe('Registre des stocks — bilans de mandat (PR 3b)', () => {
+  it('mi-mandat PRÊT : de l\'inventaire hérité à la dernière inscription AVANT le 20/05 (le 17/05) — hausses, nouveautés, trésor', async () => {
+    const w = await mountRead()
+    const mid = find(w, 'registry-bilan-mid')
+    expect(plain(mid.text())).toContain('Bilan de mi-mandat, du 08/05 au 17/05')
+    expect(find(w, 'registry-bilan-mid-summary').text()).toBe('En hausse : 1 · En baisse : 0 · Nouveaux : 1 · Disparus : 0')
+    expect(plain(mid.text())).toContain('Trésor : 1 500 écus')
+    expect(plain(mid.text())).toContain('+500,00')
+  })
+
+  it('fin de mandat : « disponible le 09/06, dans 14 jours » — jamais un bilan partiel', async () => {
+    const w = await mountRead()
+    const end = find(w, 'registry-bilan-end')
+    expect(plain(end.text())).toBe('Bilan de fin de mandat : disponible le 09/06, dans 14 jours.')
+    expect(find(w, 'registry-bilan-end-summary').exists()).toBe(false)
+    expect(find(w, 'registry-bilan-end-export').exists()).toBe(false)
+  })
+
+  it('le détail s\'ouvre et se referme : le tableau Article / Avant / Après / Écart, rien que ce qui a bougé', async () => {
+    const w = await mountRead()
+    expect(find(w, 'registry-bilan-mid-table').exists()).toBe(false)
+    await find(w, 'registry-bilan-mid-toggle').trigger('click')
+    const rows = w.findAll('[data-testid="registry-bilan-mid-row"]').map(r => r.findAll('td').map(td => plain(td.text())))
+    expect(rows).toHaveLength(2) // rien que ce qui a bougé
+    expect(rows[0].slice(0, 3)).toEqual(['Miches de pain', '10', '16'])
+    expect(rows[0][3]).toContain('+6')
+    expect(rows[1][0]).toContain('Sel')
+    expect(rows[1].slice(1, 3)).toEqual(['—', '2']) // nouveauté : pas d'« avant »
+    expect(rows[1][3]).toContain('+2')
+    await find(w, 'registry-bilan-mid-toggle').trigger('click')
+    expect(find(w, 'registry-bilan-mid-table').exists()).toBe(false)
+  })
+
+  it('pas assez d\'inscriptions : le bilan dit laquelle manque', async () => {
+    // une seule inscription, après la mi-mandat : départ = elle-même, aucune arrivée
+    const w = await mountRead({ province: [READ_SNAPSHOTS[0]] })
+    expect(plain(find(w, 'registry-bilan-mid').text())).toBe('Bilan de mi-mandat : pas assez d\'inscriptions pour l\'établir — il manque l\'inscription d\'arrivée.')
+  })
+
+  it('en anglais', async () => {
+    const w = await mountRead({ locale: 'en' })
+    expect(plain(find(w, 'registry-bilan-end').text())).toBe('End-of-term report: available on 09/06, in 14 days.')
+    expect(plain(find(w, 'registry-takeover-start').text())).toContain('Inherited inventory: the one of 08/05, 2 days before you took office.')
+  })
+})
+
+describe('Registre des stocks — jours sans inscription (PR 3b)', () => {
+  it('un fait, en périodes, depuis l\'entrée en fonction jusqu\'à hier — sans seuil, sans couleur', async () => {
+    const w = await mountRead() // 10/05 → 25/05, couverts : 17/05 et 24/05
+    expect(plain(find(w, 'registry-gaps-summary').text())).toBe('14 jours sans inscription depuis votre entrée en fonction, le 10/05 :')
+    expect(w.findAll('[data-testid="registry-gaps-periods"] li').map(li => plain(li.text()))).toEqual(['du 10/05 au 16/05', 'du 18/05 au 23/05', 'le 25/05'])
+    expect(find(w, 'registry-gaps').html()).not.toMatch(/orange|red-|font-bold/)
+  })
+
+  it('aucun jour sans inscription : le dit', async () => {
+    const all = ['2026-05-10', '2026-05-11'].map((d, i) => ({ ...READ_SNAPSHOTS[0], id: 10 + i, taken_on: d }))
+    const w = await mountRead({ province: all, today: '2026-05-12' })
+    expect(plain(find(w, 'registry-gaps-summary').text())).toBe('Aucun jour sans inscription depuis votre entrée en fonction, le 10/05.')
+    expect(find(w, 'registry-gaps-periods').exists()).toBe(false)
+  })
+})
+
+describe('Registre des stocks — exports BBCode (PR 3b)', () => {
+  it('une inscription : le BBCode du Bilan des stocks, sous un titre « Inventaire du {date} — {lieu} » (français fixe, année du jeu)', async () => {
+    const writeText = clipboard()
+    const w = await mountRead()
+    await find(w, 'registry-export').trigger('click')
+    await flushPromises()
+    const text = writeText.mock.calls[0][0]
+    expect(text.startsWith('[b][size=20]Inventaire du 24/05/1474 — Province : Artois[/size][/b]\n\n')).toBe(true)
+    expect(text).toContain('Miches de pain')
+    expect(text).toMatch(/Trésor : 2\s000,00 écus/)
+  })
+
+  it('un bilan de mandat : le BBCode annoté de la Balance (▲ ▼), titre « Bilan de mi-mandat, du … au … »', async () => {
+    const writeText = clipboard()
+    const w = await mountRead()
+    await find(w, 'registry-bilan-mid-export').trigger('click')
+    await flushPromises()
+    const text = writeText.mock.calls[0][0]
+    expect(text.startsWith('[b][size=20]Bilan de mi-mandat, du 08/05/1474 au 17/05/1474[/size][/b]\n\n')).toBe(true)
+    expect(text).toContain('▲')
+    expect(text).toContain('Sel')
+  })
+
+  it('la comparaison libre : même export annoté, titre « Comparaison des inventaires du … au … », l\'ancienne est « avant »', async () => {
+    const writeText = clipboard()
+    const w = await mountRead()
+    await find(w, 'registry-compare').setValue('3') // 24/05 (ouverte) contre 17/05
+    await find(w, 'registry-compare-export').trigger('click')
+    await flushPromises()
+    const text = writeText.mock.calls[0][0]
+    expect(text.startsWith('[b][size=20]Comparaison des inventaires du 17/05/1474 au 24/05/1474[/size][/b]\n\n')).toBe(true)
+    expect(text).toContain('▲')
+  })
+
+  it('l\'export n\'écrit rien au serveur et ne garde rien dans le navigateur', async () => {
+    clipboard()
+    const setItem = vi.spyOn(Storage.prototype, 'setItem')
+    const w = await mountRead()
+    await find(w, 'registry-export').trigger('click')
+    await flushPromises()
     expect(http.post).not.toHaveBeenCalled()
     expect(http.put).not.toHaveBeenCalled()
     expect(setItem.mock.calls.filter(([key]) => /inventory|registry/i.test(String(key)))).toEqual([])

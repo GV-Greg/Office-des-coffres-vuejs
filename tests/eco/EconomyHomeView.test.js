@@ -46,19 +46,20 @@ describe('EconomyHomeView — groupes de cartes', () => {
     expect(mountHome({ locale: 'en', stockRegistry: true }).find('[data-testid="card-inventoryRegistry"]').text()).toContain('Stock Registry')
   })
 
-  it('les groupes sont en deux colonnes, les cartes empilées dans chacun', () => {
-    const w = mountHome({ read: true })
-    expect(w.find('[data-testid="economy-groups"]').classes()).toContain('tablet:grid-cols-2')
-    for (const key of ['mines', 'inventories']) {
-      const cards = w.find(`[data-testid="economy-home-cards-${key}"]`)
-      expect(cards.classes()).toContain('grid-cols-1')
-      expect(cards.classes()).not.toContain('desktop:grid-cols-3')
-    }
-  })
-
-  it('la carte de la Balance s\'écrit sans « La », comme le lien du menu : « Balance des stocks » / « Stock Balance »', () => {
-    expect(mountHome().find('[data-testid="card-balance"] h3').text()).toBe('Balance des stocks')
-    expect(mountHome({ locale: 'en' }).find('[data-testid="card-balance"] h3').text()).toBe('Stock Balance')
+  it('une seule carte = une seule colonne ; deux cartes ou plus = deux colonnes ; les groupes côte à côte, larges de leurs colonnes', () => {
+    const w = mountHome()
+    const mines = w.find('[data-testid="economy-home-cards-mines"]')
+    const inventories = w.find('[data-testid="economy-home-cards-inventories"]')
+    expect(mines.classes()).toContain('grid-cols-1')
+    expect(mines.classes()).not.toContain('tablet:grid-cols-2') // une seule carte : une seule colonne
+    expect(inventories.classes()).toContain('tablet:grid-cols-2')
+    expect(inventories.classes()).not.toContain('desktop:grid-cols-3')
+    // largeur proportionnelle aux colonnes : 1 pour Mines, 2 pour Inventaires
+    expect(w.find('[data-testid="economy-group-mines"]').attributes('style')).toContain('flex: 1 1 15rem')
+    expect(w.find('[data-testid="economy-group-inventories"]').attributes('style')).toContain('flex: 2 1 30rem')
+    // avec le registre (mines : 2 cartes), le groupe Mines passe lui aussi à deux colonnes
+    const withRegistry = mountHome({ read: true })
+    expect(withRegistry.find('[data-testid="economy-home-cards-mines"]').classes()).toContain('tablet:grid-cols-2')
   })
 
   it('la carte du module s\'appelle « Bilan des stocks » / « Stock Report »', () => {

@@ -20,8 +20,8 @@
     items: { type: Array, required: true },
     accent: { type: String, default: 'teal', validator: v => ['teal', 'gold', 'rose', 'violet', 'slate'].includes(v) },
     testid: { type: String, default: 'module-cards' },
-    // `single` : une seule colonne de cartes (le groupe vit lui-même dans une colonne, ex. la Salle des comptes) ; `auto` : 2 puis 3 colonnes.
-    layout: { type: String, default: 'auto', validator: v => ['auto', 'single'].includes(v) },
+    // `single` : une seule colonne de cartes ; `duo` : deux colonnes (un groupe qui vit lui-même dans une colonne, ex. la Salle des comptes) ; `auto` : 2 puis 3 colonnes.
+    layout: { type: String, default: 'auto', validator: v => ['auto', 'single', 'duo'].includes(v) },
   })
 
   const { t } = useI18n()
@@ -32,7 +32,7 @@
 </script>
 
 <template>
-  <ul class="grid gap-4 list-none p-0 m-0" :class="layout === 'single' ? 'grid-cols-1' : 'tablet:grid-cols-2 desktop:grid-cols-3'" :data-testid="testid">
+  <ul class="grid gap-4 list-none p-0 m-0" :class="{ single: 'grid-cols-1', duo: 'grid-cols-1 tablet:grid-cols-2' }[layout] ?? 'tablet:grid-cols-2 desktop:grid-cols-3'" :data-testid="testid">
     <li v-for="item in items" :key="item.key">
       <article
         class="relative h-full flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-100 p-4 pt-5 shadow-sm motion-safe:transition-all motion-safe:duration-200 hover:shadow-lg motion-safe:hover:-translate-y-0.5"

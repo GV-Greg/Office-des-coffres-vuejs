@@ -435,7 +435,32 @@
     "HelpStep2": "Cliquez sur « Inscrire au registre » : l'inventaire est daté du jour du jeu. Si un autre inventaire est déjà inscrit ce jour-là, l'écran nomme son rédacteur et demande confirmation avant de le remplacer.",
     "HelpStep3": "Ouvrez le Registre des stocks : les inscriptions se parcourent avec les chevrons, de la plus récente à la plus ancienne.",
     "HelpStep4": "Comparez l'inscription ouverte à une autre : ▲ en hausse, ▼ en baisse, les nouveautés et les articles disparus.",
-    "HelpStep5": "Un nouveau titulaire du poste retrouve toute l'histoire de ses prédécesseurs ; le pseudo du rédacteur d'une inscription remplacée y reste visible."
+    "HelpStep5": "Un nouveau titulaire du poste retrouve toute l'histoire de ses prédécesseurs ; le pseudo du rédacteur d'une inscription remplacée y reste visible.",
+    "TakeOverTitle": "Prise de poste",
+    "TakeOverInherited": "Inventaire hérité : celui du {date}, {gap} votre entrée en fonction.",
+    "TakeOverFirst": "Première inscription de votre mandat : celle du {date}.",
+    "DaysBefore": "le jour même de | 1 jour avant | {n} jours avant",
+    "OpenEntry": "Ouvrir",
+    "PredecessorsLead": "Aucune inscription de vos prédécesseurs dans les {days} jours avant le {date}. | Inscrit par vos prédécesseurs dans les {days} jours avant le {date} : {n} inscription | Inscrit par vos prédécesseurs dans les {days} jours avant le {date} : {n} inscriptions",
+    "BilansTitle": "Bilans de votre mandat",
+    "Bilan": {
+      "mid": "Bilan de mi-mandat",
+      "end": "Bilan de fin de mandat"
+    },
+    "BilanRange": ", du {from} au {to}",
+    "BilanPending": "{label} : disponible le {date}, aujourd'hui. | {label} : disponible le {date}, dans {n} jour. | {label} : disponible le {date}, dans {n} jours.",
+    "BilanInsufficient": "{label} : pas assez d'inscriptions pour l'établir — il manque {missing}.",
+    "Missing": {
+      "start": "l'inscription de départ",
+      "end": "l'inscription d'arrivée",
+      "start_end": "les inscriptions de départ et d'arrivée"
+    },
+    "BilanShow": "Voir le détail",
+    "BilanHide": "Masquer le détail",
+    "GapsTitle": "Jours sans inscription",
+    "GapsCount": "Aucun jour sans inscription depuis votre entrée en fonction, le {date}. | {n} jour sans inscription depuis votre entrée en fonction, le {date} : | {n} jours sans inscription depuis votre entrée en fonction, le {date} :",
+    "GapsDay": "le {date}",
+    "GapsPeriod": "du {from} au {to}"
   },
   "EconomyInventory": {
     "PageTitle": "Bilan des stocks",
