@@ -15,8 +15,10 @@
   const showInventoryHelp = ref(false)
   const showRegistryHelp = ref(false)
   const showBalanceHelp = ref(false)
+  const showStockRegistryHelp = ref(false)
   const inventoryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventory.HelpStep${n}`)))
   const balanceHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyBalance.HelpStep${n}`)))
+  const stockRegistryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventoryRegistry.HelpStep${n}`)))
   const registryHelpSteps = computed(() => [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => t(`EconomyMines.RegistryPage.HelpStep${n}`)))
   const helpSteps = computed(() => [
     t('EconomyMines.HelpStep1'),
@@ -124,6 +126,16 @@
             <v-icon name="gi-chest" scale="2" class="mr-1"/>
             {{ t('Economy.RegistryStocksLink') }}
           </RouterLink>
+          <button
+            type="button"
+            @click="showStockRegistryHelp = true"
+            class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
+            :aria-label="t('EconomyInventoryRegistry.HelpButton')"
+            :title="t('EconomyInventoryRegistry.HelpButton')"
+            data-testid="stock-registry-help"
+          >
+            <v-icon name="fa-info-circle" scale="0.9" />
+          </button>
         </div>
       </div>
       <div class="w-full laptop:w-auto laptop:flex-1 laptop:min-w-0 mt-2 laptop:mt-0 laptop:ml-2 p-1">
@@ -157,6 +169,15 @@
       :overview="t('EconomyBalance.HelpOverview')"
       :steps="balanceHelpSteps"
       @close="showBalanceHelp = false"
+    />
+
+    <HelpModal
+      :show="showStockRegistryHelp"
+      :title="t('EconomyInventoryRegistry.HelpTitle')"
+      :purpose="t('EconomyInventoryRegistry.HelpPurpose')"
+      :overview="t('EconomyInventoryRegistry.HelpOverview')"
+      :steps="stockRegistryHelpSteps"
+      @close="showStockRegistryHelp = false"
     />
 
     <HelpModal

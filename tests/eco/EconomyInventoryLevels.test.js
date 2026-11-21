@@ -148,6 +148,30 @@ describe('Registre des stocks : la ville et la province, depuis le Bilan', () =>
     response: { status: 409, data: { success: false, code: 'registry_needs_confirmation', message: 'Un inventaire existe déjà au registre pour le 10/05/2026 (Artois).', messages: { fr: 'Un inventaire existe déjà au registre pour le 10/05/2026 (Artois). Il sera remplacé, pas effacé.', en: 'An inventory is already in the registry for 10/05/2026 (Artois).' }, existing } },
   })
 
+  it('mise en page : colonne de gauche = niveau, champ, décompte et actions sur le champ ; colonne de droite = consignes au scribe et registre', async () => {
+    const wrapper = await levelView('city')
+    const left = textarea(wrapper).element.parentElement
+    const inLeft = id => left.contains(wrapper.find(`[data-testid="${id}"]`).element)
+    expect(inLeft('inventory-summary')).toBe(true) // le décompte, sur la ligne du libellé
+    expect(wrapper.find('[data-testid="inventory-summary"]').text()).toMatch(/^\d+ article\(s\)/)
+    expect(inLeft('clear-btn')).toBe(true) // Effacer, Tout masquer… sous le champ
+    expect(inLeft('hide-all-btn')).toBe(true)
+    expect(inLeft('registry-block')).toBe(false) // le registre est à droite
+    expect(wrapper.find('[data-testid="registry-block"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="export-btn"]').exists()).toBe(true)
+  })
+
+  it('le bouton « Inscrire au registre » porte la plume (le geste d\'écrire au registre)', async () => {
+    const wrapper = await levelView('city')
+    expect(wrapper.find('[data-testid="registry-record"] v-icon-stub').attributes('name')).toBe('gi-quill')
+  })
+
+  it('l\'encart dit à quoi sert la liste : rouvrir une inscription dans le champ ne modifie pas le registre', async () => {
+    const wrapper = await levelView('province')
+    expect(wrapper.find('[data-testid="registry-history"]').attributes('aria-label')).toBe(fr.EconomyInventory.RegistryHistoryAria)
+    expect(wrapper.find('[data-testid="registry-block"]').text()).toContain('le registre reste intact')
+  })
+
   it('au niveau personnel : aucun registre (pas d\'inscription, pas d\'historique)', async () => {
     const wrapper = await mountPage()
     expect(wrapper.find('[data-testid="registry-block"]').exists()).toBe(false)
@@ -157,7 +181,7 @@ describe('Registre des stocks : la ville et la province, depuis le Bilan', () =>
   it('le commissaire au commerce inscrit l\'inventaire du jour à la main (jamais automatiquement) ; l\'écran dit où AVANT l\'envoi', async () => {
     const wrapper = await levelView('province')
     http.post.mockReturnValue(ok({ snapshot: { id: 3, taken_on: '2026-05-24' }, replaced: null, unchanged: false }))
-    expect(wrapper.find('[data-testid="registry-target"]').text()).toBe('Sera inscrit au registre : Province : Artois.')
+    expect(wrapper.find('[data-testid="registry-target"]').text()).toBe('Cet inventaire sera inscrit au registre : Province : Artois.')
 
     vi.useFakeTimers()
     await textarea(wrapper).setValue('900Miches de pain4500')
@@ -174,7 +198,7 @@ describe('Registre des stocks : la ville et la province, depuis le Bilan', () =>
   it('le maire inscrit au registre de SA ville : route et message propres au niveau', async () => {
     const wrapper = await levelView('city')
     http.post.mockReturnValue(ok({ snapshot: { id: 10, taken_on: '2026-05-24' }, replaced: null, unchanged: false }))
-    expect(wrapper.find('[data-testid="registry-target"]').text()).toBe('Sera inscrit au registre : Ville : Arras.')
+    expect(wrapper.find('[data-testid="registry-target"]').text()).toBe('Cet inventaire sera inscrit au registre : Ville : Arras.')
     await textarea(wrapper).setValue('900Cailloux0')
     await wrapper.find('[data-testid="registry-record"]').trigger('click')
     await flushPromises()
@@ -262,6 +286,6 @@ describe('Registre des stocks : la ville et la province, depuis le Bilan', () =>
     const wrapper = await levelView('province', { snapshots: [] })
     expect(wrapper.find('[data-testid="registry-history-empty"]').text()).toBe(fr.EconomyInventory.RegistryHistoryEmpty)
     expect(textarea(wrapper).element.value).toBe('')
-    expect(wrapper.find('[data-testid="registry-open"]').text()).toBe('Ouvrir le Registre des stocks')
+    expect(wrapper.find('[data-testid="registry-open"]').text()).toBe('Ouvrir le registre')
   })
 })

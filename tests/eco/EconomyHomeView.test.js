@@ -56,6 +56,11 @@ describe('EconomyHomeView — groupes de cartes', () => {
     }
   })
 
+  it('la carte de la Balance s\'écrit sans « La », comme le lien du menu : « Balance des stocks » / « Stock Balance »', () => {
+    expect(mountHome().find('[data-testid="card-balance"] h3').text()).toBe('Balance des stocks')
+    expect(mountHome({ locale: 'en' }).find('[data-testid="card-balance"] h3').text()).toBe('Stock Balance')
+  })
+
   it('la carte du module s\'appelle « Bilan des stocks » / « Stock Report »', () => {
     expect(mountHome().find('[data-testid="card-inventory"]').text()).toContain('Bilan des stocks')
     expect(mountHome({ locale: 'en' }).find('[data-testid="card-inventory"]').text()).toContain('Stock Report')

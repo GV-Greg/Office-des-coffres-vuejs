@@ -6,6 +6,8 @@ import { parseInventoryText, resolveItems } from '@/modules/inventoryParser'
 import { compareInventories, formatDiff, formatEcusDiff, STATUS } from '@/modules/inventoryCompare'
 import { formatFieldDate } from '@/modules/playerDates'
 import { useInventoryStore } from '@/stores/inventoryStore'
+import ChestLoader from '@/components/loading/ChestLoader.vue'
+import AccessDenied from '@/components/loading/AccessDenied.vue'
 
 /*
   Le Registre des stocks (PR 3a ; fil admin/echanges/registre-stocks, brief admin/content/brief-registre-et-reorganisation-sdc.md §3.9) :
@@ -88,13 +90,21 @@ const newerSnapshot = computed(() => (selectedIndex.value > 0 ? snapshots.value[
 
 const contents = computed(() => (selected.value ? inventoryOf(selected.value.raw) : null))
 const contentsRows = computed(() => [...(contents.value?.items ?? [])].sort((a, b) => a.name.localeCompare(b.name, 'fr')))
-const summary = computed(() => {
-  if (!contents.value) return ''
-  const count = contents.value.items.length
-  return contents.value.totalEcus != null
-    ? t('EconomyInventoryRegistry.Summary', { count, ecus: contents.value.totalEcus.toLocaleString('fr-FR') })
-    : t('EconomyInventoryRegistry.SummaryNoEcus', { count })
+// Les chiffres clés de l'inscription ouverte : le nombre d'articles et, si le texte du jeu le porte, le trésor.
+const placeName = computed(() => (level.value ? store.scopes?.[level.value]?.name ?? '' : ''))
+// « Dernière inscription : il y a 2 jours, le 24/05. » — même format et mêmes mots que « Dernier relevé » du Registre des mines. Le jour
+// du jeu en cours vient du serveur (`today`, bascule à 04:00). Orange et gras dès deux jours, comme les mines (Greg, 21/11/2026).
+const dayMonth = iso => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}` : '')
+const daysBetween = (from, to) => Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000)
+const last = computed(() => snapshots.value[0] ?? null)
+const stale = computed(() => !!last.value && !!registry.value?.today && daysBetween(last.value.taken_on, registry.value.today) >= 2)
+const lastAge = computed(() => {
+  if (!last.value || !registry.value?.today) return null
+  const n = daysBetween(last.value.taken_on, registry.value.today)
+  return n <= 0 ? t('EconomyMines.RegistryPage.Today') : n === 1 ? t('EconomyMines.RegistryPage.Yesterday') : t('EconomyMines.RegistryPage.DaysAgo', { n })
 })
+const itemCount = computed(() => contents.value?.items.length ?? 0)
+const ecusAmount = computed(() => (contents.value?.totalEcus != null ? contents.value.totalEcus.toLocaleString('fr-FR') : null))
 
 // ─── Comparaison de deux inscriptions : l'ancienne est « avant », la récente « après », quel que soit l'ordre choisi ───
 const compareCandidates = computed(() => snapshots.value.filter(s => s.id !== selectedId.value))
@@ -107,9 +117,9 @@ const comparison = computed(() => {
 
 // Flèche ET signe : la couleur n'est qu'un repère (même présentation que La Balance des stocks). Une quantité identique n'affiche rien.
 const STATUS_VIEW = {
-  [STATUS.UP]: { arrow: '▲', cls: 'text-green-700 dark:text-green-400', label: 'EconomyBalance.Increased' },
-  [STATUS.NEW]: { arrow: '▲', cls: 'text-green-700 dark:text-green-400', label: 'EconomyBalance.Increased' },
-  [STATUS.DOWN]: { arrow: '▼', cls: 'text-red-700 dark:text-red-400', label: 'EconomyBalance.Decreased' },
+  [STATUS.UP]: { arrow: '▲', cls: 'text-green-800 dark:text-green-800', label: 'EconomyBalance.Increased' },
+  [STATUS.NEW]: { arrow: '▲', cls: 'text-green-800 dark:text-green-800', label: 'EconomyBalance.Increased' },
+  [STATUS.DOWN]: { arrow: '▼', cls: 'text-red-800 dark:text-red-800', label: 'EconomyBalance.Decreased' },
 }
 const changedRows = computed(() => (comparison.value?.result.rows ?? []).filter(row => row.status !== STATUS.SAME))
 const ecusView = computed(() => {
@@ -121,140 +131,180 @@ const ecusView = computed(() => {
 </script>
 
 <template>
-  <div data-testid="inventory-registry">
-    <h2 class="text-lg font-semibold text-yellow-600 dark:text-yellow-500 mb-1">{{ t('EconomyInventoryRegistry.PageTitle') }}</h2>
-    <p class="text-sm italic text-slate-600 dark:text-slate-400 mb-4">{{ t('EconomyInventoryRegistry.Intro') }}</p>
-
-    <p v-if="!ready" role="status" class="text-sm text-slate-500 dark:text-slate-400" data-testid="registry-loading">{{ t('EconomyInventoryRegistry.Loading') }}</p>
-
-    <p v-else-if="!levels.length" role="note" class="text-sm text-slate-600 dark:text-slate-400" data-testid="registry-no-access">{{ t('EconomyInventoryRegistry.NoAccess') }}</p>
+  <!-- Mise en page de la page sœur, le Registre des mines : titre et filet, deux colonnes — à gauche ce qui sert à lire (l'inscription ouverte,
+       sa comparaison), à droite la mémoire (les inscriptions) —, sections séparées par un filet, pas de cartes. Couleurs de texte posées sur
+       CHAQUE élément (règle globale `.dark p`). -->
+  <div class="w-full text-slate-800 dark:text-slate-800" data-testid="inventory-registry">
+    <!-- Le coffre s'ouvre pendant que le serveur dit les niveaux ouverts ; sans poste de lecture : le cadenas fermé et le message, pas une panne. -->
+    <ChestLoader :loading="!ready" accent="gold" error-testid="registry-chest-error">
+    <AccessDenied v-if="!levels.length" :message="t('EconomyInventoryRegistry.NoAccess')" testid="registry-no-access" />
 
     <template v-else>
-      <!-- Niveau : seulement si le personnage actif a un poste pour chacun (ville ET province). -->
-      <div v-if="levels.length > 1" role="group" :aria-label="t('EconomyInventory.LevelNav')" class="flex flex-wrap gap-2 mb-3" data-testid="registry-levels">
-        <button
-          v-for="lv in levels"
-          :key="lv"
-          type="button"
-          class="odc-btn odc-btn--soft odc-btn--sm"
-          :class="level === lv ? 'odc--gold' : 'odc--slate'"
-          :aria-pressed="level === lv"
-          :data-testid="`registry-level-${lv}`"
-          @click="level = lv"
-        >{{ levelLabel(lv) }}</button>
-      </div>
-      <p v-else class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3" data-testid="registry-place">{{ levelLabel(levels[0]) }}</p>
+      <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
+        <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyInventoryRegistry.PageTitle', { name: placeName }) }}</h2>
+        <!-- Niveau : deux boutons si le personnage a un poste pour chacun (ville ET province), sinon le lieu seul. -->
+        <div v-if="levels.length > 1" role="group" :aria-label="t('EconomyInventory.LevelNav')" class="flex flex-wrap items-center gap-2" data-testid="registry-levels">
+          <button
+            v-for="lv in levels"
+            :key="lv"
+            type="button"
+            class="odc-btn odc-btn--soft odc-btn--sm"
+            :class="level === lv ? 'odc--gold' : 'odc--slate'"
+            :aria-pressed="level === lv"
+            :data-testid="`registry-level-${lv}`"
+            @click="level = lv"
+          >{{ levelLabel(lv) }}</button>
+        </div>
+        <!-- Âge de la dernière inscription, toujours visible (comme l'âge du dernier relevé des mines) : un fait, jamais un jugement. -->
+        <p class="text-sm italic" :class="stale ? 'font-bold text-orange-800 dark:text-orange-800' : 'text-slate-700 dark:text-slate-700'" data-testid="registry-last">
+          <template v-if="last">{{ t('EconomyInventoryRegistry.LastEntry', { age: lastAge ?? '', date: dayMonth(last.taken_on) }) }}</template>
+          <template v-else>{{ t('EconomyInventoryRegistry.NoEntry') }}</template>
+        </p>
+      </header>
 
-      <p v-if="registry && !canWrite" role="note" class="text-xs italic text-slate-600 dark:text-slate-400 mb-3" data-testid="registry-readonly">{{ t('EconomyInventory.ReadOnlyScope') }}</p>
+      <p v-if="registry && !canWrite" role="note" class="mt-3 text-xs italic text-slate-700 dark:text-slate-700" data-testid="registry-readonly">{{ t('EconomyInventory.ReadOnlyScope') }}</p>
 
-      <p v-if="!registry" role="status" class="text-sm text-slate-500 dark:text-slate-400" data-testid="registry-unavailable">{{ t('EconomyInventoryRegistry.LoadError') }}</p>
+      <p v-if="!registry" role="status" class="mt-4 text-slate-700 dark:text-slate-700" data-testid="registry-unavailable">{{ t('EconomyInventoryRegistry.LoadError') }}</p>
 
-      <p v-else-if="!snapshots.length" class="text-sm text-slate-600 dark:text-slate-400" data-testid="registry-empty">
+      <p v-else-if="!snapshots.length" class="mt-4 text-slate-700 dark:text-slate-700" data-testid="registry-empty">
         {{ t('EconomyInventoryRegistry.Empty') }}
         <RouterLink :to="{ name: 'economy-inventory' }" class="underline">{{ t('Economy.InventoryLink') }}</RouterLink>
       </p>
 
-      <div v-else class="laptop:grid laptop:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] laptop:gap-6 laptop:items-start">
-        <!-- Les inscriptions, de la plus récente à la plus ancienne. -->
-        <nav :aria-label="t('EconomyInventoryRegistry.ListTitle')" data-testid="registry-list">
-          <h3 class="text-xs font-bold uppercase tracking-wide mb-1 border-b border-yellow-200 dark:border-yellow-900 pb-0.5 text-yellow-700 dark:text-yellow-500">
-            {{ t('EconomyInventoryRegistry.ListTitle') }}
-          </h3>
-          <ul class="max-h-80 overflow-y-auto">
-            <li v-for="snapshot in snapshots" :key="snapshot.id">
-              <button
-                type="button"
-                class="w-full text-left text-sm px-2 py-1 rounded hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
-                :class="snapshot.id === selectedId ? 'font-bold bg-yellow-100 dark:bg-yellow-900/30' : ''"
-                :aria-current="snapshot.id === selectedId ? 'true' : undefined"
-                :data-testid="`registry-entry-${snapshot.id}`"
-                @click="selectedId = snapshot.id"
-              >{{ dateOf(snapshot) }}<span v-if="snapshot.by_me" class="ml-1 text-xs font-normal text-slate-500 dark:text-slate-400">·&nbsp;{{ t('EconomyInventoryRegistry.ByMe') }}</span></button>
-            </li>
-          </ul>
-        </nav>
-
-        <section v-if="selected" class="mt-4 laptop:mt-0" aria-live="polite" data-testid="registry-detail">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
-            <h3 class="text-base font-semibold text-slate-800 dark:text-slate-200" data-testid="registry-detail-title">{{ t('EconomyInventoryRegistry.EntryOf', { date: dateOf(selected) }) }}</h3>
-            <div class="flex gap-2">
-              <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" :disabled="!olderSnapshot" data-testid="registry-older" @click="selectedId = olderSnapshot.id">
-                <v-icon name="fa-chevron-left" aria-hidden="true" />{{ t('EconomyInventoryRegistry.Older') }}
-              </button>
-              <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" :disabled="!newerSnapshot" data-testid="registry-newer" @click="selectedId = newerSnapshot.id">
-                {{ t('EconomyInventoryRegistry.Newer') }}<v-icon name="fa-chevron-right" aria-hidden="true" />
-              </button>
+      <div v-else class="mt-5 grid grid-cols-1 gap-x-8 gap-y-5 laptop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <section v-if="selected" class="min-w-0" aria-live="polite" data-testid="registry-detail">
+          <!-- ◀ ▶ avant et après le titre, comme les semaines du Registre des mines : toujours là, grisés quand il n'y a rien de plus ancien ou de plus récent. -->
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <button type="button" class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate" :disabled="!olderSnapshot"
+                    :aria-label="t('EconomyInventoryRegistry.Older')" data-testid="registry-older" @click="selectedId = olderSnapshot.id">
+              <v-icon name="fa-chevron-left" scale="0.9" />
+            </button>
+            <h3 class="!mb-0 text-lg font-bold text-slate-800 dark:text-slate-800" data-testid="registry-detail-title">{{ t('EconomyInventoryRegistry.EntryOf', { date: dateOf(selected) }) }}</h3>
+            <button type="button" class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate" :disabled="!newerSnapshot"
+                    :aria-label="t('EconomyInventoryRegistry.Newer')" data-testid="registry-newer" @click="selectedId = newerSnapshot.id">
+              <v-icon name="fa-chevron-right" scale="0.9" />
+            </button>
+            <!-- Les infos de l'inscription, juste après le chevron de droite : qui l'a inscrite, ce qu'elle remplace, combien d'articles. -->
+            <div class="flex flex-wrap items-baseline gap-x-4 gap-y-0.5 text-sm text-slate-700 dark:text-slate-700" data-testid="registry-info">
+              <span v-if="selected.by_me" data-testid="registry-by-me">{{ t('EconomyInventoryRegistry.ByMe') }}</span>
+              <span v-if="selected.replaced" class="italic" data-testid="registry-replaced-note">
+                {{ t('EconomyInventoryRegistry.Replaced', { pseudo: pseudoOf(selected.replaced), office: selected.replaced.office_label?.[locale] ?? '' }) }}
+              </span>
+              <span class="text-slate-800 dark:text-slate-800" data-testid="registry-summary">
+                <strong class="font-bold tabular-nums" data-testid="registry-count">{{ itemCount }}</strong>{{ ' ' }}{{ t('EconomyInventoryRegistry.ItemsLabel', itemCount) }}<template v-if="ecusAmount !== null">, <strong class="font-bold tabular-nums" data-testid="registry-ecus">{{ ecusAmount }}</strong>{{ ' ' }}{{ t('EconomyInventoryRegistry.EcusLabel') }}</template>
+              </span>
             </div>
           </div>
-          <p v-if="selected.by_me" class="text-xs text-slate-600 dark:text-slate-400" data-testid="registry-by-me">{{ t('EconomyInventoryRegistry.ByMe') }}</p>
-          <p v-if="selected.replaced" class="text-xs italic text-slate-600 dark:text-slate-400" data-testid="registry-replaced-note">
-            {{ t('EconomyInventoryRegistry.Replaced', { pseudo: pseudoOf(selected.replaced), office: selected.replaced.office_label?.[locale] ?? '' }) }}
-          </p>
-          <p class="mt-1 text-sm text-slate-600 dark:text-slate-400" data-testid="registry-summary">{{ summary }}</p>
 
-          <!-- Comparaison avec une autre inscription : le moteur de La Balance des stocks. -->
-          <label v-if="compareCandidates.length" class="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-            <span>{{ t('EconomyInventoryRegistry.CompareLabel') }}</span>
-            <select v-model="compareId" class="text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 dark:text-slate-100 py-0.5 px-1 cursor-pointer" data-testid="registry-compare">
-              <option value="">{{ t('EconomyInventoryRegistry.CompareNone') }}</option>
-              <option v-for="snapshot in compareCandidates" :key="snapshot.id" :value="snapshot.id">{{ dateOf(snapshot) }}</option>
-            </select>
-          </label>
-
-          <div v-if="comparison" class="mt-3" data-testid="registry-compare-result">
-            <h4 class="text-xs font-bold uppercase tracking-wide mb-1 border-b border-yellow-200 dark:border-yellow-900 pb-0.5 text-yellow-700 dark:text-yellow-500">
-              {{ t('EconomyInventoryRegistry.CompareTitle', { from: dateOf(comparison.older), to: dateOf(comparison.newer) }) }}
-            </h4>
-            <p class="text-sm text-slate-600 dark:text-slate-400" data-testid="registry-compare-summary">
-              {{ t('EconomyBalance.Summary', { up: comparison.result.counts.up, down: comparison.result.counts.down, added: comparison.result.counts.new, gone: comparison.result.counts.disappeared }) }}
-            </p>
-            <p v-if="ecusView" class="mt-1 text-sm" data-testid="registry-compare-ecus">
-              {{ t('EconomyBalance.Treasury', { ecus: ecusView.amount }) }}
-              <span v-if="ecusView.diff" :class="ecusView.cls">
-                <span aria-hidden="true">{{ ecusView.arrow }}</span>
-                <span class="sr-only">{{ t(ecusView.label) }}</span>
-                {{ ecusView.diff }}
-              </span>
-            </p>
-            <p v-if="!comparison.result.hasChanges" class="mt-1 text-sm font-medium text-slate-700 dark:text-slate-300" data-testid="registry-compare-nochange">{{ t('EconomyBalance.NoChange') }}</p>
-            <ul class="mt-2 grid grid-cols-1 desktop:grid-cols-2 gap-x-6 gap-y-0.5">
-              <li v-for="row in changedRows" :key="row.name" class="flex items-center gap-2 text-sm" data-testid="registry-compare-row">
-                <span class="tabular-nums text-right w-14 shrink-0 text-yellow-600 dark:text-yellow-500 font-medium">{{ row.quantity }}</span>
-                <span class="flex-1 min-w-0 truncate">{{ row.name }}</span>
-                <span v-if="row.status === 'new'" class="shrink-0 rounded px-1 text-[0.65rem] font-semibold uppercase bg-green-100 text-green-900 border border-green-300">{{ t('EconomyBalance.New') }}</span>
-                <span class="shrink-0 tabular-nums font-medium" :class="STATUS_VIEW[row.status].cls">
-                  <span aria-hidden="true">{{ STATUS_VIEW[row.status].arrow }}</span>
-                  <span class="sr-only">{{ t(STATUS_VIEW[row.status].label) }}</span>
-                  {{ formatDiff(row.diff) }}
-                </span>
-              </li>
-              <li v-for="item in comparison.result.disappeared" :key="`gone-${item.name}`" class="flex items-center gap-2 text-sm" data-testid="registry-compare-gone">
-                <span class="tabular-nums text-right w-14 shrink-0 line-through text-slate-500 dark:text-slate-400">{{ item.before }}</span>
-                <span class="flex-1 min-w-0 truncate line-through text-slate-500 dark:text-slate-400">{{ item.name }}</span>
-                <span class="shrink-0 tabular-nums font-medium text-red-700 dark:text-red-400">
-                  <span aria-hidden="true">▼</span>
-                  <span class="sr-only">{{ t('EconomyBalance.Disappeared') }}</span>
-                  {{ formatDiff(-item.before) }}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Le contenu de l'inscription ouverte. -->
-          <div v-else class="mt-3" data-testid="registry-contents">
-            <h4 class="text-xs font-bold uppercase tracking-wide mb-1 border-b border-yellow-200 dark:border-yellow-900 pb-0.5 text-yellow-700 dark:text-yellow-500">
-              {{ t('EconomyInventoryRegistry.ContentsTitle') }}
-            </h4>
-            <p v-if="!contentsRows.length" class="text-sm text-slate-500 dark:text-slate-400">{{ t('EconomyInventory.NoItems') }}</p>
-            <ul class="grid grid-cols-1 desktop:grid-cols-2 gap-x-6 gap-y-0.5">
-              <li v-for="item in contentsRows" :key="item.name" class="flex items-center gap-2 text-sm" data-testid="registry-content-row">
-                <span class="tabular-nums text-right w-14 shrink-0 text-yellow-600 dark:text-yellow-500 font-medium">{{ item.quantity }}</span>
-                <span class="flex-1 min-w-0 truncate">{{ item.name }}</span>
+          <!-- Comparer avec une autre inscription : le moteur de La Balance des stocks. -->
+          <!-- Le contenu de l'inscription ouverte : les mêmes lignes que le Bilan des stocks (quantité, nom). -->
+          <!-- Le contenu de l'inscription ouverte : des colonnes compactes (il peut y avoir des centaines d'articles), lues de haut en bas, par nom. -->
+          <div class="mt-3" data-testid="registry-contents">
+            <p v-if="!contentsRows.length" class="text-sm text-slate-700 dark:text-slate-700">{{ t('EconomyInventory.NoItems') }}</p>
+            <ul class="columns-1 gap-x-6 tablet:columns-2 desktop:columns-3 laptop:columns-2">
+              <li v-for="item in contentsRows" :key="item.name" class="-mx-1 flex break-inside-avoid items-center gap-2 rounded px-1 text-sm text-slate-800 hover:bg-yellow-50 dark:text-slate-800" data-testid="registry-content-row">
+                <span class="w-14 shrink-0 text-right font-medium tabular-nums text-yellow-700 dark:text-yellow-700">{{ item.quantity }}</span>
+                <span class="min-w-0 flex-1 truncate">{{ item.name }}</span>
               </li>
             </ul>
           </div>
         </section>
+
+        <!-- La mémoire : les inscriptions, de la plus récente à la plus ancienne. -->
+        <!-- À droite : la comparaison au-dessus, la mémoire (les inscriptions) dessous. -->
+        <aside v-if="selected" class="min-w-0" data-testid="registry-side">
+            <!-- Toujours là, comme les chevrons : grisée tant qu'il n'y a qu'une inscription (rien à comparer), et elle le dit. -->
+            <label class="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-800 dark:text-slate-800">
+              <span>{{ t('EconomyInventoryRegistry.CompareLabel') }}</span>
+              <select v-model="compareId" :disabled="!compareCandidates.length" class="cursor-pointer rounded-lg border border-slate-400 bg-white px-2 py-1 text-sm text-slate-900 disabled:cursor-not-allowed disabled:opacity-60" data-testid="registry-compare">
+                <option value="">{{ t('EconomyInventoryRegistry.CompareNone') }}</option>
+                <option v-for="snapshot in compareCandidates" :key="snapshot.id" :value="snapshot.id">{{ dateOf(snapshot) }}</option>
+              </select>
+              <span v-if="!compareCandidates.length" class="text-xs font-normal italic text-slate-700 dark:text-slate-700" data-testid="registry-compare-unavailable">{{ t('EconomyInventoryRegistry.CompareUnavailable') }}</span>
+            </label>
+
+            <div v-if="comparison" class="registry-section mt-4" data-testid="registry-compare-result">
+              <h3 class="registry-heading">{{ t('EconomyInventoryRegistry.CompareTitle', { from: dateOf(comparison.older), to: dateOf(comparison.newer) }) }}</h3>
+              <p class="mt-1 text-sm text-slate-800 dark:text-slate-800" data-testid="registry-compare-summary">
+                {{ t('EconomyBalance.Summary', { up: comparison.result.counts.up, down: comparison.result.counts.down, added: comparison.result.counts.new, gone: comparison.result.counts.disappeared }) }}
+              </p>
+              <p v-if="ecusView" class="mt-1 text-sm text-slate-800 dark:text-slate-800" data-testid="registry-compare-ecus">
+                {{ t('EconomyBalance.Treasury', { ecus: ecusView.amount }) }}
+                <span v-if="ecusView.diff" :class="ecusView.cls">
+                  <span aria-hidden="true">{{ ecusView.arrow }}</span>
+                  <span class="sr-only">{{ t(ecusView.label) }}</span>
+                  {{ ecusView.diff }}
+                </span>
+              </p>
+              <p v-if="!comparison.result.hasChanges" class="mt-1 text-sm font-medium text-slate-800 dark:text-slate-800" data-testid="registry-compare-nochange">{{ t('EconomyBalance.NoChange') }}</p>
+              <div class="overflow-x-auto">
+                <table class="mt-2 w-full text-sm" data-testid="registry-compare-table">
+                  <thead>
+                    <tr>
+                      <th class="text-left">{{ t('EconomyInventoryRegistry.ColumnItem') }}</th>
+                      <th class="text-right">{{ t('EconomyInventoryRegistry.ColumnBefore') }}</th>
+                      <th class="text-right">{{ t('EconomyInventoryRegistry.ColumnAfter') }}</th>
+                      <th class="text-right">{{ t('EconomyInventoryRegistry.ColumnDiff') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="tabular-nums">
+                    <tr v-for="row in changedRows" :key="row.name" class="border-b border-slate-300" data-testid="registry-compare-row">
+                      <td class="py-1.5 pr-3 font-bold">
+                        {{ row.name }}
+                        <span v-if="row.status === 'new'" class="ml-1 rounded border border-green-300 bg-green-100 px-1 text-[0.65rem] font-semibold uppercase text-green-900">{{ t('EconomyBalance.New') }}</span>
+                      </td>
+                      <td class="py-1.5 text-right">{{ row.before ?? '—' }}</td>
+                      <td class="py-1.5 text-right">{{ row.quantity }}</td>
+                      <td class="py-1.5 text-right font-medium" :class="STATUS_VIEW[row.status].cls">
+                        <span aria-hidden="true">{{ STATUS_VIEW[row.status].arrow }}</span>
+                        <span class="sr-only">{{ t(STATUS_VIEW[row.status].label) }}</span>
+                        {{ formatDiff(row.diff) }}
+                      </td>
+                    </tr>
+                    <tr v-for="item in comparison.result.disappeared" :key="`gone-${item.name}`" class="border-b border-slate-300" data-testid="registry-compare-gone">
+                      <td class="py-1.5 pr-3 font-bold text-slate-700 line-through">{{ item.name }}</td>
+                      <td class="py-1.5 text-right text-slate-700">{{ item.before }}</td>
+                      <td class="py-1.5 text-right text-slate-700">—</td>
+                      <td class="py-1.5 text-right font-medium text-red-800 dark:text-red-800">
+                        <span aria-hidden="true">▼</span>
+                        <span class="sr-only">{{ t('EconomyBalance.Disappeared') }}</span>
+                        {{ formatDiff(-item.before) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          <nav class="min-w-0" :aria-label="t('EconomyInventoryRegistry.ListTitle')" data-testid="registry-list">
+            <details open class="registry-section mt-4" data-testid="registry-index">
+              <summary class="registry-heading cursor-pointer">{{ t('EconomyInventoryRegistry.ListTitle') }} ({{ snapshots.length }})</summary>
+              <ul class="mt-2 max-h-96 overflow-y-auto">
+                <li v-for="snapshot in snapshots" :key="snapshot.id">
+                  <button
+                    type="button"
+                    class="block w-full rounded px-2 py-1 text-left text-sm text-slate-800 hover:bg-yellow-50 dark:text-slate-800"
+                    :class="snapshot.id === selectedId ? 'bg-yellow-100 font-bold' : ''"
+                    :aria-current="snapshot.id === selectedId ? 'true' : undefined"
+                    :data-testid="`registry-entry-${snapshot.id}`"
+                    @click="selectedId = snapshot.id"
+                  >
+                    {{ dateOf(snapshot) }}
+                    <span v-if="snapshot.by_me" class="block text-xs font-normal text-slate-700">{{ t('EconomyInventoryRegistry.ByMe') }}</span>
+                  </button>
+                </li>
+              </ul>
+            </details>
+          </nav>
+        </aside>
       </div>
     </template>
+    </ChestLoader>
   </div>
 </template>
+
+<style scoped>
+  /* Mêmes règles que la page sœur (Registre des mines) : un filet fin au-dessus, pas de carte — la structure porte l'information. */
+  .registry-section { border-top: 1px solid #cbd5e1; padding-top: 0.75rem; }
+  .registry-section--first { border-top: 0; padding-top: 0; }
+  .registry-heading { font-weight: 700; font-size: 1rem; line-height: 1.4; color: #1e293b; margin-bottom: 0; }
+</style>

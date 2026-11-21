@@ -37,11 +37,12 @@ const PROVINCE_SNAPSHOTS = [
 ]
 const CITY_SNAPSHOTS = [{ id: 20, taken_on: '2026-05-20', by_me: true, office_key: 'mayor', replaced: null, raw: '30Poissons900' }]
 
-function serve({ scopes = SCOPES(), province = PROVINCE_SNAPSHOTS, city = CITY_SNAPSHOTS, canWrite = true } = {}) {
+// `today` : le jour du jeu en cours, dit par le serveur (bascule à 04:00).
+function serve({ scopes = SCOPES(), province = PROVINCE_SNAPSHOTS, city = CITY_SNAPSHOTS, canWrite = true, today = '2026-05-26' } = {}) {
   http.get.mockImplementation(url => {
     if (url.endsWith('inventory-scopes')) return ok(scopes)
-    if (url.endsWith('inventory/province')) return ok({ province: { id: 3, name: 'Artois' }, can_write: canWrite, snapshots: province })
-    if (url.endsWith('inventory/city/registry')) return ok({ city: { id: 1, name: 'Arras' }, can_write: true, snapshots: city })
+    if (url.endsWith('inventory/province')) return ok({ province: { id: 3, name: 'Artois' }, can_write: canWrite, snapshots: province, today })
+    if (url.endsWith('inventory/city/registry')) return ok({ city: { id: 1, name: 'Arras' }, can_write: true, snapshots: city, today })
     return ok({})
   })
 }
@@ -67,13 +68,15 @@ describe('Registre des stocks — accès', () => {
   it('sans ville ni province : le registre le dit, aucun appel au registre', async () => {
     const w = await mountPage({ scopes: SCOPES({ city: null, province: null }) })
     expect(find(w, 'registry-no-access').text()).toBe(fr.EconomyInventoryRegistry.NoAccess)
+    expect(find(w, 'registry-no-access').attributes('role')).toBe('alert') // le cadenas fermé et le message (AccessDenied), pas un simple texte
+    expect(find(w, 'registry-no-access').find('v-icon-stub').attributes('name')).toBe('gi-padlock')
     expect(http.get.mock.calls.some(c => c[0].includes('registry') || c[0].endsWith('inventory/province'))).toBe(false)
   })
 
   it('un seul niveau : pas de sélecteur, le lieu est nommé ; deux niveaux : un bouton chacun, la ville d\'abord', async () => {
     const solo = await mountPage({ scopes: SCOPES({ city: null }) })
     expect(find(solo, 'registry-levels').exists()).toBe(false)
-    expect(find(solo, 'registry-place').text()).toBe('Province : Artois')
+    expect(solo.find('h2').text()).toBe('Registre des stocks : Artois') // le lieu est dans le titre, comme « Registre de Franche-Comté »
 
     const both = await mountPage()
     expect(['city', 'province'].map(l => find(both, `registry-level-${l}`).text())).toEqual(['Ville : Arras', 'Province : Artois'])
@@ -94,6 +97,37 @@ describe('Registre des stocks — accès', () => {
     expect(find(w, 'registry-readonly').text()).toBe(fr.EconomyInventory.ReadOnlyScope)
   })
 
+  it('une seule inscription : les chevrons restent avant et après le titre (comme les semaines du Registre des mines), grisés ; le chiffre n\'est dit qu\'une fois (« 1 article »)', async () => {
+    const w = await mountPage({ scopes: SCOPES({ city: null }), province: [PROVINCE_SNAPSHOTS[2]] })
+    expect(find(w, 'registry-older').attributes('disabled')).toBeDefined()
+    expect(find(w, 'registry-newer').attributes('disabled')).toBeDefined()
+    // « Comparer avec » reste là, grisée, et dit pourquoi (une seule inscription : rien à comparer)
+    expect(find(w, 'registry-compare').attributes('disabled')).toBeDefined()
+    expect(find(w, 'registry-compare-unavailable').text()).toBe('Il faut au moins deux inscriptions pour comparer.')
+    const order = w.findAll('[data-testid="registry-older"], [data-testid="registry-detail-title"], [data-testid="registry-newer"]').map(n => n.attributes('data-testid'))
+    expect(order).toEqual(['registry-older', 'registry-detail-title', 'registry-newer'])
+    expect(plain(find(w, 'registry-summary').text())).toContain('1 article')
+    expect(plain(find(w, 'registry-summary').text())).not.toContain('1 articles')
+  })
+
+  it('« Dernière inscription » au format du Registre des mines : « il y a 2 jours, le 24/05. », « hier », « aujourd\'hui » ; orange gras dès deux jours', async () => {
+    const w = await mountPage({ scopes: SCOPES({ city: null }) }) // dernière inscription le 24/05, le serveur dit le 26/05
+    expect(find(w, 'registry-last').text()).toBe('Dernière inscription : il y a 2 jours, le 24/05.')
+    // Deux jours ou plus : orange et gras, comme « Dernier relevé » du Registre des mines
+    expect(find(w, 'registry-last').classes()).toEqual(expect.arrayContaining(['italic', 'text-sm', 'font-bold', 'text-orange-800']))
+    const yesterday = find(await mountPage({ scopes: SCOPES({ city: null }), today: '2026-05-25' }), 'registry-last')
+    expect(yesterday.text()).toBe('Dernière inscription : hier, le 24/05.')
+    expect(yesterday.classes()).toContain('text-slate-700') // moins de deux jours : texte normal
+    expect(yesterday.classes()).not.toContain('font-bold')
+    expect(find(await mountPage({ scopes: SCOPES({ city: null }), today: '2026-05-24' }), 'registry-last').text()).toBe('Dernière inscription : aujourd\'hui, le 24/05.')
+    expect(find(await mountPage({ locale: 'en', scopes: SCOPES({ city: null }) }), 'registry-last').text()).toBe('Last entry: 2 days ago, on 24/05.')
+  })
+
+  it('aucune ligne séparatrice entre le titre de l\'inscription et sa liste d\'articles', async () => {
+    const w = await mountPage({ scopes: SCOPES({ city: null }) })
+    expect(find(w, 'registry-contents').classes()).not.toContain('registry-section')
+  })
+
   it('un registre vide le dit et renvoie au Bilan des stocks', async () => {
     const w = await mountPage({ scopes: SCOPES({ city: null }), province: [] })
     expect(find(w, 'registry-empty').text()).toContain(fr.EconomyInventoryRegistry.Empty)
@@ -107,10 +141,18 @@ describe('Registre des stocks — historique navigable', () => {
     expect(entries).toHaveLength(3)
     expect(entries[0].attributes('aria-current')).toBe('true')
     expect(w.findAll('[data-testid="registry-content-row"]').map(r => r.text())).toEqual(['2Cailloux', '700Miches de pain']) // par nom
-    expect(plain(find(w, 'registry-summary').text())).toBe('2 article(s) · 3 500 écus')
+    // Des centaines d'articles possibles : des colonnes compactes, ni tableau ni titre « Contenu ».
+    expect(find(w, 'registry-contents').find('table').exists()).toBe(false)
+    expect(find(w, 'registry-contents').find('h3').exists()).toBe(false)
+    expect(find(w, 'registry-contents').find('ul').classes()).toContain('tablet:columns-2')
+    expect(find(w, 'registry-count').text()).toBe('2')
+    expect(plain(find(w, 'registry-ecus').text())).toBe('3 500')
+    expect(plain(find(w, 'registry-summary').text())).toContain('2 articles')
+    expect(plain(find(w, 'registry-summary').text())).toContain('3 500 écus au trésor')
+    expect(plain(find(w, 'registry-summary').text())).toContain('écus au trésor')
   })
 
-  it('« Plus ancien » / « Plus récent » parcourent le temps, et se désactivent aux extrémités', async () => {
+  it('les chevrons « inscription plus ancienne / plus récente » parcourent le temps, et se désactivent aux extrémités', async () => {
     const w = await mountPage({ scopes: SCOPES({ city: null }) })
     expect(find(w, 'registry-newer').attributes('disabled')).toBeDefined()
     await find(w, 'registry-older').trigger('click')
@@ -120,6 +162,30 @@ describe('Registre des stocks — historique navigable', () => {
     expect(find(w, 'registry-entry-1').attributes('aria-current')).toBe('true')
     await find(w, 'registry-newer').trigger('click')
     expect(find(w, 'registry-entry-2').attributes('aria-current')).toBe('true')
+  })
+
+  it('mise en page : la comparaison est à droite, AU-DESSUS des inscriptions ; le contenu reste à gauche', async () => {
+    const w = await mountPage({ scopes: SCOPES({ city: null }) })
+    await find(w, 'registry-compare').setValue('2')
+    const side = find(w, 'registry-side').element
+    const detail = find(w, 'registry-detail').element
+    expect(side.contains(find(w, 'registry-compare').element)).toBe(true)
+    expect(side.contains(find(w, 'registry-compare-result').element)).toBe(true)
+    expect(side.contains(find(w, 'registry-list').element)).toBe(true)
+    expect(detail.contains(find(w, 'registry-compare').element)).toBe(false)
+    expect(detail.contains(find(w, 'registry-contents').element)).toBe(true)
+    // au-dessus : le sélecteur précède la liste des inscriptions dans la colonne
+    const order = [...side.querySelectorAll('[data-testid="registry-compare"], [data-testid="registry-list"]')].map(n => n.getAttribute('data-testid'))
+    expect(order).toEqual(['registry-compare', 'registry-list'])
+  })
+
+  it('les infos de l\'inscription (rédacteur, remplacement, nombre d\'articles) sont sur la ligne du titre, après le chevron de droite', async () => {
+    const w = await mountPage({ scopes: SCOPES({ city: null }) })
+    const row = find(w, 'registry-newer').element.parentElement
+    expect(row.contains(find(w, 'registry-detail-title').element)).toBe(true)
+    for (const id of ['registry-info', 'registry-by-me', 'registry-replaced-note', 'registry-summary']) expect(row.contains(find(w, id).element), id).toBe(true)
+    const children = [...row.children].map(el => el.getAttribute('data-testid'))
+    expect(children.indexOf('registry-info')).toBeGreaterThan(children.indexOf('registry-newer'))
   })
 
   it('l\'auteur d\'une inscription en vigueur n\'est jamais nommé : « inscrit par vous » seulement ; le rédacteur REMPLACÉ l\'est', async () => {
@@ -141,7 +207,7 @@ describe('Registre des stocks — historique navigable', () => {
   it('en anglais', async () => {
     const w = await mountPage({ locale: 'en', scopes: SCOPES({ city: null }) })
     expect(find(w, 'registry-replaced-note').text()).toBe('Replaces the entry by Marchand (Trade Minister)')
-    expect(find(w, 'registry-older').text()).toBe('Older')
+    expect(find(w, 'registry-older').attributes('aria-label')).toBe('Older entry') // les chevrons portent un libellé accessible
   })
 })
 
@@ -157,7 +223,7 @@ describe('Registre des stocks — comparaison de deux inscriptions', () => {
     expect(rows.find(r => r.includes('Cailloux'))).toContain('Nouveau')
     expect(find(w, 'registry-compare-gone').text()).toContain('Pommes')
     expect(plain(find(w, 'registry-compare-ecus').text())).toContain('3 500')
-    expect(find(w, 'registry-contents').exists()).toBe(false) // la comparaison remplace le contenu
+    expect(find(w, 'registry-contents').exists()).toBe(true) // le contenu reste à gauche : la comparaison vit à droite
 
     // Ouvrir l'ancienne et la comparer à la récente donne le même sens (avant = la plus ancienne) : « Disparus » devient « Nouveaux ».
     await find(w, 'registry-entry-2').trigger('click')

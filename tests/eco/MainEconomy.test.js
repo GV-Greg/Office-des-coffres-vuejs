@@ -78,6 +78,21 @@ describe('MainEconomy — menu', () => {
     expect(leader.find('[data-testid="stock-registry-link"]').exists()).toBe(true)
   })
 
+  it('l\'aide « i » du Registre des stocks ouvre ses cinq étapes (comme les autres liens du menu)', async () => {
+    const w = await mountPage('fr', { ...NO_SCOPES, city: { id: 1, name: 'Arras', can_write: true, can_read: true } })
+    const button = w.find('[data-testid="stock-registry-help"]')
+    expect(button.attributes('aria-label')).toBe('Comment ça marche ?')
+    await button.trigger('click')
+    const modal = w.findAllComponents({ name: 'HelpModal' }).find(m => m.props('show'))
+    expect(modal.props('title')).toBe('Comment fonctionne le Registre des stocks ?')
+    expect(modal.props('steps')).toHaveLength(5)
+    expect(modal.props('steps')[1]).toContain('Inscrire au registre')
+  })
+
+  it('pas de lien, donc pas d\'aide, sans poste de lecture', async () => {
+    expect((await mountPage()).find('[data-testid="stock-registry-help"]').exists()).toBe(false)
+  })
+
   it('en anglais : « Stock Registry »', async () => {
     const w = await mountPage('en', { ...NO_SCOPES, city: { id: 1, name: 'Arras', can_write: true, can_read: true } })
     expect(w.find('[data-testid="stock-registry-link"]').text()).toBe('Stock Registry')

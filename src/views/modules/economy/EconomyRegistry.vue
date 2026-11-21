@@ -14,6 +14,7 @@
   import useMinePrices from '@/use/useMinePrices'
   import BilanTable from '@/components/mines/BilanTable.vue'
   import ChestLoader from '@/components/loading/ChestLoader.vue'
+  import AccessDenied from '@/components/loading/AccessDenied.vue'
 
   /*
     Registre des mines — lecture (PR 4b ; brief admin/content/brief-registre-mines.md §7 ; fil
@@ -32,6 +33,8 @@
   const character = computed(() => authStore.activeCharacter)
   const registry = ref(null)
   const error = ref(null)
+  // Un REFUS du serveur (403 : pas de poste de lecture) n'est pas une panne : cadenas fermé et message, sans « Réessayer ».
+  const denied = ref(null)
   const loading = ref(false)
   // Prix par période (lot 2) : les jeux de la province, et si le personnage peut en écrire. Une lecture
   // qui échoue n'empêche pas le registre : les bilans retombent alors sur les prix des relevés.
@@ -45,6 +48,7 @@
   async function load() {
     registry.value = null
     error.value = null
+    denied.value = null
     if (!character.value) return
     loading.value = true
     try {
@@ -53,7 +57,9 @@
       selectedMonday.value = null
       await loadPrices()
     } catch (e) {
-      error.value = apiMessage(e, locale.value, t('Auth.Errors.NetworkError'))
+      const message = apiMessage(e, locale.value, t('Auth.Errors.NetworkError'))
+      if (e?.response?.status === 403) denied.value = message
+      else error.value = message
     } finally {
       loading.value = false
     }
@@ -159,6 +165,7 @@
        séparées par un filet. Couleurs de texte posées sur CHAQUE élément (règle globale `.dark p`). -->
   <div class="w-full text-slate-800 dark:text-slate-800">
     <p v-if="!character" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.NoCharacter') }}</p>
+    <AccessDenied v-else-if="denied" :message="denied" testid="registry-denied" />
     <ChestLoader v-else :loading="loading" :error="error || ''" accent="gold" error-testid="registry-error" block-class="laptop:mt-14 laptop:w-[calc((100%-2rem)*3/5)]" @retry="load">
     <template v-if="registry">
       <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">

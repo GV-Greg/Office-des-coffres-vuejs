@@ -299,7 +299,7 @@ function loadSnapshot(event) {
 
 <template>
   <div>
-    <h2 class="text-lg font-semibold text-yellow-600 dark:text-yellow-500 mb-3">
+    <h2 class="!mt-0 !mb-2 text-lg font-semibold text-yellow-600 dark:text-yellow-500">
       {{ t('EconomyInventory.PageTitle') }}
     </h2>
 
@@ -323,9 +323,16 @@ function loadSnapshot(event) {
         <p v-if="!canWriteLevel" role="note" class="text-xs italic text-slate-600 dark:text-slate-400 mb-2" data-testid="inventory-readonly">
           {{ t('EconomyInventory.ReadOnlyScope') }}
         </p>
-        <label class="block text-sm font-medium mb-1" for="inventory-paste">
-          {{ t('EconomyInventory.PasteLabel') }}
-        </label>
+        <div class="mb-1 flex items-baseline justify-between gap-2">
+          <label class="block text-sm font-medium" for="inventory-paste">
+            {{ t('EconomyInventory.PasteLabel') }}
+          </label>
+          <!-- Le décompte vit ici, avec le champ qu'il décrit. Couleur fixe : la carte est claire dans les deux thèmes. -->
+          <span v-if="parsedItems.length > 0" class="text-xs text-slate-700 dark:text-slate-700 tabular-nums" data-testid="inventory-summary">
+            <template v-if="totalEcus !== null">{{ t('EconomyInventory.Summary', { count: parsedItems.length, ecus: totalEcus.toLocaleString('fr-FR') }) }}</template>
+            <template v-else>{{ t('EconomyInventory.SummaryNoEcus', { count: parsedItems.length }) }}</template>
+          </span>
+        </div>
         <textarea
           id="inventory-paste"
           v-model="pastedText"
@@ -333,62 +340,16 @@ function loadSnapshot(event) {
           class="textarea-autoresize w-full h-36 p-2 rounded-xl bg-white text-sm font-mono resize-y"
           data-testid="inventory-paste"
         />
-
-        <!-- Registre des stocks (ville : le maire ; province : le commissaire au commerce) : l'écran DIT où l'inventaire sera inscrit AVANT l'envoi. -->
-        <div v-if="hasRegistry" class="mt-2" data-testid="registry-block">
-          <p class="text-xs text-slate-600 dark:text-slate-400" data-testid="registry-target">{{ t('EconomyInventory.RegistryTarget', { place: levelLabel(level) }) }}</p>
-          <div class="mt-1 flex flex-wrap items-center gap-2">
-            <button
-              v-if="canWriteLevel && !pendingReplace"
-              type="button"
-              class="odc-btn odc-btn--soft odc--green odc-btn--sm"
-              :disabled="recording || parsedItems.length === 0"
-              :aria-busy="recording"
-              data-testid="registry-record"
-              @click="recordRegistry(false)"
-            >
-              <v-icon name="fa-save" aria-hidden="true" />{{ recording ? t('EconomyInventory.RegistryRecording') : t('EconomyInventory.RegistryRecord') }}
-            </button>
-            <label v-if="snapshots.length" class="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
-              <span>{{ t('EconomyInventory.RegistryHistory', { count: snapshots.length }) }}</span>
-              <select
-                class="text-xs border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 dark:text-slate-100 py-0.5 px-1 cursor-pointer"
-                data-testid="registry-history"
-                @change="loadSnapshot"
-              >
-                <option value="">{{ t('EconomyInventory.RegistryHistoryLoad') }}</option>
-                <option v-for="snapshot in snapshots" :key="snapshot.id" :value="snapshot.id">{{ snapshotDate(snapshot) }}</option>
-              </select>
-            </label>
-            <span v-else class="text-xs italic text-slate-500 dark:text-slate-400" data-testid="registry-history-empty">{{ t('EconomyInventory.RegistryHistoryEmpty') }}</span>
-            <RouterLink :to="{ name: 'economy-inventory-registry' }" class="text-xs underline text-slate-600 dark:text-slate-400" data-testid="registry-open">{{ t('EconomyInventory.RegistryOpen') }}</RouterLink>
-          </div>
-
-          <!-- 409 : un autre inventaire est déjà inscrit ce jour-là. Rien ne s'efface : l'ancien reste, l'écran nomme son rédacteur. -->
-          <div v-if="pendingReplace" role="alert" class="mt-2 rounded-lg border border-yellow-600 bg-yellow-50 p-2 text-sm text-slate-800" data-testid="registry-confirm">
-            <p class="font-semibold">{{ pendingReplace.message }}</p>
-            <p class="mt-1 text-xs" data-testid="registry-confirm-author">
-              {{ t('EconomyInventory.RegistryRecordedBy', {
-                pseudo: pendingReplace.existing.pseudo ?? t('EconomyInventory.RegistryDeletedCharacter'),
-                office: pendingReplace.existing.office_label?.[locale] ?? '',
-              }) }}
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :disabled="recording" data-testid="registry-confirm-yes" @click="recordRegistry(true)">
-                {{ t('EconomyInventory.RegistryConfirm') }}
-              </button>
-              <button type="button" class="odc-btn odc-btn--soft odc--red odc-btn--sm" data-testid="registry-confirm-no" @click="pendingReplace = null">
-                {{ t('EconomyInventory.RegistryCancel') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Colonne droite : actions -->
-      <div class="mt-2 laptop:mt-6">
-        <!-- Bouton gérer les catégories : toujours visible -->
-        <div class="flex items-center gap-2 flex-wrap mb-3">
+        <!-- Texte collé mais aucun item reconnu -->
+        <p
+          v-if="parsedItems.length === 0 && pastedText.trim()"
+          class="mt-2 text-sm text-slate-700 dark:text-slate-700"
+          data-testid="no-items-msg"
+        >
+          {{ t('EconomyInventory.NoItems') }}
+        </p>
+        <!-- Actions sur le champ : sous le champ de collage (Effacer, masquer, afficher, gérer les catégories) -->
+        <div class="mt-2 flex items-center gap-2 flex-wrap">
           <template v-if="parsedItems.length > 0">
             <button
               type="button"
@@ -423,7 +384,10 @@ function loadSnapshot(event) {
             <v-icon name="fa-tag" aria-hidden="true" />{{ t('EconomyInventory.SettingsInDesk') }}
           </RouterLink>
         </div>
+      </div>
 
+      <!-- Colonne droite : actions -->
+      <div class="mt-2 laptop:mt-0">
         <!-- Toggles d'export : visibles uniquement quand des items sont parsés -->
         <fieldset
           v-if="parsedItems.length > 0"
@@ -520,23 +484,70 @@ function loadSnapshot(event) {
           </div>
         </fieldset>
 
-        <p v-if="parsedItems.length > 0" class="text-sm text-slate-600 dark:text-slate-400">
-          <template v-if="totalEcus !== null">
-            {{ t('EconomyInventory.Summary', { count: parsedItems.length, ecus: totalEcus.toLocaleString('fr-FR') }) }}
-          </template>
-          <template v-else>
-            {{ t('EconomyInventory.SummaryNoEcus', { count: parsedItems.length }) }}
-          </template>
-        </p>
+        <!-- Registre des stocks (ville : le maire ; province : le commissaire au commerce). Même encart que « Consignes au scribe » : le lieu est dit
+             AVANT l'envoi, l'inscription est un geste volontaire, rouvrir une inscription passée ne touche jamais au registre. -->
+        <fieldset v-if="hasRegistry" class="mb-3 border border-slate-400 rounded-lg px-3 pt-1.5 pb-2" data-testid="registry-block">
+          <legend class="px-1.5 text-xs font-semibold text-slate-700 select-none">{{ t('EconomyInventory.RegistryBlockTitle') }}</legend>
+          <p class="text-sm text-slate-800 dark:text-slate-800" data-testid="registry-target">{{ t('EconomyInventory.RegistryTarget', { place: levelLabel(level) }) }}</p>
+          <div class="mt-1.5 flex flex-wrap items-center gap-2">
+            <button
+              v-if="canWriteLevel && !pendingReplace"
+              type="button"
+              class="odc-btn odc-btn--soft odc--green"
+              :disabled="recording || parsedItems.length === 0"
+              :aria-busy="recording"
+              data-testid="registry-record"
+              @click="recordRegistry(false)"
+            >
+              <v-icon name="gi-quill" aria-hidden="true" />{{ recording ? t('EconomyInventory.RegistryRecording') : t('EconomyInventory.RegistryRecord') }}
+            </button>
 
-        <!-- Texte collé mais aucun item reconnu -->
-        <p
-          v-else-if="pastedText.trim()"
-          class="text-sm text-slate-500 dark:text-slate-400"
-          data-testid="no-items-msg"
-        >
-          {{ t('EconomyInventory.NoItems') }}
-        </p>
+            <!-- Rouvrir une inscription passée : elle vient dans le champ de collage, pour la classer ou l'exporter comme n'importe quel inventaire. -->
+            <div v-if="snapshots.length" class="relative inline-flex">
+              <span class="odc-btn odc-btn--soft odc--slate odc-btn--sm pointer-events-none select-none gap-1">
+                <span>{{ t('EconomyInventory.RegistryHistory', { count: snapshots.length }) }}</span>
+                <v-icon name="fa-chevron-down" scale="0.7" aria-hidden="true" />
+              </span>
+              <select
+                class="absolute inset-0 opacity-0 cursor-pointer w-full"
+                :aria-label="t('EconomyInventory.RegistryHistoryAria')"
+                data-testid="registry-history"
+                @change="loadSnapshot"
+              >
+                <option value="">{{ t('EconomyInventory.RegistryHistoryLoad') }}</option>
+                <option v-for="snapshot in snapshots" :key="snapshot.id" :value="snapshot.id">{{ snapshotDate(snapshot) }}</option>
+              </select>
+            </div>
+            <span v-else class="text-xs italic text-slate-700" data-testid="registry-history-empty">{{ t('EconomyInventory.RegistryHistoryEmpty') }}</span>
+
+            <RouterLink :to="{ name: 'economy-inventory-registry' }" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" data-testid="registry-open">
+              <v-icon name="gi-scroll-unfurled" aria-hidden="true" />{{ t('EconomyInventory.RegistryOpen') }}
+            </RouterLink>
+          </div>
+          <p v-if="snapshots.length" class="mt-1.5 text-xs italic text-slate-700 dark:text-slate-700">{{ t('EconomyInventory.RegistryHistoryHint') }}</p>
+
+          <!-- 409 : un autre inventaire est déjà inscrit ce jour-là. Rien ne s'efface : l'ancien reste, l'écran nomme son rédacteur. -->
+          <div v-if="pendingReplace" role="alert" class="mt-2 rounded-lg border border-yellow-600 bg-yellow-50 p-2 text-sm text-slate-800" data-testid="registry-confirm">
+            <p class="font-semibold text-slate-900 dark:text-slate-900">{{ pendingReplace.message }}</p>
+            <p class="mt-1 text-xs text-slate-800 dark:text-slate-800" data-testid="registry-confirm-author">
+              {{ t('EconomyInventory.RegistryRecordedBy', {
+                pseudo: pendingReplace.existing.pseudo ?? t('EconomyInventory.RegistryDeletedCharacter'),
+                office: pendingReplace.existing.office_label?.[locale] ?? '',
+              }) }}
+            </p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :disabled="recording" data-testid="registry-confirm-yes" @click="recordRegistry(true)">
+                {{ t('EconomyInventory.RegistryConfirm') }}
+              </button>
+              <button type="button" class="odc-btn odc-btn--soft odc--red odc-btn--sm" data-testid="registry-confirm-no" @click="pendingReplace = null">
+                {{ t('EconomyInventory.RegistryCancel') }}
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+
+
       </div>
     </div>
 
