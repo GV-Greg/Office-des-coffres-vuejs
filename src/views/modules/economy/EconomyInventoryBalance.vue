@@ -316,7 +316,7 @@ function clearAll() {
             {{ t('EconomyBalance.Summary', { up: comparison.counts.up, down: comparison.counts.down, added: comparison.counts.new, gone: comparison.counts.disappeared }) }}
           </p>
           <button type="button" class="odc-btn odc-btn--soft odc--green" data-testid="balance-export" @click="doExport">
-            <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+            <v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
           </button>
         </div>
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">{{ t('EconomyBalance.ExportHint') }}</p>

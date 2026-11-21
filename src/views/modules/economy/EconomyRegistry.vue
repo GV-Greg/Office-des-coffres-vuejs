@@ -218,7 +218,7 @@
             {{ t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}
           </button>
           <button v-if="week?.complete" type="button" class="ml-auto odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="week-export" @click="exportWeek">
-            <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Export.Button') }}
+            <v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Export.Button') }}
           </button>
         </div>
 

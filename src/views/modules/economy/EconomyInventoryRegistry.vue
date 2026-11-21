@@ -251,7 +251,7 @@ const ecusView = computed(() => {
               </span>
             </div>
             <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm ml-auto" data-testid="registry-export" @click="exportInscription">
-              <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+              <v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
             </button>
           </div>
 
@@ -316,7 +316,7 @@ const ecusView = computed(() => {
                       {{ openedBilan === bilan.kind ? t('EconomyInventoryRegistry.BilanHide') : t('EconomyInventoryRegistry.BilanShow') }}
                     </button>
                     <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :data-testid="`registry-bilan-${bilan.kind}-export`" @click="exportBilan(bilan)">
-                      <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+                      <v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
                     </button>
                   </div>
                   <InventoryDiffTable v-if="openedBilan === bilan.kind" :result="bilan.result" :testid="`registry-bilan-${bilan.kind}`" />
@@ -368,7 +368,7 @@ const ecusView = computed(() => {
               <p v-if="!comparison.result.hasChanges" class="mt-1 text-sm font-medium text-slate-800 dark:text-slate-800" data-testid="registry-compare-nochange">{{ t('EconomyBalance.NoChange') }}</p>
               <div class="mt-1.5">
                 <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="registry-compare-export" @click="exportComparison">
-                  <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+                  <v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
                 </button>
               </div>
               <InventoryDiffTable :result="comparison.result" testid="registry-compare" />

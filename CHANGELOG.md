@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-21] — PR #147 (Module Sécurité, PR 1 : Relevé de guet, « La Salle des gardes », plume sur « Confier au scribe »)
+
+### Added
+- **Parseur du guet** `src/modules/guetParser.js` (`parseGuet`, `diffGuet`), logique pure (brief `admin/content/brief-module-securite.md`, fil `admin/echanges/module-securite/`) : pseudo = premier mot du champ, noblesse, réputation `nPR`. Le collage réel (`Bug_ExportSorties.txt`) place la noblesse après un **espace** (« Brennos de Lapin ») : la forme « Pseudo, Titre » du brief n'y existe pas, elle reste tolérée en repli.
+- **Alerte de collage tronqué** : quand « Liste des villageois (N) » (français seulement) ne colle pas aux lignes lues, un message orange non bloquant le dit sous les résultats.
+
+### Changed
+- Libellés : titre « La Salle des gardes » / « The Guardroom », outil « Relevé de guet » / « Watch Report » (le menu circulaire garde « Sécurité »). Bouton « Exporter » → « Confier au scribe ».
+- **Icône plume** (`gi-quill`) sur tous les boutons « Confier au scribe » : Relevé de guet, Bilan des stocks, Balance, Registre des stocks, Bilan et Registre des mines, Grille des lots. « Copier pour le forum », « Exporter les règles/résultats » de Décode et les copies de réglages gardent `fa-copy`.
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Un test de la Grille des lots (`RewardsGridViews`, récapitulatif) a échoué une fois sous charge dans la suite complète, sans rapport avec le changement ; il passe seul.
+
 ## [2026-11-21] — PR #146 (Registre des stocks : prise de poste, bilans de mandat, jours sans inscription, exports BBCode — PR 3b)
 
 ### Added

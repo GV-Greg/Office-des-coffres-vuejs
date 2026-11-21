@@ -348,15 +348,17 @@
     "Province": "My desk"
   },
   "Security": {
-    "Title": "Security Chest",
-    "EntriesExits": "Entries/Exits",
+    "Title": "The Guardroom",
+    "EntriesExits": "Watch Report",
     "YesterdayLabel": "Yesterday's villager list:",
     "YesterdayPrefilled": "Automatically pre-filled from your last visit",
     "TodayLabel": "Today's villager list:",
     "GenerateButton": "Generate entries/exits",
     "EntriesLabel": "Entries",
     "ExitsLabel": "Exits",
-    "ExportButton": "Export"
+    "ExportButton": "Entrust to the scribe",
+    "MismatchYesterday": "Yesterday's list announces {declared} villagers, {read} were read: the paste may be truncated.",
+    "MismatchToday": "Today's list announces {declared} villagers, {read} were read: the paste may be truncated."
   },
   "Economy": {
     "Title": "Economy Chest",

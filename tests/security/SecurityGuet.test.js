@@ -18,7 +18,9 @@ const i18n = createI18n({
         GenerateButton: 'Générer les entrées/sorties',
         EntriesLabel: 'Entrées',
         ExitsLabel: 'Sorties',
-        ExportButton: 'Exporter'
+        ExportButton: 'Confier au scribe',
+        MismatchYesterday: "Hier : {declared} annoncés, {read} lus",
+        MismatchToday: "Aujourd'hui : {declared} annoncés, {read} lus"
       }
     }
   }
@@ -89,6 +91,26 @@ describe('SecurityGuet — transform() sur données réelles (préambule + table
     expect(allNames).not.toContain('Ils')
     expect(allNames).not.toContain("L'adjoint")
     expect(allNames).not.toContain('Liste')
+  })
+})
+
+describe('SecurityGuet — contrôle du total annoncé', () => {
+  it("n'alerte pas sur des collages complets", async () => {
+    const wrapper = await generateResult()
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+  })
+
+  it("alerte quand « Liste des villageois (N) » ne colle pas aux lignes lues", async () => {
+    const wrapper = mountGuet()
+    const textareas = wrapper.findAll('textarea')
+    await textareas[0].setValue('Liste des villageois (2)\nA\t1PR\nB\t1PR')
+    await textareas[1].setValue('Liste des villageois (5)\nA\t1PR\nC\t1PR')
+    await wrapper.find('button').trigger('click')
+
+    const alert = wrapper.find('[role="alert"]')
+    expect(alert.exists()).toBe(true)
+    expect(alert.text()).toContain("Aujourd'hui : 5 annoncés, 2 lus")
+    expect(alert.text()).not.toContain('Hier')
   })
 })
 

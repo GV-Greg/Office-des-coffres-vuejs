@@ -35,10 +35,10 @@
     <!-- « Confier au scribe » : exporter = vert (charte §6.7), côte à côte, centré. -->
     <div v-if="exportable" class="flex flex-wrap justify-center gap-2" data-testid="grid-export-buttons">
       <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--green" data-testid="grid-export-results" @click="entrustResults">
-        <v-icon name="fa-copy" aria-hidden="true" />{{ t('Animation.Grid.EntrustResults') }}
+        <v-icon name="gi-quill" aria-hidden="true" />{{ t('Animation.Grid.EntrustResults') }}
       </button>
       <button type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--green" data-testid="grid-export-rules" @click="entrustRules">
-        <v-icon name="fa-copy" aria-hidden="true" />{{ t('Animation.Grid.EntrustRules') }}
+        <v-icon name="gi-quill" aria-hidden="true" />{{ t('Animation.Grid.EntrustRules') }}
       </button>
     </div>
 
