@@ -435,7 +435,32 @@
     "HelpStep2": "Click \"Save to registry\": the inventory is dated with the game day. If another inventory is already saved for that day, the screen names its author and asks for confirmation before replacing it.",
     "HelpStep3": "Open the Stock Registry: entries are browsed with the chevrons, from the newest to the oldest.",
     "HelpStep4": "Compare the open entry with another: ▲ up, ▼ down, new items and items that disappeared.",
-    "HelpStep5": "A new office-holder finds the whole history of their predecessors; the character name of the author of a replaced entry stays visible."
+    "HelpStep5": "A new office-holder finds the whole history of their predecessors; the character name of the author of a replaced entry stays visible.",
+    "TakeOverTitle": "Taking office",
+    "TakeOverInherited": "Inherited inventory: the one of {date}, {gap} you took office.",
+    "TakeOverFirst": "First entry of your term: the one of {date}.",
+    "DaysBefore": "the very day | 1 day before | {n} days before",
+    "OpenEntry": "Open",
+    "PredecessorsLead": "No entry from your predecessors in the {days} days before {date}. | Saved by your predecessors in the {days} days before {date}: {n} entry | Saved by your predecessors in the {days} days before {date}: {n} entries",
+    "BilansTitle": "Reports of your term",
+    "Bilan": {
+      "mid": "Mid-term report",
+      "end": "End-of-term report"
+    },
+    "BilanRange": ", from {from} to {to}",
+    "BilanPending": "{label}: available on {date}, today. | {label}: available on {date}, in {n} day. | {label}: available on {date}, in {n} days.",
+    "BilanInsufficient": "{label}: not enough entries to produce it — {missing} is missing.",
+    "Missing": {
+      "start": "the starting entry",
+      "end": "the closing entry",
+      "start_end": "the starting and closing entries"
+    },
+    "BilanShow": "Show details",
+    "BilanHide": "Hide details",
+    "GapsTitle": "Days without an entry",
+    "GapsCount": "No day without an entry since you took office, on {date}. | {n} day without an entry since you took office, on {date}: | {n} days without an entry since you took office, on {date}:",
+    "GapsDay": "on {date}",
+    "GapsPeriod": "from {from} to {to}"
   },
   "EconomyInventory": {
     "PageTitle": "Stock Report",

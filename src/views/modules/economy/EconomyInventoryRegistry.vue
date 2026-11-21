@@ -3,7 +3,11 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { parseInventoryText, resolveItems } from '@/modules/inventoryParser'
-import { compareInventories, formatDiff, formatEcusDiff, STATUS } from '@/modules/inventoryCompare'
+import { compareInventories, formatEcusDiff, STATUS } from '@/modules/inventoryCompare'
+import { daysBetween, departure, mandateBilans, predecessorEntries, emptyPeriods } from '@/modules/inventoryRegistry'
+import { placeLabelFr, entryTitle, bilanTitle, comparisonTitle, withTitle } from '@/modules/registryBBcode'
+import useRegistryExport from '@/use/useRegistryExport'
+import InventoryDiffTable from '@/components/registry/InventoryDiffTable.vue'
 import { formatFieldDate } from '@/modules/playerDates'
 import { useInventoryStore } from '@/stores/inventoryStore'
 import ChestLoader from '@/components/loading/ChestLoader.vue'
@@ -13,7 +17,9 @@ import AccessDenied from '@/components/loading/AccessDenied.vue'
   Le Registre des stocks (PR 3a ; fil admin/echanges/registre-stocks, brief admin/content/brief-registre-et-reorganisation-sdc.md §3.9) :
   la mémoire d'une ville ou d'une province, transmise d'un titulaire au suivant. LECTURE : l'historique des inventaires inscrits depuis
   le Bilan des stocks, navigable dans le temps, et la comparaison de deux inscriptions (le moteur de La Balance, `inventoryCompare.js`).
-  Les bilans de mandat, la fiche de prise de poste, les trous d'inscription et l'export BBCode viennent en PR 3b.
+  PR 3b : la fiche de prise de poste, les bilans de mi-mandat et de fin de mandat (évolution entre l'inventaire hérité et la dernière inscription
+  avant la date), les jours sans inscription, et l'export BBCode (une inscription, un bilan, la comparaison libre). Tout vient des dates du
+  serveur (`mandate`) ; les calculs vivent dans `modules/inventoryRegistry.js`.
 
   ⚠️ Aucune règle côté site : qui lit quoi, le serveur le dit (`GET inventory-scopes`, puis le registre du niveau) ; un refus s'affiche tel quel.
   Les calculs se font ICI, avec le parseur : le serveur sert les textes déchiffrés. Rien n'est gardé dans le navigateur.
@@ -95,7 +101,6 @@ const placeName = computed(() => (level.value ? store.scopes?.[level.value]?.nam
 // « Dernière inscription : il y a 2 jours, le 24/05. » — même format et mêmes mots que « Dernier relevé » du Registre des mines. Le jour
 // du jeu en cours vient du serveur (`today`, bascule à 04:00). Orange et gras dès deux jours, comme les mines (Greg, 21/11/2026).
 const dayMonth = iso => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}` : '')
-const daysBetween = (from, to) => Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000)
 const last = computed(() => snapshots.value[0] ?? null)
 const stale = computed(() => !!last.value && !!registry.value?.today && daysBetween(last.value.taken_on, registry.value.today) >= 2)
 const lastAge = computed(() => {
@@ -121,7 +126,56 @@ const STATUS_VIEW = {
   [STATUS.NEW]: { arrow: '▲', cls: 'text-green-800 dark:text-green-800', label: 'EconomyBalance.Increased' },
   [STATUS.DOWN]: { arrow: '▼', cls: 'text-red-800 dark:text-red-800', label: 'EconomyBalance.Decreased' },
 }
-const changedRows = computed(() => (comparison.value?.result.rows ?? []).filter(row => row.status !== STATUS.SAME))
+// ─── PR 3b : les lectures du mandat DU LECTEUR (repères dits par le serveur) ─────────────────────────────────────────────────────────────
+const mandate = computed(() => registry.value?.mandate ?? null)
+const today = computed(() => registry.value?.today ?? null)
+const dateShort = iso => dayMonth(iso) // JJ/MM, comme les lectures du Registre des mines
+
+// Prise de poste : l'inventaire hérité (ou, à défaut, la première inscription du mandat) et ce que d'autres ont inscrit juste avant.
+const start = computed(() => departure(snapshots.value, mandate.value))
+const startInventory = computed(() => (start.value ? inventoryOf(start.value.raw) : null))
+const inherited = computed(() => !!start.value && !!mandate.value && start.value.taken_on <= mandate.value.in_office_from)
+const startGap = computed(() => (start.value && mandate.value ? Math.abs(daysBetween(start.value.taken_on, mandate.value.in_office_from)) : 0))
+const predecessors = computed(() => predecessorEntries(snapshots.value, mandate.value))
+const predecessorDays = computed(() => (mandate.value?.predecessor_from ? daysBetween(mandate.value.predecessor_from, mandate.value.in_office_from) : 0))
+const hasTakeOver = computed(() => !!start.value || predecessors.value.length > 0)
+
+// Bilans de mi-mandat et de fin de mandat : l'évolution entre deux photos. Le détail s'ouvre à la demande.
+const bilans = computed(() => mandateBilans(snapshots.value, mandate.value, today.value))
+const openedBilan = ref(null)
+const bilanLabel = kind => t(`EconomyInventoryRegistry.Bilan.${kind}`)
+const missingLabel = missing => t(`EconomyInventoryRegistry.Missing.${missing.join('_')}`)
+const bilanEcus = result => {
+  const e = result.ecus
+  if (!e) return null
+  const view = e.diff > 0 ? STATUS_VIEW[STATUS.UP] : e.diff < 0 ? STATUS_VIEW[STATUS.DOWN] : null
+  return { ...(view ?? { arrow: '', cls: '', label: '' }), amount: e.after.toLocaleString('fr-FR'), diff: view ? formatEcusDiff(e.diff) : '' }
+}
+watch([selectedId, level], () => { openedBilan.value = null })
+
+// Jours sans inscription : un fait, en périodes, sans seuil ni couleur.
+const gaps = computed(() => emptyPeriods(snapshots.value, mandate.value, today.value))
+
+// ─── Exports BBCode : une inscription, un bilan, la comparaison libre (français fixe ; options du joueur, catégories du niveau) ──────────────
+const registryExport = useRegistryExport()
+const dateFr = iso => formatFieldDate('inventory_snapshot_date', iso, 'fr')
+const placeFr = computed(() => placeLabelFr(level.value, placeName.value))
+async function exportInscription() {
+  if (!selected.value) return
+  const bbcode = await registryExport.inscriptionBBcode(level.value, inventoryOf(selected.value.raw))
+  await registryExport.copy(withTitle(entryTitle(dateFr(selected.value.taken_on), placeFr.value), bbcode))
+}
+async function exportBilan(bilan) {
+  const bbcode = await registryExport.evolutionBBcode(level.value, bilan.result, inventoryOf(bilan.end.raw).totalEcus)
+  await registryExport.copy(withTitle(bilanTitle(bilan.kind, dateFr(bilan.start.taken_on), dateFr(bilan.end.taken_on)), bbcode))
+}
+async function exportComparison() {
+  if (!comparison.value) return
+  const { older, newer, result } = comparison.value
+  const bbcode = await registryExport.evolutionBBcode(level.value, result, inventoryOf(newer.raw).totalEcus)
+  await registryExport.copy(withTitle(comparisonTitle(dateFr(older.taken_on), dateFr(newer.taken_on)), bbcode))
+}
+
 const ecusView = computed(() => {
   const e = comparison.value?.result.ecus
   if (!e) return null
@@ -171,8 +225,10 @@ const ecusView = computed(() => {
         <RouterLink :to="{ name: 'economy-inventory' }" class="underline">{{ t('Economy.InventoryLink') }}</RouterLink>
       </p>
 
-      <div v-else class="mt-5 grid grid-cols-1 gap-x-8 gap-y-5 laptop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <section v-if="selected" class="min-w-0" aria-live="polite" data-testid="registry-detail">
+      <!-- Trois colonnes au large : l'inscription ouverte, la comparaison, puis les inscriptions dans une petite colonne tout à droite. Sur laptop, deux
+             colonnes (les inscriptions sous la comparaison) ; en dessous, une seule. -->
+      <div v-else class="mt-5 grid grid-cols-1 gap-x-8 gap-y-5 laptop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] desktop:grid-cols-[minmax(0,3fr)_minmax(0,2fr)_11rem]">
+        <section v-if="selected" class="min-w-0 laptop:row-span-2 desktop:row-span-1" aria-live="polite" data-testid="registry-detail">
           <!-- ◀ ▶ avant et après le titre, comme les semaines du Registre des mines : toujours là, grisés quand il n'y a rien de plus ancien ou de plus récent. -->
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
             <button type="button" class="odc-btn odc-btn--soft odc-btn--rect odc-btn--icon odc-btn--sm odc--slate" :disabled="!olderSnapshot"
@@ -194,10 +250,11 @@ const ecusView = computed(() => {
                 <strong class="font-bold tabular-nums" data-testid="registry-count">{{ itemCount }}</strong>{{ ' ' }}{{ t('EconomyInventoryRegistry.ItemsLabel', itemCount) }}<template v-if="ecusAmount !== null">, <strong class="font-bold tabular-nums" data-testid="registry-ecus">{{ ecusAmount }}</strong>{{ ' ' }}{{ t('EconomyInventoryRegistry.EcusLabel') }}</template>
               </span>
             </div>
+            <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm ml-auto" data-testid="registry-export" @click="exportInscription">
+              <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+            </button>
           </div>
 
-          <!-- Comparer avec une autre inscription : le moteur de La Balance des stocks. -->
-          <!-- Le contenu de l'inscription ouverte : les mêmes lignes que le Bilan des stocks (quantité, nom). -->
           <!-- Le contenu de l'inscription ouverte : des colonnes compactes (il peut y avoir des centaines d'articles), lues de haut en bas, par nom. -->
           <div class="mt-3" data-testid="registry-contents">
             <p v-if="!contentsRows.length" class="text-sm text-slate-700 dark:text-slate-700">{{ t('EconomyInventory.NoItems') }}</p>
@@ -208,11 +265,83 @@ const ecusView = computed(() => {
               </li>
             </ul>
           </div>
+
+          <!-- Sous l'inscription : trois lectures courtes côte à côte (auto-fit), au gabarit du Registre des mines. Faits seulement : aucun score. -->
+          <div v-if="mandate" class="mt-6 grid gap-x-8 gap-y-4 grid-cols-[repeat(auto-fit,minmax(15rem,1fr))]" data-testid="registry-readings">
+            <!-- Prise de poste : l'inventaire hérité, et ce que d'autres ont inscrit juste avant l'entrée en fonction. Rien sans inscription connue. -->
+            <section v-if="hasTakeOver" class="registry-section" data-testid="registry-takeover">
+              <h3 class="registry-heading">{{ t('EconomyInventoryRegistry.TakeOverTitle') }}</h3>
+              <p v-if="start" class="mt-2 text-sm text-slate-800 dark:text-slate-800" data-testid="registry-takeover-start">
+                <template v-if="inherited">{{ t('EconomyInventoryRegistry.TakeOverInherited', { date: dateShort(start.taken_on), gap: t('EconomyInventoryRegistry.DaysBefore', startGap) }) }}</template>
+                <template v-else>{{ t('EconomyInventoryRegistry.TakeOverFirst', { date: dateShort(start.taken_on) }) }}</template>
+                {{ ' ' }}<strong class="font-bold tabular-nums">{{ startInventory.items.length }}</strong>{{ ' ' }}{{ t('EconomyInventoryRegistry.ItemsLabel', startInventory.items.length) }}<template v-if="startInventory.totalEcus != null">, <strong class="font-bold tabular-nums">{{ startInventory.totalEcus.toLocaleString('fr-FR') }}</strong>{{ ' ' }}{{ t('EconomyInventoryRegistry.EcusLabel') }}</template>.
+                <button type="button" class="ml-1 text-sm font-semibold text-yellow-800 underline dark:text-yellow-800" data-testid="registry-takeover-open" @click="selectedId = start.id">{{ t('EconomyInventoryRegistry.OpenEntry') }}</button>
+              </p>
+              <div v-if="predecessors.length" class="mt-2 text-sm text-slate-800 dark:text-slate-800" data-testid="registry-predecessors">
+                <p>{{ t('EconomyInventoryRegistry.PredecessorsLead', { days: predecessorDays, date: dateShort(mandate.in_office_from) }, predecessors.length) }}</p>
+                <ul class="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                  <li v-for="entry in predecessors" :key="entry.id">
+                    <button type="button" class="font-semibold text-yellow-800 underline dark:text-yellow-800" :data-testid="`registry-predecessor-${entry.id}`" @click="selectedId = entry.id">{{ dateShort(entry.taken_on) }}</button>
+                  </li>
+                </ul>
+              </div>
+            </section>
+
+            <!-- Bilans de votre mandat : mi-mandat et fin de mandat, de l'inventaire hérité à la dernière inscription avant la date. Jamais partiel. -->
+            <section v-if="bilans.length" class="registry-section" data-testid="registry-bilans">
+              <h3 class="registry-heading">{{ t('EconomyInventoryRegistry.BilansTitle') }}</h3>
+              <div v-for="bilan in bilans" :key="bilan.kind" class="mt-2 text-sm text-slate-800 dark:text-slate-800" :data-testid="`registry-bilan-${bilan.kind}`">
+                <p v-if="bilan.status === 'pending'" data-testid="registry-bilan-pending">
+                  {{ t('EconomyInventoryRegistry.BilanPending', { label: bilanLabel(bilan.kind), date: dateShort(bilan.at), n: bilan.inDays }, bilan.inDays) }}
+                </p>
+                <p v-else-if="bilan.status === 'insufficient'" data-testid="registry-bilan-insufficient">
+                  {{ t('EconomyInventoryRegistry.BilanInsufficient', { label: bilanLabel(bilan.kind), missing: missingLabel(bilan.missing) }) }}
+                </p>
+                <template v-else>
+                  <p class="font-bold">{{ bilanLabel(bilan.kind) }}{{ t('EconomyInventoryRegistry.BilanRange', { from: dateShort(bilan.start.taken_on), to: dateShort(bilan.end.taken_on) }) }}</p>
+                  <p class="mt-0.5" :data-testid="`registry-bilan-${bilan.kind}-summary`">
+                    {{ t('EconomyBalance.Summary', { up: bilan.result.counts.up, down: bilan.result.counts.down, added: bilan.result.counts.new, gone: bilan.result.counts.disappeared }) }}
+                  </p>
+                  <p v-if="bilanEcus(bilan.result)" class="mt-0.5">
+                    {{ t('EconomyBalance.Treasury', { ecus: bilanEcus(bilan.result).amount }) }}
+                    <span v-if="bilanEcus(bilan.result).diff" :class="bilanEcus(bilan.result).cls">
+                      <span aria-hidden="true">{{ bilanEcus(bilan.result).arrow }}</span>
+                      <span class="sr-only">{{ t(bilanEcus(bilan.result).label) }}</span>
+                      {{ bilanEcus(bilan.result).diff }}
+                    </span>
+                  </p>
+                  <p v-if="!bilan.result.hasChanges" class="mt-0.5 font-medium">{{ t('EconomyBalance.NoChange') }}</p>
+                  <div class="mt-1.5 flex flex-wrap items-center gap-2">
+                    <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" :aria-expanded="openedBilan === bilan.kind" :data-testid="`registry-bilan-${bilan.kind}-toggle`" @click="openedBilan = openedBilan === bilan.kind ? null : bilan.kind">
+                      {{ openedBilan === bilan.kind ? t('EconomyInventoryRegistry.BilanHide') : t('EconomyInventoryRegistry.BilanShow') }}
+                    </button>
+                    <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" :data-testid="`registry-bilan-${bilan.kind}-export`" @click="exportBilan(bilan)">
+                      <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+                    </button>
+                  </div>
+                  <InventoryDiffTable v-if="openedBilan === bilan.kind" :result="bilan.result" :testid="`registry-bilan-${bilan.kind}`" />
+                </template>
+              </div>
+            </section>
+
+            <!-- Jours sans inscription depuis l'entrée en fonction : un fait, en périodes. Aucun seuil, aucune couleur, aucun jugement. -->
+            <section v-if="gaps" class="registry-section" data-testid="registry-gaps">
+              <h3 class="registry-heading">{{ t('EconomyInventoryRegistry.GapsTitle') }}</h3>
+              <p class="mt-2 text-sm text-slate-800 dark:text-slate-800" data-testid="registry-gaps-summary">
+                {{ t('EconomyInventoryRegistry.GapsCount', { date: dateShort(mandate.in_office_from) }, gaps.days) }}
+              </p>
+              <ul v-if="gaps.periods.length" class="mt-1 max-h-40 overflow-y-auto text-sm text-slate-700 dark:text-slate-700" data-testid="registry-gaps-periods">
+                <li v-for="period in gaps.periods" :key="period.from" class="tabular-nums">
+                  {{ period.from === period.to ? t('EconomyInventoryRegistry.GapsDay', { date: dateShort(period.from) }) : t('EconomyInventoryRegistry.GapsPeriod', { from: dateShort(period.from), to: dateShort(period.to) }) }}
+                </li>
+              </ul>
+            </section>
+          </div>
         </section>
 
         <!-- La mémoire : les inscriptions, de la plus récente à la plus ancienne. -->
-        <!-- À droite : la comparaison au-dessus, la mémoire (les inscriptions) dessous. -->
-        <aside v-if="selected" class="min-w-0" data-testid="registry-side">
+        <!-- La comparaison (colonne du milieu) ; les inscriptions sont leur propre colonne, plus bas dans le gabarit. -->
+        <aside v-if="selected" class="min-w-0 laptop:col-start-2 laptop:row-start-1 desktop:col-start-2" data-testid="registry-side">
             <!-- Toujours là, comme les chevrons : grisée tant qu'il n'y a qu'une inscription (rien à comparer), et elle le dit. -->
             <label class="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-800 dark:text-slate-800">
               <span>{{ t('EconomyInventoryRegistry.CompareLabel') }}</span>
@@ -237,65 +366,35 @@ const ecusView = computed(() => {
                 </span>
               </p>
               <p v-if="!comparison.result.hasChanges" class="mt-1 text-sm font-medium text-slate-800 dark:text-slate-800" data-testid="registry-compare-nochange">{{ t('EconomyBalance.NoChange') }}</p>
-              <div class="overflow-x-auto">
-                <table class="mt-2 w-full text-sm" data-testid="registry-compare-table">
-                  <thead>
-                    <tr>
-                      <th class="text-left">{{ t('EconomyInventoryRegistry.ColumnItem') }}</th>
-                      <th class="text-right">{{ t('EconomyInventoryRegistry.ColumnBefore') }}</th>
-                      <th class="text-right">{{ t('EconomyInventoryRegistry.ColumnAfter') }}</th>
-                      <th class="text-right">{{ t('EconomyInventoryRegistry.ColumnDiff') }}</th>
-                    </tr>
-                  </thead>
-                  <tbody class="tabular-nums">
-                    <tr v-for="row in changedRows" :key="row.name" class="border-b border-slate-300" data-testid="registry-compare-row">
-                      <td class="py-1.5 pr-3 font-bold">
-                        {{ row.name }}
-                        <span v-if="row.status === 'new'" class="ml-1 rounded border border-green-300 bg-green-100 px-1 text-[0.65rem] font-semibold uppercase text-green-900">{{ t('EconomyBalance.New') }}</span>
-                      </td>
-                      <td class="py-1.5 text-right">{{ row.before ?? '—' }}</td>
-                      <td class="py-1.5 text-right">{{ row.quantity }}</td>
-                      <td class="py-1.5 text-right font-medium" :class="STATUS_VIEW[row.status].cls">
-                        <span aria-hidden="true">{{ STATUS_VIEW[row.status].arrow }}</span>
-                        <span class="sr-only">{{ t(STATUS_VIEW[row.status].label) }}</span>
-                        {{ formatDiff(row.diff) }}
-                      </td>
-                    </tr>
-                    <tr v-for="item in comparison.result.disappeared" :key="`gone-${item.name}`" class="border-b border-slate-300" data-testid="registry-compare-gone">
-                      <td class="py-1.5 pr-3 font-bold text-slate-700 line-through">{{ item.name }}</td>
-                      <td class="py-1.5 text-right text-slate-700">{{ item.before }}</td>
-                      <td class="py-1.5 text-right text-slate-700">—</td>
-                      <td class="py-1.5 text-right font-medium text-red-800 dark:text-red-800">
-                        <span aria-hidden="true">▼</span>
-                        <span class="sr-only">{{ t('EconomyBalance.Disappeared') }}</span>
-                        {{ formatDiff(-item.before) }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div class="mt-1.5">
+                <button type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="registry-compare-export" @click="exportComparison">
+                  <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+                </button>
               </div>
+              <InventoryDiffTable :result="comparison.result" testid="registry-compare" />
             </div>
-          <nav class="min-w-0" :aria-label="t('EconomyInventoryRegistry.ListTitle')" data-testid="registry-list">
-            <details open class="registry-section mt-4" data-testid="registry-index">
-              <summary class="registry-heading cursor-pointer">{{ t('EconomyInventoryRegistry.ListTitle') }} ({{ snapshots.length }})</summary>
-              <ul class="mt-2 max-h-96 overflow-y-auto">
-                <li v-for="snapshot in snapshots" :key="snapshot.id">
-                  <button
-                    type="button"
-                    class="block w-full rounded px-2 py-1 text-left text-sm text-slate-800 hover:bg-yellow-50 dark:text-slate-800"
-                    :class="snapshot.id === selectedId ? 'bg-yellow-100 font-bold' : ''"
-                    :aria-current="snapshot.id === selectedId ? 'true' : undefined"
-                    :data-testid="`registry-entry-${snapshot.id}`"
-                    @click="selectedId = snapshot.id"
-                  >
-                    {{ dateOf(snapshot) }}
-                    <span v-if="snapshot.by_me" class="block text-xs font-normal text-slate-700">{{ t('EconomyInventoryRegistry.ByMe') }}</span>
-                  </button>
-                </li>
-              </ul>
-            </details>
-          </nav>
         </aside>
+
+        <nav class="min-w-0 laptop:col-start-2 laptop:row-start-2 desktop:col-start-3 desktop:row-start-1" :aria-label="t('EconomyInventoryRegistry.ListTitle')" data-testid="registry-list">
+          <details open class="registry-section mt-4 desktop:!mt-0 desktop:!border-t-0 desktop:!pt-0" data-testid="registry-index">
+            <summary class="registry-heading cursor-pointer">{{ t('EconomyInventoryRegistry.ListTitle') }} ({{ snapshots.length }})</summary>
+            <ul class="mt-2 max-h-96 overflow-y-auto">
+              <li v-for="snapshot in snapshots" :key="snapshot.id">
+                <button
+                  type="button"
+                  class="block w-full rounded px-2 py-1 text-left text-sm text-slate-800 hover:bg-yellow-50 dark:text-slate-800"
+                  :class="snapshot.id === selectedId ? 'bg-yellow-100 font-bold' : ''"
+                  :aria-current="snapshot.id === selectedId ? 'true' : undefined"
+                  :data-testid="`registry-entry-${snapshot.id}`"
+                  @click="selectedId = snapshot.id"
+                >
+                  {{ dateOf(snapshot) }}
+                  <span v-if="snapshot.by_me" class="block text-xs font-normal text-slate-700">{{ t('EconomyInventoryRegistry.ByMe') }}</span>
+                </button>
+              </li>
+            </ul>
+          </details>
+        </nav>
       </div>
     </template>
     </ChestLoader>

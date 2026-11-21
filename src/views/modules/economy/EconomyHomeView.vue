@@ -13,6 +13,9 @@ const stockRegistryAccess = inject('economyStockRegistryAccess', null)
 const canAccessMandateTools = computed(() => !!(access?.value?.read || access?.value?.write))
 
 // Deux groupes, comme le menu de gauche : Mines, puis Inventaires. Un groupe sans carte n'est pas affiché.
+// Un groupe d'une seule carte n'occupe qu'une colonne ; deux cartes ou plus, deux colonnes.
+const columnsOf = group => Math.min(group.items.length, 2)
+
 const groups = computed(() => {
   const mines = [
     {
@@ -70,7 +73,7 @@ const groups = computed(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-4xl mx-auto">
+  <div class="w-full max-w-6xl mx-auto">
     <header class="text-center mb-6">
       <h2 class="!mt-0 !mb-1 text-4xl tablet:text-5xl font-extrabold tracking-tight text-yellow-800 dark:text-yellow-800">{{ t('Economy.Home.Title') }}</h2>
       <div class="flex items-center justify-center gap-3 text-yellow-700 dark:text-yellow-700" aria-hidden="true">
@@ -82,12 +85,14 @@ const groups = computed(() => {
     </header>
 
     <ChestLoader :loading="!ready" accent="gold" illustration="gate">
-      <!-- Les groupes se rangent en deux colonnes (un troisième ensemble passera à la ligne) ; les cartes sont empilées dans chacun. -->
-      <div class="grid gap-x-8 gap-y-6 tablet:grid-cols-2 items-start" data-testid="economy-groups">
+      <!-- Les groupes se rangent côte à côte, chacun large de ses colonnes : une seule carte = une seule colonne, deux cartes ou plus = deux colonnes
+           (un troisième ensemble passera à la ligne). Largeur proportionnelle au nombre de colonnes, en style : une classe construite serait purgée. -->
+      <div class="flex flex-wrap items-start gap-x-8 gap-y-6" data-testid="economy-groups">
         <section
           v-for="group in groups"
           :key="group.key"
           class="min-w-0"
+          :style="{ flex: `${columnsOf(group)} 1 ${columnsOf(group) * 15}rem` }"
           :aria-labelledby="`economy-group-${group.key}`"
           :data-testid="`economy-group-${group.key}`"
         >
@@ -95,7 +100,7 @@ const groups = computed(() => {
             :id="`economy-group-${group.key}`"
             class="!mt-0 !mb-3 border-b border-yellow-700/40 pb-1 text-sm font-bold uppercase tracking-wider text-yellow-800 dark:text-yellow-800"
           >{{ group.title }}</h3>
-          <ModuleHomeCards :items="group.items" accent="gold" layout="single" :testid="`economy-home-cards-${group.key}`" />
+          <ModuleHomeCards :items="group.items" accent="gold" :layout="columnsOf(group) === 1 ? 'single' : 'duo'" :testid="`economy-home-cards-${group.key}`" />
         </section>
       </div>
       <p v-if="groups.length === 0" class="text-center text-sm text-slate-400 dark:text-slate-500 italic py-6">
