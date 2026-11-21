@@ -60,6 +60,23 @@
   --nv-z: 9999;
 }
 
+/* Notivue : les toasts glissent depuis la droite (config `animations` de main.js). Une seule passe, 0,35 s, comme l'animation d'origine ;
+   `prefers-reduced-motion` est honoré par la règle globale de base.css (animationend se déclenche toujours : Notivue en dépend). */
+.odc-toast-enter {
+  animation: odc-toast-enter-kf 0.35s cubic-bezier(0.5, 1, 0.25, 1);
+}
+.odc-toast-leave {
+  animation: odc-toast-leave-kf 0.35s ease;
+}
+@keyframes odc-toast-enter-kf {
+  from { transform: translate3d(120%, 0, 0); opacity: 0; }
+  to { transform: translateZ(0); opacity: 1; }
+}
+@keyframes odc-toast-leave-kf {
+  from { transform: translateZ(0); opacity: 0.7; }
+  to { transform: translate3d(120%, 0, 0); opacity: 0; }
+}
+
 /* Notivue : Rules for mobile devices */
 @media (max-width: 768px) {
   :root {

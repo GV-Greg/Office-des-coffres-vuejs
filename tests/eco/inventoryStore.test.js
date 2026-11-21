@@ -330,6 +330,18 @@ describe('registre des stocks : ville et province', () => {
     expect(http.post).toHaveBeenLastCalledWith('characters/7/inventory/province', { raw: 'autre', confirm_replace: true }, expect.anything())
   })
 
+  it('la date choisie part en AAAA-MM-JJ avec le texte (et avec confirm_replace), jamais quand elle est absente', async () => {
+    const { store } = setup()
+    http.get.mockReturnValue(ok(CITY))
+    http.post.mockReturnValue(ok({ snapshot: { id: 10, taken_on: '2026-05-12' }, replaced: null, unchanged: false }))
+    await store.recordRegistry('city', 'texte', false, '2026-05-12')
+    expect(http.post).toHaveBeenLastCalledWith('characters/7/inventory/city/registry', { raw: 'texte', date: '2026-05-12' }, expect.anything())
+    await store.recordRegistry('city', 'texte', true, '2026-05-12')
+    expect(http.post).toHaveBeenLastCalledWith('characters/7/inventory/city/registry', { raw: 'texte', confirm_replace: true, date: '2026-05-12' }, expect.anything())
+    await store.recordRegistry('city', 'texte')
+    expect(http.post).toHaveBeenLastCalledWith('characters/7/inventory/city/registry', { raw: 'texte' }, expect.anything())
+  })
+
   it('changer de personnage vide aussi le registre de la ville', async () => {
     const { store } = setup()
     http.get.mockReturnValue(ok(CITY))

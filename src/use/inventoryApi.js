@@ -40,9 +40,11 @@ export default function inventoryApi() {
     /**
      * Inscrit l'inventaire du jour au registre : { snapshot, replaced, unchanged }. Un AUTRE texte le même jour répond 409 (+ `existing`, l'auteur
      * de l'inscription à remplacer) tant que `confirmReplace` n'est pas vrai ; l'ancienne inscription reste, rien ne s'efface.
+     * `date` (AAAA-MM-JJ, optionnelle) : le jour du jeu sous lequel inscrire — absente, c'est le jour en cours. Hors plage : 422 ; une inscription
+     * existante AVANT l'entrée en fonction du titulaire : 409 `registry_before_mandate_locked` (jamais de remplacement, personne n'est nommé).
      */
-    recordRegistry: (characterId, level, raw, confirmReplace = false) =>
-      http.post(`${base(characterId)}/${registryPath(level)}`, confirmReplace ? { raw, confirm_replace: true } : { raw }, auth()).then(({ data }) => data),
+    recordRegistry: (characterId, level, raw, confirmReplace = false, date = null) =>
+      http.post(`${base(characterId)}/${registryPath(level)}`, { raw, ...(confirmReplace ? { confirm_replace: true } : {}), ...(date ? { date } : {}) }, auth()).then(({ data }) => data),
     /** Historique et inscription de la province (alias de `registry`/`recordRegistry`). */
     provinceHistory: (characterId) => http.get(`${base(characterId)}/${registryPath('province')}`, auth()).then(({ data }) => data),
     recordProvince: (characterId, raw) => http.post(`${base(characterId)}/${registryPath('province')}`, { raw }, auth()).then(({ data }) => data),

@@ -142,6 +142,11 @@ describe('« Vos données » — Registre des stocks', () => {
     expect(InventoryRegistry.Deletion).toContain(lang === 'fr' ? 'ne font pas partie de votre export' : 'not part of your data export')
   })
 
+  // Brief 10 : le texte dit que la date peut être choisie, et jusqu'où (14 jours avant le début du mandat).
+  it.each([['fr', "Vous pouvez choisir une date passée (jusqu'à 14 jours avant le début de votre mandat)"], ['en', 'You may choose a past date (up to 14 days before the start of your term)']])('%s : « Vos données » dit la date choisie et sa borne', (lang, phrase) => {
+    expect(locale(lang).Legal.Data.InventoryRegistry.Input).toContain(phrase)
+  })
+
   // Le texte légal nomme le bouton : l'interface doit porter les mêmes mots, dans les deux langues.
   it.each([['fr', 'Inscrire au registre'], ['en', 'Save to registry']])('%s : le bouton de l\'interface porte le nom que le texte légal annonce', (lang, label) => {
     const d = locale(lang)
