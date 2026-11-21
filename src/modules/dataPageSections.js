@@ -34,6 +34,10 @@ export const DATA_PAGE_SECTIONS = [
   // validé est requis (fil registre-stocks, texte de Cowork du 20/11/2026).
   { id: 'registre-des-stocks', key: 'InventoryRegistry', access: 'office' },
   { id: 'guet', key: 'Watch', access: 'none' },
+  // La Salle des gardes (module Sécurité) : listes rouge/verte et bilans de défense d'une province, saisis par le trio, les douaniers
+  // validés et le maire (fil module-securite, v2 validée par Greg le 22/11/2026). « À venir » jusqu'au déploiement de la PR 3-1 : le texte
+  // précède l'écriture (règle R5). Un poste ou le statut de douanier validé est requis.
+  { id: 'salle-des-gardes', key: 'Security', access: 'office', upcoming: true },
   { id: 'carte', key: 'Map', access: 'none' },
   // Une seule entrée pour toutes les activités d'Animation (Décode le code, Grille des lots) : une activité de plus
   // s'ajoute dans le texte de la section, pas ici (fil animation-textes-legaux, 11/11/2026).

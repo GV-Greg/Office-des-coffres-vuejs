@@ -1251,7 +1251,7 @@
         "Intro": "Aucun cookie HTTP tiers n'est déposé sur ce site. Nous utilisons deux mécanismes de stockage côté navigateur, tous deux limités au strict nécessaire :",
         "Preferences": {
           "Title": "Stockage local (localStorage) — Préférences",
-          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Guet, Bilan des mines, Bilan des stocks, Animation : Décode le code, Grille des lots).",
+          "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Relevé de guet, Bilan des mines, Bilan des stocks, Animation : Décode le code, Grille des lots).",
           "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics, vos réglages d'inventaire (catégories, assignations, ordre, options d'export) lorsque vous utilisez le Bilan des stocks sans compte, et l'adresse de votre dernière activité de chaque type d'Animation (Décode le code, Grille des lots) que vous avez créée ou ouverte en mode public sur cet appareil.",
           "Retention": "jusqu'à ce que vous effaciez vos données de site depuis votre navigateur, ou que vous retiriez votre consentement via le bandeau cookies.",
           "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques).",
@@ -1377,13 +1377,20 @@
         "Deletion": "Les inscriptions du registre sont rattachées au poste, pas à votre compte : elles ne font pas partie de votre export de données et restent en place quand vous quittez vos fonctions. Le lien entre l'inscription et votre compte est supprimé."
       },
       "Watch": {
-        "Title": "Le Guet",
+        "Title": "Relevé de guet",
         "Purpose": "Comparer deux listes des villageois de votre ville copiées depuis le jeu, pour voir qui est entré et qui est sorti, et préparer le message du forum. Aucun compte n'est nécessaire.",
         "Input": "Deux listes de villageois copiées depuis le jeu : elles contiennent des noms de personnages d'autres joueurs.",
         "Stored": "Rien n'est enregistré sur nos serveurs : la comparaison se fait dans votre navigateur. Si vous avez accepté les cookies de préférences, votre navigateur garde la dernière liste collée, pour vous la proposer comme « liste d'hier » à votre prochaine visite. Sans ce consentement, rien n'est gardé.",
         "Duration": "Dans votre navigateur, jusqu'à ce que vous effaciez les données du site ou retiriez votre consentement aux cookies de préférences, ce qui les efface aussitôt.",
         "Audience": "Personne d'autre que vous : ces données ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu.",
         "Deletion": "Sans effet : le Guet n'est lié à aucun compte."
+      },
+      "Security": {
+        "Title": "La Salle des gardes",
+        "Purpose": "Suivre la défense de votre province : le trio de sécurité, les douaniers validés et le maire d'une ville saisissent des bilans de défense (habitants, pseudos croisés, armées et groupes) et tiennent des listes rouge et verte de la province. Il faut un poste validé dans l'Office, ou le statut de douanier validé.",
+        "Input": "Des collages copiés depuis le jeu : la liste des villageois, les visions en chemin, les armées et groupes. Ils contiennent des noms de personnages d'autres joueurs, saisis tels quels.",
+        "Stored": "Chaque bilan (un par ville et par jour du jeu), chiffré en base de données, et les listes rouge et verte de la province (pseudo, raison facultative, date d'ajout, auteur). Si vous demandez à devenir douanier : votre statut et ses dates.",
+        "Deletion": "Votre statut de douanier figure dans l'export de vos données. Pour les listes et les bilans, l'export indique seulement que vous avez ajouté des entrées aux listes et saisi des bilans (dates, villes, couleur), sans leur contenu : ni pseudos, ni raisons, ni bilans, qui sont rattachés à la ville et à la province, pas à votre compte, et contiennent trop de données de tiers. À la suppression de votre compte, le lien avec ce que vous avez saisi est supprimé ; le contenu reste."
       },
       "Animation": {
         "Title": "Animation",
@@ -1409,7 +1416,7 @@
       },
       "Section3": {
         "Title": "3. Quand vous créez un compte",
-        "Intro": "La création d'un compte utilisateur est optionnelle. Le site est consultable librement sans compte, avec accès aux outils publics (Guet, Bilan des mines). Un compte gratuit débloque des fonctionnalités supplémentaires liées à votre historique de jeu (Douane, Registre des mines — modules à venir).",
+        "Intro": "La création d'un compte utilisateur est optionnelle. Le site est consultable librement sans compte, avec accès aux outils publics (Relevé de guet, Bilan des mines). Un compte gratuit débloque des fonctionnalités supplémentaires liées à votre historique de jeu (Registre des mines, Registre des stocks, Salle des gardes).",
         "AccountFieldsIntro": "Pour créer un compte, seules deux informations sont demandées :",
         "AccountFields": [
           {
@@ -1418,7 +1425,7 @@
           },
           {
             "Label": "Mot de passe",
-            "Text": "stocké de façon sécurisée (haché avec bcrypt), jamais en clair."
+            "Text": "stocké de façon sécurisée (haché), jamais en clair."
           }
         ],
         "CharacterFieldsIntro": "Vous pouvez ensuite ajouter un ou plusieurs personnages Renaissance Kingdoms à votre compte :",
@@ -1529,6 +1536,22 @@
           }
         ],
         "InventoryNote": "Les réglages et les inventaires d'une ville ou d'une province sont des données du poste : ils restent en place quand leur auteur quitte ses fonctions, seul le lien vers l'auteur est coupé. Si un inventaire est remplacé par un autre officier, le pseudo du rédacteur précédent reste visible dans l'historique du registre des stocks, afin de garantir la traçabilité des données du poste. Aucune interface d'administration du site ne permet de consulter vos inventaires ni vos réglages : cette restriction est inscrite dans le code, vérifiée automatiquement à chaque livraison, et le code source est public. L'éditeur conserve néanmoins un accès technique à l'hébergement, comme tout administrateur de site ; il s'engage à ne pas l'utiliser pour consulter ces données.",
+        "SecurityIntro": "La Salle des gardes (module Sécurité) — si votre personnage est douanier, prévôt des maréchaux, connétable, capitaine, juge, procureur, dirigeant de province (comte, duc…) ou maire, l'Office vous permet, selon votre titre, de consulter ou de saisir des informations liées à la défense de votre province. L'Office conserve :",
+        "SecurityFields": [
+          {
+            "Label": "Votre statut de douanier",
+            "Text": "Si vous demandez à devenir douanier : votre personnage, la ville de rattachement et la province, l'état de votre demande (en attente, validée, refusée, retirée), les dates, le niveau de la décision (prévôt ou connétable ; en leur absence capitaine, dirigeant ou maire ; ou administrateur), le personnage qui a décidé (conservé pour la traçabilité, jamais affiché), la date de votre dernier bilan saisi — elle sert à retirer l'accès après une longue inactivité — et la cause d'une fin d'accès. Vous demandez ce rôle vous-même : personne n'est inscrit d'office."
+          },
+          {
+            "Label": "Les listes rouge et verte",
+            "Text": "Des listes par province de noms de personnages à surveiller (rouge) ou de confiance (verte). Chaque entrée contient un pseudo saisi librement (le personnage peut ne pas avoir de compte sur l'Office), une raison facultative, la date d'ajout et le personnage qui l'a ajoutée. Ces listes colorent les pseudos des bilans de défense : rouge pour la liste rouge, vert pour la liste verte. La couleur s'applique à partir de la date d'ajout, tant que l'entrée est en liste : les bilans plus anciens que l'ajout n'en portent pas. Retirer une entrée la supprime définitivement ; les bilans ne la montrent alors plus, et la rajouter plus tard repart d'une nouvelle date."
+          },
+          {
+            "Label": "Les bilans de défense",
+            "Text": "Un bilan par ville et par jour du jeu, saisi par un titulaire habilité (prévôt, connétable, capitaine, maire de la ville ou douanier) à partir de ce qu'il voit en jeu. Il peut contenir : la liste des habitants de la ville (pseudo, réputation, noblesse) ; les pseudos croisés en chemin la nuit précédente ; les armées et groupes présents (nom, commandant, membres, texte de statut) ; le texte du « Contrôle de la zone ». Ces informations sont chiffrées côté serveur ; seuls les axes de consultation (province, ville, jour du jeu, lien avec l'auteur) restent en clair."
+          }
+        ],
+        "SecurityNote": "Les noms de personnages présents dans les listes et les bilans — habitants, voyageurs, soldats — sont copiés depuis le jeu. L'Office ne les vérifie pas et ils ne sont liés à aucun compte : leur présence reflète une activité de surveillance exercée dans le jeu, pas un jugement de l'Office. Les personnes citées ne sont pas prévenues une à une ; cette politique est l'information qui leur est destinée. Aucune interface d'administration du site ne permet de consulter les listes ni les bilans : cette restriction est inscrite dans le code, vérifiée automatiquement à chaque livraison, et le code source est public. L'éditeur conserve néanmoins un accès technique à l'hébergement, comme tout administrateur de site ; il s'engage à ne pas l'utiliser pour les consulter.",
         "ToolsIntro": "À quoi sert chaque outil, qui peut l'utiliser, ce que vous y mettez et ce qu'il enregistre ou non est expliqué outil par outil sur la page {dataLink} :"
       },
       "Section4": {
@@ -1573,6 +1596,16 @@
             "Data": "Postes déclarés (mandats)",
             "Purpose": "Vérifier votre poste, puis indiquer aux modules qui peut écrire au titre d'une fonction",
             "LegalBasis": "Exécution du contrat"
+          },
+          {
+            "Data": "Statut de douanier",
+            "Purpose": "Savoir qui peut saisir les bilans de défense d'une province, et retirer l'accès après une longue inactivité",
+            "LegalBasis": "Exécution du contrat"
+          },
+          {
+            "Data": "Listes rouge et verte, bilans de défense",
+            "Purpose": "Permettre aux titulaires habilités d'une province de suivre sa défense et de comparer un jour à l'autre",
+            "LegalBasis": "Intérêt légitime"
           }
         ],
         "NoCommercialUse": "Aucune donnée personnelle n'est utilisée à des fins commerciales, publicitaires, statistiques agrégées ou de profilage."
@@ -1588,7 +1621,8 @@
         "MineRegistry": "Registre des mines : les relevés que vous enregistrez sont conservés sans limite de durée, parce qu'ils forment la mémoire de gestion d'une province, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, le relevé reste, mais le lien avec votre compte est supprimé : il garde sa date, sa province et le poste utilisé, et ne désigne plus aucun personnage. Nous écrivons « le lien est supprimé » et non « le relevé est anonymisé » : l'historique des postes de la province reste consultable, et il peut permettre de rapprocher une date et un poste d'un nom de personnage. Enfin, aucun relevé ne peut être effacé, pas même par celui qui l'a écrit : un relevé erroné est remplacé, et le remplacement reste visible.",
         "MinePrices": "Prix des mines : les prix enregistrés sont conservés sans limite de durée, parce qu'ils servent à calculer les bilans de la province, d'un titulaire au suivant. Vous pouvez corriger un prix tant que vous tenez le poste, et jusqu'à 7 jours après la fin de votre mandat ; ensuite il est verrouillé. Les jeux de prix successifs forment un historique et restent tous consultables ; en revanche, corriger un jeu remplace ses valeurs, et l'ancienne valeur n'est pas conservée. Personne ne peut effacer un prix. À la suppression de votre personnage ou de votre compte, les prix restent, mais le lien avec votre compte est supprimé : ils gardent leur date et leur province, et ne désignent plus aucun personnage. Là encore, « le lien est supprimé » et non « anonymisé » : l'historique des postes de la province peut permettre de rapprocher une date d'un nom de personnage.",
         "Animation": "Animation (Décode le code, Grille des lots) : en mode privé, l'activité et son contenu — les coffres et les propositions que vous avez inscrites (Décode le code), les lots (Grille des lots) — sont conservés tant que vous ne supprimez ni l'activité, ni le personnage, ni le compte qui l'a créée — leur suppression supprime l'activité avec eux, contenu compris. Dans les deux modes, une activité sans action depuis 30 jours est automatiquement close ; en mode privé, vous pouvez la rouvrir et tout est conservé, alors qu'en mode public cette fermeture est définitive : aucune réouverture n'est possible. En mode public, à la clôture, qu'elle soit manuelle ou automatique, l'empreinte de votre connexion, votre adresse email, votre mot de passe et toute demande de réinitialisation en attente sont effacés ; pour Décode le code, un compte rendu incluant l'ensemble des propositions reçues est d'abord envoyé à votre adresse email si vous en avez confirmé une. Ce qui reste visible à la communauté pendant 5 ans après la clôture : le nom de l'activité, votre pseudo d'organisateur et le lieu, plus, pour Décode le code, les coffres percés avec le pseudo de qui les a trouvés et le classement final — jamais les propositions reçues, qui sont effacées à la clôture — et, pour la Grille des lots, les dimensions, tous les lots et le nom des personnages qui ont choisi une case. Passé ce délai, la page et le pseudonyme sont supprimés. Pour demander le retrait d'un nom inscrit sur une de ces pages avant ce délai, contactez {email}.",
-        "Inventory": "Bilan des stocks : vos réglages et votre inventaire personnels sont conservés tant que votre personnage existe, et supprimés avec lui. Les réglages et l'inventaire d'une ville ou d'une province sont conservés tant que cette ville ou cette province existe dans le référentiel du jeu, et restent en place quand leur auteur quitte ses fonctions. L'historique des inventaires d'une province ou d'une ville est conservé sans limite de durée, parce qu'il forme la mémoire de gestion du poste, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, ce qui concerne une ville ou une province reste, mais le lien avec votre compte est supprimé : nous écrivons « le lien est supprimé » et non « anonymisé », comme pour le Registre des mines."
+        "Inventory": "Bilan des stocks : vos réglages et votre inventaire personnels sont conservés tant que votre personnage existe, et supprimés avec lui. Les réglages et l'inventaire d'une ville ou d'une province sont conservés tant que cette ville ou cette province existe dans le référentiel du jeu, et restent en place quand leur auteur quitte ses fonctions. L'historique des inventaires d'une province ou d'une ville est conservé sans limite de durée, parce qu'il forme la mémoire de gestion du poste, transmise d'un titulaire au suivant. À la suppression de votre personnage ou de votre compte, ce qui concerne une ville ou une province reste, mais le lien avec votre compte est supprimé : nous écrivons « le lien est supprimé » et non « anonymisé », comme pour le Registre des mines.",
+        "Security": "La Salle des gardes : votre statut de douanier est conservé tant que votre personnage existe et supprimé avec lui. Les entrées des listes rouge et verte, tant qu'elles n'ont pas été retirées (un retrait les supprime définitivement), et les bilans de défense sont conservés sans limite de durée, parce qu'ils forment la mémoire de défense de la province : les bilans servent à comparer un jour à l'autre (arrivées et départs) et à transmettre un suivi d'un titulaire au suivant ; une date d'expiration rendrait ces usages inopérants. À la suppression de votre personnage ou de votre compte, ce que vous avez saisi reste, mais le lien avec votre compte est supprimé : nous écrivons « le lien est supprimé » et non « anonymisé », comme pour le Registre des mines. Les pseudos de tiers figurant dans les listes et les bilans ne sont liés à aucun compte : la suppression d'un compte ne les retire pas."
       },
       "Section6": {
         "Title": "6. À qui vos données sont accessibles",
@@ -1600,7 +1634,8 @@
         "MineRegistryHolders": "Le commissaire aux mines et le bailli de la province concernée, qui tiennent le Registre des mines de cette province, ainsi que son commissaire au commerce et son dirigeant (comte, duc…), qui peuvent le consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. C'est la fonction même du registre : la gestion des mines d'une province passe de main en main, et tous les postes sont vidés à chaque élection. Jamais les autres conseillers, jamais un joueur d'une autre province.",
         "MinePricesHolders": "Prix des mines : le commissaire au commerce, le commissaire aux mines et le bailli de la province, qui les gèrent, et son dirigeant (comte, duc…), qui peut les consulter — y compris les titulaires qui vous succéderont, et y compris après la suppression de votre compte. Les autres titulaires de ces trois postes reçoivent aussi, une fois par jour, un email qui résume les prix modifiés et nomme le personnage qui les a modifiés. Jamais les autres conseillers, jamais un joueur d'une autre province.",
         "AnimationHolders": "Animation (Décode le code, Grille des lots) : la page publique d'une activité est visible de tout le monde, qu'elle ait été créée en mode privé ou public — c'est le but de ces outils, partagés sur le forum du jeu. Elle montre le nom, le lieu et le pseudo de l'organisateur, plus, pour Décode le code, les coffres percés et le classement ; pour la Grille des lots, visible dès le tirage, les cases et, pour chaque case choisie, le lot révélé et le nom du personnage qui l'a choisie (le contenu des cases non choisies reste caché jusqu'à la clôture, où tous les lots deviennent visibles). Votre mot de passe n'est jamais visible de personne, pas même de l'administrateur du site. Votre adresse email, si vous en avez confirmé une, est visible de l'administrateur du site dans son panneau d'administration — pour vous aider en cas de mot de passe oublié et pour les besoins de l'administration technique du service. Votre pseudo d'organisateur et, le cas échéant, la date de la dernière réinitialisation de mot de passe y sont également visibles.",
-        "InventoryHolders": "Bilan des stocks : votre inventaire personnel, vous seul. L'inventaire et les réglages d'une ville : le maire en fonction de cette ville, y compris ceux qui vous succéderont. L'inventaire et les réglages d'une province, historique compris : le commissaire au commerce en fonction et le dirigeant de la province (comte, duc…), ce dernier en lecture seule — y compris ceux qui vous succéderont, et y compris après la suppression de votre compte. Jamais les autres conseillers, jamais un joueur d'une autre ville ou d'une autre province, et aucune interface d'administration du site (voir §3)."
+        "InventoryHolders": "Bilan des stocks : votre inventaire personnel, vous seul. L'inventaire et les réglages d'une ville : le maire en fonction de cette ville, y compris ceux qui vous succéderont. L'inventaire et les réglages d'une province, historique compris : le commissaire au commerce en fonction et le dirigeant de la province (comte, duc…), ce dernier en lecture seule — y compris ceux qui vous succéderont, et y compris après la suppression de votre compte. Jamais les autres conseillers, jamais un joueur d'une autre ville ou d'une autre province, et aucune interface d'administration du site (voir §3).",
+        "SecurityHolders": "La Salle des gardes : les listes et les bilans ne sont jamais publics. Le trio de sécurité (prévôt des maréchaux, connétable et capitaine, en fonction) : lecture et écriture, listes et bilans, sur toute la province ; seuls le prévôt et le connétable corrigent un bilan déjà saisi ou saisissent un jour passé. Les douaniers validés : lecture et saisie des bilans de toutes les villes de leur province, lecture des listes ; écriture sur les listes seulement si aucun membre du trio n'est connu de l'Office pour la province. Le maire : lecture et saisie des bilans de sa ville (de toute la province s'il est aussi douanier validé), lecture des listes, écriture sous la même condition que les douaniers. Le juge : lecture des listes et ajout à la liste rouge, jamais de retrait. Le procureur et le dirigeant de la province (comte, duc…) : lecture seule, listes et bilans — y compris ceux qui vous succéderont, et y compris après la suppression de votre compte. L'auteur d'une entrée de liste n'est visible que du trio ; les autres voient « ajoutée par moi » sur leurs propres entrées et rien sur celles des autres. L'auteur d'un bilan n'est jamais affiché. Jamais les autres conseillers, jamais un joueur sans titre, et aucune interface d'administration du site (voir §3)."
       },
       "DataPageLink": "Vos données, outil par outil",
       "Section7": {
@@ -1633,13 +1668,14 @@
           }
         ],
         "Complaint": "Droit d'introduire une réclamation auprès de l'{apdLink} si vous estimez que le traitement de vos données n'est pas conforme au RGPD.",
-        "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. Le téléchargement de vos données et la suppression de votre compte sont disponibles immédiatement depuis votre Profil ; le canal email reste disponible en secours."
+        "HowToExercise": "Pour exercer ces droits : contactez {email}. Une réponse vous sera fournie dans un délai maximum d'un mois. Le téléchargement de vos données et la suppression de votre compte sont disponibles immédiatement depuis votre Profil ; le canal email reste disponible en secours.",
+        "SecurityThirdParty": "Données de tiers dans la Salle des gardes : les noms de personnages figurant dans les bilans de défense et les listes rouge/verte reflètent des décisions et des observations prises dans le jeu, par les titulaires habilités de la province. L'Office les enregistre ; il ne les prononce pas et n'en assure pas la modération. Le recours contre une décision provinciale (inscription sur une liste, par exemple) relève du jeu, auprès de la province concernée."
       },
       "Section8": {
         "Title": "8. Sécurité de vos données",
         "Intro": "Nous mettons en œuvre les mesures techniques et organisationnelles suivantes pour protéger vos données :",
         "Measures": [
-          "Mots de passe hachés via bcrypt (jamais stockés en clair, impossible à reconstituer).",
+          "Mots de passe hachés (jamais stockés en clair, impossible à reconstituer).",
           "Authentification par jetons OAuth 2.0 (Laravel Passport) : jeton d'accès à courte durée (15 minutes) et jeton de rafraîchissement séparé (12 heures ou 30 jours si « Rester connecté »).",
           "Rotation des jetons de rafraîchissement à chaque utilisation, avec détection de réutilisation (signal de compromission possible).",
           "Communications chiffrées en HTTPS (TLS 1.2 minimum).",

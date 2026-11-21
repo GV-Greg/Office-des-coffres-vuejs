@@ -1251,7 +1251,7 @@
         "Intro": "No third-party HTTP cookies are set on this site. We use two browser storage mechanisms, both limited to what is strictly necessary:",
         "Preferences": {
           "Title": "Local storage — Preferences",
-          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch, Mines Report, Stock Report, Animation: Crack the Code, Prize Grid).",
+          "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch Report, Mines Report, Stock Report, Animation: Crack the Code, Prize Grid).",
           "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, your inventory settings (categories, assignments, order, export options) when you use Stock Report without an account, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
           "Retention": "until you clear site data from your browser, or withdraw your consent via the cookies banner.",
           "LegalBasis": "your consent (GDPR art. 6.1.a, article 129 of the Belgian law of 13 June 2005 on electronic communications, transposing the ePrivacy Directive).",
@@ -1377,13 +1377,20 @@
         "Deletion": "Registry entries are linked to the office, not to your account: they are not part of your data export and stay in place when you leave office. The link between the entry and your account is removed."
       },
       "Watch": {
-        "Title": "Watch",
+        "Title": "Watch Report",
         "Purpose": "Compare two lists of your town's villagers copied from the game, to see who came in and who left, and prepare the forum message. No account is needed.",
         "Input": "Two lists of villagers copied from the game: they contain other players' character names.",
         "Stored": "Nothing is stored on our servers: the comparison happens in your browser. If you have accepted preference cookies, your browser keeps the last list you pasted, to offer it as \"yesterday's list\" on your next visit. Without that consent, nothing is kept.",
         "Duration": "In your browser, until you clear the site's data or withdraw your consent to preference cookies, which erases them immediately.",
         "Audience": "No one but you: this data does not leave your browser, except what you choose to publish on the game forum.",
         "Deletion": "No effect: the Watch is not tied to any account."
+      },
+      "Security": {
+        "Title": "The Guardroom",
+        "Purpose": "Follow your province's defence: the security trio, validated customs officers and a town's mayor enter defence reports (inhabitants, nicknames met on the road, armies and groups) and keep the province's red and green lists. You need a validated office in the Office, or validated customs officer status.",
+        "Input": "Pastes copied from the game: the villager list, the road encounters, the armies and groups. They contain other players' character names, entered as they are.",
+        "Stored": "Each report (one per town per game day), encrypted in the database, and the province's red and green lists (nickname, optional reason, date added, author). If you apply to become a customs officer: your status and its dates.",
+        "Deletion": "Your customs officer status is in your data export. For the lists and reports, the export only shows that you added entries to the lists and entered reports (dates, towns, colour), without their content: no nicknames, no reasons, no reports, which belong to the town and the province, not to your account, and contain too much third-party data. When you delete your account, the link with what you entered is removed; the content stays."
       },
       "Animation": {
         "Title": "Animation",
@@ -1409,7 +1416,7 @@
       },
       "Section3": {
         "Title": "3. When you create an account",
-        "Intro": "Creating a user account is optional. The site can be browsed freely without an account, with access to public tools (Watch, Mines Report). A free account unlocks additional features tied to your game history (Customs, Mines Registry — upcoming modules).",
+        "Intro": "Creating a user account is optional. The site can be browsed freely without an account, with access to public tools (Watch Report, Mines Report). A free account unlocks additional features tied to your game history (Mines Registry, Stock Registry, Guardroom).",
         "AccountFieldsIntro": "To create an account, only two pieces of information are requested:",
         "AccountFields": [
           {
@@ -1418,7 +1425,7 @@
           },
           {
             "Label": "Password",
-            "Text": "stored securely (hashed with bcrypt), never in plain text."
+            "Text": "stored securely (hashed), never in plain text."
           }
         ],
         "CharacterFieldsIntro": "You can then add one or more Renaissance Kingdoms characters to your account:",
@@ -1529,6 +1536,22 @@
           }
         ],
         "InventoryNote": "City and province settings and inventories are office data: they stay in place when their author leaves office, only the link to the author is removed. If an inventory is replaced by another officer, the previous author's character name remains visible in the stock registry history, to ensure traceability of office data. No site administration interface lets anyone view your inventories or your settings: this restriction is written into the code, checked automatically at every release, and the source code is public. The publisher nevertheless keeps technical access to the hosting, like any site administrator, and undertakes not to use it to view this data.",
+        "SecurityIntro": "The Guardroom (Security module) — if your character is a customs officer, a Constable, a Sergeant, a Captain, a Judge, a Public Prosecutor, a province leader (count, duke…) or a mayor, the Office lets you, depending on your title, view or enter information related to the defence of your province. The Office keeps:",
+        "SecurityFields": [
+          {
+            "Label": "Your customs officer status",
+            "Text": "If you apply to become a customs officer: your character, the town you are attached to and the province, the state of your application (pending, validated, refused, withdrawn), the dates, the level of the decision (Constable or Sergeant; in their absence Captain, leader or mayor; or administrator), the character who decided (kept for traceability, never displayed), the date of your latest report entered — it is used to withdraw access after a long period of inactivity — and the reason access ended. You apply for this role yourself: nobody is registered automatically."
+          },
+          {
+            "Label": "The red and green lists",
+            "Text": "Province-level lists of character names to watch (red) or trusted (green). Each entry contains a freely typed nickname (the character may not have an Office account), an optional reason, the date of addition and the character who added it. These lists colour the nicknames in defence reports: red for the red list, green for the green list. The colour applies from the date of addition, as long as the entry is on the list: reports older than the addition do not carry it. Removing an entry deletes it permanently; the reports then no longer show it, and adding it again later starts from a new date."
+          },
+          {
+            "Label": "Defence reports",
+            "Text": "One report per town per game day, entered by an authorised office-holder (Constable, Sergeant, Captain, the town's mayor or a customs officer) from what they see in-game. It may contain: the list of inhabitants (nickname, reputation, nobility); the nicknames encountered on the road the previous night; the armies and groups present (name, commander, members, status text); the text of the \"Zone control\" section. This information is encrypted server-side; only the lookup axes (province, town, game day, link to the author) are stored in clear text."
+          }
+        ],
+        "SecurityNote": "The character names in the lists and reports — inhabitants, travellers, soldiers — are copied from the game. The Office does not verify them and they are not linked to any account: their presence reflects a surveillance activity carried out within the game, not a judgement by the Office. The people named are not informed one by one; this policy is the information intended for them. No site administration interface can display the lists or the reports: this restriction is written in the code, checked automatically with every release, and the source code is public. The publisher nevertheless keeps technical access to the hosting, like any site administrator; he undertakes not to use it to view them.",
         "ToolsIntro": "What each tool is for, who can use it, what you put into it and what it does or does not store is explained tool by tool on the {dataLink} page:"
       },
       "Section4": {
@@ -1573,6 +1596,16 @@
             "Data": "Declared offices (terms)",
             "Purpose": "Check your office, then tell the modules who may write on behalf of a position",
             "LegalBasis": "Performance of the contract"
+          },
+          {
+            "Data": "Customs officer status",
+            "Purpose": "Know who may enter a province's defence reports, and withdraw access after a long inactivity",
+            "LegalBasis": "Performance of the contract"
+          },
+          {
+            "Data": "Red and green lists, defence reports",
+            "Purpose": "Let a province's authorised office-holders follow its defence and compare one day with the next",
+            "LegalBasis": "Legitimate interest"
           }
         ],
         "NoCommercialUse": "No personal data is used for commercial, advertising, aggregate statistics, or profiling purposes."
@@ -1588,7 +1621,8 @@
         "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible.",
         "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price while you hold the office, and up to 7 days after your term ends; after that it is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name.",
         "Animation": "Animation (Crack the Code, Prize Grid): in private mode, the activity and its content — the chests and the proposals you entered (Crack the Code), the prizes (Prize Grid) — are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, content included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, the fingerprint of your connection, your email address, your password and any pending reset request are erased; for Crack the Code, a report including all proposals received is first sent to your email address if you confirmed one. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname and the location, plus, for Crack the Code, the chests cracked with the nickname of who found them and the final standings — never the proposals received, which are erased on closing — and, for the Prize Grid, the dimensions, all the prizes and the names of the characters who chose a cell. After that period, the page and the nickname are deleted. To request the removal of a name entered on one of these pages before that period, contact {email}.",
-        "Inventory": "Stock Report: your personal settings and inventory are kept as long as your character exists, and deleted with it. A city's or a province's settings and inventory are kept as long as that city or province exists in the game's reference data, and stay in place when their author leaves office. A province's or city's inventory history is kept with no time limit, because it forms the office's management memory, handed from one office-holder to the next. If you delete your character or your account, what concerns a city or a province remains, but its link to your account is removed: we say \"the link is removed\" rather than \"anonymised\", as for the Mine Registry."
+        "Inventory": "Stock Report: your personal settings and inventory are kept as long as your character exists, and deleted with it. A city's or a province's settings and inventory are kept as long as that city or province exists in the game's reference data, and stay in place when their author leaves office. A province's or city's inventory history is kept with no time limit, because it forms the office's management memory, handed from one office-holder to the next. If you delete your character or your account, what concerns a city or a province remains, but its link to your account is removed: we say \"the link is removed\" rather than \"anonymised\", as for the Mine Registry.",
+        "Security": "The Guardroom: your customs officer status is kept as long as your character exists and deleted with it. The entries of the red and green lists, as long as they have not been removed (a removal deletes them permanently), and the defence reports are kept without any time limit, because they form the province's defence memory: reports are used to compare one day with the next (arrivals and departures) and to hand a follow-up from one office-holder to the next; an expiry date would make these uses inoperable. When your character or your account is deleted, what you entered stays, but the link with your account is removed: we write \"the link is removed\" and not \"anonymised\", as for the Mine Registry. The third-party nicknames in the lists and reports are not linked to any account: deleting an account does not remove them."
       },
       "Section6": {
         "Title": "6. Who can access your data",
@@ -1600,7 +1634,8 @@
         "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province.",
         "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province.",
         "AnimationHolders": "Animation (Crack the Code, Prize Grid): an activity's public page is visible to everyone, whether created in private or public mode — that is the point of these tools, shared on the game's forum. It shows the name, the location and the organiser's nickname, plus, for Crack the Code, the chests cracked and the standings; for the Prize Grid, visible from the draw onwards, the cells and, for each chosen cell, the revealed prize and the name of the character who chose it (the contents of unchosen cells stay hidden until closing, when all prizes become visible). Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there.",
-        "InventoryHolders": "Stock Report: your personal inventory, you alone. A city's inventory and settings: the acting mayor of that city, including those who succeed you. A province's inventory and settings, history included: the acting Trade Minister and the province's leader (count, duke…), the latter read-only — including those who succeed you, and including after your account is deleted. Never the other councillors, never a player from another city or province, and no site administration interface (see §3)."
+        "InventoryHolders": "Stock Report: your personal inventory, you alone. A city's inventory and settings: the acting mayor of that city, including those who succeed you. A province's inventory and settings, history included: the acting Trade Minister and the province's leader (count, duke…), the latter read-only — including those who succeed you, and including after your account is deleted. Never the other councillors, never a player from another city or province, and no site administration interface (see §3).",
+        "SecurityHolders": "The Guardroom: the lists and the reports are never public. The security trio (Constable, Sergeant and Captain, in office): read and write, lists and reports, across the whole province; only the Constable and the Sergeant correct a report already entered or enter a past day. Validated customs officers: read and enter the reports of every town in their province, read the lists; write to the lists only if no member of the trio is known to the Office for the province. The mayor: read and enter the reports of their town (of the whole province if also a validated customs officer), read the lists, write under the same condition as customs officers. The Judge: read the lists and add to the red list, never remove. The Public Prosecutor and the province leader (count, duke…): read-only, lists and reports — including those who succeed you, and including after your account is deleted. The author of a list entry is visible only to the trio; others see \"added by me\" on their own entries and nothing on others'. The author of a report is never displayed. Never the other councillors, never a player without a title, and no site administration interface (see §3)."
       },
       "DataPageLink": "Your data, tool by tool",
       "Section7": {
@@ -1633,13 +1668,14 @@
           }
         ],
         "Complaint": "Right to lodge a complaint with the {apdLink} if you consider that the processing of your data does not comply with GDPR.",
-        "HowToExercise": "To exercise these rights: contact {email}. A response will be provided within a maximum of one month. Your data can be downloaded and your account can be deleted immediately from your Profile; the email channel remains available as a fallback."
+        "HowToExercise": "To exercise these rights: contact {email}. A response will be provided within a maximum of one month. Your data can be downloaded and your account can be deleted immediately from your Profile; the email channel remains available as a fallback.",
+        "SecurityThirdParty": "Third-party data in the Guardroom: the character names appearing in defence reports and in the red/green lists reflect decisions and observations made in-game by the province's authorised office-holders. The Office records them; it does not make those decisions and does not moderate them. Any challenge to a provincial decision (such as a list entry) is a matter for the game, with the province concerned."
       },
       "Section8": {
         "Title": "8. Security of your data",
         "Intro": "We implement the following technical and organizational measures to protect your data:",
         "Measures": [
-          "Passwords hashed via bcrypt (never stored in plain text, impossible to reconstruct).",
+          "Passwords hashed (never stored in plain text, impossible to reconstruct).",
           "OAuth 2.0 token authentication (Laravel Passport): short-lived access token (15 minutes) and separate refresh token (12 hours or 30 days with \"Stay logged in\").",
           "Refresh token rotation on each use, with reuse detection (possible compromise signal).",
           "Encrypted communications via HTTPS (TLS 1.2 minimum).",
