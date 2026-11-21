@@ -5,6 +5,7 @@
   import { ref, reactive, onMounted } from "vue";
   import { useI18n } from "vue-i18n";
   import { useCookieStore } from "@/stores/cookieStore";
+  import { parseGuet, diffGuet } from "@/modules/guetParser";
 
   const { t } = useI18n()
   const cookieStore = useCookieStore()
@@ -29,36 +30,25 @@
   const inputs = reactive({
     value: []
   })
+  const mismatches = ref([])
   const result_press_papier = reactive({
     value: ""
   })
 
 /* result */
-  function transform(list) {
-    let list_array = list._rawValue.split("\n")
-    let list_pseudos = []
-    for (let el in list_array) {
-      let line = list_array[el]
-      // Seules les lignes du tableau (pseudo + PR séparés par tabulation) sont
-      // de vrais villageois : le texte descriptif collé au-dessus (maire, adjoints,
-      // rappel "noblesse d'épée"...) et l'en-tête "Liste des villageois (N)" n'ont
-      // pas de tabulation et doublonnaient/polluaient le comptage.
-      if (!line.includes("\t")) continue
-      // Le premier mot avant un éventuel espace est le vrai pseudo : le reste est
-      // le nom personnalisé affiché pour les comptes ayant un pack noblesse.
-      let pseudo = line.split("\t")[0].split(" ")[0].trim()
-      if (pseudo.length > 0) {
-        list_pseudos.push(pseudo)
-      }
-    }
-    return list_pseudos
-  }
-
   function result() {
-    let array_yesterday = transform(list_yesterday)
-    array_today.value = transform(list_today)
-    outputs.value = array_yesterday.filter(x => !array_today.value.includes(x))
-    inputs.value = array_today.value.filter(x => !array_yesterday.includes(x))
+    const guetYesterday = parseGuet(list_yesterday.value)
+    const guetToday = parseGuet(list_today.value)
+    const diff = diffGuet(list_yesterday.value, list_today.value)
+    array_today.value = diff.today
+    outputs.value = diff.outputs
+    inputs.value = diff.inputs
+    // Un « Liste des villageois (N) » qui ne colle pas au nombre de lignes lues : collage tronqué.
+    mismatches.value = [
+      { key: 'Security.MismatchYesterday', guet: guetYesterday },
+      { key: 'Security.MismatchToday', guet: guetToday }
+    ].filter(({ guet }) => guet.totalMatches === false)
+     .map(({ key, guet }) => ({ key, declared: guet.declaredTotal, read: guet.villagers.length }))
     loading.value = true
 
     // Confort : mémorise la liste du jour pour pré-remplir "hier" à la prochaine visite.
@@ -140,6 +130,11 @@
             </a>
           </div>
         </div>
+      </div>
+      <div v-if="loading.value && mismatches.length" class="w-full mt-2" role="alert">
+        <p v-for="m in mismatches" :key="m.key" class="text-sm font-bold text-orange-800">
+          {{ t(m.key, { declared: m.declared, read: m.read }) }}
+        </p>
       </div>
       <button v-if="loading.value" @click="to_export" class="odc-btn odc-btn--soft odc--green mt-3"><v-icon name="fa-copy" aria-hidden="true" />{{ t('Security.ExportButton') }}</button>
     </div>

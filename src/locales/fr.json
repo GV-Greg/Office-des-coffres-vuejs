@@ -348,15 +348,17 @@
     "Province": "Mon bureau"
   },
   "Security": {
-    "Title": "Coffres Sécurité",
-    "EntriesExits": "Entrées/sorties",
+    "Title": "La Salle des gardes",
+    "EntriesExits": "Relevé de guet",
     "YesterdayLabel": "Liste des villageois d'hier :",
     "YesterdayPrefilled": "Pré-remplie automatiquement depuis votre dernière visite",
     "TodayLabel": "Liste des villageois d'aujourd'hui :",
     "GenerateButton": "Générer les entrées/sorties",
     "EntriesLabel": "Entrées",
     "ExitsLabel": "Sorties",
-    "ExportButton": "Exporter"
+    "ExportButton": "Exporter",
+    "MismatchYesterday": "La liste d'hier annonce {declared} villageois, {read} ont été lus : le collage est peut-être tronqué.",
+    "MismatchToday": "La liste d'aujourd'hui annonce {declared} villageois, {read} ont été lus : le collage est peut-être tronqué."
   },
   "Economy": {
     "Title": "Coffres Économie",
