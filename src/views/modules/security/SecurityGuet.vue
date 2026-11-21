@@ -136,7 +136,7 @@
           {{ t(m.key, { declared: m.declared, read: m.read }) }}
         </p>
       </div>
-      <button v-if="loading.value" @click="to_export" class="odc-btn odc-btn--soft odc--green mt-3"><v-icon name="fa-copy" aria-hidden="true" />{{ t('Security.ExportButton') }}</button>
+      <button v-if="loading.value" @click="to_export" class="odc-btn odc-btn--soft odc--green mt-3"><v-icon name="gi-quill" aria-hidden="true" />{{ t('Security.ExportButton') }}</button>
     </div>
   </div>
 </template>
