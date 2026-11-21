@@ -6,6 +6,23 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-21] — PR #145 (Registre des stocks : date d'inscription choisie, toasts par la droite)
+
+### Added
+- **Date d'inscription** (brief `10-brief-date-inventaire`, demande de Greg) : dans le Bilan des stocks, un champ date à gauche de la phrase « Cet inventaire sera inscrit au registre : {lieu}, le {date} » — le jour du jeu en cours par défaut, de **14 jours du jeu avant l'entrée en fonction** à aujourd'hui (bornes dites par le serveur), saisi en année du jeu ; lien « Aujourd'hui ». Pour inscrire l'inventaire hérité du prédécesseur.
+- **Avant la prise de fonction**, une inscription déjà en place à la date choisie ne se remplace pas : le message du serveur seul, avec « Fermer », jamais « Remplacer » (le rédacteur n'est pas nommé).
+- « Vos données » : le texte dit que la date peut être choisie, et sa borne.
+
+### Changed
+- **Toasts** : ils entrent et sortent par la **droite** (animations Notivue personnalisées) au lieu de tomber du haut — **tous** les toasts de l'Office ; mouvement réduit honoré.
+- « Déjà inscrit, rien à changer » : toast d'information (bleu).
+
+### Removed
+- « Rouvrir une inscription » du Bilan des stocks (le Registre montre le passé ; l'export d'un ancien inventaire viendra avec la PR 3b).
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Suppose back #102 (champ `date`, `today`, `backdate_min`), déjà mergée.
+
 ## [2026-11-21] — PR #144 (Registre des stocks : inscription, page de lecture, menu — PR 3a)
 
 ### Added

@@ -387,8 +387,8 @@ export const useInventoryStore = defineStore('inventory', () => {
    * LÈVE l'erreur du serveur — dont le 409 « un autre texte existe déjà ce jour-là » (`error.response.data.existing` nomme l'auteur de
    * l'inscription à remplacer) : l'appelant demande confirmation puis rappelle avec `confirmReplace`.
    */
-  async function recordRegistry(level, raw, confirmReplace = false) {
-    const result = await api.recordRegistry(characterId.value, level, raw, confirmReplace)
+  async function recordRegistry(level, raw, confirmReplace = false, date = null) {
+    const result = await api.recordRegistry(characterId.value, level, raw, confirmReplace, date)
     await loadRegistry(level, true)
     return result
   }

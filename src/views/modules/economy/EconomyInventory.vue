@@ -5,6 +5,7 @@ import { parseInventoryText, resolveItems } from '@/modules/inventoryParser'
 import { suggestCategory, orderCategoryKeys, CATEGORY_KEYS, CATEGORY_LABELS_FR } from '@/modules/inventoryCategories'
 import { exportInventoryToBBCode, EXPORT_DEFAULT_COLOR } from '@/modules/inventoryBBcode'
 import { formatFieldDate } from '@/modules/playerDates'
+import { toGameDateIso, toRealDateIso } from '@/modules/gameCalendar'
 import { fetchItemIcons } from '@/use/itemIconsApi'
 import SwitchButton from '@/components/buttons/SwitchButton.vue'
 import { apiMessage } from '@/stores/mandateStore'
@@ -252,27 +253,46 @@ function clear() {
 // REMPLACE l'ancien (qui reste conservé) après confirmation : le serveur répond 409 en nommant l'auteur de l'inscription à remplacer.
 const hasRegistry = computed(() => level.value !== 'personal')
 const registry = computed(() => store.registryOf(level.value))
-const snapshots = computed(() => registry.value?.snapshots ?? [])
-const snapshotDate = s => formatFieldDate('inventory_snapshot_date', s.taken_on, locale.value)
 const recording = ref(false)
 const pendingReplace = ref(null) // 409 : { message, existing }
+const lockedMessage = ref(null) // 409 « avant la prise de fonction » : un message, aucun « Remplacer »
+
+// La date de l'inscription (brief 10) : par défaut le jour du jeu en cours (dit par le serveur), choisissable de 14 jours du jeu avant l'entrée en
+// fonction jusqu'à aujourd'hui. Le champ montre l'année du JEU (1474), comme les prix des mines ; l'API garde la date réelle.
+const registryToday = computed(() => registry.value?.today ?? null)
+const chosenDate = ref('') // date réelle AAAA-MM-JJ choisie ; vide = le jour en cours
+const effectiveDate = computed(() => chosenDate.value || registryToday.value || '')
+const gameDate = computed({
+  get: () => (effectiveDate.value ? toGameDateIso(effectiveDate.value) : ''),
+  set: (value) => { chosenDate.value = value ? toRealDateIso(value) : '' },
+})
+const minGameDate = computed(() => (registry.value?.backdate_min ? toGameDateIso(registry.value.backdate_min) : undefined))
+const maxGameDate = computed(() => (registryToday.value ? toGameDateIso(registryToday.value) : undefined))
+const pickedDate = computed(() => (chosenDate.value && chosenDate.value !== registryToday.value ? chosenDate.value : null))
+const targetDate = computed(() => (effectiveDate.value ? formatFieldDate('inventory_snapshot_date', effectiveDate.value, locale.value) : ''))
 
 watch(level, lv => {
   pendingReplace.value = null
+  lockedMessage.value = null
+  chosenDate.value = ''
   if (lv !== 'personal') store.loadRegistry(lv)
 }, { immediate: true })
-watch(pastedText, () => { pendingReplace.value = null })
+watch(pastedText, () => { pendingReplace.value = null; lockedMessage.value = null })
+watch(chosenDate, () => { pendingReplace.value = null; lockedMessage.value = null })
 
 async function recordRegistry(confirmReplace = false) {
   if (recording.value) return
   recording.value = true
   const lv = level.value
   try {
-    const result = await store.recordRegistry(lv, pastedText.value, confirmReplace)
+    const result = await store.recordRegistry(lv, pastedText.value, confirmReplace, pickedDate.value)
     pendingReplace.value = null
+    lockedMessage.value = null
+    chosenDate.value = ''
     const date = formatFieldDate('inventory_snapshot_date', result.snapshot.taken_on, locale.value)
     if (result.unchanged) {
-      push.success(t('EconomyInventory.RegistryUnchanged', { date }))
+      // Rien n'a été écrit : ni une réussite ni un problème, une information — toast bleu (l'orange est réservé à ce qui est dégradé).
+      push.info(t('EconomyInventory.RegistryUnchanged', { date }))
     } else {
       const done = t('EconomyInventory.RegistryRecorded', { date, place: levelLabel(lv) })
       push.success(result.replaced
@@ -280,7 +300,9 @@ async function recordRegistry(confirmReplace = false) {
         : done)
     }
   } catch (error) {
-    if (error?.response?.status === 409 && error.response.data?.existing) {
+    if (error?.response?.status === 409 && error.response.data?.code === 'registry_before_mandate_locked') {
+      lockedMessage.value = apiMessage(error, locale.value, '')
+    } else if (error?.response?.status === 409 && error.response.data?.existing) {
       pendingReplace.value = { message: apiMessage(error, locale.value, ''), existing: error.response.data.existing }
     } else {
       push.error(apiMessage(error, locale.value, t('EconomyInventory.SaveError')))
@@ -288,12 +310,6 @@ async function recordRegistry(confirmReplace = false) {
   } finally {
     recording.value = false
   }
-}
-
-function loadSnapshot(event) {
-  const snapshot = snapshots.value.find(s => String(s.id) === event.target.value)
-  event.target.value = ''
-  if (snapshot) pastedText.value = snapshot.raw
 }
 </script>
 
@@ -488,7 +504,32 @@ function loadSnapshot(event) {
              AVANT l'envoi, l'inscription est un geste volontaire, rouvrir une inscription passée ne touche jamais au registre. -->
         <fieldset v-if="hasRegistry" class="mb-3 border border-slate-400 rounded-lg px-3 pt-1.5 pb-2" data-testid="registry-block">
           <legend class="px-1.5 text-xs font-semibold text-slate-700 select-none">{{ t('EconomyInventory.RegistryBlockTitle') }}</legend>
-          <p class="text-sm text-slate-800 dark:text-slate-800" data-testid="registry-target">{{ t('EconomyInventory.RegistryTarget', { place: levelLabel(level) }) }}</p>
+          <!-- La date à GAUCHE de la phrase qui dit où l'inventaire sera inscrit : le jour en cours par défaut ; plus tôt (l'inventaire hérité du
+               prédécesseur), jamais dans le futur. Même hauteur et même arrondi que les boutons, liseré or (la couleur d'Économie). -->
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5" data-testid="registry-target-row">
+            <template v-if="canWriteLevel && registryToday">
+              <label for="registry-date" class="sr-only">{{ t('EconomyInventory.RegistryDate') }}</label>
+              <input
+                id="registry-date"
+                v-model="gameDate"
+                type="date"
+                :min="minGameDate"
+                :max="maxGameDate"
+                :title="t('EconomyInventory.RegistryDate')"
+                class="h-9 cursor-pointer rounded-full border-2 border-yellow-700 bg-white px-3 text-sm font-bold tabular-nums text-slate-900 shadow-sm"
+                data-testid="registry-date"
+              />
+              <button
+                v-if="pickedDate"
+                type="button"
+                class="text-sm font-semibold text-yellow-800 underline dark:text-yellow-800"
+                data-testid="registry-date-today"
+                @click="chosenDate = ''"
+              >{{ t('EconomyInventory.RegistryDateToday') }}</button>
+            </template>
+            <p class="min-w-0 flex-1 text-sm text-slate-800 dark:text-slate-800" data-testid="registry-target">{{ targetDate ? t('EconomyInventory.RegistryTargetOn', { place: levelLabel(level), date: targetDate }) : t('EconomyInventory.RegistryTarget', { place: levelLabel(level) }) }}</p>
+          </div>
+          <!-- La date : le jour en cours par défaut ; plus tôt (l'inventaire hérité du prédécesseur), jamais dans le futur. -->
           <div class="mt-1.5 flex flex-wrap items-center gap-2">
             <button
               v-if="canWriteLevel && !pendingReplace"
@@ -502,29 +543,18 @@ function loadSnapshot(event) {
               <v-icon name="gi-quill" aria-hidden="true" />{{ recording ? t('EconomyInventory.RegistryRecording') : t('EconomyInventory.RegistryRecord') }}
             </button>
 
-            <!-- Rouvrir une inscription passée : elle vient dans le champ de collage, pour la classer ou l'exporter comme n'importe quel inventaire. -->
-            <div v-if="snapshots.length" class="relative inline-flex">
-              <span class="odc-btn odc-btn--soft odc--slate odc-btn--sm pointer-events-none select-none gap-1">
-                <span>{{ t('EconomyInventory.RegistryHistory', { count: snapshots.length }) }}</span>
-                <v-icon name="fa-chevron-down" scale="0.7" aria-hidden="true" />
-              </span>
-              <select
-                class="absolute inset-0 opacity-0 cursor-pointer w-full"
-                :aria-label="t('EconomyInventory.RegistryHistoryAria')"
-                data-testid="registry-history"
-                @change="loadSnapshot"
-              >
-                <option value="">{{ t('EconomyInventory.RegistryHistoryLoad') }}</option>
-                <option v-for="snapshot in snapshots" :key="snapshot.id" :value="snapshot.id">{{ snapshotDate(snapshot) }}</option>
-              </select>
-            </div>
-            <span v-else class="text-xs italic text-slate-700" data-testid="registry-history-empty">{{ t('EconomyInventory.RegistryHistoryEmpty') }}</span>
-
             <RouterLink :to="{ name: 'economy-inventory-registry' }" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" data-testid="registry-open">
               <v-icon name="gi-scroll-unfurled" aria-hidden="true" />{{ t('EconomyInventory.RegistryOpen') }}
             </RouterLink>
           </div>
-          <p v-if="snapshots.length" class="mt-1.5 text-xs italic text-slate-700 dark:text-slate-700">{{ t('EconomyInventory.RegistryHistoryHint') }}</p>
+
+          <!-- 409 « avant la prise de fonction » : l'inscription en place est celle d'un prédécesseur, elle ne se remplace pas. Message seul, pas de « Remplacer ». -->
+          <div v-if="lockedMessage" role="alert" class="mt-2 rounded-lg border border-yellow-600 bg-yellow-50 p-2 text-sm text-slate-800" data-testid="registry-locked">
+            <p class="font-semibold text-slate-900 dark:text-slate-900">{{ lockedMessage }}</p>
+            <div class="mt-2">
+              <button type="button" class="odc-btn odc-btn--soft odc--slate odc-btn--sm" data-testid="registry-locked-close" @click="lockedMessage = null">{{ t('EconomyInventory.RegistryClose') }}</button>
+            </div>
+          </div>
 
           <!-- 409 : un autre inventaire est déjà inscrit ce jour-là. Rien ne s'efface : l'ancien reste, l'écran nomme son rédacteur. -->
           <div v-if="pendingReplace" role="alert" class="mt-2 rounded-lg border border-yellow-600 bg-yellow-50 p-2 text-sm text-slate-800" data-testid="registry-confirm">

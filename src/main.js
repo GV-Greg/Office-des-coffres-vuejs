@@ -180,6 +180,13 @@ const notivue = createNotivue({
   limit: 4,
   enqueue: true,
   avoidDuplicates: true,
+  // Les toasts entrent par la DROITE (et repartent par elle), au lieu de tomber du haut comme dans l'animation d'origine de Notivue : classes
+  // `odc-toast-*` définies dans App.vue. `clearAll` garde celle de Notivue (un simple fondu). Mouvement réduit : coupé par base.css.
+  animations: {
+    enter: 'odc-toast-enter',
+    leave: 'odc-toast-leave',
+    clearAll: 'Notivue__clearAll',
+  },
   notifications: {
     global: {
       duration: 10000
