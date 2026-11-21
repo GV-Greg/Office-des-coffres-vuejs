@@ -335,7 +335,7 @@
       <textarea v-model="pastedText" rows="10" :placeholder="t('EconomyMines.PastePlaceholder')"
                 class="textarea-autoresize col-span-3 w-full rounded-xl p-2"></textarea>
       <div v-if="pastedText.trim()" class="flex flex-col items-center justify-start mt-7">
-        <button @click="formatDayForForum" class="odc-btn odc-btn--soft odc--green" data-testid="day-export"><v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.DayExportButton') }}</button>
+        <button @click="formatDayForForum" class="odc-btn odc-btn--soft odc--green" data-testid="day-export"><v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyMines.DayExportButton') }}</button>
         <!-- Registre des mines : même collage, seconde destination, action du jour (brief Registre §6). -->
         <MineRegistrySave :text="pastedText" :prices="usesTable ? null : prices" :rate="usesTable ? null : rate" />
       </div>
@@ -461,7 +461,7 @@
       <!-- Convention de valorisation, écrite à l'écran plutôt que sous-entendue (§2.5). -->
       <p class="mt-1 text-xs italic text-slate-700 dark:text-slate-700" data-testid="convention">{{ t('EconomyMines.Convention') }}</p>
 
-      <button v-if="weekCheck.complete" @click="toExport" class="odc-btn odc-btn--soft odc--green mt-3"><v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyMines.ExportButton') }}</button>
+      <button v-if="weekCheck.complete" @click="toExport" class="odc-btn odc-btn--soft odc--green mt-3"><v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyMines.ExportButton') }}</button>
     </div>
   </div>
 </template>

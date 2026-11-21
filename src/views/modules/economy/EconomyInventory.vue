@@ -495,7 +495,7 @@ async function recordRegistry(confirmReplace = false) {
             data-testid="export-btn"
             @click="doExport"
           >
-            <v-icon name="fa-copy" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
+            <v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyInventory.ExportButton') }}
           </button>
           </div>
         </fieldset>
