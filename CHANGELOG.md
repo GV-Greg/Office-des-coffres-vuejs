@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-21] — PR #144 (Registre des stocks : inscription, page de lecture, menu — PR 3a)
+
+### Added
+- **Registre des stocks** (`/app/eco/registre-stocks`, connecté ; menu et carte d'accueil sous Inventaires, seulement pour le maire, le commissaire au commerce et le dirigeant — le serveur le dit) : l'historique des inventaires inscrits d'une ville ou d'une province, au gabarit du Registre des mines (titre et filet, « Dernière inscription : il y a N jours, le JJ/MM. » — orange gras dès 2 jours —, deux colonnes). À gauche l'inscription ouverte (chevrons avant et après le titre, articles en colonnes compactes) ; à droite la **comparaison de deux inscriptions** (moteur de la Balance ; Article / Avant / Après / Écart) au-dessus des inscriptions repliables. Aide « i » dans le menu. Rien n'est stocké dans le navigateur.
+- **« Vos données »** : section « Registre des stocks » (texte de Cowork ; durée et destinataires renvoyés à la politique §5 et §6).
+
+### Changed
+- **Bilan des stocks** : aux niveaux ville et province, bloc « Registre des stocks » à droite — le lieu est dit avant l'envoi, bouton « Inscrire au registre » (plume), « Rouvrir une inscription (n) ». Un autre texte le même jour : l'écran nomme le rédacteur de l'inscription à remplacer et demande confirmation (`confirm_replace`). Boutons d'action sous le champ de collage, décompte sur la ligne du libellé.
+- **Accès** : cadenas fermé (`AccessDenied`) sans poste de lecture, y compris pour un 403 du Registre des mines (plus de « Réessayer » pour un refus) ; la Balance des stocks réserve la place du sélecteur de niveau pendant l'attente du droit.
+- Carte d'accueil « Balance des stocks » sans « La ».
+- Politique de confidentialité : l'auteur d'une inscription en vigueur n'est jamais nommé ; seul le rédacteur d'une inscription remplacée l'est.
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Suppose back #100 déployée (`migrate` + `route:cache` en SSH) et back #101 (`today`, âge de la dernière inscription).
+
 ## [2026-11-20] — PR #143 (Politique §3 et §5 : Registre des stocks)
 
 ### Changed
