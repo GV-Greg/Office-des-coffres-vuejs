@@ -6,6 +6,20 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-21] — PR #146 (Registre des stocks : prise de poste, bilans de mandat, jours sans inscription, exports BBCode — PR 3b)
+
+### Added
+- **Registre des stocks, lectures du mandat** (fil `admin/echanges/registre-stocks/`, réponses de Cowork Q1 à Q6), sous l'inscription ouverte et tirées des dates du serveur (`mandate`, back #103) — aucune règle de durée côté site : **Prise de poste** (l'inventaire hérité, et les inscriptions d'autres dans les 30 jours avant l'entrée en fonction, dates cliquables, personne n'est nommé) ; **Bilans de votre mandat** (mi-mandat et fin : évolution entre l'inventaire hérité et la dernière inscription strictement avant la date, moteur de la Balance ; avant la date « disponible le JJ/MM, dans N jours », jamais un bilan partiel ; « pas assez d'inscriptions » dit laquelle manque) ; **Jours sans inscription** (périodes depuis l'entrée en fonction jusqu'à hier, sans seuil ni couleur).
+- **Exports BBCode « Confier au scribe »** (français fixe, catégories du niveau, options d'export du joueur, rien d'enregistré) : une inscription (« Inventaire du {date} — {lieu} »), un bilan (« Bilan de mi-mandat, du … au … »), la comparaison libre.
+- **Annonce à la chronique** : « Le Registre des stocks garde la mémoire des inventaires de votre ville ou de votre province » (rubrique Chroniques, comptes connectés ; Discord au merge).
+
+### Changed
+- Page du Registre en **trois colonnes** au large : l'inscription ouverte, la comparaison, et les inscriptions dans une petite colonne tout à droite ; deux colonnes sur laptop, une en dessous. Tableau d'évolution partagé entre la comparaison et les bilans.
+- Accueil de la Salle des comptes : une carte seule occupe une colonne, un groupe de plusieurs en occupe deux.
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Suppose back #103 (bloc `mandate`), déjà mergée ; sans elle, les trois lectures n'apparaissent pas.
+
 ## [2026-11-21] — PR #145 (Registre des stocks : date d'inscription choisie, toasts par la droite)
 
 ### Added

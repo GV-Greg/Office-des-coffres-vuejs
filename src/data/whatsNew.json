@@ -102,5 +102,13 @@
     "type": "feature",
     "fr": "Dans la Salle des comptes, faites maintenant votre balance des stocks.",
     "en": "In the Counting Room, you can now weigh your stocks with the Stock Balance."
+  },
+  {
+    "id": "inventory-registry",
+    "date": "2026-11-21",
+    "scope": "private",
+    "type": "feature",
+    "fr": "Dans la Salle des comptes, le Registre des stocks garde la mémoire des inventaires de votre ville ou de votre province, d'un titulaire au suivant : inscrivez vos inventaires, comparez-les et relisez les bilans de votre mandat.",
+    "en": "In the Counting Room, the Stock Registry keeps the memory of your city's or province's inventories, from one office-holder to the next: record your inventories, compare them and review the reports of your term."
   }
 ]
