@@ -356,7 +356,7 @@
     "GenerateButton": "Generate entries/exits",
     "EntriesLabel": "Entries",
     "ExitsLabel": "Exits",
-    "ExportButton": "Export",
+    "ExportButton": "Entrust to the scribe",
     "MismatchYesterday": "Yesterday's list announces {declared} villagers, {read} were read: the paste may be truncated.",
     "MismatchToday": "Today's list announces {declared} villagers, {read} were read: the paste may be truncated."
   },

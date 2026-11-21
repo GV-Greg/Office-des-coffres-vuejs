@@ -18,7 +18,7 @@ const i18n = createI18n({
         GenerateButton: 'Générer les entrées/sorties',
         EntriesLabel: 'Entrées',
         ExitsLabel: 'Sorties',
-        ExportButton: 'Exporter',
+        ExportButton: 'Confier au scribe',
         MismatchYesterday: "Hier : {declared} annoncés, {read} lus",
         MismatchToday: "Aujourd'hui : {declared} annoncés, {read} lus"
       }
