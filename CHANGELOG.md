@@ -6,7 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [2026-11-22] — PR (Fix : le niveau du mandat renouvelé n'est plus proposé en radios désactivées)
+## [2026-11-23] — PR #156 (Export BBCode des bilans de mi-mandat et de fin de mandat)
+
+### Added
+- **Un bouton « Confier au scribe » sur chaque bilan de mandat prêt** du Registre des mines (demande de Greg, 22/11/2026) : même gabarit que l'export d'une semaine (`bilanToBBcode`, un seul pour le forum du jeu), période en dates du jeu (« Bilan de fin de mandat, du 1 mars 1474 au 29 avril 1474 »). Valable aussi pour un mandat passé (front #154).
+- **Exporté partiel, mais dit partiel** : option `coverage` de `bilanToBBcode` — une ligne « Bilan partiel : N jours couverts sur M » ; un bilan complet n'en porte pas. Contrairement à une semaine (règle Q10), un bilan de mandat s'exporte partiel (il l'est presque toujours). Pas de bouton avant la date (« dans N jours ») ni sans aucun jour couvert.
+- Tests `EconomyRegistryPast` (+4) ; 1602 tests.
+
+### Deploy notes
+- Frontend seul : aucune migration, route, `config/*.php` ni paquet.
+
+## [2026-11-22] — PR #155 (Fix : le niveau du mandat renouvelé n'est plus proposé en radios désactivées)
 
 ### Fixed
 - **Modal « Renouveler le mandat »** (fil `admin/echanges/mandats-lot3/09-bug-radios-renouvellement.md`, signalé par Greg le 22/11/2026) : les deux radios « Maire » / « Conseil comtal » ne réagissaient pas au clic — par conception, le niveau d'un renouvellement est celui du mandat renouvelé et ne se choisit pas, mais des radios désactivées, sans rien de visiblement coché, ressemblaient à un bug. Le niveau est maintenant **dit en texte** (« Niveau : Conseil comtal »), comme le lieu juste dessous ; plus de radios en renouvellement. Une **demande** de poste garde ses radios, cliquables.
