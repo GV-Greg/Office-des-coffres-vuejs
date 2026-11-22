@@ -5,6 +5,8 @@
   import { http } from '@/api.js'
   import { useAuthStore } from '@/stores/authStore'
   import { apiMessage } from '@/stores/mandateStore'
+  import { formatFieldDate } from '@/modules/playerDates'
+  import useMineAccess from '@/use/useMineAccess'
 
   import { push } from 'notivue'
   import { levelHistory, mandateBilans, daysWithoutData, currentPeriodBilan, weekRange, weeklyBilan, shiftWeek } from '@/modules/mineRegistry'
@@ -25,6 +27,12 @@
     le parseur qui les a produits. ⚠️ Le prédécesseur se dit comme un fait — « relevés de X » —,
     jamais « votre prédécesseur était X » : le registre sait qui a écrit, pas qui occupait le poste.
     Dates en jour/mois, comme les alertes du Bilan : un relevé est un jour du jeu.
+
+    Bilans de mandat PASSÉS (fil admin/echanges/bilans-passes-mines, 22/11/2026) : un ancien titulaire relit, EN LECTURE SEULE, les relevés de
+    SON mandat (le serveur les fenêtre : jamais ceux de ses successeurs). Un sélecteur de mandat choisit entre le mandat en cours (s'il y en a un)
+    et les mandats passés ; la règle (qui, quels mandats, quelle fenêtre) vient de `GET characters/{id}/mine-registry` (`past_mandates`) et de
+    `…/mandates/{id}` — jamais recalculée ici. Pour un mandat terminé, « aujourd'hui » devient le jour où il a pris fin : les bilans, les semaines et
+    les jours sans données se lisent comme au dernier jour du mandat, et le bilan « en cours » (provisoire par nature) disparaît.
   */
 
   const { t, locale } = useI18n()
@@ -32,6 +40,9 @@
 
   const character = computed(() => authStore.activeCharacter)
   const registry = ref(null)
+  // Le mandat lu : 'current' (celui en cours) ou l'identifiant d'un mandat passé. Le serveur dit lesquels existent (`access`).
+  const { access, ready: accessReady } = useMineAccess(() => character.value?.id ?? null)
+  const selected = ref(null)
   const error = ref(null)
   // Un REFUS du serveur (403 : pas de poste de lecture) n'est pas une panne : cadenas fermé et message, sans « Réessayer ».
   const denied = ref(null)
@@ -52,9 +63,13 @@
     if (!character.value) return
     loading.value = true
     try {
-      const { data } = await http.get(`characters/${character.value.id}/mine-registry/reports`, auth())
+      const url = selected.value === null || selected.value === 'current'
+        ? `characters/${character.value.id}/mine-registry/reports`
+        : `characters/${character.value.id}/mine-registry/mandates/${selected.value}`
+      const { data } = await http.get(url, auth())
       registry.value = data
-      selectedMonday.value = null
+      // Un mandat terminé s'ouvre sur sa DERNIÈRE semaine (il n'a pas de « période en cours ») ; un mandat en cours, sur le bilan du mois.
+      selectedMonday.value = data.read_only ? lastMondayOf(data) : null
       await loadPrices()
     } catch (e) {
       const message = apiMessage(e, locale.value, t('Auth.Errors.NetworkError'))
@@ -67,6 +82,8 @@
   async function loadPrices() {
     priceSets.value = []
     canManagePrices.value = false
+    // Un ancien titulaire n'a plus le droit de lire les prix de la province : ses bilans retombent sur les prix de ses relevés.
+    if (registry.value?.read_only) return
     try {
       const access = await minePrices.access(character.value.id)
       canManagePrices.value = !!access?.prices?.write
@@ -76,7 +93,31 @@
       priceSets.value = []
     }
   }
-  watch(() => character.value?.id, load, { immediate: true })
+
+  // ── Les mandats que l'on peut lire : le mandat en cours (si le serveur en donne un) puis les mandats passés ──
+  const pastMandates = computed(() => access.value?.past_mandates ?? [])
+  const mandateDate = (field, iso) => formatFieldDate(field, iso, locale.value)
+  const mandateOptions = computed(() => [
+    ...(access.value?.read ? [{ key: 'current', label: t('EconomyMines.RegistryPage.PastMandates.OptionCurrent', { province: access.value.read.name }) }] : []),
+    ...pastMandates.value.map(m => ({
+      key: m.id,
+      label: t('EconomyMines.RegistryPage.PastMandates.OptionPast', {
+        office: m.office_label?.[locale.value] ?? m.office_key, province: m.province?.name ?? '',
+        from: mandateDate('mine_mandate_from', m.in_office_from), to: mandateDate('mine_mandate_until', m.holds_until),
+      }),
+    })),
+  ])
+  const readOnly = computed(() => !!registry.value?.read_only)
+
+  // Au départ : le mandat en cours s'il existe, sinon le plus récent des mandats passés. On attend le droit avant de lire (pas de 403 qui
+  // s'afficherait puis changerait). Un droit qui ne répond pas laisse le comportement d'avant : le mandat en cours.
+  watch([() => character.value?.id, accessReady], ([id, ready]) => {
+    if (!id) { load(); return }
+    if (!ready) return
+    selected.value = access.value?.read ? 'current' : (pastMandates.value[0]?.id ?? 'current')
+    load()
+  }, { immediate: true })
+  const pickMandate = () => { load() }
 
   const dayMonth = iso => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}` : '')
   const daysBetween = (from, to) => Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000)
@@ -92,15 +133,34 @@
     return n <= 0 ? t('EconomyMines.RegistryPage.Today') : n === 1 ? t('EconomyMines.RegistryPage.Yesterday') : t('EconomyMines.RegistryPage.DaysAgo', { n })
   })
 
-  /** Bilan en cours du mois de mandat (Greg, 09/10) — remplace l'état des seuils ; modules/mineRegistry.js. */
-  const current = computed(() => currentPeriodBilan(registry.value, priceSets.value))
+  /**
+   * Le registre lu « à la date » de ce qu'on regarde. Mandat en cours : le registre tel quel. Mandat TERMINÉ : « aujourd'hui » est le jour où il a pris fin
+   * (`mandate.ended_at`) — les semaines, les jours sans données et l'âge se lisent au dernier jour du mandat — et, pour les bilans de mi-mandat et de fin
+   * (dates R4 inchangées), on ne dit jamais « dans N jours » : un mandat fini n'attend plus rien, la couverture dit ce qui manque.
+   */
+  const view = computed(() => (readOnly.value && registry.value?.mandate?.ended_at ? { ...registry.value, today: registry.value.mandate.ended_at } : registry.value))
+  const bilanView = computed(() => {
+    if (!readOnly.value || !registry.value?.mandate) return registry.value
+    const { end_at: end, ended_at: ended } = registry.value.mandate
+    return { ...registry.value, today: ended && ended > end ? ended : end }
+  })
+  /** Dernière semaine à parcourir d'un mandat terminé : celle de son dernier jour (jamais une semaine vide si le mandat finit un lundi). */
+  function lastMondayOf(data) {
+    const ended = data?.mandate?.ended_at
+    const r = ended ? weekRange({ ...data, today: ended }) : null
+    if (!r) return null
+    return ended === r.last && r.last > r.first ? shiftWeek(r.last, -1) : r.last
+  }
+
+  /** Bilan en cours du mois de mandat (Greg, 09/10) — remplace l'état des seuils ; modules/mineRegistry.js. Jamais pour un mandat terminé. */
+  const current = computed(() => (readOnly.value ? null : currentPeriodBilan(registry.value, priceSets.value)))
 
   /** Jours SANS DONNÉES depuis l'entrée en fonction du lecteur (Greg, 09/10) — modules/mineRegistry.js. */
-  const gaps = computed(() => daysWithoutData(registry.value))
+  const gaps = computed(() => daysWithoutData(view.value))
 
   /** Historique des niveaux (+1 crédité, −1 constaté) et bilans du mandat — modules/mineRegistry.js. */
   const levels = computed(() => levelHistory(registry.value?.reports))
-  const bilans = computed(() => mandateBilans(registry.value, priceSets.value))
+  const bilans = computed(() => mandateBilans(bilanView.value, priceSets.value))
   const num = n => Number(n || 0).toLocaleString(locale.value === 'fr' ? 'fr-FR' : 'en-GB', { maximumFractionDigits: 1 })
   const dayBefore = iso => new Date(Date.parse(`${iso}T00:00:00Z`) - 86400000).toISOString().slice(0, 10)
   const bilanLabel = kind => t(kind === 'mid' ? 'EconomyMines.RegistryPage.BilanMid' : 'EconomyMines.RegistryPage.BilanEnd')
@@ -119,10 +179,11 @@
     bilan recalculé jour par jour avec les prix en vigueur ce jour-là. « Période en cours » (le bilan du
     mois) reste l'affichage par défaut.
   */
-  const range = computed(() => weekRange(registry.value))
-  const week = computed(() => (selectedMonday.value && registry.value ? weeklyBilan(registry.value, priceSets.value, selectedMonday.value) : null))
+  const range = computed(() => weekRange(view.value))
+  const week = computed(() => (selectedMonday.value && registry.value ? weeklyBilan(view.value, priceSets.value, selectedMonday.value) : null))
+  const lastMonday = computed(() => (readOnly.value ? lastMondayOf(registry.value) : null))
   const canGoPrevious = computed(() => !!range.value && (selectedMonday.value ? selectedMonday.value > range.value.first : true))
-  const canGoNext = computed(() => !!selectedMonday.value)
+  const canGoNext = computed(() => (readOnly.value ? !!selectedMonday.value && selectedMonday.value < lastMonday.value : !!selectedMonday.value))
   function previousWeek() {
     if (!range.value) return
     selectedMonday.value = selectedMonday.value ? shiftWeek(selectedMonday.value, -1) : range.value.last
@@ -130,7 +191,9 @@
   function nextWeek() {
     if (!selectedMonday.value) return
     const next = shiftWeek(selectedMonday.value, 1)
-    selectedMonday.value = next > range.value.last ? null : next
+    // Un mandat terminé n'a pas de « période en cours » où revenir : sa dernière semaine est la borne.
+    if (readOnly.value) selectedMonday.value = next > lastMonday.value ? lastMonday.value : next
+    else selectedMonday.value = next > range.value.last ? null : next
   }
   const gameDate = iso => formatDateFr(toGameDateIso(iso))
   const weekLabel = computed(() => (week.value
@@ -170,7 +233,7 @@
     <template v-if="registry">
       <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
         <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Title', { province: registry.province.name }) }}</h2>
-        <div class="flex flex-wrap items-center gap-3">
+        <div v-if="!readOnly" class="flex flex-wrap items-center gap-3">
           <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="prices-history-link">
             <v-icon name="fa-history" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}
           </RouterLink>
@@ -179,7 +242,7 @@
           </RouterLink>
         </div>
         <!-- Âge du dernier relevé, toujours visible (brief §7) ; orange dès deux jours : on travaille à l'aveugle. -->
-        <p class="text-sm italic" :class="stale ? 'font-bold text-orange-800 dark:text-orange-800' : 'text-slate-700 dark:text-slate-700'" data-testid="registry-age">
+        <p v-if="!readOnly" class="text-sm italic" :class="stale ? 'font-bold text-orange-800 dark:text-orange-800' : 'text-slate-700 dark:text-slate-700'" data-testid="registry-age">
           <template v-if="latest">{{ t('EconomyMines.RegistryPage.LastReport', { age: lastAge, date: dayMonth(latest.reported_at) }) }}</template>
           <template v-else>
             {{ t('EconomyMines.RegistryPage.NoReport') }}
@@ -187,6 +250,20 @@
           </template>
         </p>
       </header>
+
+      <!-- Bilans des mandats précédents : le sélecteur (dès qu'il y a un mandat passé) et, pour un mandat terminé, le bandeau « lecture seule ».
+           Il n'y a rien à masquer dans cette page côté saisie : la saisie d'un relevé vit dans le Bilan des mines, réservée au mandat en cours. -->
+      <div v-if="pastMandates.length" class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2" data-testid="registry-mandate-bar">
+        <label class="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-800">
+          {{ t('EconomyMines.RegistryPage.PastMandates.Select') }}
+          <select v-model="selected" class="rounded p-1 font-normal" data-testid="registry-mandate-select" @change="pickMandate">
+            <option v-for="o in mandateOptions" :key="o.key" :value="o.key">{{ o.label }}</option>
+          </select>
+        </label>
+        <p v-if="readOnly" class="text-sm italic text-slate-700 dark:text-slate-700" data-testid="registry-readonly">
+          {{ t('EconomyMines.RegistryPage.PastMandates.ReadOnly', { date: mandateDate('mine_mandate_until', registry.mandate?.ended_at) }) }}
+        </p>
+      </div>
 
       <!-- Page pensée pour tenir SANS défilement sur ordinateur (Greg, 15/10) et prendre toute la largeur :
            à gauche tout ce qui sert à décider — le bilan (le point fort, avec son sélecteur de période), les
@@ -214,7 +291,7 @@
                   :aria-label="t('EconomyMines.RegistryPage.Navigation.Next')" data-testid="week-next" @click="nextWeek">
             <v-icon name="fa-chevron-right" scale="0.9" />
           </button>
-          <button v-if="week" type="button" class="text-sm underline text-slate-700 dark:text-slate-700" data-testid="week-reset" @click="selectedMonday = null">
+          <button v-if="week && !readOnly" type="button" class="text-sm underline text-slate-700 dark:text-slate-700" data-testid="week-reset" @click="selectedMonday = null">
             {{ t('EconomyMines.RegistryPage.Navigation.CurrentPeriod') }}
           </button>
           <button v-if="week?.complete" type="button" class="ml-auto odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="week-export" @click="exportWeek">
@@ -223,7 +300,8 @@
         </div>
 
         <div v-if="week" data-testid="registry-week">
-          <p v-if="!week.complete" class="mt-2 text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="week-incomplete">{{ t('EconomyMines.IncompleteWeekTitle') }}</p>
+          <!-- Un mandat terminé n'a pas de bilan « provisoire » : sa dernière semaine est incomplète parce qu'elle déborde du mandat, ou que des jours n'ont pas de données. -->
+          <p v-if="!week.complete" class="mt-2 text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="week-incomplete">{{ t(readOnly ? 'EconomyMines.RegistryPage.PastMandates.IncompleteWeek' : 'EconomyMines.IncompleteWeekTitle') }}</p>
           <BilanTable :bilan="week.bilan" total-testid="registry-week-total" />
           <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
             {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: week.bilan.covered, days: week.bilan.days }, week.bilan.covered) }}

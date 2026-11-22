@@ -918,7 +918,14 @@
       },
       "HelpStep7": "Relevés inscrits : tout ce qui a été enregistré, remplacements compris, replié sous l'historique des niveaux.",
       "HelpStep8": "Prix : le commissaire au commerce, le commissaire aux mines et le bailli les fixent par date d'effet — un prix reste en vigueur jusqu'au suivant. « Gérer les prix » met à jour ceux d'aujourd'hui ; « Historique des prix » montre les jeux passés et permet de corriger ceux de votre mandat, jusqu'à 7 jours après sa fin. Le dirigeant les consulte.",
-      "HelpStep9": "Export : « Confier au scribe » copie en BBCode, pour le forum du jeu, le bilan d'une semaine complète, valorisé avec les prix de chaque jour."
+      "HelpStep9": "Export : « Confier au scribe » copie en BBCode, pour le forum du jeu, le bilan d'une semaine complète, valorisé avec les prix de chaque jour.",
+      "PastMandates": {
+        "Select": "Choisir un mandat",
+        "OptionCurrent": "Mandat en cours — {province}",
+        "OptionPast": "{office} — {province}, du {from} au {to}",
+        "ReadOnly": "Bilan du mandat terminé le {date} — lecture seule",
+        "IncompleteWeek": "Semaine incomplète : elle déborde du mandat, ou des jours n'ont pas de données."
+      }
     },
     "Registry": {
       "HelpButton": "Comment fonctionne le registre ?",

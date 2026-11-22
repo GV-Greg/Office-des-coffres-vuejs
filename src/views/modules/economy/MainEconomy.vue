@@ -31,7 +31,8 @@
   // Registre des mines : le lien n'apparaît qu'à qui peut le consulter (commissaire aux mines, bailli,
   // dirigeant) — la règle vient de l'API (GET characters/{id}/mine-registry), jamais recalculée ici.
   const { access, ready } = useMineAccess(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null))
-  const canReadRegistry = computed(() => !!access.value?.read)
+  // Un ancien titulaire (mandat terminé, poste éligible) y relit ses bilans en lecture seule : `past_mandates` (fil bilans-passes-mines).
+  const canReadRegistry = computed(() => !!access.value?.read || (access.value?.past_mandates?.length ?? 0) > 0)
 
   // Registre des stocks : le lien n'apparaît qu'à qui peut le lire (maire, commissaire au commerce, dirigeant) — la règle vient de l'API
   // (GET characters/{id}/inventory-scopes), jamais recalculée ici. Charge les niveaux une fois par personnage (inventoryStore).

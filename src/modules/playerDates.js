@@ -35,6 +35,9 @@ export const DATE_FIELDS = Object.freeze({
   inventory_snapshot_date: 'game',
   // Registre de douane (module Sécurité) : jour du jeu d'un bilan et jour d'ajout d'une entrée de liste, lus en année du JEU (comme les relevés
   // des mines et les inventaires).
+  // Registre des mines, mandats PASSÉS (fil bilans-passes-mines) : entrée en fonction et fin d'un mandat — des faits de jeu, en année du JEU.
+  mine_mandate_from: 'game',
+  mine_mandate_until: 'game',
   customs_report_day: 'game',
   customs_list_added_on: 'game',
   // Douaniers (module Sécurité) : actes de l'Office (demande, validation, dernier bilan, échéance d'inactivité), lus en année RÉELLE comme les

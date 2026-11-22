@@ -918,7 +918,14 @@
       },
       "HelpStep7": "Recorded reports: everything that was saved, replacements included, folded under the level history.",
       "HelpStep8": "Prices: the Trade Minister, the Mines Superintendent and the Sheriff set them by effective date — a price stays in force until the next one. \"Manage prices\" updates today's; \"Price history\" shows past sets and lets you correct those of your term, up to 7 days after it ends. The leader can read them.",
-      "HelpStep9": "Export: \"Entrust it to the scribe\" copies as BBCode, for the game forum, the report of a complete week, valued with each day's prices."
+      "HelpStep9": "Export: \"Entrust it to the scribe\" copies as BBCode, for the game forum, the report of a complete week, valued with each day's prices.",
+      "PastMandates": {
+        "Select": "Select a mandate",
+        "OptionCurrent": "Current mandate — {province}",
+        "OptionPast": "{office} — {province}, from {from} to {to}",
+        "ReadOnly": "Report for mandate ended {date} — read only",
+        "IncompleteWeek": "Incomplete week: it extends beyond the mandate, or some days have no data."
+      }
     },
     "Registry": {
       "HelpButton": "How does the registry work?",
