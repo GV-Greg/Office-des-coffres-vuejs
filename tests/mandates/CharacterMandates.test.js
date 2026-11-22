@@ -253,15 +253,28 @@ describe('Modale de demande', () => {
       expect(push.error).toHaveBeenCalledWith(expected)
     })
 
-  it('« Renouveler » verrouille le niveau et le lieu, préremplit la date et ne propose aucun titre', () => {
+  it('« Renouveler » dit le niveau et le lieu (verrouillés), préremplit la date et ne propose aucun titre', () => {
     const renewOf = mandate({ level: 'council', place: { id: 10, name: 'Artois' }, valid_until: '2020-03-01T23:00:00+00:00' })
     const wrapper = mountModal(MandateRequestModal, { show: true, character, renewOf })
 
-    expect(wrapper.find('[data-testid="level-council"]').element.closest('fieldset').disabled).toBe(true)
+    // Le niveau est DIT (texte), jamais proposé en radios désactivées qui ressemblent à un bug : rien à cliquer, rien de décoché (bug du 22/11/2026).
+    expect(wrapper.find('[data-testid="locked-level"]').text()).toBe('Niveau : Conseil comtal')
+    expect(wrapper.find('[data-testid="level-council"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="level-mayor"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="locked-place"]').text()).toContain('Artois')
     expect(wrapper.find('[data-testid="office-select"]').exists()).toBe(false)
     // Année du jeu dans le champ (2020 → 1468).
     expect(wrapper.find('[data-testid="started-at"]').element.value).toBe('1468-03-02')
+  })
+
+  it('« Renouveler » un mandat de MAIRE dit « Maire », en anglais aussi ; une DEMANDE garde ses radios cliquables', () => {
+    const renewMayor = mountModal(MandateRequestModal, { show: true, character, renewOf: mandate({ level: 'mayor', place: { id: 100, name: 'Arras' } }) }, 'en')
+    expect(renewMayor.find('[data-testid="locked-level"]').text()).toBe('Level : Mayor')
+
+    const request = mountModal(MandateRequestModal, { show: true, character })
+    expect(request.find('[data-testid="locked-level"]').exists()).toBe(false)
+    expect(request.find('[data-testid="level-mayor"]').element.disabled).toBe(false)
+    expect(request.find('[data-testid="level-council"]').element.disabled).toBe(false)
   })
 
   it('la date se saisit en année du jeu et part en année réelle', async () => {
