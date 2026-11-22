@@ -44,7 +44,7 @@ describe('Vos données / politique — une seule source par fait', () => {
   it.each(['fr', 'en'])('%s : la politique garde toutes ses lignes, la page ne fait qu’y renvoyer', (lang) => {
     const { Privacy } = legal(lang)
     expect(Privacy.Section3.CharacterFields).toHaveLength(4)
-    expect(Privacy.Section4.Rows).toHaveLength(7)
+    expect(Privacy.Section4.Rows).toHaveLength(9) // 7 + les deux lignes de la Salle des gardes (22/11/2026)
     expect(Privacy.Section5.Mandates).toBeTruthy()
     expect(Privacy.Section6.ProvincePlayers).toBeTruthy()
     expect(Privacy.Section5.Tools).toBeUndefined()

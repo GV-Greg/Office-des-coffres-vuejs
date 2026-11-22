@@ -36,11 +36,13 @@ describe('DataPageView', () => {
     }
   })
 
-  // Le Registre des mines est ouvert depuis le 08/10/2026 : plus aucun outil « à venir ».
-  it('ne marque plus aucun outil « à venir »', () => {
+  // Le Registre des mines est ouvert depuis le 08/10/2026. Seule la Salle des gardes est « à venir » : son texte précède l'écriture
+  // (règle R5) et l'outil s'ouvre avec la PR 3-1 ; retirer `upcoming` dans dataPageSections.js à ce moment-là.
+  it('ne marque « à venir » que la Salle des gardes', () => {
     const wrapper = mountView()
     const upcoming = wrapper.findAll('[data-testid="upcoming"]')
-    expect(upcoming).toHaveLength(0)
+    expect(upcoming).toHaveLength(1)
+    expect(wrapper.find('section#salle-des-gardes [data-testid="upcoming"]').exists()).toBe(true)
   })
 
   it('« Compte et personnages » renvoie à la politique sans recopier un seul fait', () => {
@@ -65,7 +67,7 @@ describe('DataPageView', () => {
     const withLink = DATA_PAGE_SECTIONS
       .filter(section => wrapper.find(`section#${section.id} [data-testid="see-policy"]`).exists())
       .map(section => section.id)
-    expect(withLink).toEqual(['postes', 'registre-des-mines', 'registre-des-stocks'])
+    expect(withLink).toEqual(['postes', 'registre-des-mines', 'registre-des-stocks', 'salle-des-gardes'])
     // Ni durée ni destinataires recopiés : la politique les énumère (version B).
     for (const id of withLink) {
       expect(wrapper.findAll(`section#${id} dt`).map(dt => dt.text())).not.toContain('Combien de temps')

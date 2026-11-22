@@ -46,6 +46,7 @@ const messages = {
         InventoryBalance: { Title: 'La Balance des stocks' },
         InventoryRegistry: { Title: 'Registre des stocks' },
         Watch: { Title: 'Le Guet' },
+Security: { Title: 'La Salle des gardes' },
         Map: { Title: 'Carte des royaumes' },
         Animation: { Title: 'Animation' },
       },
@@ -94,6 +95,12 @@ const messages = {
             { Label: 'Inventaire comtal', Text: 'avec un historique.' },
           ],
           InventoryNote: 'Aucune interface d’administration n’y donne accès.',
+          SecurityIntro: 'Si vous utilisez la Salle des gardes, l’Office conserve :',
+          SecurityFields: [
+            { Label: 'Votre statut', Text: 'de douanier.' },
+            { Label: 'Les listes', Text: 'rouge et verte.' },
+          ],
+          SecurityNote: 'Aucune interface d’administration ne permet de les consulter.',
           ToolsIntro: 'Outil par outil sur la page {dataLink} :',
         },
         DataPageLink: 'Vos données',
@@ -117,6 +124,7 @@ const messages = {
           MinePrices: 'Prix : sans limite.',
           Animation: 'Animation : contactez {email}.',
           Inventory: 'Stocks : tant que le personnage existe.',
+          Security: 'Sécurité : sans limite.',
           TechnicalLogs: 'Logs : 12 mois.',
         },
         Section6: {
@@ -127,6 +135,7 @@ const messages = {
           MinePricesHolders: 'Les trois postes des prix.',
           AnimationHolders: 'Animation : page visible de tous.',
           InventoryHolders: 'Stocks : le maire et le commissaire au commerce.',
+          SecurityHolders: 'Sécurité : le trio et les douaniers.',
           ProvincePlayers: 'Les joueurs de la province.',
           NoOneElse: 'Personne d\'autre.',
           Hosting: 'Hébergeur : [À REMPLIR PAR GREG : hébergeur].',
@@ -140,6 +149,7 @@ const messages = {
           ],
           Complaint: 'Réclamation auprès de l\'{apdLink}.',
           HowToExercise: 'Contactez {email} pour exercer ces droits.',
+          SecurityThirdParty: 'Salle des gardes : le recours relève du jeu.',
         },
         Section8: {
           Title: '8. Sécurité',
@@ -279,7 +289,8 @@ describe('PrivacyPolicyView', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Registre : sans limite.')).toBe(items.indexOf('Postes : tout est effacé SAUF l’historique.') + 1)
     expect(items.indexOf('Prix : sans limite.')).toBe(items.indexOf('Registre : sans limite.') + 1)
-    expect(items.indexOf('Stocks : le maire et le commissaire au commerce.')).toBe(items.indexOf("Personne d'autre.") - 1)
+    expect(items.indexOf('Sécurité : le trio et les douaniers.')).toBe(items.indexOf("Personne d'autre.") - 1)
+    expect(items.indexOf('Stocks : le maire et le commissaire au commerce.')).toBe(items.indexOf('Sécurité : le trio et les douaniers.') - 1)
     expect(items.indexOf('Animation : page visible de tous.')).toBe(items.indexOf('Stocks : le maire et le commissaire au commerce.') - 1)
     expect(items.indexOf('Les trois postes des prix.')).toBe(items.indexOf('Animation : page visible de tous.') - 1)
     expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf('Les trois postes des prix.') - 1)
@@ -310,7 +321,7 @@ describe('PrivacyPolicyView', () => {
     const links = mountView().findAll('[data-testid="privacy-tools-links"] a')
     expect(links.map(a => a.text())).toEqual([
       'Compte et personnages', 'Postes déclarés et Ma province', 'Bilan des mines',
-      'Registre des mines', 'Gestion des stocks', 'La Balance des stocks', 'Registre des stocks', 'Le Guet', 'Carte des royaumes', 'Animation',
+      'Registre des mines', 'Gestion des stocks', 'La Balance des stocks', 'Registre des stocks', 'Le Guet', 'La Salle des gardes', 'Carte des royaumes', 'Animation',
     ])
     expect(links[2].attributes('href')).toBe(JSON.stringify({ name: 'legal-data', hash: '#bilan-des-mines' }))
   })
@@ -320,7 +331,19 @@ describe('PrivacyPolicyView', () => {
   it('garde l’exception des postes juste après le compte supprimé (§5), et les joueurs de la province avant les tenants du registre et « Personne d’autre » (§6)', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Postes : tout est effacé SAUF l’historique.')).toBe(items.indexOf('Compte supprimé : effacé.') + 1)
-    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 5)
+    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 6)
+  })
+
+  // La Salle des gardes (fil module-securite, v2 validée par Greg le 22/11/2026) : durée au §5 juste après les stocks, destinataires au §6
+  // juste avant « Personne d’autre », personnes citées au §7 juste après l’adresse de contact.
+  it('rend ce que conserve la Salle des gardes (§3), sa durée (§5), ses destinataires (§6) et le paragraphe des personnes citées (§7)', () => {
+    const wrapper = mountView()
+    expect(wrapper.findAll('[data-testid="privacy-security"] li').map(li => li.text()))
+      .toEqual(['Votre statut — de douanier.', 'Les listes — rouge et verte.'])
+    expect(wrapper.text()).toContain('Aucune interface d’administration ne permet de les consulter.')
+    const items = wrapper.findAll('li').map(li => li.text())
+    expect(items.indexOf('Sécurité : sans limite.')).toBe(items.indexOf('Stocks : tant que le personnage existe.') + 1)
+    expect(wrapper.find('[data-testid="privacy-security-third-party"]').text()).toBe('Salle des gardes : le recours relève du jeu.')
   })
 
   it('affiche une date de dernière modification', () => {

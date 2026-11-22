@@ -17,7 +17,7 @@
   // admin/content/policy-privacy-draft.md).
   // Date de MISE EN LIGNE de la dernière modification : la page « Vos données » (front #90), qui lui
   // ajoute une ligne par outil (§3) — même date que DataPageView.vue.
-  const LAST_UPDATED = '2026-11-11'
+  const LAST_UPDATED = '2026-11-22'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
@@ -31,6 +31,7 @@
   const animFields = computed(() => tm('Legal.Privacy.Section3.AnimFields'))
   const animActivities = computed(() => tm('Legal.Privacy.Section3.AnimActivities'))
   const inventoryFields = computed(() => tm('Legal.Privacy.Section3.InventoryFields'))
+  const securityFields = computed(() => tm('Legal.Privacy.Section3.SecurityFields'))
   const rights = computed(() => tm('Legal.Privacy.Section7.Rights'))
   const measures = computed(() => tm('Legal.Privacy.Section8.Measures'))
 </script>
@@ -153,6 +154,18 @@
             </ul>
             <p class="mt-2">{{ t('Legal.Privacy.Section3.InventoryNote') }}</p>
 
+            <!-- La Salle des gardes (module Sécurité) : texte de Cowork du 22/11/2026, repris par la v2 de Claude Code
+                 (admin/content/policy-securite-draft-v2.md) et validée par Greg. Premier module qui conserve des
+                 pseudos de tiers sans compte : durée sans limite assumée au §5, aucune procédure de retrait annoncée
+                 (Greg, 22/11/2026), inconsultabilité par l'éditeur gardée par SecurityNotConsultableTest côté backend. -->
+            <p class="mt-4">{{ t('Legal.Privacy.Section3.SecurityIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-security">
+              <li v-for="(field, index) in securityFields" :key="`security-${index}`">
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
+            <p class="mt-2">{{ t('Legal.Privacy.Section3.SecurityNote') }}</p>
+
             <!-- Une ligne par outil, avec son lien. AJOUT seulement : les énumérations de la politique
                  (§4, §5, §6) ne perdent jamais une ligne, la page porte l'usage et le contenu de
                  chaque outil et renvoie ici pour la durée et les destinataires (fil
@@ -212,6 +225,7 @@
             <li>{{ t('Legal.Privacy.Section5.MinePrices') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Animation', { email: contactEmail }) }}</li>
               <li>{{ t('Legal.Privacy.Section5.Inventory') }}</li>
+              <li>{{ t('Legal.Privacy.Section5.Security') }}</li>
               <li>{{ t('Legal.Privacy.Section5.TechnicalLogs') }}</li>
             </ul>
           </section>
@@ -227,6 +241,7 @@
             <li>{{ t('Legal.Privacy.Section6.MinePricesHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.AnimationHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.InventoryHolders') }}</li>
+              <li>{{ t('Legal.Privacy.Section6.SecurityHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.NoOneElse') }}</li>
             </ul>
             <p class="mt-4">{{ t('Legal.Privacy.Section6.Hosting') }}</p>
@@ -259,6 +274,7 @@
                 </template>
               </i18n-t>
             </p>
+            <p class="mt-4" data-testid="privacy-security-third-party">{{ t('Legal.Privacy.Section7.SecurityThirdParty') }}</p>
           </section>
 
           <section>

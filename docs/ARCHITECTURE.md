@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 20/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 22/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -63,7 +63,7 @@ Les deux guards sont **exportés** nommément (testables dans `tests/auth/`). `r
 - **`WelcomeView.vue`** — landing : logo vertical `<h1>`, cadenas, invite « cliquez » en rebond fini (`bounce-hint`), `SelectorMenu`, intro roleplay, **footer propre** (disclaimer + copyright + liens légaux, exemptée d'`AppFooter`).
 - **`HomeView.vue`** — `NavMenu` + deux rubriques de `whatsNew.json` : « Chroniques » (`feature`) et « Registre des réparations » (`fix`/`improvement`), entrées `scope: "private"` connecté seulement.
 - **`404.vue`** — logo, texte roleplay, un bouton retour (historique navigateur ou `home`/`welcome`). Pas de hauteur minimale propre.
-- **Pages légales** (`legal/`) — FR + EN, contenu i18n `Legal.*`. ⚠️ Listes rendues avec `tm()` **+ `rt()`** (sinon AST invisibles en test). Insertions par module (Décode, Registre des mines, Inventaires) avec gardes-fous `tests/legal/privacy*`.
+- **Pages légales** (`legal/`) — FR + EN, contenu i18n `Legal.*`. ⚠️ Listes rendues avec `tm()` **+ `rt()`** (sinon AST invisibles en test). Insertions par module (Décode, Registre des mines, Inventaires, **La Salle des gardes** — texte validé par Greg le 22/11/2026, fil `admin/echanges/module-securite/`, garde-fou `privacySecurity.unit.test.js` : trio = prévôt + connétable + capitaine, aucune procédure de retrait annoncée, aucune mention de `bcrypt`) avec gardes-fous `tests/legal/privacy*`. 🔴 Un texte légal qui annonce un garde-fou backend (« vérifiée automatiquement ») ne passe pas avant ce garde-fou.
 - **`legal/DataPageView.vue`** — « Vos données, outil par outil » : badge d'accès par outil, `modules/dataPageSections.js` = source unique. 🔴 **Version B** : les énumérations de la politique ne perdent jamais une ligne, la page renvoie à la politique pour durée/destinataires. Gardes-fous `dataPageSingleSource` et `badgeContrast`.
 - **`LoginView.vue`** — connexion par **email**. Carte claire deux thèmes, alerte « email non vérifié » + renvoi, case « Rester connecté » (comfort data `remember_me_preference`). Comparaison `error_message === 'Email non vérifié.'` **volontairement pas traduite** (message brut API).
 - **`RegisterView.vue`** — email + mot de passe + confirmation seulement (pseudo/ville dans `AddCharacterView`). Après soumission : écran « vérifiez votre boîte mail ».
