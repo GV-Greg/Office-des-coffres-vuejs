@@ -91,22 +91,22 @@ describe('armées, groupes et contrôle de la zone', () => {
     expect(armies[0].status).toContain('\n')
   })
 
-  it('groupes : les chefs sont sur la ligne de nom (jamais une liste de membres), cinq types, mêmes résultats en FR et en EN', () => {
+  it('groupes : tous les membres sont sur la ligne de nom, séparés par des virgules (une armée n\'a qu\'un commandant), cinq types, mêmes résultats en FR et en EN', () => {
     const fr = parseArmiesGroups(fixture('groupes-fr')).groups
     const en = parseArmiesGroups(fixture('groupes-en')).groups
     expect(fr).toHaveLength(11)
     expect(en.map(g => g.type)).toEqual(fr.map(g => g.type))
-    expect(en.map(g => g.leaders)).toEqual(fr.map(g => g.leaders))
+    expect(en.map(g => g.members)).toEqual(fr.map(g => g.members))
     expect([...new Set(fr.map(g => g.type))].sort()).toEqual(['corps_armes', 'groupe', 'lance', 'marechaux', 'milice'])
-    expect(fr[3]).toMatchObject({ type: 'corps_armes', leaders: ['Damonkael', 'Thymotee_bilal'] })
-    expect(fr[6]).toMatchObject({ type: 'marechaux', leaders: ['Calimera'] })
-    expect(fr[9]).toMatchObject({ type: 'groupe', leaders: ['Sefrian'] })
-    expect(fr[10]).toMatchObject({ type: 'milice', leaders: [] })
+    expect(fr[3]).toMatchObject({ type: 'corps_armes', members: ['Damonkael', 'Thymotee_bilal'] })
+    expect(fr[6]).toMatchObject({ type: 'marechaux', members: ['Calimera'] })
+    expect(fr[9]).toMatchObject({ type: 'groupe', members: ['Sefrian'] })
+    expect(fr[10]).toMatchObject({ type: 'milice', members: [] })
   })
 
   it('seul « Groupe de PSEUDO » alerte (groupe à surveiller) ; la milice et les autres types jamais', () => {
     const alerts = parseArmiesGroups(fixture('groupes-fr')).groups.filter(g => ALERT_GROUP_TYPES.includes(g.type))
-    expect(alerts.map(g => g.leaders)).toEqual([['Sefrian']])
+    expect(alerts.map(g => g.members)).toEqual([['Sefrian']])
   })
 
   it('le contrôle de la zone est du texte brut ; les trois sections d\'un même collage se lisent ensemble, dans n\'importe quel sous-ensemble', () => {

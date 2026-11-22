@@ -7,7 +7,8 @@
 
   Corrections du brief par les collages réels :
   - les visions sont un JOURNAL de plusieurs jours, chaque bloc sous une date de jeu explicite ;
-  - un groupe ne liste PAS ses membres : le ou les CHEFS sont sur la ligne de nom ; cinq types dont la milice (sans pseudo) ;
+  - un groupe liste TOUS ses membres, mais sur UNE seule ligne (celle du nom, séparés par « , »), pas un par ligne comme le disait le brief ;
+    une armée n'a, elle, qu'un COMMANDANT ; cinq types de groupe dont la milice (sans pseudo) ;
   - un pseudo ne contient jamais d'espace (points, soulignés, chiffres, tirets : on ne les nettoie jamais).
 */
 
@@ -117,7 +118,7 @@ export const ALERT_GROUP_TYPES = ['groupe']
 
 /**
  * @returns {{ armies: Array<{name: string, commander: string, status: string}>,
- *             groups: Array<{type: string, leaders: string[], status: string}>, zone: string|null }}
+ *             groups: Array<{type: string, members: string[], status: string}>, zone: string|null }}
  */
 export function parseArmiesGroups(raw) {
   const armies = []
@@ -149,8 +150,8 @@ export function parseArmiesGroups(raw) {
     const group = GROUP_TYPES.map(([type, pattern]) => [type, line.match(pattern)]).find(([, match]) => match)
     if (group) {
       const [type, match] = group
-      const leaders = type === 'milice' ? [] : match[1].split(',').map(p => p.trim()).filter(p => p !== '')
-      groups.push({ type, leaders, status: '' })
+      const members = type === 'milice' ? [] : match[1].split(',').map(p => p.trim()).filter(p => p !== '')
+      groups.push({ type, members, status: '' })
       current = groups.length - 1
     } else if (current !== null) {
       groups[current].status = `${groups[current].status}\n${line}`.trim()
