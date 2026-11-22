@@ -11,6 +11,7 @@
   import ChangeEmailModal from '@/components/ChangeEmailModal.vue'
   import ChangePasswordModal from '@/components/ChangePasswordModal.vue'
   import CharacterMandates from '@/components/mandates/CharacterMandates.vue'
+  import CharacterCustoms from '@/components/customs/CharacterCustoms.vue'
   import { useMandateStore } from '@/stores/mandateStore'
   import { useAuthStore } from '@/stores/authStore'
   import useNavigationLoading from '@/use/useNavigationLoading'
@@ -148,20 +149,23 @@
          tenir sans défilement sur ordinateur. Personnages à gauche (2/3), suppression du compte
          REPLIÉE à droite (1/3) — dépliée en grand, elle attirait l'œil juste après le titre. Sur
          mobile, tout reste empilé, personnages d'abord. -->
-    <div class="w-full max-w-7xl flex flex-col flex-grow">
-      <h2 class="mt-0 mb-5">{{ t('Profil.Title') }}</h2>
-
-      <!-- Bouton ajout hors grille : même niveau de départ pour les deux colonnes. -->
-      <div class="flex justify-start mb-3">
-        <RouterLink to="/app/character/new" class="odc-btn odc-btn--soft odc-btn--sm odc--orange">
-          <v-icon name="fa-user-plus" />
-          {{ t('Profil.AddCharacter') }}
-        </RouterLink>
+    <!-- Revu le 22/11/2026 (gain de place, sans défilement pour voir le menu du bas) : toute la largeur, titre et « Ajouter un personnage » sur la
+         MÊME ligne, personnages côte à côte sur grand écran (deux colonnes dès 1500 px, identité au-dessus des postes), compte en colonne fixe à droite. -->
+    <div class="w-full max-w-[1600px] flex flex-col flex-grow">
+      <div class="grid grid-cols-1 tablet:grid-cols-3 items-center gap-2 mb-4">
+        <div class="flex justify-start">
+          <RouterLink to="/app/character/new" class="odc-btn odc-btn--soft odc-btn--sm odc--orange">
+            <v-icon name="fa-user-plus" />
+            {{ t('Profil.AddCharacter') }}
+          </RouterLink>
+        </div>
+        <h2 class="my-0 text-center tablet:order-none -order-1">{{ t('Profil.Title', authStore.getCharacters.length > 1 ? 2 : 1) }}</h2>
+        <div class="hidden tablet:block"></div>
       </div>
 
-      <div class="grid grid-cols-1 laptop:grid-cols-4 gap-6 items-start">
+      <div class="grid grid-cols-1 laptop:grid-cols-[minmax(0,1fr)_19rem] gap-4 items-start">
         <!-- Personnages -->
-        <div class="laptop:col-span-3 flex flex-col gap-3">
+        <div class="grid grid-cols-1 min-[1500px]:grid-cols-2 gap-3 items-start">
           <div v-if="!authStore.hasCharacters" class="w-full bg-white rounded-xl shadow-md border border-gray-200 p-6 text-center">
             <p class="text-slate-700 dark:text-slate-700">{{ t('Profil.NoCharacter') }}</p>
           </div>
@@ -180,8 +184,8 @@
             />
             <!-- Deux zones à partir de laptop : le personnage à gauche, ses postes à droite (panneau
                  teinté, filet vertical). Empilées en dessous, postes après les actions. -->
-            <div class="flex-1 min-w-0 grid grid-cols-1 laptop:grid-cols-5">
-            <div class="laptop:col-span-2 p-4 flex gap-3">
+            <div class="flex-1 min-w-0 grid grid-cols-1 laptop:grid-cols-5 min-[1500px]:grid-cols-1">
+            <div class="laptop:col-span-2 min-[1500px]:col-span-1 p-4 flex gap-3">
               <div class="relative h-11 w-11 shrink-0">
                 <div class="h-11 w-11 rounded-full bg-slate-700 flex items-center justify-center">
                   <v-icon name="gi-barbute" scale="1.2" class="text-white" />
@@ -280,11 +284,12 @@
               </div>
             </div>
 
-            <!-- Postes (mandats, lot 2) : demande, suivi, renouvellement, déclaration de poste. -->
-            <CharacterMandates
-              :character="character"
-              class="laptop:col-span-3 p-4 bg-slate-50 border-t laptop:border-t-0 laptop:border-l border-slate-200"
-            />
+            <!-- Zone de droite : postes (mandats, lot 2 : demande, suivi, renouvellement, déclaration de poste), puis le rôle de douanier
+                 (module Sécurité : on le DEMANDE ici, comme un poste ; Greg, 22/11/2026). -->
+            <div class="laptop:col-span-3 min-[1500px]:col-span-1 p-4 bg-slate-50 border-t laptop:border-t-0 laptop:border-l min-[1500px]:border-t min-[1500px]:border-l-0 border-slate-200 space-y-2">
+              <CharacterMandates :character="character" />
+              <CharacterCustoms :character="character" />
+            </div>
             </div>
           </article>
         </div>

@@ -8,6 +8,8 @@
 import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
   import useNavigationLoading from '@/use/useNavigationLoading'
   import { toGameDateIso, toRealDateIso } from '@/modules/gameCalendar'
+  import customsApi from '@/use/customsApi'
+  import { bumpCustoms } from '@/use/customsRefresh'
 
   /*
     Demande de poste — ou renouvellement (`renewOf`) — pour un personnage validé (mandats, lot 2).
@@ -22,6 +24,9 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
     renewOf: { type: Object, default: null },       // mandat renouvelé, ou null
     // { mayor: { can_request, blocked_by }, council: {…} } — règle de l'API (Q6), jamais recodée.
     requestable: { type: Object, default: null },
+    // Le rôle de DOUANIER (module Sécurité) se demande ICI, comme un poste (Greg, 22/11/2026) : GET characters/{id}/customs dit si cette demande est
+    // ouverte (personnage validé, aucun rôle ni demande en cours). Règle de l'API, jamais recodée.
+    customsOpen: { type: Boolean, default: false },
   })
   const levelOpen = (value) => props.requestable?.[value]?.can_request !== false
   const emit = defineEmits(['close', 'done'])
@@ -65,7 +70,7 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
       const end = realDate(new Date(props.renewOf.valid_until))
       startedAt.value = toGameDateIso(end > today.value ? today.value : end)
     } else {
-      level.value = levelOpen('mayor') ? 'mayor' : 'council'
+      level.value = levelOpen('mayor') ? 'mayor' : (!levelOpen('council') && props.customsOpen ? 'customs' : 'council')
       cityId.value = props.character.city_id ?? ''
       provinceId.value = ''
       startedAt.value = ''
@@ -80,6 +85,12 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
     const found = {}
     if (!isRenewal.value && level.value === 'mayor' && !cityId.value) found.city_id = t('Profil.Mandates.Form.Errors.PlaceRequired')
     if (!isRenewal.value && level.value === 'council' && !provinceId.value) found.province_id = t('Profil.Mandates.Form.Errors.PlaceRequired')
+    // Douanier : une ville de rattachement, ni date de début ni lien d'annonce (le trio de la province valide).
+    if (level.value === 'customs') {
+      if (!cityId.value) found.city_id = t('Profil.Mandates.Form.Errors.PlaceRequired')
+      errors.value = found
+      return Object.keys(found).length === 0
+    }
     if (!startedAt.value) found.started_at = t('Profil.Mandates.Form.Errors.DateRequired')
     else if (toRealDateIso(startedAt.value) > today.value) found.started_at = t('Profil.Mandates.Form.Errors.DateFuture')
     if (!announcementUrl.value) found.announcement_url = t('Profil.Mandates.Form.Errors.UrlRequired')
@@ -93,7 +104,9 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
     submitting.value = true
     generalError.value = ''
 
-    const call = isRenewal.value
+    const call = level.value === 'customs' && !isRenewal.value
+      ? customsApi().requestOfficer(props.character.id, Number(cityId.value))
+      : isRenewal.value
       ? store.renew(props.renewOf, { started_at: toRealDateIso(startedAt.value), announcement_url: announcementUrl.value })
       : store.requestMandate(props.character.id, {
           level: level.value,
@@ -105,7 +118,8 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
 
     trackApiCall(call)
       .then(() => {
-        emit('done')
+        if (level.value === 'customs') bumpCustoms()
+        emit('done', level.value)
         close()
       })
       .catch((error) => {
@@ -156,6 +170,7 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
           <div class="flex flex-wrap gap-4 text-sm text-slate-800 dark:text-slate-100">
             <label class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="mayor" :disabled="!isRenewal && !levelOpen('mayor')" data-testid="level-mayor"> {{ t('Profil.Mandates.Level.mayor') }}</label>
             <label class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="council" :disabled="!isRenewal && !levelOpen('council')" data-testid="level-council"> {{ t('Profil.Mandates.Level.council') }}</label>
+            <label v-if="!isRenewal && customsOpen" class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="customs" data-testid="level-customs"> {{ t('SecurityOfficers.Request.Level') }}</label>
           </div>
         </fieldset>
 
@@ -165,9 +180,9 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
             {{ t('Profil.Mandates.Form.Place') }} : <strong>{{ placeName }}</strong>
           </p>
           <template v-else>
-            <CityCascadeSelect v-if="level === 'mayor'" :key="'mayor'" v-model="cityId" />
+            <CityCascadeSelect v-if="level === 'mayor' || level === 'customs'" :key="level" v-model="cityId" />
             <CityCascadeSelect v-else :key="'council'" v-model="provinceId" stop-at="province" :initial-city-id="character.city_id ?? ''" />
-            <p class="text-xs text-slate-600 dark:text-slate-400">{{ t('Profil.Mandates.Form.PlaceHelp') }}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-400">{{ t(level === 'customs' ? 'SecurityOfficers.Request.CityHelp' : 'Profil.Mandates.Form.PlaceHelp') }}</p>
             <p v-if="errors.city_id || errors.province_id" class="mt-1 text-sm font-semibold text-red-600 dark:text-red-400" data-testid="error-place">{{ errors.city_id || errors.province_id }}</p>
           </template>
         </div>
@@ -185,8 +200,14 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
           <p v-if="errors.council_office_key" class="mt-1 text-sm font-semibold text-red-600 dark:text-red-400">{{ errors.council_office_key }}</p>
         </div>
 
+        <!-- Douanier : ni titre, ni date, ni annonce — l'explication de la cascade de validation. -->
+        <div v-if="level === 'customs'" class="space-y-2" data-testid="customs-explain">
+          <p class="text-sm text-slate-800 dark:text-slate-300">{{ t('SecurityOfficers.Request.Help') }}</p>
+          <p class="text-xs text-slate-600 dark:text-slate-400">{{ t('SecurityOfficers.Request.Cascade') }}</p>
+        </div>
+
         <!-- 4. Date de début -->
-        <div>
+        <div v-if="level !== 'customs'">
           <label for="mandate-start" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ t('Profil.Mandates.Form.StartedAt') }}</label>
           <input id="mandate-start" v-model="startedAt" type="date" :max="todayInGame" data-testid="started-at" class="w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 px-3 py-2">
           <p v-if="level === 'council'" class="text-xs text-slate-600 dark:text-slate-400">{{ t('Profil.Mandates.Form.StartedAtCouncilHelp') }}</p>
@@ -194,7 +215,7 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
         </div>
 
         <!-- 5. Lien vers l'annonce publique -->
-        <div>
+        <div v-if="level !== 'customs'">
           <label for="mandate-url" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ t('Profil.Mandates.Form.Announcement') }}</label>
           <input id="mandate-url" v-model="announcementUrl" type="url" inputmode="url" placeholder="https://" data-testid="announcement-url" class="w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 px-3 py-2">
           <p class="text-xs text-slate-600 dark:text-slate-400">{{ t('Profil.Mandates.Form.AnnouncementHelp') }}</p>
@@ -205,7 +226,7 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
         </div>
 
         <!-- 6. Information -->
-        <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{{ t('Profil.Mandates.Form.Info') }}</p>
+        <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed" data-testid="mandate-info">{{ t('Profil.Mandates.Form.InfoCommon') }}<template v-if="level === 'mayor'"> {{ t('Profil.Mandates.Form.InfoMayor') }}</template><template v-else-if="level === 'council'"> {{ t('Profil.Mandates.Form.InfoCouncil') }}</template></p>
 
         <p v-if="generalError" class="text-sm font-semibold text-red-600 dark:text-red-400" data-testid="error-general">{{ generalError }}</p>
 

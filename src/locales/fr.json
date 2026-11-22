@@ -59,7 +59,7 @@
     "Copy": "Copier"
   },
   "Profil": {
-    "Title": "Mon profil",
+    "Title": "Mon personnage | Mes personnages",
     "NoCharacter": "Vous n'avez pas encore de personnage.",
     "AddCharacter": "Ajouter un personnage",
     "EditResidence": "Modifier la résidence",
@@ -181,7 +181,6 @@
         "StartedAtCouncilHelp": "Date de l'élection du conseil, et non celle du dirigeant (Comte, Duc…). Si vous remplacez un conseiller en cours de mandat, indiquez aussi la date d'élection du conseil.",
         "Announcement": "Lien vers l'annonce publique",
         "AnnouncementHelp": "Le lien vers l'annonce de votre élection (forum ou gazette du jeu). C'est ce qui permet de vérifier votre demande.",
-        "Info": "Votre demande sera vérifiée à la main. Vous recevrez un email à la décision. Un mandat de maire dure 30 jours, un mandat de conseiller comtal 60 jours, à compter de la date de début. Un nouveau conseiller n'entre en fonction qu'à l'élection du dirigeant de la province (Comte, Duc…) ; jusque-là, les conseillers sortants restent en poste, dans une limite vérifiée par l'administration. Pensez à renouveler après chaque réélection.",
         "Submit": "Envoyer la demande",
         "Errors": {
           "PlaceRequired": "Choisissez le lieu du poste.",
@@ -189,7 +188,10 @@
           "DateFuture": "La date de début ne peut pas être dans le futur.",
           "UrlRequired": "Le lien vers l'annonce est obligatoire.",
           "UrlHttps": "Le lien doit commencer par https://"
-        }
+        },
+        "InfoCommon": "Votre demande sera vérifiée à la main. Vous recevrez un email à la décision.",
+        "InfoMayor": "Un mandat de maire dure 30 jours, à compter de la date de début. Pensez à renouveler après chaque réélection.",
+        "InfoCouncil": "Un mandat de conseiller comtal dure 60 jours, à compter de la date de début. Un nouveau conseiller n'entre en fonction qu'à l'élection du dirigeant de la province (Comte, Duc…) ; jusque-là, les conseillers sortants restent en poste, dans une limite vérifiée par l'administration. Pensez à renouveler après chaque réélection."
       },
       "Declare": {
         "Title": "Déclarer mon poste",
@@ -466,6 +468,71 @@
       "ArmiesGroups": "Les armées, les groupes et le contrôle de la zone",
       "Button": "Confier au scribe",
       "Copied": "Le bilan est copié, prêt à coller sur le forum."
+    }
+  },
+  "SecurityOfficers": {
+    "Link": "Douaniers",
+    "Title": "Valider les douaniers",
+    "Cancel": "Annuler",
+    "Intro": "Le douanier n'existe pas en jeu : c'est un rôle de l'Office. Chacun le demande depuis son Profil, et le trio de sécurité de la province le valide ici, en cascade.",
+    "NoCharacter": "Il faut un personnage pour demander à devenir douanier.",
+    "Status": {
+      "Title": "Mon statut de douanier — {pseudo}",
+      "Requested": "Votre demande est envoyée.",
+      "Pending": "Demande du {date}, rattaché à {city}.",
+      "PendingCascade": "Le prévôt des maréchaux ou le connétable de la province la valide ; en leur absence connue de l'Office, le capitaine, le dirigeant de la province (Comte, Duc, …) ou un maire de votre ville ; en dernier recours, l'administrateur.",
+      "Withdraw": "Retirer ma demande",
+      "Withdrawn": "Votre demande est retirée.",
+      "Approved": "Rattaché à {city}, depuis le {date}.",
+      "Lapses": "Sans nouveau bilan, votre accès prendra fin le {date}.",
+      "Inactive": "Votre accès est échu depuis le {date}, faute de bilan saisi.",
+      "LastReport": "Dernier bilan saisi le {date}.",
+      "Renounce": "Renoncer à mon accès",
+      "RenounceConfirm": "Renoncer vraiment ?",
+      "RenounceYes": "Oui, renoncer",
+      "Renounced": "Votre accès de douanier est retiré.",
+      "CardTitle": "Douanier de {province}",
+      "BadgeActive": "Actif",
+      "BadgeInactive": "Accès échu",
+      "CascadeLabel": "Qui valide ma demande ?"
+    },
+    "Decisions": {
+      "Title": "Valider les douaniers de {province}",
+      "Level1": "Vous validez les douaniers de cette province en tant que prévôt des maréchaux ou connétable.",
+      "Level2": "Ni prévôt ni connétable n'est connu de l'Office pour cette province : en repli, vous validez les douaniers en tant que capitaine, dirigeant ou maire.",
+      "NoTrio": "Aucun membre de la sécurité (prévôt, connétable, capitaine) n'est connu de l'Office pour votre province : un douanier inactif voit son accès retiré automatiquement, après un avis de 7 jours.",
+      "Pending": "Demandes en attente ({count})",
+      "NoPending": "Aucune demande en attente.",
+      "PendingLine": "veut devenir douanier, rattaché à {city} (demande du {date}).",
+      "Approve": "Valider",
+      "Reject": "Refuser",
+      "Approved": "Le douanier est validé.",
+      "Rejected": "La demande est refusée.",
+      "Officers": "Douaniers en vigueur ({count})",
+      "NoOfficers": "Aucun douanier en vigueur.",
+      "OfficerLine": "rattaché à {city}, depuis le {date}.",
+      "Revoke": "Révoquer",
+      "RevokeConfirm": "Révoquer vraiment ?",
+      "RevokeYes": "Oui, révoquer",
+      "Revoked": "L'accès est retiré.",
+      "InactiveSignal": "Inactif : aucun bilan depuis l'échéance du {date}. Un trio étant connu, c'est à vous de décider de le révoquer.",
+      "InactiveAuto": "Inactif depuis le {date} : son accès sera retiré automatiquement au prochain passage.",
+      "LastReport": "Dernier bilan saisi le {date}.",
+      "DaysLabel": "Durée d'inactivité avant la fin de l'accès",
+      "DaysHelp": "En jours, de {min} à {max} (par défaut {default}). Seul un bilan saisi remet le compteur à zéro.",
+      "DaysSave": "Enregistrer",
+      "DaysSaved": "La durée d'inactivité est enregistrée."
+    },
+    "NotDecider": "Cette page est celle de qui valide les douaniers (prévôt des maréchaux, connétable ; en leur absence connue de l'Office, capitaine, dirigeant ou maire). Pour devenir douanier, la demande se fait depuis votre Profil.",
+    "ToProfile": "Aller à mon Profil",
+    "Profile": {
+      "Title": "Douanier"
+    },
+    "Request": {
+      "Level": "Douanier",
+      "CityHelp": "Ville de rattachement : elle permet de proposer votre ville par défaut mais vous pourrez saisir les bilans de toutes les villes de cette province.",
+      "Help": "Le douanier n'est pas un poste In Game. Il peut désigner les postes roleplay créés par une province : maréchaux, douanier, … L'Office a choisi le terme douanier. Vous pouvez demander ce poste ; personne n'est inscrit d'office.",
+      "Cascade": "Le prévôt des maréchaux ou le connétable de la province la valide ; en leur absence connue de l'Office, le capitaine, le dirigeant de la province (Comte, Duc, …) ou un maire de votre ville ; en dernier recours, l'administrateur."
     }
   },
   "Economy": {

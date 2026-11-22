@@ -19,10 +19,10 @@ const localesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/l
 const fr = JSON.parse(readFileSync(resolve(localesDir, 'fr.json'), 'utf-8'))
 const en = JSON.parse(readFileSync(resolve(localesDir, 'en.json'), 'utf-8'))
 
-async function mountMenu({ loggedIn = true, access = null, locale = 'fr' } = {}) {
+async function mountMenu({ loggedIn = true, access = null, decider = null, locale = 'fr' } = {}) {
   setActivePinia(createPinia())
   if (loggedIn) useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
-  http.get.mockImplementation(() => Promise.resolve({ data: { success: true, access } }))
+  http.get.mockImplementation(url => Promise.resolve({ data: url.endsWith('/customs') ? { success: true, officer: null, can_request: true, decider } : { success: true, access } }))
   const wrapper = mount(MainSecurity, {
     global: {
       plugins: [createI18n({ legacy: false, locale, messages: { fr, en } })],
@@ -61,5 +61,14 @@ describe('Menu de la Sécurité', () => {
 
     expect(w.find('[data-testid="customs-link"]').text()).toBe('Customs Register')
     expect(w.text()).toContain('The Guardroom')
+  })
+
+  it('« Douaniers » : la page de VALIDATION n\'apparaît qu\'à qui valide ; la demande du rôle se fait dans le Profil', async () => {
+    const decider = { level: 1, province: { id: 3, name: 'Artois' }, has_security_trio: true, pending: [], officers: [] }
+
+    expect((await mountMenu({ decider })).find('[data-testid="officers-link"]').text()).toBe('Douaniers')
+    expect((await mountMenu({ decider, locale: 'en' })).find('[data-testid="officers-link"]').text()).toBe('Customs officers')
+    expect((await mountMenu({ decider: null })).find('[data-testid="officers-link"]').exists()).toBe(false)
+    expect((await mountMenu({ loggedIn: false })).find('[data-testid="officers-link"]').exists()).toBe(false)
   })
 })

@@ -29,7 +29,7 @@ const i18n = createI18n({
   messages: {
     fr: {
       Profil: {
-        Title: 'Mon profil',
+        Title: 'Mon personnage | Mes personnages',
         NoCharacter: "Vous n'avez pas encore de personnage.",
         AddCharacter: 'Ajouter un personnage',
         Status: { ValidatedBadge: 'Validé', PendingBadge: 'En attente', PendingMessage: 'En attente.' },

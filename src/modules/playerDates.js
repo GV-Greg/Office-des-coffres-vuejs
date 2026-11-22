@@ -37,6 +37,12 @@ export const DATE_FIELDS = Object.freeze({
   // des mines et les inventaires).
   customs_report_day: 'game',
   customs_list_added_on: 'game',
+  // Douaniers (module Sécurité) : actes de l'Office (demande, validation, dernier bilan, échéance d'inactivité), lus en année RÉELLE comme les
+  // gestes de l'Office — ce ne sont pas des faits de jeu.
+  customs_requested_at: 'real',
+  customs_in_office_from: 'real',
+  customs_last_report_at: 'real',
+  customs_lapses_at: 'real',
   // Gestes de l'Office
   processed_at: 'real',
   revoked_at: 'real',
