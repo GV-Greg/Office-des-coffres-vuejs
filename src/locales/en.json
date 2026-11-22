@@ -471,10 +471,8 @@
     }
   },
   "SecurityOfficers": {
-    "Link": "Customs officers",
     "Title": "Validate customs officers",
     "Cancel": "Cancel",
-    "Intro": "The customs officer does not exist in the game: it is a role of the Office. Everyone applies from their Profile, and the province's security trio validates it here, in cascade.",
     "NoCharacter": "You need a character to apply to become a customs officer.",
     "Status": {
       "Title": "My customs officer status — {pseudo}",
@@ -523,8 +521,6 @@
       "DaysSave": "Save",
       "DaysSaved": "The inactivity period is saved."
     },
-    "NotDecider": "This page is for those who validate customs officers (Constable, Sergeant; in their absence known to the Office, Captain, leader or mayor). To become a customs officer, apply from your Profile.",
-    "ToProfile": "Go to my Profile",
     "Profile": {
       "Title": "Customs officer"
     },
@@ -1967,7 +1963,8 @@
     "PricesDesc": "Set the resource prices and hourly rate for your province.",
     "ManagePrices": "Edit prices",
     "PricesHistory": "Price history",
-    "CatPersoPanel": "Inventory categories — Personal"
+    "CatPersoPanel": "Inventory categories — Personal",
+    "TabOfficers": "Customs officers"
   },
   "Chest": {
     "Opening": "Opening the chest…",

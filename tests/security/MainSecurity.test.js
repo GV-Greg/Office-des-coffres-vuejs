@@ -63,12 +63,10 @@ describe('Menu de la Sécurité', () => {
     expect(w.text()).toContain('The Guardroom')
   })
 
-  it('« Douaniers » : la page de VALIDATION n\'apparaît qu\'à qui valide ; la demande du rôle se fait dans le Profil', async () => {
+  it('« Douaniers » n\'est plus dans ce menu : la validation est un onglet de Mon bureau (Greg, 22/11/2026)', async () => {
     const decider = { level: 1, province: { id: 3, name: 'Artois' }, has_security_trio: true, pending: [], officers: [] }
 
-    expect((await mountMenu({ decider })).find('[data-testid="officers-link"]').text()).toBe('Douaniers')
-    expect((await mountMenu({ decider, locale: 'en' })).find('[data-testid="officers-link"]').text()).toBe('Customs officers')
-    expect((await mountMenu({ decider: null })).find('[data-testid="officers-link"]').exists()).toBe(false)
-    expect((await mountMenu({ loggedIn: false })).find('[data-testid="officers-link"]').exists()).toBe(false)
+    expect((await mountMenu({ decider })).find('[data-testid="officers-link"]').exists()).toBe(false)
+    expect((await mountMenu({ decider })).text()).not.toContain('Douaniers')
   })
 })
