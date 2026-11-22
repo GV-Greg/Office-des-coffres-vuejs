@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { push } from 'notivue'
   import { useMandateStore, apiMessage } from '@/stores/mandateStore'
@@ -7,6 +7,8 @@
   import { formatFieldDate } from '@/modules/playerDates'
   import MandateRequestModal from '@/components/mandates/MandateRequestModal.vue'
   import DeclareOfficeModal from '@/components/mandates/DeclareOfficeModal.vue'
+  import customsApi from '@/use/customsApi'
+  import { customsVersion } from '@/use/customsRefresh'
 
   /*
     Bloc « Postes » d'une carte de personnage (mandats, lot 2). Les statuts sont du texte
@@ -43,7 +45,19 @@
   const current = computed(() => mandates.value.filter(m => !isPast(m) && !isSuperseded(m)))
   const past = computed(() => mandates.value.filter(m => isPast(m) && !isSuperseded(m)))
   const requestable = computed(() => (store.characters ?? []).find(c => c.id === props.character.id)?.requestable ?? null)
-  const canRequest = computed(() => !!(requestable.value?.mayor?.can_request || requestable.value?.council?.can_request))
+  // Le rôle de douanier se demande dans la même modale (Greg, 22/11/2026) : la règle vient de l'API (GET characters/{id}/customs → can_request).
+  // Une panne ou une absence de réponse laisse la demande fermée, sans bloquer le Profil.
+  const customsOpen = ref(false)
+  async function loadCustoms() {
+    try {
+      const state = await customsApi().officer(props.character.id)
+      customsOpen.value = state?.can_request === true && !state?.officer
+    } catch {
+      customsOpen.value = false
+    }
+  }
+  watch(() => [props.character.id, customsVersion.value], loadCustoms, { immediate: true })
+  const canRequest = computed(() => !!(requestable.value?.mayor?.can_request || requestable.value?.council?.can_request || customsOpen.value))
 
   const label = (labels) => labels?.[locale.value] ?? ''
   // Année d'une date : décidée par le CHAMP (modules/playerDates.js), jamais par ce composant.
@@ -82,7 +96,7 @@
   const declareFor = ref(null)
   const openRequest = () => { renewOf.value = null; requestOpen.value = true }
   const openRenew = (mandate) => { renewOf.value = mandate; requestOpen.value = true }
-  const onRequestDone = () => push.success(t(renewOf.value ? 'Profil.Mandates.RenewSent' : 'Profil.Mandates.RequestSent'))
+  const onRequestDone = (level) => push.success(t(level === 'customs' ? 'SecurityOfficers.Status.Requested' : (renewOf.value ? 'Profil.Mandates.RenewSent' : 'Profil.Mandates.RequestSent')))
 
   const cancelRequest = (mandate) => {
     trackApiCall(store.cancel(mandate))
@@ -212,6 +226,7 @@
       :character="character"
       :renew-of="renewOf"
       :requestable="requestable"
+      :customs-open="customsOpen"
       @close="requestOpen = false"
       @done="onRequestDone"
     />

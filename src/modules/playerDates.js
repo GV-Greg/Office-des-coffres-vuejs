@@ -33,6 +33,16 @@ export const DATE_FIELDS = Object.freeze({
   // Historique des inventaires de la province (API characters/{id}/inventory/province) : jour où l'inventaire a été collé,
   // lu en année du JEU comme les relevés des mines.
   inventory_snapshot_date: 'game',
+  // Registre de douane (module Sécurité) : jour du jeu d'un bilan et jour d'ajout d'une entrée de liste, lus en année du JEU (comme les relevés
+  // des mines et les inventaires).
+  customs_report_day: 'game',
+  customs_list_added_on: 'game',
+  // Douaniers (module Sécurité) : actes de l'Office (demande, validation, dernier bilan, échéance d'inactivité), lus en année RÉELLE comme les
+  // gestes de l'Office — ce ne sont pas des faits de jeu.
+  customs_requested_at: 'real',
+  customs_in_office_from: 'real',
+  customs_last_report_at: 'real',
+  customs_lapses_at: 'real',
   // Gestes de l'Office
   processed_at: 'real',
   revoked_at: 'real',

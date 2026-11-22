@@ -11,7 +11,7 @@ const i18n = createI18n({
   messages: {
     fr: {
       Profil: {
-        Title: 'Mon profil',
+        Title: 'Mon personnage | Mes personnages',
         NoCharacter: "Vous n'avez pas encore de personnage.",
         AddCharacter: 'Ajouter un personnage',
         Status: {
@@ -74,6 +74,14 @@ describe('ProfilView', () => {
     expect(wrapper.text()).toContain('En attente de validation.')
     // Pas de mention redondante avec le badge "Validé" pour un personnage validé
     expect(wrapper.text()).not.toContain('Personnage validé.')
+  })
+
+  it('le titre suit le nombre de personnages : « Mon personnage » pour un seul, « Mes personnages » pour plusieurs', () => {
+    const one = mountProfil({ id: 1, email: 'a@test.com', characters: [{ id: 1, pseudo: 'Artifice', is_validated: true }] })
+    expect(one.find('h2').text()).toBe('Mon personnage')
+
+    const many = mountProfil({ id: 1, email: 'a@test.com', characters: [{ id: 1, pseudo: 'Artifice', is_validated: true }, { id: 2, pseudo: 'Buldo', is_validated: true }] })
+    expect(many.find('h2').text()).toBe('Mes personnages')
   })
 
   it('affiche un message différent quand le personnage est en attente suite à un changement de résidence', () => {

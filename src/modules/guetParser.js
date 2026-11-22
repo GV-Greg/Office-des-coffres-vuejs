@@ -12,11 +12,12 @@
 
   Un pseudo peut contenir points, tirets, soulignés, chiffres, accents : on ne le « nettoie » jamais.
 
-  FR seulement pour l'en-tête « Liste des villageois (N) » (le tableau lui-même ne dépend d'aucune
-  langue : pseudo[TAB]nPR). L'en-tête anglais se branche ici dès que Greg fournit un collage anglais.
+  En-tête du total : FR « Liste des villageois (N) » et EN « Presently in town (N) » ; le tableau lui-même ne dépend d'aucune
+  langue : pseudo[TAB]nPR.
 */
 
-const HEADER_FR = /Liste des villageois\s*\((\d+)\)/i
+// FR « Liste des villageois (N) », EN « Presently in town (N) » (collage réel du 22/11/2026).
+export const GUET_HEADER = /(?:Liste des villageois|Presently in town)\s*\((\d+)\)/i
 const REPUTATION = /^(\d+)\s*PR$/i
 
 /**
@@ -30,7 +31,7 @@ export function parseGuet(raw) {
   let declaredTotal = null
 
   for (const line of text.split(/\r?\n/)) {
-    const header = line.match(HEADER_FR)
+    const header = line.match(GUET_HEADER)
     if (header && !line.includes('\t')) {
       declaredTotal = Number(header[1])
       continue
@@ -46,7 +47,8 @@ export function parseGuet(raw) {
 
     const firstSpace = trimmed.search(/\s/)
     let pseudo = firstSpace === -1 ? trimmed : trimmed.slice(0, firstSpace)
-    let noblesse = firstSpace === -1 ? '' : trimmed.slice(firstSpace + 1).trim()
+    // Une virgule de tête n'appartient pas au titre (« Aurelia. , Edle von … » → « Edle von … »).
+    let noblesse = firstSpace === -1 ? '' : trimmed.slice(firstSpace + 1).replace(/^[\s,]+/, '').trim()
 
     // Repli sur la forme du brief « Pseudo, Titre » : la virgule collée au pseudo n'en fait pas partie.
     if (pseudo.endsWith(',') && pseudo.length > 1) pseudo = pseudo.slice(0, -1)
@@ -76,4 +78,15 @@ export function diffGuet(yesterdayRaw, todayRaw) {
     inputs: today.filter(p => !yesterday.includes(p)),
     outputs: yesterday.filter(p => !today.includes(p))
   }
+}
+
+/**
+ * Le brut du guet QUE L'OFFICE GARDE : l'en-tête « Liste des villageois (N) » et les lignes du tableau (pseudo + tabulation + nPR),
+ * SANS le préambule (maire, adjoints, tribun, noblesse d'épée) — décision de Greg, 22/11/2026, fil module-securite/12.
+ */
+export function extractGuetRaw(raw) {
+  return String(raw ?? '').split(/\r\n|\n|\r/)
+    .filter(line => line.includes('\t') || GUET_HEADER.test(line))
+    .map(line => line.replace(/\s+$/, ''))
+    .join('\n')
 }

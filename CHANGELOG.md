@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #149 (Module Sécurité, PR 3-1 : Registre de douane, écran des douaniers, Profil en pleine largeur)
+
+### Added
+- **Registre de douane** (`/app/secu/douane`, `security-customs` ; lien de menu seulement pour qui le serveur connaît un rôle de sécurité) : bilans d'une ville jour par jour, pseudos colorés (sens porté par le texte, jamais la couleur seule), différentiel du guet, visions, armées, groupes (seul « Groupe à surveiller » alerte), contrôle de la zone ; saisie par collage (ville et jour dits avant l'envoi) ; listes rouge et verte en modale ; **export BBCode « Confier au scribe »**. **Parseurs au frontend seulement** (`customsParsers.js`, `customsPaste.js`) : le serveur reçoit l'analyse et le brut gardé. Fixtures : dix collages réels.
+- **Douaniers** : le rôle se **demande** dans la modale « Demander un poste » du Profil (choix « Douanier », ville de rattachement seule) et se **valide** dans la Salle des gardes (`/app/secu/douaniers`, lien réservé à qui valide). Carte de poste dans le Profil avec infobulle « i » sur la cascade de validation. Icône `fa-user-shield`.
+- Garde-fous : `tests/security/*`, `tests/mandates/MandateRequestCustoms.test.js`.
+
+### Changed
+- **Page Profil** : titre « Mon personnage / Mes personnages », « Ajouter un personnage » sur la ligne du titre, pleine largeur (1600 px max), personnages côte à côte dès 1500 px.
+- Parseur du guet : en-tête anglais « Presently in town (N) » lu, virgule de tête retirée de la noblesse.
+- « La Salle des gardes » n'est plus « à venir » dans « Vos données ».
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. **Le backend (back #107) est mergé avant** ; tant que `migrate` + `route:cache` n'ont pas été lancés en SSH, l'API `customs-access` répond 404 et le lien du Registre reste caché (sans danger).
+
 ## [2026-11-22] — PR #150 (Texte légal du Relevé unique : ce que le navigateur garde)
 
 ### Changed

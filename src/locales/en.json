@@ -59,7 +59,7 @@
     "Copy": "Copy"
   },
   "Profil": {
-    "Title": "My profile",
+    "Title": "My character | My characters",
     "NoCharacter": "You don't have a character yet.",
     "AddCharacter": "Add a character",
     "EditResidence": "Change residence",
@@ -181,7 +181,6 @@
         "StartedAtCouncilHelp": "Date of the council election, not the leader's (Count, Duke…). If you are replacing a councillor during the term, also give the council election date.",
         "Announcement": "Link to the public announcement",
         "AnnouncementHelp": "The link to the announcement of your election (game forum or gazette). It is what allows your request to be verified.",
-        "Info": "Your request will be checked by hand. You will receive an email with the decision. A mayor's term lasts 30 days, a county councillor's 60 days, from the start date. A new councillor only takes office when the leader of the province (Count, Duke…) is elected; until then, outgoing councillors stay in office, within a limit checked by the administration. Remember to renew after each re-election.",
         "Submit": "Send the request",
         "Errors": {
           "PlaceRequired": "Choose the place of the office.",
@@ -189,7 +188,10 @@
           "DateFuture": "The start date cannot be in the future.",
           "UrlRequired": "The link to the announcement is required.",
           "UrlHttps": "The link must start with https://"
-        }
+        },
+        "InfoCommon": "Your request will be checked by hand. You will receive an email with the decision.",
+        "InfoMayor": "A mayor's term lasts 30 days, from the start date. Remember to renew after each re-election.",
+        "InfoCouncil": "A county councillor's term lasts 60 days, from the start date. A new councillor only takes office when the leader of the province (Count, Duke…) is elected; until then, outgoing councillors stay in office, within a limit checked by the administration. Remember to renew after each re-election."
       },
       "Declare": {
         "Title": "Declare my office",
@@ -359,6 +361,179 @@
     "ExportButton": "Entrust to the scribe",
     "MismatchYesterday": "Yesterday's list announces {declared} villagers, {read} were read: the paste may be truncated.",
     "MismatchToday": "Today's list announces {declared} villagers, {read} were read: the paste may be truncated."
+  },
+  "SecurityCustoms": {
+    "Link": "Customs Register",
+    "Title": "Customs Register: {province}",
+    "NoAccess": "The register's doors stay shut: the Office knows no security title for your character in any province (Constable, Sergeant, Captain, mayor, Judge, Public Prosecutor, leader, or validated customs officer).",
+    "NoTrio": "No member of the security (Constable, Sergeant, Captain) is known to the Office for your province. In their absence, mayors and validated customs officers keep the red and green lists.",
+    "NoReadableCity": "Your title gives access to no town's reports: only the province's lists are open to you.",
+    "City": "Town",
+    "Day": "Game day",
+    "Today": "Today",
+    "OlderDay": "Previous day",
+    "NewerDay": "Next day",
+    "NoReportShort": "no report",
+    "ListsButton": "Red and green lists",
+    "Loading": "Loading…",
+    "ReportTitle": "Report of {date} — {city}",
+    "NoReport": "No report has been recorded for {city} on that day.",
+    "ExistsNotice": "A report already exists for that day: only the Constable and the Sergeant correct it.",
+    "List": {
+      "Red": "red list",
+      "Green": "green list"
+    },
+    "Report": {
+      "Villagers": "Inhabitants ({count})",
+      "AllVillagers": "Show all inhabitants",
+      "TotalMismatch": "The paste announced {declared} villagers, {read} were read: it may have been truncated.",
+      "ComparedTo": "Compared with the report of {date}.",
+      "NoPrevious": "No earlier report: no comparison.",
+      "Arrivals": "Arrivals ({count})",
+      "Departures": "Departures ({count})",
+      "None": "None",
+      "Visions": "Visions on the road (the previous night)",
+      "VisionGroup": "Group",
+      "VisionsOtherDays": "{count} vision(s) from other days were not kept.",
+      "Armies": "Armies",
+      "ArmyLeader": "army leader:",
+      "Groups": "Groups",
+      "GroupTypes": {
+        "lance": "Armed Retinue",
+        "corps_armes": "Armed Mob",
+        "marechaux": "Marshal group",
+        "groupe": "Group",
+        "milice": "Militia"
+      },
+      "GroupAlert": "Group to watch",
+      "Zone": "Control of the area"
+    },
+    "Form": {
+      "Title": {
+        "create": "Enter the report",
+        "complete": "Complete the report",
+        "correct": "Correct the report"
+      },
+      "WritesIn": "The report will be recorded for {city}, on {date}.",
+      "GuetRequired": "Villager list (required for a first report)",
+      "Guet": "Villager list",
+      "Visions": "Visions on the road (only those of the day are kept)",
+      "ArmiesGroups": "Armies, groups and control of the area",
+      "Placeholder": "Paste the text copied from the game here",
+      "SummaryGuet": "{read} villagers read.",
+      "SummaryVisions": "{kept} vision(s) of the day kept, {other} from other days ignored.",
+      "SummaryArmies": "{armies} army(ies), {groups} group(s).",
+      "NeedsGuet": "A first report starts with the villager list.",
+      "Problem": {
+        "guet_empty": "No villager could be read in this paste: check that it contains the table (nickname, tab, reputation).",
+        "visions_none": "No vision of that day in this paste: nothing will be recorded for the visions.",
+        "armies_groups_empty": "No army, group or control of the area could be read in this paste."
+      },
+      "Send": "Record in the register",
+      "Sending": "Recording…",
+      "Sent": {
+        "created": "The report is recorded in the register.",
+        "completed": "The report is completed.",
+        "corrected": "The report is corrected."
+      }
+    },
+    "Lists": {
+      "Title": "Red and green lists of {province}",
+      "Intro": "Character names to watch (red) or trusted (green), per province. The nickname is free text: the character may have no account on the Office. The colour applies to reports from the date of addition, as long as the entry stays on the list; removing it deletes it.",
+      "ReadOnly": "You are reading the lists. They are kept by the Constable, the Sergeant and the Captain; when none of them is known to the Office, by mayors and validated customs officers.",
+      "JudgeOnly": "The Judge adds to the red list, without changing or removing other entries.",
+      "Pseudo": "Nickname (no space)",
+      "Colour": "List",
+      "Reason": "Reason (optional)",
+      "Add": "Add",
+      "Edit": "Edit",
+      "Remove": "Remove",
+      "Save": "Save",
+      "Empty": "No entries in this province's lists.",
+      "Since": "since {date}",
+      "AddedBy": "added by {pseudo}",
+      "ByMe": "added by you",
+      "Added": "The entry is added.",
+      "Saved": "The entry is changed.",
+      "Removed": "The entry is removed.",
+      "Cancel": "Cancel"
+    },
+    "Export": {
+      "Title": "Entrust it to the scribe",
+      "PublicWarning": "A report is never public: by exporting it to a forum, you are the one making it public. The report's author never appears in it, and nothing is saved by this export.",
+      "Options": "What the scribe copies",
+      "Villagers": "The full list of inhabitants",
+      "Colours": "The red and green list marks",
+      "Visions": "Visions on the road",
+      "ArmiesGroups": "Armies, groups and control of the area",
+      "Button": "Entrust it to the scribe",
+      "Copied": "The report is copied, ready to paste on the forum."
+    }
+  },
+  "SecurityOfficers": {
+    "Link": "Customs officers",
+    "Title": "Validate customs officers",
+    "Cancel": "Cancel",
+    "Intro": "The customs officer does not exist in the game: it is a role of the Office. Everyone applies from their Profile, and the province's security trio validates it here, in cascade.",
+    "NoCharacter": "You need a character to apply to become a customs officer.",
+    "Status": {
+      "Title": "My customs officer status — {pseudo}",
+      "Requested": "Your application is sent.",
+      "Pending": "Application of {date}, attached to {city}.",
+      "PendingCascade": "The province's Constable or Sergeant validates it; in their absence known to the Office, the Captain, the province's leader (Count, Duke, …) or a mayor of your town; as a last resort, the administrator.",
+      "Withdraw": "Withdraw my application",
+      "Withdrawn": "Your application is withdrawn.",
+      "Approved": "Attached to {city}, since {date}.",
+      "Lapses": "Without a new report, your access will end on {date}.",
+      "Inactive": "Your access lapsed on {date}, for lack of a report entered.",
+      "LastReport": "Latest report entered on {date}.",
+      "Renounce": "Give up my access",
+      "RenounceConfirm": "Really give it up?",
+      "RenounceYes": "Yes, give up",
+      "Renounced": "Your customs officer access is withdrawn.",
+      "CardTitle": "Customs officer of {province}",
+      "BadgeActive": "Active",
+      "BadgeInactive": "Access lapsed",
+      "CascadeLabel": "Who validates my application?"
+    },
+    "Decisions": {
+      "Title": "Validate the customs officers of {province}",
+      "Level1": "You validate this province's customs officers as Constable or Sergeant.",
+      "Level2": "Neither a Constable nor a Sergeant is known to the Office for this province: as a fallback, you validate customs officers as Captain, leader or mayor.",
+      "NoTrio": "No member of the security (Constable, Sergeant, Captain) is known to the Office for your province: an inactive customs officer's access is withdrawn automatically, after a 7-day notice.",
+      "Pending": "Pending applications ({count})",
+      "NoPending": "No pending application.",
+      "PendingLine": "wants to become a customs officer, attached to {city} (application of {date}).",
+      "Approve": "Validate",
+      "Reject": "Refuse",
+      "Approved": "The customs officer is validated.",
+      "Rejected": "The application is refused.",
+      "Officers": "Active customs officers ({count})",
+      "NoOfficers": "No active customs officer.",
+      "OfficerLine": "attached to {city}, since {date}.",
+      "Revoke": "Revoke",
+      "RevokeConfirm": "Really revoke?",
+      "RevokeYes": "Yes, revoke",
+      "Revoked": "The access is withdrawn.",
+      "InactiveSignal": "Inactive: no report since the {date} deadline. As a trio is known, it is up to you to decide to revoke.",
+      "InactiveAuto": "Inactive since {date}: their access will be withdrawn automatically on the next run.",
+      "LastReport": "Latest report entered on {date}.",
+      "DaysLabel": "Inactivity period before access ends",
+      "DaysHelp": "In days, from {min} to {max} (default {default}). Only entering a report resets the counter.",
+      "DaysSave": "Save",
+      "DaysSaved": "The inactivity period is saved."
+    },
+    "NotDecider": "This page is for those who validate customs officers (Constable, Sergeant; in their absence known to the Office, Captain, leader or mayor). To become a customs officer, apply from your Profile.",
+    "ToProfile": "Go to my Profile",
+    "Profile": {
+      "Title": "Customs officer"
+    },
+    "Request": {
+      "Level": "Customs officer",
+      "CityHelp": "Town of attachment: it lets us suggest your town by default, but you will be able to enter the reports of every town in this province.",
+      "Help": "The customs officer is not an in-game office. It can designate the roleplay offices created by a province: marshals, customs officer, … The Office chose the term customs officer. You can apply for this office; nobody is registered automatically.",
+      "Cascade": "The province's Constable or Sergeant validates it; in their absence known to the Office, the Captain, the province's leader (Count, Duke, …) or a mayor of your town; as a last resort, the administrator."
+    }
   },
   "Economy": {
     "Title": "Economy Chest",

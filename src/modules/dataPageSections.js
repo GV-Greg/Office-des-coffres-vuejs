@@ -35,9 +35,9 @@ export const DATA_PAGE_SECTIONS = [
   { id: 'registre-des-stocks', key: 'InventoryRegistry', access: 'office' },
   { id: 'guet', key: 'Watch', access: 'none' },
   // La Salle des gardes (module Sécurité) : listes rouge/verte et bilans de défense d'une province, saisis par le trio, les douaniers
-  // validés et le maire (fil module-securite, v2 validée par Greg le 22/11/2026). « À venir » jusqu'au déploiement de la PR 3-1 : le texte
-  // précède l'écriture (règle R5). Un poste ou le statut de douanier validé est requis.
-  { id: 'salle-des-gardes', key: 'Security', access: 'office', upcoming: true },
+  // validés et le maire (fil module-securite, v2 validée par Greg le 22/11/2026). Ouverte avec la PR 3-1 (écran du Registre de douane) : le texte
+  // a précédé l'écriture (règle R5), le badge « à venir » est retiré. Un poste ou le statut de douanier validé est requis.
+  { id: 'salle-des-gardes', key: 'Security', access: 'office' },
   { id: 'carte', key: 'Map', access: 'none' },
   // Une seule entrée pour toutes les activités d'Animation (Décode le code, Grille des lots) : une activité de plus
   // s'ajoute dans le texte de la section, pas ici (fil animation-textes-legaux, 11/11/2026).

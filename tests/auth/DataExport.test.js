@@ -22,7 +22,7 @@ const i18n = createI18n({
   messages: {
     fr: {
       Profil: {
-        Title: 'Mon profil',
+        Title: 'Mon personnage | Mes personnages',
         NoCharacter: "Vous n'avez pas encore de personnage.",
         AddCharacter: 'Ajouter un personnage',
         ActiveCharacter: 'Personnage actif à la connexion',
@@ -60,7 +60,7 @@ const i18n = createI18n({
     },
     en: {
       Profil: {
-        Title: 'My profile',
+        Title: 'My character | My characters',
         NoCharacter: "You don't have a character yet.",
         AddCharacter: 'Add a character',
         ActiveCharacter: 'Active character at login',
