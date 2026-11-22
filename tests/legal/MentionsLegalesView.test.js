@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { createPinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import MentionsLegalesView from '../../src/views/legal/MentionsLegalesView.vue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 // Mock api.js (importé par authStore.js, lui-même importé par router/index.js)
 vi.mock('../../src/api.js', () => ({
@@ -61,7 +62,7 @@ const messages = {
   },
 }
 
-const i18n = createI18n({ legacy: false, locale: 'fr', messages })
+const i18n = createI18n({ legacy: false, locale: 'fr', messages: withRealLocales(messages) })
 
 const RouterLinkStub = {
   props: ['to'],

@@ -2,11 +2,12 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import HelpModal from '../../src/components/HelpModal.vue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Common: {
         HelpModal: {
@@ -17,7 +18,7 @@ const i18n = createI18n({
         }
       }
     }
-  }
+  })
 })
 
 function mountModal(props = {}) {

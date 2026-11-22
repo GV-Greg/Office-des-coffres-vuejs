@@ -4,11 +4,12 @@ import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import CookiesModal from '../../src/components/CookiesModal.vue'
 import SwitchButton from '../../src/components/buttons/SwitchButton.vue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 // Mock translations
 const i18n = createI18n({
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Cookies: {
         Modal: {
@@ -21,7 +22,7 @@ const i18n = createI18n({
         Required: 'Requis'
       }
     }
-  }
+  })
 })
 
 describe('CookiesModal', () => {

@@ -5,6 +5,7 @@ import { createI18n } from 'vue-i18n'
 import CookiesBanner from '../../src/components/CookiesBanner.vue'
 import CookiesModal from '../../src/components/CookiesModal.vue'
 import { useCookieStore } from '../../src/stores/cookieStore'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 vi.mock('notivue', () => ({ push: { error: vi.fn(), success: vi.fn() } }))
 
@@ -17,7 +18,7 @@ afterEach(() => {
 // Mock translations
 const i18n = createI18n({
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Cookies: {
         Banner: {
@@ -35,7 +36,7 @@ const i18n = createI18n({
         SaveError: "Vos préférences n'ont pas pu être enregistrées. Réessayez."
       }
     }
-  }
+  })
 })
 
 // hasUserChoice est un getter dérivé de consent.choiceMadeAt (pas un state

@@ -6,6 +6,7 @@ import LoginView from '../../src/views/auth/LoginView.vue'
 import SelectorMenu from '../../src/components/SelectorMenu.vue'
 import { useAuthStore } from '../../src/stores/authStore'
 import { useCookieStore } from '../../src/stores/cookieStore'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 vi.mock('notivue', () => ({
   push: { error: vi.fn() }
@@ -22,7 +23,7 @@ vi.mock('../../src/api.js', () => ({
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Common: { SiteName: 'Office des coffres' },
       Login: {
@@ -51,7 +52,7 @@ const i18n = createI18n({
       email: 'email',
       password: 'mot de passe'
     }
-  }
+  })
 })
 
 function mountLogin() {

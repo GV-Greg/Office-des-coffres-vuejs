@@ -5,6 +5,7 @@ import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import AddCharacterView from '../../src/views/auth/AddCharacterView.vue'
 import { useAuthStore } from '../../src/stores/authStore'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 vi.mock('notivue', () => ({ push: { error: vi.fn() } }))
 
@@ -30,7 +31,7 @@ vi.mock('../../src/api.js', () => ({
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       AddCharacter: {
         Heading: 'Ajoutez votre personnage',
@@ -45,7 +46,7 @@ const i18n = createI18n({
       Auth: { UsernamePlaceholder: 'Entrez votre pseudo' },
       username: 'pseudo'
     }
-  }
+  })
 })
 
 async function mountView() {
