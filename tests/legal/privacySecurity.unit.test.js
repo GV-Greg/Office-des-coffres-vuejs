@@ -116,7 +116,7 @@ describe('Politique — La Salle des gardes', () => {
     const reports = Section3.SecurityFields[2].Text
     expect(reports).toMatch(lang === 'fr' ? /liste des villageois que vous collez est aussi conservé tel quel, sans le préambule/ : /villager list you paste is also kept as it is, without the preamble/)
     expect(reports).toMatch(lang === 'fr' ? /lignes des visions du jour du bilan/ : /lines of the visions of the report's day/)
-    expect(reports).toMatch(lang === 'fr' ? /commandant pour une armée, membres pour un groupe/ : /commander for an army, members for a group/)
+    expect(reports).toMatch(lang === 'fr' ? /pour une armée : son nom, son chef.*pour un groupe : son nom, tous ses membres/ : /for an army: its name, its leader.*for a group: its name, all its members/)
     const { Stored } = locale(lang).Legal.Data.Security
     expect(Stored).toMatch(lang === 'fr' ? /tel quel et sans le préambule/ : /as it is and without the preamble/)
   })
