@@ -10,9 +10,11 @@ import { formatFieldDate } from '@/modules/playerDates'
 import { provinceHistoryToBBcode } from '@/modules/provinceBBcode'
 import useMineAccess from '@/use/useMineAccess.js'
 import useMinePrices from '@/use/useMinePrices.js'
+import useCustomsOfficer from '@/use/useCustomsOfficer'
 import NavMenu from '@/components/NavMenu.vue'
 import MinePricesModal from '@/components/mines/MinePricesModal.vue'
 import InventoryLevelsAccordion from '@/components/economy/InventoryLevelsAccordion.vue'
+import OfficerValidationSection from '@/components/customs/OfficerValidationSection.vue'
 
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
@@ -84,17 +86,24 @@ const onPricesSaved = () => {
   loadPrices()
 }
 
+// --- Douaniers (validation des demandes) : seulement pour qui le serveur donne un rôle de validation (`decider`) ---
+const { state: officerState, ready: officerReady } = useCustomsOfficer(() => character.value?.id ?? null)
+const canValidateOfficers = computed(() => officerReady.value && !!officerState.value?.decider)
+
 // --- Sections (onglets) ---
-// Une section à la fois, choisie par l'adresse : /app/mon-bureau[/province|prix|categories]. « Prix » n'existe que pour qui
-// gère les prix d'une province. Remplace les panneaux repliables : la page n'empile plus trois sujets indépendants.
+// Une section à la fois, choisie par l'adresse : /app/mon-bureau[/province|prix|douaniers|categories]. « Prix » n'existe que pour qui
+// gère les prix d'une province, « Douaniers » que pour qui valide les demandes de douanier. Remplace les panneaux repliables : la page
+// n'empile plus des sujets indépendants.
 const sections = computed(() => [
   { key: 'province', label: t('MonBureau.TabProvince'), icon: 'gi-tower-flag', color: 'odc--violet' },
   ...(pricesProvince.value ? [{ key: 'prix', label: t('MonBureau.TabPrices'), icon: 'fa-coins', color: 'odc--gold' }] : []),
+  ...(canValidateOfficers.value ? [{ key: 'douaniers', label: t('MonBureau.TabOfficers'), icon: 'fa-user-shield', color: 'odc--violet' }] : []),
   { key: 'categories', label: t('MonBureau.TabCategories'), icon: 'fa-tag', color: 'odc--gold' },
 ])
 const activeSection = computed(() => {
   const asked = route.params.section
   if (asked === 'prix') return accessReady.value && !pricesProvince.value ? 'province' : 'prix'
+  if (asked === 'douaniers') return officerReady.value && !canValidateOfficers.value ? 'province' : 'douaniers'
   return asked === 'categories' ? 'categories' : 'province'
 })
 </script>
@@ -324,6 +333,19 @@ const activeSection = computed(() => {
                 {{ t('MonBureau.PricesHistory') }}
               </RouterLink>
             </div>
+          </div>
+        </section>
+
+        <!-- Douaniers : valider les demandes (qui valide, à quel niveau : le serveur le dit). -->
+        <section v-if="activeSection === 'douaniers'" class="w-full max-w-4xl mx-auto min-w-0 rounded-xl bg-white shadow-md overflow-hidden" aria-labelledby="panel-officers">
+          <div class="flex items-center gap-2 px-4 pt-3">
+            <v-icon name="fa-user-shield" class="text-violet-700 shrink-0" aria-hidden="true" />
+            <h2 id="panel-officers" class="flex-1 !mt-0 !mb-0 !text-left text-base font-bold text-violet-800 dark:text-violet-800 leading-tight">
+              {{ officerState?.decider ? t('SecurityOfficers.Decisions.Title', { province: officerState.decider.province.name }) : t('SecurityOfficers.Title') }}
+            </h2>
+          </div>
+          <div class="px-4 pb-3 pt-2">
+            <OfficerValidationSection />
           </div>
         </section>
 

@@ -5,14 +5,14 @@ import { createPinia, setActivePinia } from 'pinia'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import SecurityOfficers from '../../src/views/modules/security/SecurityOfficers.vue'
+import OfficerValidationSection from '../../src/components/customs/OfficerValidationSection.vue'
 import { useAuthStore } from '../../src/stores/authStore'
 import { http } from '../../src/api.js'
 import { push } from 'notivue'
 
 /*
   Valider les douaniers (module Sécurité ; brief §4, fil admin/echanges/module-securite) : le joueur DEMANDE le rôle depuis son PROFIL (Greg, 22/11/2026),
-  le trio de la province le valide ICI, en cascade ; seule la saisie d'un bilan remet le compteur d'inactivité à zéro. ⚠️ Aucune règle côté site :
+  le trio de la province le valide dans l'onglet « Douaniers » de MON BUREAU (tests/province/MonBureauOfficers.test.js), en cascade ; seule la saisie d'un bilan remet le compteur d'inactivité à zéro. ⚠️ Aucune règle côté site :
   tout vient de GET characters/{id}/customs.
 */
 vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn() } }))
@@ -48,7 +48,7 @@ async function mountPage({ locale = 'fr', state = STATE() } = {}) {
   setActivePinia(createPinia())
   useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
   serve(state)
-  const wrapper = mount(SecurityOfficers, {
+  const wrapper = mount(OfficerValidationSection, {
     global: { plugins: [createI18n({ legacy: false, locale, messages: { fr, en } })], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } },
   })
   await flushPromises()
@@ -59,19 +59,17 @@ const find = (w, id) => w.find(`[data-testid="${id}"]`)
 beforeEach(() => vi.clearAllMocks())
 
 describe('Douaniers — valider (niveau 1 ou 2)', () => {
-  it('sans rôle de validation : la page le dit et renvoie au Profil, où l\'on DEMANDE le rôle', async () => {
+  it('sans rôle de validation : rien n\'est affiché (l\'onglet n\'existe pas dans Mon bureau)', async () => {
     const w = await mountPage()
 
     expect(find(w, 'officer-decisions').exists()).toBe(false)
-    expect(find(w, 'officers-not-decider').text()).toContain('Pour devenir douanier, la demande se fait depuis votre Profil')
-    expect(find(w, 'officers-profile-link').exists()).toBe(true)
-    expect(find(w, 'officer-request').exists()).toBe(false) // plus de formulaire de demande ici
+    expect(find(w, 'officer-request').exists()).toBe(false) // la demande se fait dans le Profil
+    expect(w.text()).not.toContain('Pour devenir douanier')
   })
 
   it('en anglais', async () => {
     const w = await mountPage({ locale: 'en', state: STATE({ decider: DECIDER() }) })
 
-    expect(w.text()).toContain('Validate customs officers')
     expect(w.text()).toContain('Pending applications (0)')
   })
 
