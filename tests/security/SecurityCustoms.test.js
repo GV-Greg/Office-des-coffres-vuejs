@@ -169,7 +169,8 @@ describe('Registre de douane — lecture du bilan', () => {
   it('l\'auteur d\'un bilan n\'est jamais nommé, le brut jamais servi', async () => {
     const w = await mountPage()
 
-    expect(w.html()).not.toMatch(/Le_prevot|author|auteur/i)
+    expect(w.html()).not.toContain('Le_prevot')
+    expect(w.html()).not.toContain('by_me')
     expect(w.html()).not.toContain('"raw"')
   })
 
@@ -363,5 +364,51 @@ describe('Registre de douane — listes rouge et verte', () => {
     await flushPromises()
 
     expect(find(w, 'lists-error').text()).toBe('Ce pseudo figure déjà.')
+  })
+})
+
+describe('Registre de douane — « Confier au scribe »', () => {
+  let written
+  beforeEach(() => {
+    written = null
+    Object.defineProperty(globalThis.navigator, 'clipboard', { configurable: true, value: { writeText: vi.fn(text => { written = text; return Promise.resolve() }) } })
+  })
+
+  it('le bilan affiché part au presse-papiers en BBCode (français fixe, année du jeu), avec un toast', async () => {
+    const w = await mountPage({ locale: 'en' })
+    await find(w, 'customs-export-button').trigger('click')
+    await flushPromises()
+
+    expect(written).toContain('[b][size=20]Bilan de défense du 26/05/1474 — Ville : Arras[/size][/b]')
+    expect(written).toContain('Comparé au bilan du 25/05/1474.')
+    expect(written).toContain('⚠ [char]Parti[/char]')
+    expect(written).not.toContain('Liste des villageois') // le brut n'existe pas côté écran
+    expect(push.success).toHaveBeenCalledWith('The report is copied, ready to paste on the forum.')
+  })
+
+  it('l\'écran dit qu\'un bilan n\'est jamais public avant d\'exporter ; rien n\'est enregistré', async () => {
+    const w = await mountPage()
+
+    expect(find(w, 'export-public-warning').text()).toContain('Un bilan n\'est jamais public')
+    expect(find(w, 'export-public-warning').text()).toContain('rien n\'est enregistré')
+  })
+
+  it('les options changent le BBCode : la liste complète des habitants sur demande, les marques à retirer', async () => {
+    const w = await mountPage()
+    await find(w, 'opt-villagers').setValue(true)
+    await find(w, 'opt-colours').setValue(false)
+    await find(w, 'customs-export-button').trigger('click')
+    await flushPromises()
+
+    expect(written).toContain('[char]Emmie....[/char]')
+    expect(written).not.toContain('⚠ [char]') // plus de marque devant un pseudo (l'alerte « Groupe à surveiller » reste : ce n'est pas une liste)
+    expect(written).not.toContain('✔')
+    expect(written).toContain('⚠ Groupe à surveiller')
+  })
+
+  it('sans bilan ce jour-là : pas d\'export', async () => {
+    const w = await mountPage({ report: null })
+
+    expect(find(w, 'customs-export').exists()).toBe(false)
   })
 })

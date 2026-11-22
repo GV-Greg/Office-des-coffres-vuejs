@@ -455,6 +455,17 @@
       "Saved": "The entry is changed.",
       "Removed": "The entry is removed.",
       "Cancel": "Cancel"
+    },
+    "Export": {
+      "Title": "Entrust it to the scribe",
+      "PublicWarning": "A report is never public: by exporting it to a forum, you are the one making it public. The report's author never appears in it, and nothing is saved by this export.",
+      "Options": "What the scribe copies",
+      "Villagers": "The full list of inhabitants",
+      "Colours": "The red and green list marks",
+      "Visions": "Visions on the road",
+      "ArmiesGroups": "Armies, groups and control of the area",
+      "Button": "Entrust it to the scribe",
+      "Copied": "The report is copied, ready to paste on the forum."
     }
   },
   "Economy": {

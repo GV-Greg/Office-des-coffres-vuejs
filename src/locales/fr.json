@@ -455,6 +455,17 @@
       "Saved": "L'entrée est modifiée.",
       "Removed": "L'entrée est retirée.",
       "Cancel": "Annuler"
+    },
+    "Export": {
+      "Title": "Confier au scribe",
+      "PublicWarning": "Un bilan n'est jamais public : en l'exportant sur un forum, c'est vous qui le rendez public. L'auteur du bilan n'y figure jamais, et rien n'est enregistré par cet export.",
+      "Options": "Ce que le scribe recopie",
+      "Villagers": "La liste complète des habitants",
+      "Colours": "Les marques des listes rouge et verte",
+      "Visions": "Les visions en chemin",
+      "ArmiesGroups": "Les armées, les groupes et le contrôle de la zone",
+      "Button": "Confier au scribe",
+      "Copied": "Le bilan est copié, prêt à coller sur le forum."
     }
   },
   "Economy": {

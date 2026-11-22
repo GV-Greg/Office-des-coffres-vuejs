@@ -10,6 +10,7 @@
   import AccessDenied from '@/components/loading/AccessDenied.vue'
   import CustomsReportView from '@/components/customs/CustomsReportView.vue'
   import CustomsReportForm from '@/components/customs/CustomsReportForm.vue'
+  import CustomsExport from '@/components/customs/CustomsExport.vue'
   import CustomsListsModal from '@/components/customs/CustomsListsModal.vue'
 
   /*
@@ -146,6 +147,7 @@
           <h3 class="!mb-0 text-lg font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.ReportTitle', { date: dayLabel(day), city: city.name }) }}</h3>
           <p v-if="loading" class="text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Loading') }}</p>
           <CustomsReportView v-else-if="report" :report="report" class="mt-2" />
+          <CustomsExport v-if="report && !loading" :report="report" :city-name="city.name" class="mt-3" />
           <p v-else class="mt-1 text-sm text-slate-800 dark:text-slate-800" data-testid="no-report">{{ t('SecurityCustoms.NoReport', { city: city.name }) }}</p>
         </section>
 
