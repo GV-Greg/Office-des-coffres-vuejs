@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #152 (La validation des douaniers devient un onglet de Mon bureau)
+
+### Changed
+- **Onglet « Douaniers » de Mon bureau** (`/app/mon-bureau/douaniers`) : la validation des demandes de douanier quitte la Salle des gardes. L'onglet n'existe que si le serveur donne un rôle de validation (`GET characters/{id}/customs` → `decider`) ; sinon l'adresse retombe sur « Ma province ». Aucune règle côté site.
+- **Restructuré** : un seul titre « Valider les douaniers de {province} », demandes en attente et douaniers en vigueur à gauche, durée d'inactivité à droite ; l'introduction redondante est retirée.
+- **`/app/secu/douaniers`** redirige vers l'onglet ; la route `security-officers` et le lien du menu Sécurité disparaissent. `SecurityOfficers.vue` devient `components/customs/OfficerValidationSection.vue`.
+
+### Added
+- Tests `MonBureauOfficers` (onglet visible ou non, ordre, repli, anglais, redirection) ; `OfficerValidation` reprend les tests de la page.
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Indépendant de la PR 3-2 (front #151, back #108).
+
 ## [2026-11-22] — PR #149 (Module Sécurité, PR 3-1 : Registre de douane, écran des douaniers, Profil en pleine largeur)
 
 ### Added
