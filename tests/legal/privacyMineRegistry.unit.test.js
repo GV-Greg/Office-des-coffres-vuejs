@@ -88,4 +88,25 @@ describe('Politique — Registre des mines', () => {
     expect(privacy('fr').Section3.MineRegistryFields[2].Text).toContain('table des prix de la province')
     expect(privacy('en').Section3.MineRegistryFields[2].Text).toContain("province's price table")
   })
+
+  // Bilans de mandat passés (fil admin/echanges/bilans-passes-mines 01 et 02, 22/11/2026) : un ancien titulaire relit, en lecture seule, les relevés de
+  // la période de SON mandat — jamais ceux de ses successeurs. Texte validé par Greg et Cowork, NON substantiel (pas de policy:notify). Le texte passe
+  // AVANT le code.
+  it.each([
+    ['fr', 'les anciens titulaires de ces postes, qui peuvent relire les relevés de la période de leur mandat, sans limite de durée, tant que ces relevés existent'],
+    ['en', 'the former holders of these offices, who may re-read the reports from the period of their term, with no time limit, for as long as those reports exist'],
+  ])('%s : les anciens titulaires relisent les relevés de leur période, sans limite de durée (§6)', (lang, sentence) => {
+    const holders = privacy(lang).Section6.MineRegistryHolders
+    expect(holders).toContain(sentence)
+    // les anciens titulaires ne lisent pas le travail de leurs successeurs : la phrase borne à « leur mandat »
+    expect(holders).not.toMatch(lang === 'fr' ? /tous les relevés/ : /all the reports/)
+  })
+
+  it.each([
+    ['fr', 'Une fois leur mandat terminé, les anciens titulaires de ces postes peuvent relire, en lecture seule, les relevés de la période de leur mandat'],
+    ['en', 'Once their term has ended, the former holders of these offices may re-read, read-only, the reports from the period of their term'],
+  ])('%s : « Vos données » le dit aussi, en lecture seule', (lang, sentence) => {
+    const { Purpose } = JSON.parse(readFileSync(resolve(localesDir, `${lang}.json`), 'utf-8')).Legal.Data.MineRegistry
+    expect(Purpose).toContain(sentence)
+  })
 })
