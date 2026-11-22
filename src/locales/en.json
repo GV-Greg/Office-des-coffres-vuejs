@@ -1252,7 +1252,7 @@
         "Preferences": {
           "Title": "Local storage — Preferences",
           "Purpose": "remember your interface choices (dark/light theme, French/English language), your default character, and your last inputs in public tools (Watch Report, Mines Report, Stock Report, Animation: Crack the Code, Prize Grid).",
-          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools, your inventory settings (categories, assignments, order, export options) when you use Stock Report without an account, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
+          "Data": "your chosen theme, language, default character ID, cache of texts you have pasted into public tools — for the Watch Report, the last paste of each type (villager list, visions, armies, groups, control of the area), replaced at each new paste, with no history; these texts may name other players' characters, your inventory settings (categories, assignments, order, export options) when you use Stock Report without an account, and the address of your last activity of each Animation type (Crack the Code, Prize Grid) that you created or opened in public mode on this device.",
           "Retention": "until you clear site data from your browser, or withdraw your consent via the cookies banner.",
           "LegalBasis": "your consent (GDPR art. 6.1.a, article 129 of the Belgian law of 13 June 2005 on electronic communications, transposing the ePrivacy Directive).",
           "IfDecline": "the site works normally, but your preferences and drafts are not remembered between visits."
@@ -1378,11 +1378,11 @@
       },
       "Watch": {
         "Title": "Watch Report",
-        "Purpose": "Compare two lists of your town's villagers copied from the game, to see who came in and who left, and prepare the forum message. No account is needed.",
-        "Input": "Two lists of villagers copied from the game: they contain other players' character names.",
-        "Stored": "Nothing is stored on our servers: the comparison happens in your browser. If you have accepted preference cookies, your browser keeps the last list you pasted, to offer it as \"yesterday's list\" on your next visit. Without that consent, nothing is kept.",
+        "Purpose": "Paste your town's reports copied from the game (villager list, visions, armies, groups, control of the area), see who came in and who left, and prepare the forum message. No account is needed.",
+        "Input": "Lists and reports copied from the game: they contain other players' character names.",
+        "Stored": "Without an account, nothing is stored on our servers: the analysis happens in your browser. If you have accepted preference cookies, your browser keeps the last paste of each type, replaced at each new paste, to offer it again on your next visit (the villager list serves as \"yesterday's list\"). Without that consent, nothing is kept. With an account and a recognised security role in a province, the report can also be recorded in the Customs Register: see \"The Guardroom\".",
         "Duration": "In your browser, until you clear the site's data or withdraw your consent to preference cookies, which erases them immediately.",
-        "Audience": "No one but you: this data does not leave your browser, except what you choose to publish on the game forum.",
+        "Audience": "No one but you: this data does not leave your browser, except what you choose to publish on the game forum and, with an account and a recognised role, what you record in the Customs Register (see \"The Guardroom\").",
         "Deletion": "No effect: the Watch is not tied to any account."
       },
       "Security": {
