@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #148 (Texte légal de La Salle des gardes — PR 3-0 ; `bcrypt` retiré de la politique)
+
+### Added
+- **Politique de confidentialité et « Vos données »** pour le module Sécurité (fil `admin/echanges/module-securite/`, `admin/content/policy-securite-draft-v2.md`, validé par Greg le 22/11/2026) : §3 (statut de douanier, listes rouge et verte, bilans de défense, texte collé conservé tel quel — liste des villageois sans préambule, armées, groupes, contrôle de la zone, lignes des visions du jour), §4 (bases légales), §5 (conservation **sans limite**, « le lien est supprimé »), §6 (le trio = prévôt + connétable + capitaine, maire, douaniers, juge, procureur, dirigeant), §7 (personnes citées : le recours relève du jeu, **aucune procédure de retrait annoncée**). Section « La Salle des gardes » de « Vos données » marquée **« à venir »** (à retirer avec la PR 3-1). Rien n'est exporté de ces listes ni de ces bilans, seulement une trace d'activité sans contenu.
+- Titres anglais relevés en jeu : Constable (prévôt des maréchaux), Sergeant (connétable), Captain, Public Prosecutor ; « The Guardroom ».
+
+### Changed
+- **`bcrypt` retiré** de la politique (§3 et §8), FR et EN : le procédé de hachage n'est plus révélé (demande de Greg).
+- « Le Guet » devient « Relevé de guet » dans la politique, les cookies et « Vos données » ; l'intro du §3 ne range plus « Douane » parmi les modules à venir. Dates « dernière modification » au 22/11/2026.
+
+### Deploy notes
+- Frontend seul. **À déployer avec back #105** : le texte promet un garde-fou (`SecurityNotConsultableTest`) qu'il apporte. Ensuite, `php artisan policy:notify` (une entrée par jour) **une fois le texte en ligne** ; la PR 3-1 (écriture des listes et des bilans) ne se merge pas avant.
+
 ## [2026-11-21] — PR #147 (Module Sécurité, PR 1 : Relevé de guet, « La Salle des gardes », plume sur « Confier au scribe »)
 
 ### Added
