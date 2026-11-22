@@ -10,6 +10,8 @@
   const props = defineProps({
     pseudo: { type: String, required: true },
     colour: { type: String, default: null },
+    // Lien vers la fiche du personnage sur le site du jeu (Relevé de guet : entrées et sorties). Un clic du joueur, jamais un chargement automatique.
+    linked: { type: Boolean, default: false },
   })
   const { t } = useI18n()
 
@@ -24,7 +26,8 @@
   <span class="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-sm" :class="classes" :data-colour="colour ?? 'none'" data-testid="customs-pseudo">
     <v-icon v-if="colour === 'red'" name="fa-exclamation-triangle" scale="0.7" aria-hidden="true" />
     <v-icon v-else-if="colour === 'green'" name="fa-check-circle" scale="0.7" aria-hidden="true" />
-    {{ pseudo }}
+    <a v-if="linked" class="underline" :href="`https://www.renaissancekingdoms.com/FichePersonnage.php?login=${encodeURIComponent(pseudo)}`" target="_blank" rel="noopener noreferrer" data-testid="customs-pseudo-link">{{ pseudo }}</a>
+    <template v-else>{{ pseudo }}</template>
     <span v-if="label" class="sr-only">({{ label }})</span>
   </span>
 </template>

@@ -46,7 +46,8 @@ export function customsReportToBBCode(report, { cityName, dayLabel, options = {}
   const sections = report?.sections ?? {}
   const blocks = []
 
-  blocks.push(`[b][size=20]Bilan de défense du ${dayLabel} — Ville : ${safe(cityName)}[/size][/b]`)
+  // Sans ville (Relevé de guet sans titre de sécurité) : pas de « Ville : … ».
+  blocks.push(`[b][size=20]Bilan de défense du ${dayLabel}${cityName ? ` — Ville : ${safe(cityName)}` : ''}[/size][/b]`)
 
   const guet = sections.guet
   if (guet) {
@@ -56,7 +57,7 @@ export function customsReportToBBCode(report, { cityName, dayLabel, options = {}
 
     const diff = guet.diff
     if (diff) {
-      lines.push(`[i]Comparé au bilan du ${diff.comparedLabel ?? diff.compared_to}.[/i]`)
+      lines.push(diff.comparedLabel || diff.compared_to ? `[i]Comparé au bilan du ${diff.comparedLabel ?? diff.compared_to}.[/i]` : '[i]Comparé à la liste d\'hier.[/i]')
       lines.push(heading(`Arrivées (${diff.arrivals.length})`))
       lines.push(diff.arrivals.length ? `[quote]${names(diff.arrivals, o.colours).join('\n')}[/quote]` : 'Aucune')
       lines.push(heading(`Départs (${diff.departures.length})`))

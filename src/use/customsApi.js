@@ -19,6 +19,11 @@ export default function customsApi() {
     reports: (characterId, cityId, date) => http.get(`${base(characterId)}/customs-reports`, auth({ params: { city_id: cityId, ...(date ? { date } : {}) } })).then(({ data }) => data),
     /** Inscrit le bilan : { city_id, date?, sections: { guet?, visions?, armies_groups? } } → { mode: created|completed|corrected }. */
     saveReport: (characterId, body) => http.post(`${base(characterId)}/customs-reports`, body, auth()).then(({ data }) => data),
+    /**
+     * Relevé unique : couleur des pseudos collés (droit de lire les listes) et guet du dernier bilan de la ville (droit de lire ses bilans),
+     * SANS rien enregistrer. N'envoie que des pseudos, jamais un texte. { pseudos, city_id? } → { today, colours: [{pseudo, colour}]|null, previous: {compared_to, pseudos}|null }.
+     */
+    preview: (characterId, body) => http.post(`${base(characterId)}/customs-preview`, body, auth()).then(({ data }) => data),
     /** Les douaniers (PR 2) : le statut du personnage et, s'il valide, sa province, les demandes en attente et les douaniers en vigueur. */
     officer: characterId => http.get(`${base(characterId)}/customs`, auth()).then(({ data }) => data),
     requestOfficer: (characterId, cityId) => http.post(`${base(characterId)}/customs`, { city_id: cityId }, auth()).then(({ data }) => data),

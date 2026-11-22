@@ -11,6 +11,8 @@
   */
   const props = defineProps({
     report: { type: Object, required: true },
+    // Entrées et sorties du guet avec lien vers la fiche du personnage (Relevé de guet).
+    linkDiff: { type: Boolean, default: false },
   })
   const { t, locale } = useI18n()
 
@@ -46,19 +48,19 @@
 
       <div class="mt-3" data-testid="guet-diff">
         <template v-if="guet.diff">
-          <p class="text-sm text-slate-700 dark:text-slate-700">{{ t('SecurityCustoms.Report.ComparedTo', { date: day(guet.diff.compared_to) }) }}</p>
+          <p class="text-sm text-slate-700 dark:text-slate-700">{{ guet.diff.compared_to ? t('SecurityCustoms.Report.ComparedTo', { date: day(guet.diff.compared_to) }) : t('SecurityCustoms.Report.ComparedToYesterday') }}</p>
           <div class="grid gap-3 mt-1 laptop:grid-cols-2">
             <div>
               <p class="font-bold text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Report.Arrivals', { count: guet.diff.arrivals.length }) }}</p>
               <p class="flex flex-wrap gap-1 mt-1 text-slate-800 dark:text-slate-800">
-                <CustomsPseudo v-for="p in guet.diff.arrivals" :key="p.pseudo" :pseudo="p.pseudo" :colour="p.colour" />
+                <CustomsPseudo v-for="p in guet.diff.arrivals" :key="p.pseudo" :pseudo="p.pseudo" :colour="p.colour" :linked="linkDiff" />
                 <span v-if="!guet.diff.arrivals.length" class="text-sm text-slate-600">{{ t('SecurityCustoms.Report.None') }}</span>
               </p>
             </div>
             <div>
               <p class="font-bold text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Report.Departures', { count: guet.diff.departures.length }) }}</p>
               <p class="flex flex-wrap gap-1 mt-1 text-slate-800 dark:text-slate-800">
-                <CustomsPseudo v-for="p in guet.diff.departures" :key="p.pseudo" :pseudo="p.pseudo" :colour="p.colour" />
+                <CustomsPseudo v-for="p in guet.diff.departures" :key="p.pseudo" :pseudo="p.pseudo" :colour="p.colour" :linked="linkDiff" />
                 <span v-if="!guet.diff.departures.length" class="text-sm text-slate-600">{{ t('SecurityCustoms.Report.None') }}</span>
               </p>
             </div>

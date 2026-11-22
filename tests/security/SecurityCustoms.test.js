@@ -21,7 +21,6 @@ vi.mock('../../src/api.js', () => ({ http: { get: vi.fn(), put: vi.fn(), post: v
 const localesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/locales')
 const fr = JSON.parse(readFileSync(resolve(localesDir, 'fr.json'), 'utf-8'))
 const en = JSON.parse(readFileSync(resolve(localesDir, 'en.json'), 'utf-8'))
-const fixture = name => readFileSync(resolve(process.cwd(), `tests/fixtures/customs/collage-${name}.txt`), 'utf8')
 
 const ok = data => Promise.resolve({ data })
 const refuse = (status, messages) => Promise.reject({ response: { status, data: { success: false, message: messages.fr, errors: { x: [messages.fr] }, messages: { x: messages } } } })
@@ -190,112 +189,20 @@ describe('Registre de douane — lecture du bilan', () => {
   })
 })
 
-describe('Registre de douane — saisie', () => {
-  it('jour sans bilan : le formulaire dit la ville et le jour ; le guet est obligatoire', async () => {
-    const w = await mountPage({ report: null })
+describe('Registre de douane — la saisie vit dans le Relevé de guet', () => {
+  it('qui peut saisir voit un lien vers le Relevé de guet ; aucun formulaire de collage ici', async () => {
+    const w = await mountPage()
 
-    expect(find(w, 'form-target').text()).toBe('Le bilan sera inscrit pour Arras, le 26/05/1474.')
-    expect(find(w, 'customs-form').text()).toContain('obligatoire pour un premier bilan')
-    expect(find(w, 'customs-send').attributes('disabled')).toBeDefined()
-  })
-
-  it('le collage est lu AVANT l\'envoi, puis envoyé : analyse + brut gardé (sans préambule), sans date pour le jour en cours', async () => {
-    const w = await mountPage({ report: null })
-    await find(w, 'paste-guet').setValue(fixture('guet-fr'))
-
-    expect(find(w, 'form-summary').text()).toContain('45 villageois lus.')
-    expect(find(w, 'customs-send').attributes('disabled')).toBeUndefined()
-
-    await find(w, 'customs-form').trigger('submit')
-    await flushPromises()
-
-    const [url, body] = http.post.mock.calls[0]
-    expect(url).toBe('characters/7/customs-reports')
-    expect(body.city_id).toBe(1)
-    expect(body.date).toBeUndefined()
-    expect(body.sections.guet.report.villagers).toHaveLength(45)
-    expect(body.sections.guet.report.declared_total).toBe(45)
-    expect(body.sections.guet.raw.split('\n')).toHaveLength(46)
-    expect(body.sections.guet.raw).not.toContain('Le maire est')
-    expect(body.sections.guet.parser_version).toBeGreaterThanOrEqual(1)
-    expect(push.success).toHaveBeenCalledWith('Le bilan est inscrit au registre.')
-  })
-
-  it('des visions de plusieurs jours : seules celles du jour sont envoyées, les autres sont comptées à l\'écran', async () => {
-    const w = await mountPage({ report: null, access: ACCESS({ today: '2026-10-27', earliest_day: '2026-10-20' }) })
-    await find(w, 'paste-guet').setValue(fixture('guet-fr'))
-    await find(w, 'paste-visions').setValue(fixture('visions-fr'))
-
-    expect(find(w, 'form-summary').text()).toContain('2 vision(s) du jour gardée(s), 10 d\'autres jours ignorée(s).')
-    await find(w, 'customs-form').trigger('submit')
-    await flushPromises()
-
-    const sent = http.post.mock.calls[0][1].sections.visions
-    expect(sent.report.entries).toHaveLength(2)
-    expect(sent.report.other_days).toBe(10)
-    expect(sent.raw.split('\n')).toHaveLength(3)
-  })
-
-  it('un collage illisible est signalé et rien n\'est envoyé', async () => {
-    const w = await mountPage({ report: null })
-    await find(w, 'paste-guet').setValue('du texte quelconque')
-
-    expect(find(w, 'form-summary').text()).toContain('Aucun villageois n\'a pu être lu')
-    expect(find(w, 'customs-send').attributes('disabled')).toBeDefined()
-  })
-
-  it('un refus du serveur s\'affiche tel quel, dans la langue de l\'interface, et le collage reste', async () => {
-    const w = await mountPage({ report: null, locale: 'en' })
-    http.post.mockImplementation(() => refuse(422, { fr: 'Un bilan existe déjà.', en: 'A report already exists.' }))
-    await find(w, 'paste-guet').setValue(fixture('guet-en'))
-    await find(w, 'customs-form').trigger('submit')
-    await flushPromises()
-
-    expect(push.error).toHaveBeenCalledWith('A report already exists.')
-    expect(find(w, 'paste-guet').element.value).toContain('Presently in town')
-  })
-
-  it('un bilan existant d\'un AUTRE : l\'écran le dit, aucun formulaire', async () => {
-    const w = await mountPage({ access: ACCESS({ correct_reports: false, role: 'customs' }), report: REPORT({ can_complete: false }) })
-
-    expect(find(w, 'exists-notice').text()).toContain('seuls le prévôt et le connétable le corrigent')
+    expect(find(w, 'enter-report').exists()).toBe(true)
+    expect(find(w, 'enter-report').text()).toContain('Saisir un relevé')
     expect(find(w, 'customs-form').exists()).toBe(false)
+    expect(w.find('textarea').exists()).toBe(false)
   })
 
-  it('son propre bilan du jour : on COMPLÈTE, seules les sections manquantes sont à coller', async () => {
-    const w = await mountPage({ access: ACCESS({ correct_reports: false, role: 'customs' }), report: REPORT({ by_me: true, can_complete: true }) })
+  it('qui ne fait que lire (le dirigeant) n\'a pas le lien', async () => {
+    const w = await mountPage({ access: ACCESS({ write_reports: false, correct_reports: false, role: 'leader', writable_cities: [] }) })
 
-    expect(find(w, 'customs-form').text()).toContain('Compléter le bilan')
-    expect(find(w, 'paste-guet').exists()).toBe(false)
-    expect(find(w, 'paste-armies-groups').exists()).toBe(false)
-    expect(find(w, 'paste-visions').exists()).toBe(true)
-  })
-
-  it('prévôt et connétable CORRIGENT : toutes les zones, et un jour passé envoie sa date', async () => {
-    const w = await mountPage({ report: REPORT({ sections_present: ['guet'] }) })
-    expect(find(w, 'customs-form').text()).toContain('Corriger le bilan')
-    expect(find(w, 'paste-guet').exists()).toBe(true)
-
-    const options = w.findAll('[data-testid="day-select"] option').map(o => o.element.value)
-    expect(options[0]).toBe('2026-05-26')
-    expect(options).toContain('2026-05-19') // earliest_day dit par le serveur
-    expect(options).not.toContain('2026-05-18')
-
-    await find(w, 'day-select').setValue('2026-05-20')
-    await flushPromises()
-    await find(w, 'paste-guet').setValue(fixture('guet-fr'))
-    await find(w, 'customs-form').trigger('submit')
-    await flushPromises()
-
-    expect(http.post.mock.calls[0][1].date).toBe('2026-05-20')
-  })
-
-  it('une ville où l\'on ne saisit pas : pas de formulaire (le maire n\'a que la sienne)', async () => {
-    const w = await mountPage({ access: ACCESS({ correct_reports: false, role: 'mayor', writable_cities: [CITIES[0]] }), report: null })
-    await find(w, 'city-select').setValue(2)
-    await flushPromises()
-
-    expect(find(w, 'customs-form').exists()).toBe(false)
+    expect(find(w, 'enter-report').exists()).toBe(false)
   })
 })
 

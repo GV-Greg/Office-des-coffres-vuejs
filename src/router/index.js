@@ -5,7 +5,6 @@ import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import VerifyEmailChangeView from '@/views/auth/VerifyEmailChangeView.vue'
-import SecurityGuetView from '@/views/modules/security/SecurityGuet.vue'
 import { push } from 'notivue'
 import useNavigationLoading from '@/use/useNavigationLoading'
 import { setBypass } from '@/use/useMaintenance'
@@ -205,7 +204,8 @@ const router = createRouter({
         {
           path: 'guet',
           name: 'security-guet',
-          component: SecurityGuetView,
+          // Chargée à la demande (comme le Registre) : le Relevé unique porte les parseurs et l'affichage des bilans, trop lourds pour le bundle principal.
+          component: () => import('@/views/modules/security/SecurityGuet.vue'),
         },
         {
           path: 'douane',

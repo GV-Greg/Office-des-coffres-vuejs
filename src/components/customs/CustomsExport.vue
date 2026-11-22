@@ -12,7 +12,8 @@
   */
   const props = defineProps({
     report: { type: Object, required: true },
-    cityName: { type: String, required: true },
+    cityName: { type: String, default: '' }, // vide : relevé sans ville (Relevé de guet sans titre de sécurité)
+    title: { type: String, default: '' },     // titre du dépliant ; par défaut « Confier au scribe »
   })
   const { t } = useI18n()
 
@@ -29,7 +30,7 @@
 
   function withDates(report) {
     const diff = report.sections?.guet?.diff
-    if (!diff) return report
+    if (!diff?.compared_to) return report
     const guet = { ...report.sections.guet, diff: { ...diff, comparedLabel: formatFieldDate('customs_report_day', diff.compared_to, 'fr') } }
     return { ...report, sections: { ...report.sections, guet } }
   }
@@ -46,7 +47,7 @@
 
 <template>
   <details class="rounded-lg border border-slate-300 bg-white p-3" data-testid="customs-export">
-    <summary class="cursor-pointer font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Export.Title') }}</summary>
+    <summary class="cursor-pointer font-bold text-slate-800 dark:text-slate-800">{{ title || t('SecurityCustoms.Export.Title') }}</summary>
     <div class="mt-3 space-y-3">
       <p class="text-sm text-slate-800 dark:text-slate-800" data-testid="export-public-warning">{{ t('SecurityCustoms.Export.PublicWarning') }}</p>
       <fieldset class="space-y-1 text-sm text-slate-800">

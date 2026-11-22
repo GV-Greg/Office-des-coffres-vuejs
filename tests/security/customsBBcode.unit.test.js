@@ -118,4 +118,21 @@ describe('export BBCode d\'un bilan', () => {
   it('un bilan sans section ne donne que son titre', () => {
     expect(customsReportToBBCode({ sections: {} }, ctx())).toBe('[b][size=20]Bilan de défense du 22/11/1474 — Ville : Arras[/size][/b]')
   })
+
+  // Relevé unique (PR 3-2) : le relevé d'un joueur SANS titre de sécurité n'a ni ville ni bilan antérieur.
+  it('sans ville : le titre ne dit pas « Ville : »', () => {
+    const text = customsReportToBBCode({ sections: {} }, { cityName: '', dayLabel: '22/11/1474', options: {} })
+
+    expect(text).toBe('[b][size=20]Bilan de défense du 22/11/1474[/size][/b]')
+  })
+
+  it('un différentiel fait à la liste d\'hier collée le dit, sans date inventée', () => {
+    const local = JSON.parse(JSON.stringify(REPORT))
+    local.sections.guet.diff.compared_to = null
+    delete local.sections.guet.diff.comparedLabel
+    const text = customsReportToBBCode(local, ctx())
+
+    expect(text).toContain('Comparé à la liste d\'hier.')
+    expect(text).not.toContain('Comparé au bilan du')
+  })
 })
