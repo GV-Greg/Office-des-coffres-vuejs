@@ -7,6 +7,7 @@ import { useAuthStore } from '../../src/stores/authStore'
 import VerifyEmailChangeView from '../../src/views/auth/VerifyEmailChangeView.vue'
 import ChangeEmailModal from '../../src/components/ChangeEmailModal.vue'
 import ChangePasswordModal from '../../src/components/ChangePasswordModal.vue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn() } }))
 vi.mock('../../src/api.js', () => ({ http: { patch: vi.fn(), get: vi.fn() } }))
@@ -15,7 +16,7 @@ vi.mock('../../src/api.js', () => ({ http: { patch: vi.fn(), get: vi.fn() } }))
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Common: { SiteName: 'Office des coffres' },
       Login: { Heading: 'Se connecter' },
@@ -52,7 +53,7 @@ const i18n = createI18n({
         },
       },
     },
-  },
+  }),
 })
 
 // ─── VerifyEmailChangeView ─────────────────────────────────────────────────────

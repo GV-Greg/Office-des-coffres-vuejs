@@ -4,11 +4,12 @@ import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import ProfilView from '../../src/views/auth/ProfilView.vue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Profil: {
         Title: 'Mon personnage | Mes personnages',
@@ -23,7 +24,7 @@ const i18n = createI18n({
       },
       Cookies: { Button: { Preferences: 'Gérer mes préférences' } }
     }
-  }
+  })
 })
 
 function mountProfil(user) {

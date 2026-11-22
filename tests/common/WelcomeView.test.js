@@ -4,11 +4,12 @@ import { createTestingPinia } from '@pinia/testing'
 import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import WelcomeView from '../../src/views/WelcomeView.vue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Common: { SiteName: 'Office des coffres' },
       Welcome: {
@@ -24,7 +25,7 @@ const i18n = createI18n({
         Mentions: { PageTitle: 'Mentions légales' },
       },
     },
-  },
+  }),
 })
 
 function mountWelcome() {

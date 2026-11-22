@@ -8,6 +8,7 @@ import SelectorMenu from '../../src/components/SelectorMenu.vue'
 import SelectorCharacter from '../../src/components/SelectorCharacter.vue'
 import { useAuthStore } from '../../src/stores/authStore'
 import { useCookieStore } from '../../src/stores/cookieStore'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 vi.mock('notivue', () => ({
   push: { success: vi.fn(), error: vi.fn() }
@@ -16,13 +17,13 @@ vi.mock('notivue', () => ({
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Common: { SiteName: 'Office des coffres' },
       NavBar: { Home: 'Accueil', Logout: 'Se déconnecter', LoggedOut: 'Vous avez été déconnecté.', Admin: 'Admin', CharacterSelector: 'Changer de personnage' },
       Cookies: { Button: { Preferences: 'Gérer mes préférences' } }
     }
-  }
+  })
 })
 
 async function mountNavBar({ isLoggedIn = false, isAdmin = false, characters = [] } = {}) {

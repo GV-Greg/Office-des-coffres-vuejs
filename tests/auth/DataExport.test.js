@@ -15,11 +15,12 @@ vi.mock('notivue', () => ({
 
 import { http } from '../../src/api.js'
 import { push } from 'notivue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Profil: {
         Title: 'Mon personnage | Mes personnages',
@@ -96,7 +97,7 @@ const i18n = createI18n({
       Cookies: { Button: { Preferences: 'Manage preferences' } },
       Auth: { Errors: { NetworkError: 'Network error.' } },
     },
-  }
+  })
 })
 
 function mountProfil(token = 'fake-token') {

@@ -5,6 +5,7 @@ import { createI18n } from 'vue-i18n'
 import RegisterView from '../../src/views/auth/RegisterView.vue'
 import SelectorMenu from '../../src/components/SelectorMenu.vue'
 import { useAuthStore } from '../../src/stores/authStore'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 vi.mock('notivue', () => ({
   push: { error: vi.fn() }
@@ -20,7 +21,7 @@ vi.mock('../../src/api.js', () => ({
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Common: { SiteName: 'Office des coffres' },
       Register: {
@@ -47,7 +48,7 @@ const i18n = createI18n({
       email: 'email',
       confirmation: 'confirmation du mot de passe'
     }
-  }
+  })
 })
 
 // Stub maison plutôt que `RouterLink: true` : ce dernier n'expose pas le contenu du slot

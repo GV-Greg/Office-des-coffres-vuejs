@@ -5,6 +5,7 @@ import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import App from '../../src/App.vue'
 import AppFooter from '../../src/components/AppFooter.vue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 const localStorageMock = (() => {
   let store = {}
@@ -17,7 +18,7 @@ const localStorageMock = (() => {
 })()
 Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
-const i18n = createI18n({ legacy: false, locale: 'fr', messages: { fr: {} } })
+const i18n = createI18n({ legacy: false, locale: 'fr', messages: withRealLocales({ fr: {} }) })
 
 async function mountAppOnRoute(routeName, meta) {
   const router = createRouter({

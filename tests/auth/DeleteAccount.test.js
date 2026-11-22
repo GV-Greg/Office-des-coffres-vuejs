@@ -22,11 +22,12 @@ vi.mock('notivue', () => ({
 }))
 
 import { push } from 'notivue'
+import { withRealLocales } from '../helpers/withRealLocales.js'
 
 const i18n = createI18n({
   legacy: false,
   locale: 'fr',
-  messages: {
+  messages: withRealLocales({
     fr: {
       Profil: {
         Title: 'Mon personnage | Mes personnages',
@@ -54,7 +55,7 @@ const i18n = createI18n({
       Cookies: { Button: { Preferences: 'Gérer mes préférences' } },
       Auth: { Errors: { NetworkError: 'Erreur réseau.' } },
     }
-  }
+  })
 })
 
 // Asynchrone à dessein : Vue Router démarre sur START_LOCATION et résout sa route initiale de
