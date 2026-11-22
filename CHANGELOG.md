@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR (Fix : le niveau du mandat renouvelé n'est plus proposé en radios désactivées)
+
+### Fixed
+- **Modal « Renouveler le mandat »** (fil `admin/echanges/mandats-lot3/09-bug-radios-renouvellement.md`, signalé par Greg le 22/11/2026) : les deux radios « Maire » / « Conseil comtal » ne réagissaient pas au clic — par conception, le niveau d'un renouvellement est celui du mandat renouvelé et ne se choisit pas, mais des radios désactivées, sans rien de visiblement coché, ressemblaient à un bug. Le niveau est maintenant **dit en texte** (« Niveau : Conseil comtal »), comme le lieu juste dessous ; plus de radios en renouvellement. Une **demande** de poste garde ses radios, cliquables.
+
+### Added
+- Tests dans `CharacterMandates.test.js` (niveau dit en texte, en anglais, radios d'une demande restées actives) ; 1598 tests.
+
+### Deploy notes
+- Frontend seul : aucune migration, route, `config/*.php` ni paquet.
+
 ## [2026-11-22] — PR #154 (Fix : bilans de mandat passés du Registre des mines, sélecteur de mandat et lecture seule)
 
 ### Fixed

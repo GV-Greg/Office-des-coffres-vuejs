@@ -165,12 +165,17 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
         <div class="grid grid-cols-1 laptop:grid-cols-2 gap-4 laptop:gap-6">
         <div class="space-y-4">
         <!-- 1. Niveau -->
-        <fieldset :disabled="isRenewal">
+        <!-- Renouvellement : le niveau est CELUI du mandat renouvelé, il ne se choisit pas. Des radios désactivées ressemblaient à un bug (rien de coché,
+             rien de cliquable — bug signalé le 22/11/2026, fil mandats-lot3/09) : on le DIT, comme le lieu juste dessous. -->
+        <p v-if="isRenewal" class="text-sm text-slate-700 dark:text-slate-300" data-testid="locked-level">
+          {{ t('Profil.Mandates.Form.Level') }} : <strong>{{ t(`Profil.Mandates.Level.${level}`) }}</strong>
+        </p>
+        <fieldset v-else>
           <legend class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ t('Profil.Mandates.Form.Level') }}</legend>
           <div class="flex flex-wrap gap-4 text-sm text-slate-800 dark:text-slate-100">
-            <label class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="mayor" :disabled="!isRenewal && !levelOpen('mayor')" data-testid="level-mayor"> {{ t('Profil.Mandates.Level.mayor') }}</label>
-            <label class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="council" :disabled="!isRenewal && !levelOpen('council')" data-testid="level-council"> {{ t('Profil.Mandates.Level.council') }}</label>
-            <label v-if="!isRenewal && customsOpen" class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="customs" data-testid="level-customs"> {{ t('SecurityOfficers.Request.Level') }}</label>
+            <label class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="mayor" :disabled="!levelOpen('mayor')" data-testid="level-mayor"> {{ t('Profil.Mandates.Level.mayor') }}</label>
+            <label class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="council" :disabled="!levelOpen('council')" data-testid="level-council"> {{ t('Profil.Mandates.Level.council') }}</label>
+            <label v-if="customsOpen" class="inline-flex items-center gap-2"><input v-model="level" type="radio" value="customs" data-testid="level-customs"> {{ t('SecurityOfficers.Request.Level') }}</label>
           </div>
         </fieldset>
 
