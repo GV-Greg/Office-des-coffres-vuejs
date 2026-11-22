@@ -1,0 +1,367 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { mount, flushPromises } from '@vue/test-utils'
+import { createI18n } from 'vue-i18n'
+import { createPinia, setActivePinia } from 'pinia'
+import { readFileSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import SecurityCustoms from '../../src/views/modules/security/SecurityCustoms.vue'
+import { useAuthStore } from '../../src/stores/authStore'
+import { http } from '../../src/api.js'
+import { push } from 'notivue'
+
+/*
+  Le Registre de douane (module Sécurité, PR 3-1 ; fil admin/echanges/module-securite) : bilans d'une ville jour par jour, saisie par collage, listes
+  rouge et verte. ⚠️ Aucune règle côté site : qui lit, écrit, quelles villes et quels jours, le serveur le dit (`customs-access`). L'auteur d'un bilan
+  n'est jamais nommé ; le brut n'est jamais servi. Le parseur est au frontend : l'écran envoie l'analyse ET le brut gardé.
+*/
+vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn() } }))
+vi.mock('../../src/api.js', () => ({ http: { get: vi.fn(), put: vi.fn(), post: vi.fn(), delete: vi.fn() } }))
+
+const localesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/locales')
+const fr = JSON.parse(readFileSync(resolve(localesDir, 'fr.json'), 'utf-8'))
+const en = JSON.parse(readFileSync(resolve(localesDir, 'en.json'), 'utf-8'))
+const fixture = name => readFileSync(resolve(process.cwd(), `tests/fixtures/customs/collage-${name}.txt`), 'utf8')
+
+const ok = data => Promise.resolve({ data })
+const refuse = (status, messages) => Promise.reject({ response: { status, data: { success: false, message: messages.fr, errors: { x: [messages.fr] }, messages: { x: messages } } } })
+
+const CITIES = [{ id: 1, name: 'Arras' }, { id: 2, name: 'Béthune' }]
+const ACCESS = (over = {}) => ({
+  province: { id: 3, name: 'Artois' }, role: 'prevot_des_marechaux', has_security_trio: true, today: '2026-05-26', earliest_day: '2026-05-19',
+  read_reports: true, write_reports: true, correct_reports: true, read_lists: true, write_lists: true, add_red_only: false,
+  writable_cities: CITIES, readable_cities: CITIES, min_parser_version: 1, ...over,
+})
+const REPORT = (over = {}) => ({
+  id: 5, city_id: 1, reported_on: '2026-05-26', by_me: false, can_complete: false, can_correct: true, sections_present: ['guet', 'armies_groups'],
+  sections: {
+    guet: {
+      villagers: [
+        { pseudo: 'Gregor.', noblesse: '', reputation: 255, colour: 'red' },
+        { pseudo: 'Artifice', noblesse: 'de Dole', reputation: 255, colour: 'green' },
+        { pseudo: 'Emmie....', noblesse: '', reputation: 255, colour: null },
+      ],
+      declared_total: 3, read_total: 3, total_matches: true,
+      diff: { compared_to: '2026-05-25', arrivals: [{ pseudo: 'Nouveau', colour: null }], departures: [{ pseudo: 'Parti', colour: 'red' }] },
+    },
+    armies_groups: {
+      armies: [{ name: 'Legio Aurea', commander: { pseudo: 'Lucas_', colour: null }, status: 'aux portes de la ville' }],
+      groups: [
+        { type: 'groupe', alert: true, members: [{ pseudo: 'Sefrian', colour: null }], status: 'Admission libre' },
+        { type: 'corps_armes', alert: false, members: [{ pseudo: 'Damonkael', colour: null }, { pseudo: 'Thymotee_bilal', colour: null }], status: 'Fermé' },
+        { type: 'milice', alert: false, members: [], status: '' },
+      ],
+      zone: 'La mairie est maîtresse du statu quo sur ce noeud.',
+    },
+  },
+  ...over,
+})
+const ENTRIES = () => [
+  { id: 1, colour: 'red', pseudo: 'Gregor.', reason: 'brigandage', added_on: '2026-05-20', by_me: false, added_by: 'Le_prevot', can_remove: true, can_edit: true },
+  { id: 2, colour: 'green', pseudo: 'Artifice', reason: null, added_on: '2026-05-21', by_me: true, added_by: null, can_remove: true, can_edit: false },
+]
+
+function serve({ access = ACCESS(), report = REPORT(), days = ['2026-05-26', '2026-05-25'], entries = ENTRIES() } = {}) {
+  http.get.mockImplementation((url) => {
+    if (url.endsWith('customs-access')) return ok({ success: true, access })
+    if (url.endsWith('customs-reports')) return ok({ success: true, days, report })
+    if (url.endsWith('customs-lists')) return ok({ success: true, entries })
+    return ok({})
+  })
+  http.post.mockImplementation(() => ok({ success: true, mode: 'created', id: 9 }))
+  http.put.mockImplementation(() => ok({ success: true }))
+  http.delete.mockImplementation(() => ok({ success: true }))
+}
+
+async function mountPage({ locale = 'fr', ...options } = {}) {
+  setActivePinia(createPinia())
+  useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
+  serve(options)
+  const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
+  const wrapper = mount(SecurityCustoms, { global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } } })
+  await flushPromises()
+  return wrapper
+}
+
+const find = (w, id) => w.find(`[data-testid="${id}"]`)
+const reportCalls = () => http.get.mock.calls.filter(([url]) => url.endsWith('customs-reports'))
+
+beforeEach(() => vi.clearAllMocks())
+
+describe('Registre de douane — accès', () => {
+  it('sans rôle : les portes restent closes, aucun appel aux bilans', async () => {
+    const w = await mountPage({ access: null })
+
+    expect(find(w, 'customs-denied').text()).toContain('Les portes du registre restent closes')
+    expect(reportCalls()).toHaveLength(0)
+    expect(find(w, 'customs-form').exists()).toBe(false)
+  })
+
+  it('un rôle : le titre dit la province, la ville et le jour du jeu sont proposés, le bilan du jour est lu', async () => {
+    const w = await mountPage()
+
+    expect(w.text()).toContain('Registre de douane : Artois')
+    expect(w.findAll('[data-testid="city-select"] option').map(o => o.text())).toEqual(['Arras', 'Béthune'])
+    expect(reportCalls()[0][1].params).toEqual({ city_id: 1, date: '2026-05-26' })
+    expect(find(w, 'no-trio').exists()).toBe(false)
+  })
+
+  it('sans trio connu, l\'écran le dit : c\'est l\'état courant d\'une province', async () => {
+    const w = await mountPage({ access: ACCESS({ has_security_trio: false, role: 'customs', correct_reports: false }) })
+
+    expect(find(w, 'no-trio').text()).toContain('Aucun membre de la sécurité')
+  })
+
+  it('en anglais', async () => {
+    const w = await mountPage({ locale: 'en' })
+
+    expect(w.text()).toContain('Customs Register: Artois')
+    expect(w.text()).toContain('Report of')
+  })
+})
+
+describe('Registre de douane — lecture du bilan', () => {
+  it('les pseudos colorés disent leur liste par le TEXTE, pas seulement par la couleur ; les autres restent neutres', async () => {
+    const w = await mountPage()
+    const coloured = find(w, 'coloured-villagers')
+
+    expect(coloured.text()).toContain('Gregor.')
+    expect(coloured.text()).toContain('(liste rouge)')
+    expect(coloured.text()).toContain('(liste verte)')
+    expect(coloured.find('[data-colour="red"]').text()).toContain('Gregor.')
+    expect(coloured.text()).not.toContain('Emmie....')
+  })
+
+  it('le différentiel dit à quel bilan il se compare ; sans bilan antérieur, il le dit aussi', async () => {
+    const w = await mountPage()
+    expect(find(w, 'guet-diff').text()).toContain('Comparé au bilan du 25/05/1474')
+    expect(find(w, 'guet-diff').text()).toContain('Nouveau')
+    expect(find(w, 'guet-diff').text()).toContain('Parti')
+
+    const bare = REPORT()
+    bare.sections.guet.diff = null
+    expect(find(await mountPage({ report: bare }), 'guet-diff').text()).toContain('Aucun bilan antérieur')
+  })
+
+  it('un collage tronqué est signalé : total annoncé et lignes lues', async () => {
+    const truncated = REPORT()
+    truncated.sections.guet = { ...truncated.sections.guet, declared_total: 45, read_total: 44, total_matches: false }
+    const w = await mountPage({ report: truncated })
+
+    expect(find(w, 'total-mismatch').text()).toContain('45 villageois')
+    expect(find(w, 'total-mismatch').text()).toContain('44')
+  })
+
+  it('seul « Groupe de » alerte (« groupe à surveiller »), tous les membres d\'un groupe sont lus, la milice n\'a aucun pseudo', async () => {
+    const w = await mountPage()
+    const groups = w.findAll('[data-testid="report-armies-groups"] li[data-alert]')
+
+    expect(w.findAll('[data-testid="group-alert"]')).toHaveLength(1)
+    expect(groups[0].text()).toContain('Groupe à surveiller')
+    expect(groups[1].text()).toContain('Damonkael')
+    expect(groups[1].text()).toContain('Thymotee_bilal')
+    expect(groups[2].find('[data-testid="customs-pseudo"]').exists()).toBe(false)
+    expect(w.text()).toContain('chef d\'armée')
+    expect(w.text()).not.toMatch(/brigand(?!age)/i)
+    expect(w.text()).toContain('La mairie est maîtresse du statu quo')
+  })
+
+  it('l\'auteur d\'un bilan n\'est jamais nommé, le brut jamais servi', async () => {
+    const w = await mountPage()
+
+    expect(w.html()).not.toMatch(/Le_prevot|author|auteur/i)
+    expect(w.html()).not.toContain('"raw"')
+  })
+
+  it('un jour sans bilan : le message le dit', async () => {
+    const w = await mountPage({ report: null })
+
+    expect(find(w, 'no-report').text()).toContain('Aucun bilan n\'a été inscrit pour Arras')
+  })
+
+  it('les chevrons passent d\'un jour à l\'autre et relisent le bilan de ce jour', async () => {
+    const w = await mountPage({ days: ['2026-05-26', '2026-05-25'] })
+    await find(w, 'older-day').trigger('click')
+    await flushPromises()
+
+    expect(reportCalls().at(-1)[1].params).toEqual({ city_id: 1, date: '2026-05-25' })
+    expect(find(w, 'today-button').attributes('disabled')).toBeUndefined()
+  })
+})
+
+describe('Registre de douane — saisie', () => {
+  it('jour sans bilan : le formulaire dit la ville et le jour ; le guet est obligatoire', async () => {
+    const w = await mountPage({ report: null })
+
+    expect(find(w, 'form-target').text()).toBe('Le bilan sera inscrit pour Arras, le 26/05/1474.')
+    expect(find(w, 'customs-form').text()).toContain('obligatoire pour un premier bilan')
+    expect(find(w, 'customs-send').attributes('disabled')).toBeDefined()
+  })
+
+  it('le collage est lu AVANT l\'envoi, puis envoyé : analyse + brut gardé (sans préambule), sans date pour le jour en cours', async () => {
+    const w = await mountPage({ report: null })
+    await find(w, 'paste-guet').setValue(fixture('guet-fr'))
+
+    expect(find(w, 'form-summary').text()).toContain('45 villageois lus.')
+    expect(find(w, 'customs-send').attributes('disabled')).toBeUndefined()
+
+    await find(w, 'customs-form').trigger('submit')
+    await flushPromises()
+
+    const [url, body] = http.post.mock.calls[0]
+    expect(url).toBe('characters/7/customs-reports')
+    expect(body.city_id).toBe(1)
+    expect(body.date).toBeUndefined()
+    expect(body.sections.guet.report.villagers).toHaveLength(45)
+    expect(body.sections.guet.report.declared_total).toBe(45)
+    expect(body.sections.guet.raw.split('\n')).toHaveLength(46)
+    expect(body.sections.guet.raw).not.toContain('Le maire est')
+    expect(body.sections.guet.parser_version).toBeGreaterThanOrEqual(1)
+    expect(push.success).toHaveBeenCalledWith('Le bilan est inscrit au registre.')
+  })
+
+  it('des visions de plusieurs jours : seules celles du jour sont envoyées, les autres sont comptées à l\'écran', async () => {
+    const w = await mountPage({ report: null, access: ACCESS({ today: '2026-10-27', earliest_day: '2026-10-20' }) })
+    await find(w, 'paste-guet').setValue(fixture('guet-fr'))
+    await find(w, 'paste-visions').setValue(fixture('visions-fr'))
+
+    expect(find(w, 'form-summary').text()).toContain('2 vision(s) du jour gardée(s), 10 d\'autres jours ignorée(s).')
+    await find(w, 'customs-form').trigger('submit')
+    await flushPromises()
+
+    const sent = http.post.mock.calls[0][1].sections.visions
+    expect(sent.report.entries).toHaveLength(2)
+    expect(sent.report.other_days).toBe(10)
+    expect(sent.raw.split('\n')).toHaveLength(3)
+  })
+
+  it('un collage illisible est signalé et rien n\'est envoyé', async () => {
+    const w = await mountPage({ report: null })
+    await find(w, 'paste-guet').setValue('du texte quelconque')
+
+    expect(find(w, 'form-summary').text()).toContain('Aucun villageois n\'a pu être lu')
+    expect(find(w, 'customs-send').attributes('disabled')).toBeDefined()
+  })
+
+  it('un refus du serveur s\'affiche tel quel, dans la langue de l\'interface, et le collage reste', async () => {
+    const w = await mountPage({ report: null, locale: 'en' })
+    http.post.mockImplementation(() => refuse(422, { fr: 'Un bilan existe déjà.', en: 'A report already exists.' }))
+    await find(w, 'paste-guet').setValue(fixture('guet-en'))
+    await find(w, 'customs-form').trigger('submit')
+    await flushPromises()
+
+    expect(push.error).toHaveBeenCalledWith('A report already exists.')
+    expect(find(w, 'paste-guet').element.value).toContain('Presently in town')
+  })
+
+  it('un bilan existant d\'un AUTRE : l\'écran le dit, aucun formulaire', async () => {
+    const w = await mountPage({ access: ACCESS({ correct_reports: false, role: 'customs' }), report: REPORT({ can_complete: false }) })
+
+    expect(find(w, 'exists-notice').text()).toContain('seuls le prévôt et le connétable le corrigent')
+    expect(find(w, 'customs-form').exists()).toBe(false)
+  })
+
+  it('son propre bilan du jour : on COMPLÈTE, seules les sections manquantes sont à coller', async () => {
+    const w = await mountPage({ access: ACCESS({ correct_reports: false, role: 'customs' }), report: REPORT({ by_me: true, can_complete: true }) })
+
+    expect(find(w, 'customs-form').text()).toContain('Compléter le bilan')
+    expect(find(w, 'paste-guet').exists()).toBe(false)
+    expect(find(w, 'paste-armies-groups').exists()).toBe(false)
+    expect(find(w, 'paste-visions').exists()).toBe(true)
+  })
+
+  it('prévôt et connétable CORRIGENT : toutes les zones, et un jour passé envoie sa date', async () => {
+    const w = await mountPage({ report: REPORT({ sections_present: ['guet'] }) })
+    expect(find(w, 'customs-form').text()).toContain('Corriger le bilan')
+    expect(find(w, 'paste-guet').exists()).toBe(true)
+
+    const options = w.findAll('[data-testid="day-select"] option').map(o => o.element.value)
+    expect(options[0]).toBe('2026-05-26')
+    expect(options).toContain('2026-05-19') // earliest_day dit par le serveur
+    expect(options).not.toContain('2026-05-18')
+
+    await find(w, 'day-select').setValue('2026-05-20')
+    await flushPromises()
+    await find(w, 'paste-guet').setValue(fixture('guet-fr'))
+    await find(w, 'customs-form').trigger('submit')
+    await flushPromises()
+
+    expect(http.post.mock.calls[0][1].date).toBe('2026-05-20')
+  })
+
+  it('une ville où l\'on ne saisit pas : pas de formulaire (le maire n\'a que la sienne)', async () => {
+    const w = await mountPage({ access: ACCESS({ correct_reports: false, role: 'mayor', writable_cities: [CITIES[0]] }), report: null })
+    await find(w, 'city-select').setValue(2)
+    await flushPromises()
+
+    expect(find(w, 'customs-form').exists()).toBe(false)
+  })
+})
+
+describe('Registre de douane — listes rouge et verte', () => {
+  async function openLists(options) {
+    const w = await mountPage(options)
+    await find(w, 'lists-open').trigger('click')
+    await flushPromises()
+    return w
+  }
+
+  it('la modale lit les entrées ; « ajouté par » n\'apparaît que si le serveur le sert (le trio)', async () => {
+    const w = await openLists()
+
+    expect(find(w, 'lists-entries').text()).toContain('Gregor.')
+    expect(find(w, 'lists-entries').text()).toContain('brigandage')
+    expect(w.findAll('[data-testid="added-by"]')).toHaveLength(1)
+    expect(find(w, 'lists-entries').text()).toContain('ajouté par vous')
+    expect(find(w, 'lists-entries').text()).toContain('depuis le 20/05/1474')
+  })
+
+  it('ajouter une entrée envoie pseudo, couleur et raison, puis recharge les listes', async () => {
+    const w = await openLists()
+    await find(w, 'lists-pseudo').setValue('Nouveau_pseudo')
+    await find(w, 'lists-colour').setValue('green')
+    await find(w, 'lists-reason').setValue('marchand')
+    await find(w, 'lists-add').trigger('submit')
+    await flushPromises()
+
+    expect(http.post).toHaveBeenCalledWith('characters/7/customs-lists', { pseudo: 'Nouveau_pseudo', colour: 'green', reason: 'marchand' }, expect.anything())
+    expect(push.success).toHaveBeenCalledWith('L\'entrée est ajoutée.')
+  })
+
+  it('retirer une entrée appelle la suppression', async () => {
+    const w = await openLists()
+    await w.findAll('[data-testid="lists-remove"]')[0].trigger('click')
+    await flushPromises()
+
+    expect(http.delete).toHaveBeenCalledWith('characters/7/customs-lists/1', expect.anything())
+  })
+
+  it('le juge n\'ajoute qu\'au rouge, le dit, et ne voit ni modifier ni retirer sur les entrées des autres', async () => {
+    const w = await openLists({
+      access: ACCESS({ role: 'juge', write_reports: false, read_reports: false, correct_reports: false, write_lists: false, add_red_only: true, writable_cities: [], readable_cities: [] }),
+      entries: [{ id: 1, colour: 'red', pseudo: 'Gregor.', reason: null, added_on: '2026-05-20', by_me: false, added_by: null, can_remove: false, can_edit: false }],
+    })
+
+    expect(find(w, 'lists-readonly').text()).toContain('Le juge ajoute à la liste rouge')
+    expect(w.findAll('[data-testid="lists-colour"] option')).toHaveLength(1)
+    expect(find(w, 'lists-remove').exists()).toBe(false)
+  })
+
+  it('en lecture seule (procureur) : aucun formulaire d\'ajout, le message dit qui tient les listes', async () => {
+    const w = await openLists({ access: ACCESS({ role: 'procureur', write_reports: false, write_lists: false, correct_reports: false }), entries: [] })
+
+    expect(find(w, 'lists-add').exists()).toBe(false)
+    expect(find(w, 'lists-readonly').text()).toContain('tenues par le prévôt, le connétable et le capitaine')
+    expect(find(w, 'lists-empty').exists()).toBe(true)
+  })
+
+  it('un refus du serveur s\'affiche dans la modale', async () => {
+    const w = await openLists()
+    http.post.mockImplementation(() => refuse(422, { fr: 'Ce pseudo figure déjà.', en: 'Already listed.' }))
+    await find(w, 'lists-pseudo').setValue('Gregor.')
+    await find(w, 'lists-add').trigger('submit')
+    await flushPromises()
+
+    expect(find(w, 'lists-error').text()).toBe('Ce pseudo figure déjà.')
+  })
+})

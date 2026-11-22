@@ -88,6 +88,24 @@ export function parseVisions(raw) {
 }
 
 /**
+ * Le brut des visions QUE L'OFFICE GARDE : l'en-tête du jour D et ses lignes de vision, rien des autres jours (Greg, 22/11/2026, fil
+ * module-securite/11 et 12 : « que celui du jour »). Vide si le journal n'a rien pour ce jour.
+ */
+export function extractVisionsRaw(raw, date) {
+  const kept = []
+  let current = null
+  for (const original of lines(raw)) {
+    const line = original.trim()
+    let m = line.match(/^Le (\d{1,2}) (\S+) (\d{4})$/u)
+    if (m) { current = realDate(Number(m[3]), m[2], Number(m[1])); if (current === date) kept.push(line); continue }
+    m = line.match(/^On (\d{4}) (\S+) (\d{1,2})$/u)
+    if (m) { current = realDate(Number(m[1]), m[2], Number(m[3])); if (current === date) kept.push(line); continue }
+    if (current === date && VISION_LINES.some(({ lead }) => lead.test(line))) kept.push(line)
+  }
+  return kept.join('\n')
+}
+
+/**
  * Le bilan du jour J ne garde que les visions de l'en-tête J = nuit J-1 → J (Greg, 22/11/2026, C1 et C2) ; les autres jours sont comptés
  * (« N visions d'autres jours ignorées »). Rattachées à la ville choisie dans le formulaire (C3).
  */

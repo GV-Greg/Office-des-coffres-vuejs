@@ -11,6 +11,7 @@ describe('playerDates — un calendrier par champ', () => {
       history_started_at: 'game', history_ended_at: 'game',
       price_effective_from: 'game', price_created_at: 'game', price_updated_at: 'game',
       inventory_snapshot_date: 'game',
+      customs_report_day: 'game', customs_list_added_on: 'game', // Registre de douane : jour d'un bilan, jour d'ajout d'une entrée de liste
       processed_at: 'real', revoked_at: 'real',
     })
   })

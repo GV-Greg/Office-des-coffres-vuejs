@@ -360,6 +360,103 @@
     "MismatchYesterday": "La liste d'hier annonce {declared} villageois, {read} ont été lus : le collage est peut-être tronqué.",
     "MismatchToday": "La liste d'aujourd'hui annonce {declared} villageois, {read} ont été lus : le collage est peut-être tronqué."
   },
+  "SecurityCustoms": {
+    "Link": "Registre de douane",
+    "Title": "Registre de douane : {province}",
+    "NoAccess": "Les portes du registre restent closes : l'Office ne connaît à votre personnage aucun titre de sécurité dans une province (prévôt, connétable, capitaine, maire, juge, procureur, dirigeant, ou douanier validé).",
+    "NoTrio": "Aucun membre de la sécurité (prévôt, connétable, capitaine) n'est connu de l'Office pour votre province. En leur absence, les maires et les douaniers validés tiennent les listes rouge et verte.",
+    "NoReadableCity": "Votre titre ne donne accès aux bilans d'aucune ville : seules les listes de la province vous sont ouvertes.",
+    "City": "Ville",
+    "Day": "Jour du jeu",
+    "Today": "Aujourd'hui",
+    "OlderDay": "Jour précédent",
+    "NewerDay": "Jour suivant",
+    "NoReportShort": "aucun bilan",
+    "ListsButton": "Listes rouge et verte",
+    "Loading": "Chargement…",
+    "ReportTitle": "Bilan du {date} — {city}",
+    "NoReport": "Aucun bilan n'a été inscrit pour {city} ce jour-là.",
+    "ExistsNotice": "Un bilan existe déjà pour ce jour : seuls le prévôt et le connétable le corrigent.",
+    "List": {
+      "Red": "liste rouge",
+      "Green": "liste verte"
+    },
+    "Report": {
+      "Villagers": "Habitants ({count})",
+      "AllVillagers": "Voir tous les habitants",
+      "TotalMismatch": "Le collage annonçait {declared} villageois, {read} ont été lus : il était peut-être tronqué.",
+      "ComparedTo": "Comparé au bilan du {date}.",
+      "NoPrevious": "Aucun bilan antérieur : pas de comparaison.",
+      "Arrivals": "Arrivées ({count})",
+      "Departures": "Départs ({count})",
+      "None": "Aucun",
+      "Visions": "Visions en chemin (la nuit précédente)",
+      "VisionGroup": "Groupe",
+      "VisionsOtherDays": "{count} vision(s) d'autres jours n'ont pas été gardées.",
+      "Armies": "Armées",
+      "ArmyLeader": "chef d'armée :",
+      "Groups": "Groupes",
+      "GroupTypes": {
+        "lance": "Lance",
+        "corps_armes": "Corps d'armes",
+        "marechaux": "Groupe de maréchaux",
+        "groupe": "Groupe",
+        "milice": "Milice"
+      },
+      "GroupAlert": "Groupe à surveiller",
+      "Zone": "Contrôle de la zone"
+    },
+    "Form": {
+      "Title": {
+        "create": "Saisir le bilan",
+        "complete": "Compléter le bilan",
+        "correct": "Corriger le bilan"
+      },
+      "WritesIn": "Le bilan sera inscrit pour {city}, le {date}.",
+      "GuetRequired": "Liste des villageois (obligatoire pour un premier bilan)",
+      "Guet": "Liste des villageois",
+      "Visions": "Visions en chemin (seules celles du jour sont gardées)",
+      "ArmiesGroups": "Armées, groupes et contrôle de la zone",
+      "Placeholder": "Collez ici le texte copié depuis le jeu",
+      "SummaryGuet": "{read} villageois lus.",
+      "SummaryVisions": "{kept} vision(s) du jour gardée(s), {other} d'autres jours ignorée(s).",
+      "SummaryArmies": "{armies} armée(s), {groups} groupe(s).",
+      "NeedsGuet": "Un premier bilan commence par la liste des villageois.",
+      "Problem": {
+        "guet_empty": "Aucun villageois n'a pu être lu dans ce collage : vérifiez qu'il contient bien le tableau (pseudo, tabulation, réputation).",
+        "visions_none": "Aucune vision de ce jour dans ce collage : rien ne sera inscrit pour les visions.",
+        "armies_groups_empty": "Ni armée, ni groupe, ni contrôle de la zone n'a pu être lu dans ce collage."
+      },
+      "Send": "Inscrire au registre",
+      "Sending": "Inscription…",
+      "Sent": {
+        "created": "Le bilan est inscrit au registre.",
+        "completed": "Le bilan est complété.",
+        "corrected": "Le bilan est corrigé."
+      }
+    },
+    "Lists": {
+      "Title": "Listes rouge et verte de {province}",
+      "Intro": "Des noms de personnages à surveiller (rouge) ou de confiance (verte), par province. Le pseudo est libre : le personnage peut n'avoir aucun compte sur l'Office. La couleur colore les bilans à partir de la date d'ajout, tant que l'entrée reste en liste ; la retirer la supprime.",
+      "ReadOnly": "Vous lisez les listes. Elles sont tenues par le prévôt, le connétable et le capitaine ; en l'absence de l'un d'eux connu de l'Office, par les maires et les douaniers validés.",
+      "JudgeOnly": "Le juge ajoute à la liste rouge, sans rien modifier ni retirer des autres entrées.",
+      "Pseudo": "Pseudo (sans espace)",
+      "Colour": "Liste",
+      "Reason": "Raison (facultative)",
+      "Add": "Ajouter",
+      "Edit": "Modifier",
+      "Remove": "Retirer",
+      "Save": "Enregistrer",
+      "Empty": "Aucune entrée dans les listes de cette province.",
+      "Since": "depuis le {date}",
+      "AddedBy": "ajouté par {pseudo}",
+      "ByMe": "ajouté par vous",
+      "Added": "L'entrée est ajoutée.",
+      "Saved": "L'entrée est modifiée.",
+      "Removed": "L'entrée est retirée.",
+      "Cancel": "Annuler"
+    }
+  },
   "Economy": {
     "Title": "Coffres Économie",
     "MinesLink": "Bilan des mines",

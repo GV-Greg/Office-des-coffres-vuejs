@@ -46,10 +46,11 @@ describe('Politique — La Salle des gardes', () => {
     expect(Object.keys(Legal.Data.Security)).toEqual(['Title', 'Purpose', 'Input', 'Stored', 'Deletion'])
   })
 
-  it('« Vos données » : la section est « à venir », demande un poste validé, et vit après le Guet', () => {
+  it('« Vos données » : la section demande un poste validé, vit après le Guet, et n\'est plus « à venir » (ouverte avec la PR 3-1)', () => {
     const ids = DATA_PAGE_SECTIONS.map(s => s.id)
     const section = DATA_PAGE_SECTIONS.find(s => s.id === 'salle-des-gardes')
-    expect(section).toMatchObject({ key: 'Security', access: 'office', upcoming: true })
+    expect(section).toMatchObject({ key: 'Security', access: 'office' })
+    expect(section.upcoming).toBeFalsy()
     expect(ids.indexOf('salle-des-gardes')).toBe(ids.indexOf('guet') + 1)
   })
 

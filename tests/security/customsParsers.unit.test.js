@@ -128,3 +128,28 @@ describe('version du parseur', () => {
     expect(PARSER_VERSION).toBeGreaterThanOrEqual(1)
   })
 })
+
+describe('ce que l\'Office garde comme brut (Greg, 22/11/2026)', () => {
+  it('le guet : l\'en-tête et le tableau, sans le préambule ni le bloc de noblesse', async () => {
+    const { extractGuetRaw } = await import('../../src/modules/guetParser.js')
+    const raw = extractGuetRaw(fixture('guet-fr')).split('\n')
+
+    expect(raw).toHaveLength(46)
+    expect(raw[0]).toBe('Liste des villageois (45)')
+    expect(raw.slice(1).every(line => line.includes('\t'))).toBe(true)
+    expect(raw.join('\n')).not.toContain('Le maire est')
+    expect(extractGuetRaw(fixture('guet-en')).split('\n')[0]).toBe('Presently in town (45)')
+  })
+
+  it('les visions : l\'en-tête du jour et ses lignes, rien des autres jours', async () => {
+    const { extractVisionsRaw } = await import('../../src/modules/customsParsers.js')
+
+    expect(extractVisionsRaw(fixture('visions-fr'), '2026-10-27').split('\n')).toEqual([
+      'Le 27 Octobre 1474',
+      "Aujourd'hui, en chemin, vous avez croisé un groupe composé de Qao et de Zorah.",
+      "Aujourd'hui, en chemin, vous avez croisé Matt_hurst.",
+    ])
+    expect(extractVisionsRaw(fixture('visions-en'), '2026-10-27').split('\n')[0]).toBe('On 1474 October 27')
+    expect(extractVisionsRaw(fixture('visions-fr'), '2026-11-22')).toBe('')
+  })
+})
