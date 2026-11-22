@@ -213,11 +213,10 @@ const router = createRouter({
           component: () => import('@/views/modules/security/SecurityCustoms.vue'),
           beforeEnter: redirectToHomeIfNotLoggedIn,
         },
+        // L'ancienne page des douaniers est devenue un onglet de Mon bureau (Greg, 22/11/2026) : on garde l'adresse pour les signets.
         {
           path: 'douaniers',
-          name: 'security-officers',
-          component: () => import('@/views/modules/security/SecurityOfficers.vue'),
-          beforeEnter: redirectToHomeIfNotLoggedIn,
+          redirect: { name: 'province', params: { section: 'douaniers' } },
         },
       ]
     },
@@ -349,7 +348,7 @@ const router = createRouter({
     {
       // « Mon bureau » : une section à la fois — `province` (défaut), `prix`, `categories` — chacune avec son adresse
       // (/app/mon-bureau/categories), pour qu'une autre page y renvoie directement. Ancienne route /app/province redirigée.
-      path: '/app/mon-bureau/:section(province|prix|categories)?',
+      path: '/app/mon-bureau/:section(province|prix|douaniers|categories)?',
       name: 'province',
       components: {
         Nav,
@@ -383,7 +382,7 @@ const router = createRouter({
 // navigation (Accueil, compte, pages publiques) reste dans le contexte "office".
 const CHEST_MODULE_ROUTE_NAMES = new Set([
   'economy', 'economy-mines', 'economy-registry', 'economy-prices', 'economy-inventory', 'economy-inventory-balance', 'economy-inventory-registry',
-  'security', 'security-guet', 'security-customs', 'security-officers',
+  'security', 'security-guet', 'security-customs',
   'animation', 'animation-decode', 'animation-public', 'animation-mine', 'animation-create', 'animation-manage', 'animation-reset', 'animation-confirm-email',
   'animation-rewards', 'animation-rewards-mine', 'animation-rewards-create', 'animation-rewards-manage', 'animation-rewards-reset', 'animation-rewards-confirm-email', 'animation-rewards-public',
 ])
@@ -391,7 +390,7 @@ const CHEST_MODULE_ROUTE_NAMES = new Set([
 // Couleur du module (charte §3.3) : la porte de l'overlay et le coffre de la page la reprennent.
 const MODULE_ACCENT_BY_ROUTE = {
   economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold', 'economy-inventory': 'gold', 'economy-inventory-balance': 'gold', 'economy-inventory-registry': 'gold',
-  security: 'rose', 'security-guet': 'rose', 'security-customs': 'rose', 'security-officers': 'rose',
+  security: 'rose', 'security-guet': 'rose', 'security-customs': 'rose',
   animation: 'teal', 'animation-decode': 'teal', 'animation-public': 'teal', 'animation-mine': 'teal', 'animation-create': 'teal', 'animation-manage': 'teal', 'animation-reset': 'teal', 'animation-confirm-email': 'teal',
   'animation-rewards': 'teal', 'animation-rewards-mine': 'teal', 'animation-rewards-create': 'teal', 'animation-rewards-manage': 'teal', 'animation-rewards-reset': 'teal', 'animation-rewards-confirm-email': 'teal', 'animation-rewards-public': 'teal',
 }

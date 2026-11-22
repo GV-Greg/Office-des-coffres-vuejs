@@ -471,10 +471,8 @@
     "EnterReport": "Saisir un relevé"
   },
   "SecurityOfficers": {
-    "Link": "Douaniers",
     "Title": "Valider les douaniers",
     "Cancel": "Annuler",
-    "Intro": "Le douanier n'existe pas en jeu : c'est un rôle de l'Office. Chacun le demande depuis son Profil, et le trio de sécurité de la province le valide ici, en cascade.",
     "NoCharacter": "Il faut un personnage pour demander à devenir douanier.",
     "Status": {
       "Title": "Mon statut de douanier — {pseudo}",
@@ -523,8 +521,6 @@
       "DaysSave": "Enregistrer",
       "DaysSaved": "La durée d'inactivité est enregistrée."
     },
-    "NotDecider": "Cette page est celle de qui valide les douaniers (prévôt des maréchaux, connétable ; en leur absence connue de l'Office, capitaine, dirigeant ou maire). Pour devenir douanier, la demande se fait depuis votre Profil.",
-    "ToProfile": "Aller à mon Profil",
     "Profile": {
       "Title": "Douanier"
     },
@@ -1967,7 +1963,8 @@
     "PricesDesc": "Définissez les prix des ressources et le taux horaire pour votre province.",
     "ManagePrices": "Modifier les prix",
     "PricesHistory": "Historique des prix",
-    "CatPersoPanel": "Catégories d'inventaire — Personnel"
+    "CatPersoPanel": "Catégories d'inventaire — Personnel",
+    "TabOfficers": "Douaniers"
   },
   "Chest": {
     "Opening": "Ouverture du coffre…",

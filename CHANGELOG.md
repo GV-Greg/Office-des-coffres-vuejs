@@ -6,6 +6,34 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #151 (Module Sécurité, PR 3-2 : le Relevé de guet, point de collage unique)
+
+### Changed
+- **Le Relevé de guet colle les cinq types** (guet d'hier et d'aujourd'hui, visions, armées/groupes/contrôle de la zone) : même écran, même parseur (frontend), même mise en forme pour tous (fil `admin/echanges/module-securite/` 12 à 14, texte légal : front #150). `modules/customsLocalReport.js` (pur) fabrique un bilan local dans la forme du serveur ; `CustomsReportView` et `CustomsExport` l'affichent tels quels.
+- **Sans compte** : rien ne quitte le navigateur, aucune couleur ; différentiel du guet à la liste d'hier collée. Avec le consentement « Préférences », le **dernier collage de chaque type** est gardé (`guet_last_list`, `guet_last_visions`, `guet_last_armies_groups`), jamais d'historique ; un collage retrouvé n'est jamais inscrit au Registre tant qu'il n'est pas modifié.
+- **Avec un titre de sécurité** : appel `customs-preview` (des pseudos seulement) → couleurs des listes rouge/verte et guet du dernier bilan de la ville, qui prime sur la liste d'hier ; « Inscrire au registre » avec ville et jour dits avant l'envoi. Un échec de l'appel de couleurs ne bloque pas le relevé.
+- **La saisie quitte le Registre de douane** (`CustomsReportForm` supprimé) : il garde la lecture, les listes et un lien « Saisir un relevé ». Entrées et sorties avec lien vers la fiche du personnage.
+- Route du Relevé **chargée à la demande** (elle portait les parseurs dans le bundle principal).
+
+### Added
+- Exports : le dépliant « Bilan de défense en BBCode » (ville facultative, « comparé à la liste d'hier ») à côté du « Confier au scribe » historique ; tests `SecurityGuet`, `customsLocalReport`, `customsBBcode`.
+
+### Deploy notes
+- Frontend seul. **Après back #108** (`customs-preview`, `route:cache` fait par Greg le 22/11/2026, routes `customs-*` sondées : 401 sans jeton).
+
+## [2026-11-22] — PR #152 (La validation des douaniers devient un onglet de Mon bureau)
+
+### Changed
+- **Onglet « Douaniers » de Mon bureau** (`/app/mon-bureau/douaniers`) : la validation des demandes de douanier quitte la Salle des gardes. L'onglet n'existe que si le serveur donne un rôle de validation (`GET characters/{id}/customs` → `decider`) ; sinon l'adresse retombe sur « Ma province ». Aucune règle côté site.
+- **Restructuré** : un seul titre « Valider les douaniers de {province} », demandes en attente et douaniers en vigueur à gauche, durée d'inactivité à droite ; l'introduction redondante est retirée.
+- **`/app/secu/douaniers`** redirige vers l'onglet ; la route `security-officers` et le lien du menu Sécurité disparaissent. `SecurityOfficers.vue` devient `components/customs/OfficerValidationSection.vue`.
+
+### Added
+- Tests `MonBureauOfficers` (onglet visible ou non, ordre, repli, anglais, redirection) ; `OfficerValidation` reprend les tests de la page.
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Indépendant de la PR 3-2 (front #151, back #108).
+
 ## [2026-11-22] — PR #149 (Module Sécurité, PR 3-1 : Registre de douane, écran des douaniers, Profil en pleine largeur)
 
 ### Added
