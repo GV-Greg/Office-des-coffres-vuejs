@@ -40,10 +40,12 @@ export function signed(n) {
 
 /**
  * @param {object} b      bilan (computePeriodBilan)
- * @param {{ title: string, week: string, t: Function }} options
+ * @param {{ title: string, week: string, t: Function, coverage?: string|null }} options
  *   `week` : le libellé de la période, déjà dit en dates du JEU (le même que le sélecteur de l'écran).
+ *   `coverage` : une ligne qui dit qu'un bilan est PARTIEL (« 27 jours couverts sur 60 ») — les bilans de mi-mandat et de fin de mandat le sont presque
+ *   toujours ; elle suit la période, jamais absente quand le bilan l'est. Une semaine, elle, ne s'exporte que complète : pas de `coverage`.
  */
-export function bilanToBBcode(b, { title, week, t }) {
+export function bilanToBBcode(b, { title, week, t, coverage = null }) {
   // Une copie de ce que le titulaire a vu : la table par mine, la ligne Total et la convention
   // (fil bilan-mines, Q11). Jamais l'alerte de seuil (Q9 bis), jamais une semaine incomplète (Q10).
   // Mise en page : UN seul [quote] (un cadre par mine alourdissait le forum — Greg, 05/10/2026), l'unité
@@ -55,6 +57,7 @@ export function bilanToBBcode(b, { title, week, t }) {
   // Couleurs du titre et de la semaine choisies par Greg (06/10/2026) : darkblue 12,5:1 et
   // darkgreen 6,1:1 sur le fond clair du [quote] (#f0e8d0).
   let bb = `[quote][center][b][size=20][color=darkblue]${title}[/color][/size][/b]\n[i][color=darkgreen]${week}[/color][/i]\n`
+  if (coverage) bb += `[size=10][i]${coverage}[/i][/size]\n`
   // Un taux qui a changé en cours de période (prix par période) ne tient pas en un chiffre : il est tu.
   if (b.rate !== null) bb += `[size=10]${bbt('Amounts', { rate: formatNum(b.rate) })}[/size]`
   bb += '[/center]\n'

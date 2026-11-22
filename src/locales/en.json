@@ -914,7 +914,8 @@
       },
       "Export": {
         "Button": "Entrust it to the scribe",
-        "Copied": "BBCode copied to clipboard."
+        "Copied": "BBCode copied to clipboard.",
+        "Coverage": "Partial report: {covered} day covered out of {days}, it only counts the days the registry has data for. | Partial report: {covered} days covered out of {days}, it only counts the days the registry has data for."
       },
       "HelpStep7": "Recorded reports: everything that was saved, replacements included, folded under the level history.",
       "HelpStep8": "Prices: the Trade Minister, the Mines Superintendent and the Sheriff set them by effective date — a price stays in force until the next one. \"Manage prices\" updates today's; \"Price history\" shows past sets and lets you correct those of your term, up to 7 days after it ends. The leader can read them.",

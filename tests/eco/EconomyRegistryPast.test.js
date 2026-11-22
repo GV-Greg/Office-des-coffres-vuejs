@@ -227,3 +227,55 @@ describe('Économie — le Registre apparaît pour un ancien titulaire', () => {
     expect(mountHome(ACCESS()).text()).not.toContain(name)
   })
 })
+
+describe('Registre — export BBCode des bilans de mi-mandat et de fin de mandat (forum)', () => {
+  const FORMER = () => ({ access: ACCESS({ past_mandates: [PAST_MANDATE] }) })
+  const writeText = vi.fn(() => Promise.resolve())
+  beforeEach(() => { writeText.mockClear(); Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true }) })
+
+  // Données sur TOUS les jours du mandat (01/03 → 29/04 : 60 jours) : un bilan complet.
+  const allDays = () => Array.from({ length: 62 }, (_, i) => new Date(Date.UTC(2026, 2, 1 + i)).toISOString().slice(0, 10))
+
+  it('un bilan de fin de mandat PRÊT s\'exporte, mis en page comme une semaine (un [quote], titre, période en dates du jeu), avec le net', async () => {
+    const w = await mountPage({ ...FORMER(), past: PAST({ reports: [report(1, '2026-04-29', allDays())] }) })
+    await find(w, 'registry-bilan-export-end').trigger('click')
+    await flushPromises()
+
+    const text = writeText.mock.calls[0][0]
+    expect(text).toContain('[quote][center]')
+    expect(text).toContain('Bilan de fin de mandat, du 1 mars 1474 au 29 avril 1474') // dates du jeu, comme l'export d'une semaine
+    expect(text).toContain('Total de la province')
+    expect(text).toContain('[/quote]')
+  })
+
+  it('un bilan COMPLET n\'a pas de ligne de couverture ; un bilan PARTIEL la porte, avec ses chiffres', async () => {
+    const complete = await mountPage({ ...FORMER(), past: PAST({ reports: [report(1, '2026-04-29', allDays())] }) })
+    await find(complete, 'registry-bilan-export-end').trigger('click')
+    await flushPromises()
+    expect(writeText.mock.calls[0][0]).not.toContain('Bilan partiel')
+
+    writeText.mockClear()
+    const partial = await mountPage({ ...FORMER(), past: PAST({ reports: [report(1, '2026-04-20', ['2026-04-18', '2026-04-19'])] }) })
+    await find(partial, 'registry-bilan-export-end').trigger('click')
+    await flushPromises()
+    expect(writeText.mock.calls[0][0]).toMatch(/Bilan partiel : \d+ jours? couverts? sur 60/)
+  })
+
+  it('mi-mandat aussi ; le toast dit que le BBCode est copié ; en anglais le gabarit suit la langue', async () => {
+    const w = await mountPage({ ...FORMER(), locale: 'en', past: PAST({ reports: [report(1, '2026-04-29', allDays())] }) })
+    await find(w, 'registry-bilan-export-mid').trigger('click')
+    await flushPromises()
+
+    expect(writeText).toHaveBeenCalledOnce()
+    expect(writeText.mock.calls[0][0]).toContain('Mid-term report')
+  })
+
+  it('un bilan PAS ENCORE DISPONIBLE (« dans N jours ») n\'a pas de bouton ; ni un bilan sans aucun jour couvert', async () => {
+    const current = await mountPage({ access: ACCESS({ read: { id: 1, name: 'Franche-Comté' } }) })
+    expect(current.find('[data-testid="registry-bilan-export-end"]').exists()).toBe(false)
+
+    const empty = await mountPage({ ...FORMER(), past: PAST({ reports: [] }) })
+    expect(empty.find('[data-testid="registry-bilan-export-end"]').exists()).toBe(false)
+  })
+})
+
