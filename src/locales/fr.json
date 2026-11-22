@@ -1427,7 +1427,7 @@
         "Preferences": {
           "Title": "Stockage local (localStorage) — Préférences",
           "Purpose": "mémoriser vos choix d'interface (thème sombre/clair, langue française/anglaise), votre personnage par défaut et vos dernières saisies dans les outils publics (Relevé de guet, Bilan des mines, Bilan des stocks, Animation : Décode le code, Grille des lots).",
-          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics, vos réglages d'inventaire (catégories, assignations, ordre, options d'export) lorsque vous utilisez le Bilan des stocks sans compte, et l'adresse de votre dernière activité de chaque type d'Animation (Décode le code, Grille des lots) que vous avez créée ou ouverte en mode public sur cet appareil.",
+          "Data": "votre thème choisi, votre langue, l'identifiant de votre personnage par défaut, un cache des textes que vous avez collés dans les outils publics — pour le Relevé de guet, le dernier collage de chaque type (liste des villageois, visions, armées, groupes, contrôle de la zone), remplacé à chaque nouveau collage, sans historique ; ces textes peuvent citer des noms de personnages d'autres joueurs, vos réglages d'inventaire (catégories, assignations, ordre, options d'export) lorsque vous utilisez le Bilan des stocks sans compte, et l'adresse de votre dernière activité de chaque type d'Animation (Décode le code, Grille des lots) que vous avez créée ou ouverte en mode public sur cet appareil.",
           "Retention": "jusqu'à ce que vous effaciez vos données de site depuis votre navigateur, ou que vous retiriez votre consentement via le bandeau cookies.",
           "LegalBasis": "votre consentement (article 6.1.a du RGPD, article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques).",
           "IfDecline": "le site fonctionne normalement, mais vos préférences et brouillons ne sont pas mémorisés d'une visite à l'autre."
@@ -1553,11 +1553,11 @@
       },
       "Watch": {
         "Title": "Relevé de guet",
-        "Purpose": "Comparer deux listes des villageois de votre ville copiées depuis le jeu, pour voir qui est entré et qui est sorti, et préparer le message du forum. Aucun compte n'est nécessaire.",
-        "Input": "Deux listes de villageois copiées depuis le jeu : elles contiennent des noms de personnages d'autres joueurs.",
-        "Stored": "Rien n'est enregistré sur nos serveurs : la comparaison se fait dans votre navigateur. Si vous avez accepté les cookies de préférences, votre navigateur garde la dernière liste collée, pour vous la proposer comme « liste d'hier » à votre prochaine visite. Sans ce consentement, rien n'est gardé.",
+        "Purpose": "Coller les relevés de votre ville copiés depuis le jeu (liste des villageois, visions, armées, groupes, contrôle de la zone), voir qui est entré et sorti, et préparer le message du forum. Aucun compte n'est nécessaire.",
+        "Input": "Des listes et des relevés copiés depuis le jeu : ils contiennent des noms de personnages d'autres joueurs.",
+        "Stored": "Sans compte, rien n'est enregistré sur nos serveurs : l'analyse se fait dans votre navigateur. Si vous avez accepté les cookies de préférences, votre navigateur garde le dernier collage de chaque type, remplacé à chaque nouveau collage, pour vous le reproposer à votre prochaine visite (la liste des villageois sert de « liste d'hier »). Sans ce consentement, rien n'est gardé. Avec un compte et un rôle de sécurité reconnu dans une province, le relevé peut en plus être inscrit au Registre de douane : voir « La Salle des gardes ».",
         "Duration": "Dans votre navigateur, jusqu'à ce que vous effaciez les données du site ou retiriez votre consentement aux cookies de préférences, ce qui les efface aussitôt.",
-        "Audience": "Personne d'autre que vous : ces données ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu.",
+        "Audience": "Personne d'autre que vous : ces données ne quittent pas votre navigateur, sauf ce que vous choisissez de publier sur le forum du jeu et, avec un compte et un rôle reconnu, ce que vous inscrivez au Registre de douane (voir « La Salle des gardes »).",
         "Deletion": "Sans effet : le Guet n'est lié à aucun compte."
       },
       "Security": {

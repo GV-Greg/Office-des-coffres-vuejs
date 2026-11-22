@@ -61,7 +61,8 @@ describe('Vos données / politique — une seule source par fait', () => {
   it('le Bilan et le Guet disent « rien sur nos serveurs », jamais « rien » tout court', () => {
     const { Data } = legal('fr')
     for (const tool of ['MinesReport', 'Watch']) {
-      expect(Data[tool].Stored, tool).toContain('Rien n\'est enregistré sur nos serveurs')
+      // « Rien n'est… » (Bilan) ou « Sans compte, rien n'est… » (Guet : avec un compte, le relevé peut aller au Registre de douane)
+      expect(Data[tool].Stored, tool).toMatch(/[Rr]ien n'est enregistré sur nos serveurs/)
       expect(Data[tool].Stored, tool).toContain('votre navigateur garde')
     }
   })

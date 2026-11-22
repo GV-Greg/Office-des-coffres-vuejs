@@ -6,6 +6,33 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #149 (Module Sécurité, PR 3-1 : Registre de douane, écran des douaniers, Profil en pleine largeur)
+
+### Added
+- **Registre de douane** (`/app/secu/douane`, `security-customs` ; lien de menu seulement pour qui le serveur connaît un rôle de sécurité) : bilans d'une ville jour par jour, pseudos colorés (sens porté par le texte, jamais la couleur seule), différentiel du guet, visions, armées, groupes (seul « Groupe à surveiller » alerte), contrôle de la zone ; saisie par collage (ville et jour dits avant l'envoi) ; listes rouge et verte en modale ; **export BBCode « Confier au scribe »**. **Parseurs au frontend seulement** (`customsParsers.js`, `customsPaste.js`) : le serveur reçoit l'analyse et le brut gardé. Fixtures : dix collages réels.
+- **Douaniers** : le rôle se **demande** dans la modale « Demander un poste » du Profil (choix « Douanier », ville de rattachement seule) et se **valide** dans la Salle des gardes (`/app/secu/douaniers`, lien réservé à qui valide). Carte de poste dans le Profil avec infobulle « i » sur la cascade de validation. Icône `fa-user-shield`.
+- Garde-fous : `tests/security/*`, `tests/mandates/MandateRequestCustoms.test.js`.
+
+### Changed
+- **Page Profil** : titre « Mon personnage / Mes personnages », « Ajouter un personnage » sur la ligne du titre, pleine largeur (1600 px max), personnages côte à côte dès 1500 px.
+- Parseur du guet : en-tête anglais « Presently in town (N) » lu, virgule de tête retirée de la noblesse.
+- « La Salle des gardes » n'est plus « à venir » dans « Vos données ».
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. **Le backend (back #107) est mergé avant** ; tant que `migrate` + `route:cache` n'ont pas été lancés en SSH, l'API `customs-access` répond 404 et le lien du Registre reste caché (sans danger).
+
+## [2026-11-22] — PR #150 (Texte légal du Relevé unique : ce que le navigateur garde)
+
+### Changed
+- **Politique cookies §3 et « Vos données » → Relevé de guet** (FR et EN ; fil `admin/echanges/module-securite/` 12 à 14, `admin/content/policy-cookies-releve-draft.md`, validé par Greg le 22/11/2026, **non substantiel**) : le navigateur garde, avec le consentement « Préférences », le dernier collage de chaque type (liste des villageois, visions, armées, groupes, contrôle de la zone), remplacé à chaque nouveau collage, sans historique ; ces textes peuvent citer des pseudos de tiers. Sans compte, rien n'est enregistré sur nos serveurs ; avec un compte et un rôle reconnu, le relevé peut être inscrit au Registre de douane (renvoi vers « La Salle des gardes »).
+- Rubrique « Audience » du Relevé complétée (écart voulu au brouillon : elle contredisait sinon le « Stockage »).
+
+### Added
+- Garde-fou `tests/legal/privacyWatch.unit.test.js` ; ligne du tableau de `admin/strategies/cookies.md`.
+
+### Deploy notes
+- Frontend seul, aucun code applicatif. **Pas d'entrée `policy:notify`** (non substantiel). Le texte précède le code du Relevé unique (PR 3-2), à venir après la PR 3-1 (back #107, front #149).
+
 ## [2026-11-22] — PR #148 (Texte légal de La Salle des gardes — PR 3-0 ; `bcrypt` retiré de la politique)
 
 ### Added
