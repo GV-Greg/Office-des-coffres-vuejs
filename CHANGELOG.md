@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #150 (Texte légal du Relevé unique : ce que le navigateur garde)
+
+### Changed
+- **Politique cookies §3 et « Vos données » → Relevé de guet** (FR et EN ; fil `admin/echanges/module-securite/` 12 à 14, `admin/content/policy-cookies-releve-draft.md`, validé par Greg le 22/11/2026, **non substantiel**) : le navigateur garde, avec le consentement « Préférences », le dernier collage de chaque type (liste des villageois, visions, armées, groupes, contrôle de la zone), remplacé à chaque nouveau collage, sans historique ; ces textes peuvent citer des pseudos de tiers. Sans compte, rien n'est enregistré sur nos serveurs ; avec un compte et un rôle reconnu, le relevé peut être inscrit au Registre de douane (renvoi vers « La Salle des gardes »).
+- Rubrique « Audience » du Relevé complétée (écart voulu au brouillon : elle contredisait sinon le « Stockage »).
+
+### Added
+- Garde-fou `tests/legal/privacyWatch.unit.test.js` ; ligne du tableau de `admin/strategies/cookies.md`.
+
+### Deploy notes
+- Frontend seul, aucun code applicatif. **Pas d'entrée `policy:notify`** (non substantiel). Le texte précède le code du Relevé unique (PR 3-2), à venir après la PR 3-1 (back #107, front #149).
+
 ## [2026-11-22] — PR #148 (Texte légal de La Salle des gardes — PR 3-0 ; `bcrypt` retiré de la politique)
 
 ### Added
