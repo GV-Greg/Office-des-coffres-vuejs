@@ -6,6 +6,19 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #154 (Fix : bilans de mandat passés du Registre des mines, sélecteur de mandat et lecture seule)
+
+### Fixed
+- **Un ancien titulaire peut relire ses bilans** (brief `admin/modules/economie/brief-bilans-passes-mines.md`, fil `admin/echanges/bilans-passes-mines/`) : le bilan de la dernière semaine d'un mandat n'était consultable qu'après sa fin, sans plus aucun accès au registre. Backend : back #109 ; texte légal : front #153.
+
+### Added
+- **Sélecteur de mandat** dans le Registre des mines (le mandat en cours par défaut, puis les mandats passés : poste, province, période en année du jeu), dès qu'il existe un mandat passé (`past_mandates`). Un mandat passé se lit via `GET …/mine-registry/mandates/{id}`.
+- **Mandat terminé = lecture seule** : bandeau « Bilan du mandat terminé le … — lecture seule » ; sa **dernière semaine** s'ouvre par défaut ; les bilans de mi-mandat et de fin sont toujours lisibles (jamais « dans N jours ») ; plus de bilan « en cours », d'âge du dernier relevé ni de liens vers les prix ; la dernière semaine, partielle, dit pourquoi elle est incomplète. Aucune règle côté site (le serveur fenêtre les relevés).
+- Le **menu et l'accueil d'Économie** montrent le Registre des mines aussi à un ancien titulaire. Dates `mine_mandate_from` / `mine_mandate_until` (année du jeu). Tests `EconomyRegistryPast` (+14).
+
+### Deploy notes
+- Frontend seul : aucune migration, route backend, `config/*.php` ni paquet. Le backend (back #109, `route:cache` fait le 22/11/2026) et le texte légal (front #153) sont déjà en ligne.
+
 ## [2026-11-22] — PR #153 (Texte légal : les anciens titulaires relisent les relevés de leur mandat, Registre des mines)
 
 ### Changed

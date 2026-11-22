@@ -10,7 +10,8 @@ const access = inject('economyAccess', null)
 const ready = inject('economyAccessReady', true)
 const stockRegistryAccess = inject('economyStockRegistryAccess', null)
 
-const canAccessMandateTools = computed(() => !!(access?.value?.read || access?.value?.write))
+// `past_mandates` : un ancien titulaire relit ses bilans en lecture seule (fil bilans-passes-mines).
+const canAccessMandateTools = computed(() => !!(access?.value?.read || access?.value?.write || (access?.value?.past_mandates?.length ?? 0) > 0))
 
 // Deux groupes, comme le menu de gauche : Mines, puis Inventaires. Un groupe sans carte n'est pas affiché.
 // Un groupe d'une seule carte n'occupe qu'une colonne ; deux cartes ou plus, deux colonnes.
