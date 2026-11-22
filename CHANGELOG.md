@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-22] — PR #153 (Texte légal : les anciens titulaires relisent les relevés de leur mandat, Registre des mines)
+
+### Changed
+- **Politique §6 et « Vos données » → Registre des mines** (FR et EN ; fil `admin/echanges/bilans-passes-mines/` 01 et 02, validé par Greg et Cowork le 22/11/2026, **non substantiel**, pas de `policy:notify`) : les anciens titulaires des postes qui consultent le registre peuvent relire, **en lecture seule**, les relevés de la période de **leur** mandat, sans limite de durée, tant que ces relevés existent. Jamais ceux de leurs successeurs.
+
+### Added
+- Garde-fou `tests/legal/privacyMineRegistry.unit.test.js` (la phrase borne à « la période de leur mandat »).
+
+### Deploy notes
+- Frontend seul, aucun code applicatif. Le texte **précède** le fix `fix/mine-past-balances` (backend puis frontend) : l'accès ne s'ouvre qu'après sa mise en ligne.
+
 ## [2026-11-22] — PR #151 (Module Sécurité, PR 3-2 : le Relevé de guet, point de collage unique)
 
 ### Changed
