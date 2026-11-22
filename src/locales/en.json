@@ -355,12 +355,25 @@
     "YesterdayLabel": "Yesterday's villager list:",
     "YesterdayPrefilled": "Automatically pre-filled from your last visit",
     "TodayLabel": "Today's villager list:",
-    "GenerateButton": "Generate entries/exits",
+    "GenerateButton": "Generate the report",
     "EntriesLabel": "Entries",
     "ExitsLabel": "Exits",
     "ExportButton": "Entrust to the scribe",
     "MismatchYesterday": "Yesterday's list announces {declared} villagers, {read} were read: the paste may be truncated.",
-    "MismatchToday": "Today's list announces {declared} villagers, {read} were read: the paste may be truncated."
+    "MismatchToday": "Today's list announces {declared} villagers, {read} were read: the paste may be truncated.",
+    "Intro": "Paste what you copied in the game: the villager list (yesterday and today), the visions on the road, the armies, the groups and the control of the area. Everything is read in your browser.",
+    "VisionsLabel": "Visions on the road:",
+    "ArmiesGroupsLabel": "Armies, groups and control of the area:",
+    "Restored": "Restored from your last visit: replace it with the new paste",
+    "RestoredNotSaved": "A paste restored from a previous visit is not recorded in the register until you have edited it.",
+    "RegistryNote": "With your title, the red and green list marks appear and the guard roll is compared with the last report of the chosen town: yesterday's list is only used when there is no earlier report. Names are sent to be coloured, nothing is stored.",
+    "ColoursOnlyNote": "With your title, the red and green list marks appear. Names are sent to be coloured, nothing is stored.",
+    "NoTitleNote": "Without a security title known to the Office, the report is read here, without the red and green list marks and without recording in the register.",
+    "ResultTitle": "Report of {date}",
+    "ResultTitleCity": "Report of {date} — {city}",
+    "PreviewFailed": "The list marks and the last report could not be read: {message}",
+    "NothingToShow": "Nothing to show: paste at least the villager list, the visions, or the armies and groups.",
+    "ExportDefenceTitle": "Defence report as BBCode"
   },
   "SecurityCustoms": {
     "Link": "Customs Register",
@@ -378,7 +391,6 @@
     "Loading": "Loading…",
     "ReportTitle": "Report of {date} — {city}",
     "NoReport": "No report has been recorded for {city} on that day.",
-    "ExistsNotice": "A report already exists for that day: only the Constable and the Sergeant correct it.",
     "List": {
       "Red": "red list",
       "Green": "green list"
@@ -406,24 +418,11 @@
         "milice": "Militia"
       },
       "GroupAlert": "Group to watch",
-      "Zone": "Control of the area"
+      "Zone": "Control of the area",
+      "ComparedToYesterday": "Compared with the pasted list of yesterday."
     },
     "Form": {
-      "Title": {
-        "create": "Enter the report",
-        "complete": "Complete the report",
-        "correct": "Correct the report"
-      },
       "WritesIn": "The report will be recorded for {city}, on {date}.",
-      "GuetRequired": "Villager list (required for a first report)",
-      "Guet": "Villager list",
-      "Visions": "Visions on the road (only those of the day are kept)",
-      "ArmiesGroups": "Armies, groups and control of the area",
-      "Placeholder": "Paste the text copied from the game here",
-      "SummaryGuet": "{read} villagers read.",
-      "SummaryVisions": "{kept} vision(s) of the day kept, {other} from other days ignored.",
-      "SummaryArmies": "{armies} army(ies), {groups} group(s).",
-      "NeedsGuet": "A first report starts with the villager list.",
       "Problem": {
         "guet_empty": "No villager could be read in this paste: check that it contains the table (nickname, tab, reputation).",
         "visions_none": "No vision of that day in this paste: nothing will be recorded for the visions.",
@@ -468,7 +467,8 @@
       "ArmiesGroups": "Armies, groups and control of the area",
       "Button": "Entrust it to the scribe",
       "Copied": "The report is copied, ready to paste on the forum."
-    }
+    },
+    "EnterReport": "Enter a report"
   },
   "SecurityOfficers": {
     "Title": "Validate customs officers",

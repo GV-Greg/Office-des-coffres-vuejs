@@ -355,12 +355,25 @@
     "YesterdayLabel": "Liste des villageois d'hier :",
     "YesterdayPrefilled": "Pré-remplie automatiquement depuis votre dernière visite",
     "TodayLabel": "Liste des villageois d'aujourd'hui :",
-    "GenerateButton": "Générer les entrées/sorties",
+    "GenerateButton": "Générer le relevé",
     "EntriesLabel": "Entrées",
     "ExitsLabel": "Sorties",
     "ExportButton": "Confier au scribe",
     "MismatchYesterday": "La liste d'hier annonce {declared} villageois, {read} ont été lus : le collage est peut-être tronqué.",
-    "MismatchToday": "La liste d'aujourd'hui annonce {declared} villageois, {read} ont été lus : le collage est peut-être tronqué."
+    "MismatchToday": "La liste d'aujourd'hui annonce {declared} villageois, {read} ont été lus : le collage est peut-être tronqué.",
+    "Intro": "Collez ce que vous avez copié dans le jeu : la liste des villageois (hier et aujourd'hui), les visions en chemin, les armées, les groupes et le contrôle de la zone. Tout se lit dans votre navigateur.",
+    "VisionsLabel": "Visions en chemin :",
+    "ArmiesGroupsLabel": "Armées, groupes et contrôle de la zone :",
+    "Restored": "Retrouvé depuis votre dernière visite : remplacez-le par le nouveau collage",
+    "RestoredNotSaved": "Un collage retrouvé d'une visite précédente n'est pas inscrit au registre tant que vous ne l'avez pas modifié.",
+    "RegistryNote": "Avec votre titre, les marques des listes rouge et verte apparaissent et le guet est comparé au dernier bilan de la ville choisie : la liste d'hier ne sert que sans bilan antérieur. Les pseudos sont envoyés pour être colorés, sans rien enregistrer.",
+    "ColoursOnlyNote": "Avec votre titre, les marques des listes rouge et verte apparaissent. Les pseudos sont envoyés pour être colorés, sans rien enregistrer.",
+    "NoTitleNote": "Sans titre de sécurité reconnu par l'Office, le relevé se lit ici, sans les marques des listes rouge et verte et sans inscription au registre.",
+    "ResultTitle": "Relevé du {date}",
+    "ResultTitleCity": "Relevé du {date} — {city}",
+    "PreviewFailed": "Les marques des listes et le dernier bilan n'ont pas pu être lus : {message}",
+    "NothingToShow": "Rien à montrer : collez au moins la liste des villageois, les visions ou les armées et les groupes.",
+    "ExportDefenceTitle": "Bilan de défense en BBCode"
   },
   "SecurityCustoms": {
     "Link": "Registre de douane",
@@ -378,7 +391,6 @@
     "Loading": "Chargement…",
     "ReportTitle": "Bilan du {date} — {city}",
     "NoReport": "Aucun bilan n'a été inscrit pour {city} ce jour-là.",
-    "ExistsNotice": "Un bilan existe déjà pour ce jour : seuls le prévôt et le connétable le corrigent.",
     "List": {
       "Red": "liste rouge",
       "Green": "liste verte"
@@ -406,24 +418,11 @@
         "milice": "Milice"
       },
       "GroupAlert": "Groupe à surveiller",
-      "Zone": "Contrôle de la zone"
+      "Zone": "Contrôle de la zone",
+      "ComparedToYesterday": "Comparé à la liste d'hier collée."
     },
     "Form": {
-      "Title": {
-        "create": "Saisir le bilan",
-        "complete": "Compléter le bilan",
-        "correct": "Corriger le bilan"
-      },
       "WritesIn": "Le bilan sera inscrit pour {city}, le {date}.",
-      "GuetRequired": "Liste des villageois (obligatoire pour un premier bilan)",
-      "Guet": "Liste des villageois",
-      "Visions": "Visions en chemin (seules celles du jour sont gardées)",
-      "ArmiesGroups": "Armées, groupes et contrôle de la zone",
-      "Placeholder": "Collez ici le texte copié depuis le jeu",
-      "SummaryGuet": "{read} villageois lus.",
-      "SummaryVisions": "{kept} vision(s) du jour gardée(s), {other} d'autres jours ignorée(s).",
-      "SummaryArmies": "{armies} armée(s), {groups} groupe(s).",
-      "NeedsGuet": "Un premier bilan commence par la liste des villageois.",
       "Problem": {
         "guet_empty": "Aucun villageois n'a pu être lu dans ce collage : vérifiez qu'il contient bien le tableau (pseudo, tabulation, réputation).",
         "visions_none": "Aucune vision de ce jour dans ce collage : rien ne sera inscrit pour les visions.",
@@ -468,7 +467,8 @@
       "ArmiesGroups": "Les armées, les groupes et le contrôle de la zone",
       "Button": "Confier au scribe",
       "Copied": "Le bilan est copié, prêt à coller sur le forum."
-    }
+    },
+    "EnterReport": "Saisir un relevé"
   },
   "SecurityOfficers": {
     "Title": "Valider les douaniers",

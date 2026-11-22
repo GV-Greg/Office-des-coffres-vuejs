@@ -1,5 +1,6 @@
 <script setup>
   import { ref, computed, watch } from 'vue'
+  import { RouterLink } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { apiMessage } from '@/stores/mandateStore'
   import { useAuthStore } from '@/stores/authStore'
@@ -9,7 +10,6 @@
   import ChestLoader from '@/components/loading/ChestLoader.vue'
   import AccessDenied from '@/components/loading/AccessDenied.vue'
   import CustomsReportView from '@/components/customs/CustomsReportView.vue'
-  import CustomsReportForm from '@/components/customs/CustomsReportForm.vue'
   import CustomsExport from '@/components/customs/CustomsExport.vue'
   import CustomsListsModal from '@/components/customs/CustomsListsModal.vue'
 
@@ -19,7 +19,7 @@
 
     ⚠️ Aucune règle côté site : qui lit, qui écrit, quelles villes, quels jours, le serveur le dit (`customs-access`) ; un refus s'affiche tel quel,
     en FR ou EN. Le parseur des collages est ICI (frontend, comme les mines) ; le serveur reçoit l'analyse ET le brut gardé, ne re-parse jamais.
-    L'auteur d'un bilan n'est jamais nommé (politique §6). Rien n'est gardé dans le navigateur.
+    L'auteur d'un bilan n'est jamais nommé (politique §6). Rien n'est gardé dans le navigateur. La saisie vit dans le Relevé de guet (point de collage unique).
     « Aucun membre de la sécurité n'est connu de l'Office pour votre province » est l'état COURANT d'une province (le repli maire/douanier), dit à l'écran.
   */
   const { t, locale } = useI18n()
@@ -61,16 +61,8 @@
     return next.toISOString().slice(0, 10)
   }
 
-  // Le serveur dit où l'on SAISIT ; l'écran ne propose le formulaire que là (et le jour en cours, ou les jours que le serveur ouvre au prévôt et au connétable).
-  const writesHere = computed(() => !!access.value?.write_reports && !!access.value.writable_cities.some(c => c.id === cityId.value)
-    && !!day.value && (day.value === today.value || (access.value.correct_reports && day.value >= access.value.earliest_day && day.value <= today.value)))
-  const formMode = computed(() => {
-    if (!writesHere.value) return null
-    if (!report.value) return 'create'
-    if (access.value.correct_reports) return 'correct'
-    return report.value.can_complete ? 'complete' : null
-  })
-  const existsNotice = computed(() => writesHere.value && !!report.value && formMode.value === null)
+  // La SAISIE n'est plus ici : elle se fait dans le Relevé de guet, point de collage unique (fil module-securite 12 à 14). Le Registre se lit, se consulte, se corrige par là.
+  const canEnter = computed(() => !!access.value?.write_reports)
   const canOpenLists = computed(() => !!access.value && (access.value.read_lists || access.value.add_red_only))
 
   async function load() {
@@ -151,12 +143,10 @@
           <p v-else class="mt-1 text-sm text-slate-800 dark:text-slate-800" data-testid="no-report">{{ t('SecurityCustoms.NoReport', { city: city.name }) }}</p>
         </section>
 
-        <p v-if="existsNotice" class="text-sm font-bold text-slate-800 dark:text-slate-800" data-testid="exists-notice">{{ t('SecurityCustoms.ExistsNotice') }}</p>
-        <CustomsReportForm
-          v-if="formMode && city"
-          :character-id="character.id" :city-id="city.id" :city-name="city.name" :day="day" :today="today"
-          :mode="formMode" :present="report?.sections_present ?? []" @saved="load"
-        />
+        <!-- On saisit un relevé dans le Relevé de guet : un seul endroit pour tous les collages. -->
+        <RouterLink v-if="canEnter" :to="{ name: 'security-guet' }" class="odc-btn odc-btn--soft odc--green inline-flex" data-testid="enter-report">
+          <v-icon name="gi-quill" aria-hidden="true" />{{ t('SecurityCustoms.EnterReport') }}
+        </RouterLink>
 
         <CustomsListsModal v-if="canOpenLists" :show="showLists" :character-id="character.id" :access="access" @close="showLists = false" @changed="load" />
       </div>
