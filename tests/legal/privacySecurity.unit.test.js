@@ -108,6 +108,20 @@ describe('Politique — La Salle des gardes', () => {
     expect(all).toMatch(lang === 'fr' ? /la supprime définitivement/ : /deletes it permanently/)
   })
 
+  // Décision de Greg du 22/11/2026 (fil module-securite, 11 et 12) : le serveur garde le brut chiffré comme les mines, mais SEULEMENT la
+  // liste des villageois (sans le préambule : maire, adjoints, noblesse d'épée) et les lignes des visions du jour du bilan. La politique
+  // décrit ce qui est réellement stocké ; les groupes ont des CHEFS (collages réels), pas des « membres ».
+  it.each(['fr', 'en'])('%s : le texte collé conservé est dit — liste des villageois sans préambule, visions du jour — et les groupes ont des chefs', (lang) => {
+    const { Section3 } = locale(lang).Legal.Privacy
+    const reports = Section3.SecurityFields[2].Text
+    expect(reports).toMatch(lang === 'fr' ? /liste des villageois que vous collez est aussi conservé tel quel, sans le préambule/ : /villager list you paste is also kept as it is, without the preamble/)
+    expect(reports).toMatch(lang === 'fr' ? /lignes des visions du jour du bilan/ : /lines of the visions of the report's day/)
+    expect(reports).toMatch(lang === 'fr' ? /commandant ou chefs/ : /commander or leaders/)
+    expect(reports).not.toMatch(lang === 'fr' ? /membres/ : /members/)
+    const { Stored } = locale(lang).Legal.Data.Security
+    expect(Stored).toMatch(lang === 'fr' ? /tel quel et sans le préambule/ : /as it is and without the preamble/)
+  })
+
   it.each(['fr', 'en'])('%s : l\'export ne porte ni listes ni bilans, seulement une trace sans contenu (Greg, 22/11/2026)', (lang) => {
     const { Deletion } = locale(lang).Legal.Data.Security
     expect(Deletion).toMatch(lang === 'fr' ? /sans leur contenu/ : /without their content/)
