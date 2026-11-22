@@ -110,14 +110,13 @@ describe('Politique — La Salle des gardes', () => {
 
   // Décision de Greg du 22/11/2026 (fil module-securite, 11 et 12) : le serveur garde le brut chiffré comme les mines, mais SEULEMENT la
   // liste des villageois (sans le préambule : maire, adjoints, noblesse d'épée) et les lignes des visions du jour du bilan. La politique
-  // décrit ce qui est réellement stocké ; les groupes ont des CHEFS (collages réels), pas des « membres ».
-  it.each(['fr', 'en'])('%s : le texte collé conservé est dit — liste des villageois sans préambule, visions du jour — et les groupes ont des chefs', (lang) => {
+  // décrit ce qui est réellement stocké ; une armée n'a qu'un COMMANDANT, un groupe liste tous ses MEMBRES sur sa ligne de nom (collages réels).
+  it.each(['fr', 'en'])('%s : le texte collé conservé est dit — liste des villageois sans préambule, visions du jour — et une armée a un commandant, un groupe des membres', (lang) => {
     const { Section3 } = locale(lang).Legal.Privacy
     const reports = Section3.SecurityFields[2].Text
     expect(reports).toMatch(lang === 'fr' ? /liste des villageois que vous collez est aussi conservé tel quel, sans le préambule/ : /villager list you paste is also kept as it is, without the preamble/)
     expect(reports).toMatch(lang === 'fr' ? /lignes des visions du jour du bilan/ : /lines of the visions of the report's day/)
-    expect(reports).toMatch(lang === 'fr' ? /commandant ou chefs/ : /commander or leaders/)
-    expect(reports).not.toMatch(lang === 'fr' ? /membres/ : /members/)
+    expect(reports).toMatch(lang === 'fr' ? /commandant pour une armée, membres pour un groupe/ : /commander for an army, members for a group/)
     const { Stored } = locale(lang).Legal.Data.Security
     expect(Stored).toMatch(lang === 'fr' ? /tel quel et sans le préambule/ : /as it is and without the preamble/)
   })
