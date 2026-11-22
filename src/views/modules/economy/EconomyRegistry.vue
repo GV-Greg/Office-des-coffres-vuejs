@@ -209,6 +209,26 @@
       .catch(() => push.error(t('EconomyMines.CopyError')))
   }
 
+  /**
+   * Bilan de MI-MANDAT ou de FIN DE MANDAT pour le forum : même mise en page que la semaine (`bilanToBBcode`, un seul gabarit pour le forum du jeu), la période
+   * en dates du JEU (« Bilan de fin de mandat, du 23/09/1474 au 21/11/1474 »). Ces bilans sont presque toujours PARTIELS (le registre ne compte que les jours
+   * où il a des données) : contrairement à une semaine, ils s'exportent partiels — mais la ligne de couverture le DIT, jamais un total qui a l'air complet.
+   */
+  function exportMandateBilan(b) {
+    if (b.status !== 'ready' || !b.bilan.covered) return
+    const covered = b.bilan.covered
+    const days = b.bilan.days
+    const text = bilanToBBcode(b.bilan, {
+      title: t('EconomyMines.Title'),
+      week: t('EconomyMines.RegistryPage.BilanPeriod', { label: bilanLabel(b.kind), from: gameDate(b.from), to: gameDate(dayBefore(b.at)) }),
+      coverage: covered < days ? t('EconomyMines.RegistryPage.Export.Coverage', { covered, days }, covered) : null,
+      t,
+    })
+    navigator.clipboard.writeText(text)
+      .then(() => push.success(t('EconomyMines.RegistryPage.Export.Copied')))
+      .catch(() => push.error(t('EconomyMines.CopyError')))
+  }
+
   /** Jours consécutifs regroupés en plages : « du 23/09 au 07/10 », un jour isolé reste seul. */
   const ranges = (days) => {
     const out = []
@@ -341,6 +361,9 @@
                   {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: b.bilan.covered, days: b.bilan.days }, b.bilan.covered) }}
                   {{ t('EconomyMines.RegistryPage.BilanPrices') }}
                 </p>
+                <button v-if="b.bilan.covered" type="button" class="mt-1 odc-btn odc-btn--soft odc--green odc-btn--sm" :data-testid="`registry-bilan-export-${b.kind}`" @click="exportMandateBilan(b)">
+                  <v-icon name="gi-quill" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Export.Button') }}
+                </button>
               </template>
             </div>
           </section>
