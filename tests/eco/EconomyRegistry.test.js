@@ -147,6 +147,29 @@ describe('EconomyRegistry', () => {
     expect(wrapper.find('[data-testid="registry-error"]').exists()).toBe(false) // aucun « Réessayer » pour un refus
   })
 
+  describe('mandat renouvelé : entré en fonction aujourd\'hui (Cowork, 23/11/2026)', () => {
+    // Entrée le 10/05 = aujourd'hui : aucun jour complet n'appartient encore au mandat.
+    const entering = (reports) => registry({ mandate: { in_office_from: '2026-05-10', mid_at: '2026-06-09', end_at: '2026-07-09' }, reports })
+
+    it('sans aucun jour à compter : « Premier bilan disponible demain », jamais un tableau de zéros', async () => {
+      const wrapper = await mountPage({ data: entering([]) })
+      expect(wrapper.find('[data-testid="registry-first-bilan"]').text()).toBe('Premier bilan disponible demain : aucun jour complet n\'est encore compté pour ce mandat.')
+      expect(wrapper.find('[data-testid="registry-current-total"]').exists()).toBe(false)
+      expect(wrapper.text()).not.toContain('Aucun jour couvert sur 0')
+      expect((await mountPage({ locale: 'en', data: entering([]) })).find('[data-testid="registry-first-bilan"]').text()).toMatch(/^First report available tomorrow/)
+    })
+
+    it('la semaine reprend les jours déjà couverts avant l\'entrée en fonction (relevés servis par le serveur)', async () => {
+      const days = { '2026-05-06': { production: 10 }, '2026-05-07': { production: 10, heures: 10 }, '2026-05-08': { heures: 10 } }
+      const served = report({ prices: { FER: 20 }, rate: 1, report: { mines: [{ number: 4, noeud: '226', label: 'Mine de fer', resource: 'FER', days }], states: [] } })
+      const wrapper = await mountPage({ data: entering([served]) })
+      await wrapper.find('[data-testid="week-previous"]').trigger('click')
+      expect(wrapper.find('[data-testid="registry-first-bilan"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="registry-week-total"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="registry-week"]').text()).toContain('2 jours couverts sur 3')
+    })
+  })
+
   it('une vraie panne (réseau, 500) reste un coffre refermé avec « Réessayer »', async () => {
     const wrapper = await mountPage({ reject: Object.assign(new Error('500'), { response: { status: 500, data: {} } }) })
     expect(wrapper.find('[data-testid="registry-denied"]').exists()).toBe(false)

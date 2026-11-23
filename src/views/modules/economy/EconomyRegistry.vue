@@ -154,6 +154,11 @@
 
   /** Bilan en cours du mois de mandat (Greg, 09/10) — remplace l'état des seuils ; modules/mineRegistry.js. Jamais pour un mandat terminé. */
   const current = computed(() => (readOnly.value ? null : currentPeriodBilan(registry.value, priceSets.value)))
+  /** Mandat en cours dont aucun jour complet n'est encore compté (entrée en fonction aujourd'hui) : on le dit au lieu d'un tableau vide. */
+  const firstBilanPending = computed(() => {
+    const m = registry.value?.mandate
+    return !readOnly.value && !current.value && !!m?.in_office_from && registry.value.today < m.end_at
+  })
 
   /** Jours SANS DONNÉES depuis l'entrée en fonction du lecteur (Greg, 09/10) — modules/mineRegistry.js. */
   const gaps = computed(() => daysWithoutData(view.value))
@@ -322,13 +327,16 @@
         <div v-if="week" data-testid="registry-week">
           <!-- Un mandat terminé n'a pas de bilan « provisoire » : sa dernière semaine est incomplète parce qu'elle déborde du mandat, ou que des jours n'ont pas de données. -->
           <p v-if="!week.complete" class="mt-2 text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="week-incomplete">{{ t(readOnly ? 'EconomyMines.RegistryPage.PastMandates.IncompleteWeek' : 'EconomyMines.IncompleteWeekTitle') }}</p>
-          <BilanTable :bilan="week.bilan" total-testid="registry-week-total" />
-          <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
-            {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: week.bilan.covered, days: week.bilan.days }, week.bilan.covered) }}
-          </p>
-          <p v-if="week.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="week-unpriced">
-            {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: week.bilan.unpricedDays.length }, week.bilan.unpricedDays.length) }}
-          </p>
+          <p v-if="!week.bilan.days" class="mt-2 text-sm text-slate-700 dark:text-slate-700" data-testid="registry-first-bilan">{{ t('EconomyMines.RegistryPage.FirstBilanTomorrow') }}</p>
+          <template v-else>
+            <BilanTable :bilan="week.bilan" total-testid="registry-week-total" />
+            <p class="mt-1 text-xs text-slate-600 dark:text-slate-600">
+              {{ t('EconomyMines.RegistryPage.BilanCoverage', { covered: week.bilan.covered, days: week.bilan.days }, week.bilan.covered) }}
+            </p>
+            <p v-if="week.bilan.unpricedDays.length" role="note" class="mt-1 text-xs font-semibold text-orange-800 dark:text-orange-800" data-testid="week-unpriced">
+              {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: week.bilan.unpricedDays.length }, week.bilan.unpricedDays.length) }}
+            </p>
+          </template>
         </div>
         <template v-else-if="current">
           <BilanTable :bilan="current.bilan" :levels="current.levels" total-testid="registry-current-total" />
@@ -340,6 +348,7 @@
             {{ t('EconomyMines.RegistryPage.Prices.Unpriced', { count: current.bilan.unpricedDays.length }, current.bilan.unpricedDays.length) }}
           </p>
         </template>
+        <p v-else-if="firstBilanPending" class="mt-2 text-sm text-slate-700 dark:text-slate-700" data-testid="registry-first-bilan">{{ t('EconomyMines.RegistryPage.FirstBilanTomorrow') }}</p>
       </section>
 
           <!-- Sous le tableau : trois lectures courtes côte à côte (auto-fit), pour tenir sans défilement. -->

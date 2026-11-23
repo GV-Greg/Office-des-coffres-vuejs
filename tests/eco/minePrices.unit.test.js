@@ -5,7 +5,7 @@ import {
   formFromSet, bodyFromForm, isDirty, isComplete,
 } from '../../src/modules/minePrices'
 import { computePeriodBilan, periodDates } from '../../src/modules/mineParser'
-import { currentPeriodBilan, weeklyBilan, weekRange } from '../../src/modules/mineRegistry'
+import { currentPeriodBilan, weeklyBilan, weekRange, mandateBilans } from '../../src/modules/mineRegistry'
 import { bilanToBBcode } from '../../src/modules/mineBBcode'
 
 // Prix des mines par période — logique pure (lot 2 ; brief admin/content/brief-prix-registre.md).
@@ -116,6 +116,28 @@ describe('bilans du registre avec la table des prix', () => {
     expect(w.bilan.total.valeur).toBe(500 + 500)
     expect(w.complete).toBe(false) // seuls 2 jours sur 7 sont appariés
     expect(weeklyBilan(registry, [], '2026-05-18').bilan.days).toBe(2) // 18 et 19/05 : avant aujourd'hui
+  })
+
+  it('weeklyBilan : un mandat qui entre en milieu de semaine garde les jours antérieurs qui ont des données (renouvellement)', () => {
+    // Entrée en fonction le jeudi 07/05 ; les relevés servis (fenêtre « prédécesseurs ») couvrent lundi et mardi.
+    const renewed = { ...registry, today: '2026-05-08', mandate: { in_office_from: '2026-05-07', mid_at: '2026-06-06', end_at: '2026-07-06' } }
+    const w = weeklyBilan(renewed, [set('2026-05-01', { prices: { FER: 50 }, hourly_rate: 0 })], '2026-05-04')
+    // 04, 05 et 06/05 (avant l'entrée, mais avec données) + 07/05 (jour d'entrée, sans donnée) ; 08/05 = aujourd'hui, écarté.
+    expect(w.bilan.days).toBe(4)
+    expect(w.bilan.covered).toBe(2) // 04 et 05/05 apparient production et heures
+    expect(w.bilan.total.valeur).toBe(1000)
+  })
+
+  it('weeklyBilan : un jour antérieur à l\'entrée SANS donnée reste écarté, et sans aucun jour il n\'y a rien à compter', () => {
+    const entering = { today: '2026-05-22', mandate: { in_office_from: '2026-05-22', mid_at: '2026-06-21', end_at: '2026-07-21' }, reports: [] }
+    expect(weeklyBilan(entering, [], '2026-05-18').bilan.days).toBe(0)
+  })
+
+  it('weeklyBilan : les mi-mandat et fin restent calés sur l\'entrée en fonction (R4 intacte)', () => {
+    const renewed = { ...registry, today: '2026-06-10', mandate: { in_office_from: '2026-05-07', mid_at: '2026-06-06', end_at: '2026-07-06' } }
+    const mid = mandateBilans(renewed, []).find(b => b.kind === 'mid')
+    expect(mid.from).toBe('2026-05-07')
+    expect(mid.bilan.days).toBe(30)
   })
 })
 
