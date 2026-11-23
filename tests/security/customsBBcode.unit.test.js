@@ -26,12 +26,12 @@ const REPORT = {
     },
   },
 }
-const ctx = (options) => ({ cityName: 'Arras', dayLabel: '22/11/1474', options })
+const ctx = (options) => ({ cityName: 'Arras', dayLabel: '22/11/1474', nightFromLabel: '21/11/1474', options })
 const bb = options => customsReportToBBCode(REPORT, ctx(options))
 
 describe('export BBCode d\'un bilan', () => {
   it('le titre dit le jour en année du jeu et la ville, en français fixe', () => {
-    expect(bb().split('\n')[0]).toBe('[b][size=20]Bilan de défense du 22/11/1474 — Ville : Arras[/size][/b]')
+    expect(bb().split('\n')[0]).toBe('[b][size=20]Relevé de défense de la nuit du 21/11/1474 au 22/11/1474 - Ville : Arras[/size][/b]')
   })
 
   it('le différentiel : arrivées et départs, avec le bilan auquel il se compare', () => {
@@ -75,9 +75,12 @@ describe('export BBCode d\'un bilan', () => {
     expect(text).toContain("[b]Legio Aurea[/b] — chef d'armée : [char]Lucas_[/char] — L'armée est aux portes — Ne recrute pas")
     expect(text).toContain('⚠ Groupe à surveiller')
     expect(text.match(/Groupe à surveiller/g)).toHaveLength(1)
-    expect(text).toContain("[b]Corps d'armes[/b] : [char]Damonkael[/char], [char]Thymotee_bilal[/char] — Fermé")
-    expect(text).toContain('[b]Milice[/b] — embauches éventuelles')
-    expect(text).toContain('Admission libre · Adhérer') // la tabulation du jeu n'ouvre rien
+    // Le détail d'un groupe n'est PAS exporté (Greg, 23/11/2026), même quand un ancien bilan le porte.
+    expect(text).toMatch(/\[b\]Corps d'armes\[\/b\] : \[char\]Damonkael\[\/char\], \[char\]Thymotee_bilal\[\/char\]\n/)
+    expect(text).not.toContain('Fermé')
+    expect(text).not.toContain('embauches éventuelles')
+    expect(text).not.toContain('Admission libre')
+    expect(text).toContain('[b]Milice[/b]')
     expect(text).not.toMatch(/brigand(?!_x)/i)
   })
 
@@ -116,14 +119,14 @@ describe('export BBCode d\'un bilan', () => {
   })
 
   it('un bilan sans section ne donne que son titre', () => {
-    expect(customsReportToBBCode({ sections: {} }, ctx())).toBe('[b][size=20]Bilan de défense du 22/11/1474 — Ville : Arras[/size][/b]')
+    expect(customsReportToBBCode({ sections: {} }, ctx())).toBe('[b][size=20]Relevé de défense de la nuit du 21/11/1474 au 22/11/1474 - Ville : Arras[/size][/b]')
   })
 
   // Relevé unique (PR 3-2) : le relevé d'un joueur SANS titre de sécurité n'a ni ville ni bilan antérieur.
   it('sans ville : le titre ne dit pas « Ville : »', () => {
-    const text = customsReportToBBCode({ sections: {} }, { cityName: '', dayLabel: '22/11/1474', options: {} })
+    const text = customsReportToBBCode({ sections: {} }, { cityName: '', dayLabel: '22/11/1474', nightFromLabel: '21/11/1474', options: {} })
 
-    expect(text).toBe('[b][size=20]Bilan de défense du 22/11/1474[/size][/b]')
+    expect(text).toBe('[b][size=20]Relevé de défense de la nuit du 21/11/1474 au 22/11/1474[/size][/b]')
   })
 
   it('un différentiel fait à la liste d\'hier collée le dit, sans date inventée', () => {

@@ -49,7 +49,11 @@ const VISION_LINES = [
  * Journal de visions. UN SEUL point final est retiré par ligne : « Elyas. » → « Elyas », mais « Agathe.. » suivi de
  * « , un groupe composé de » garde ses deux points (ce n'est pas la fin de la phrase). On ne découpe jamais sur le point.
  *
- * @returns {{ entries: Array<{date: string, singles: string[], groups: string[][]}>, ignoredLines: number }}
+ * Dans le journal du jeu la date est une ligne de séparation (« Le 21 Novembre 1474 ») : copier UNE entrée (« Visions » puis la phrase) la perd (Greg,
+ * 23/11/2026). Un collage SANS AUCUNE ligne de date garde donc ses lignes, `date: null` — elles seront comptées pour le jour du relevé
+ * (`undatedAssumed`). Dès qu'une date existe, les lignes qui la précèdent restent ignorées : on ne devine pas dans un collage daté.
+ *
+ * @returns {{ entries: Array<{date: string|null, singles: string[], groups: string[][]}>, ignoredLines: number, undatedAssumed: boolean }}
  */
 export function parseVisions(raw) {
   const entries = []
@@ -67,7 +71,6 @@ export function parseVisions(raw) {
 
     const kind = VISION_LINES.find(({ lead }) => lead.test(line))
     if (!kind) { ignoredLines++; continue }
-    if (date === null) { ignoredLines++; continue }
 
     let rest = line.replace(kind.lead, '')
     if (rest.endsWith('.')) rest = rest.slice(0, -1) // UN SEUL point final
@@ -84,7 +87,12 @@ export function parseVisions(raw) {
     entries.push({ date, singles, groups })
   }
 
-  return { entries, ignoredLines }
+  if (entries.some(entry => entry.date !== null)) {
+    // Un collage daté : les lignes d'avant la première date restent ignorées.
+    const dated = entries.filter(entry => entry.date !== null)
+    return { entries: dated, ignoredLines: ignoredLines + entries.length - dated.length, undatedAssumed: false }
+  }
+  return { entries, ignoredLines, undatedAssumed: entries.length > 0 }
 }
 
 /**
@@ -94,6 +102,9 @@ export function parseVisions(raw) {
 export function extractVisionsRaw(raw, date) {
   const kept = []
   let current = null
+  // Aucune ligne de date : ce sont les visions du jour demandé, gardées telles quelles (sans titre « Visions » ni heure).
+  const dated = lines(raw).some(l => /^Le (\d{1,2}) (\S+) (\d{4})$/u.test(l.trim()) || /^On (\d{4}) (\S+) (\d{1,2})$/u.test(l.trim()))
+  if (!dated) return lines(raw).map(l => l.trim()).filter(l => VISION_LINES.some(({ lead }) => lead.test(l))).join('\n')
   for (const original of lines(raw)) {
     const line = original.trim()
     let m = line.match(/^Le (\d{1,2}) (\S+) (\d{4})$/u)
@@ -110,7 +121,8 @@ export function extractVisionsRaw(raw, date) {
  * (« N visions d'autres jours ignorées »). Rattachées à la ville choisie dans le formulaire (C3).
  */
 export function visionsForDay(entries, date) {
-  const kept = entries.filter(entry => entry.date === date).map(({ singles, groups }) => ({ singles, groups }))
+  // `date: null` = visions collées sans date : comptées pour le jour demandé.
+  const kept = entries.filter(entry => entry.date === date || entry.date === null).map(({ singles, groups }) => ({ singles, groups }))
   return { kept, otherDays: entries.length - kept.length }
 }
 
@@ -171,9 +183,8 @@ export function parseArmiesGroups(raw) {
       const members = type === 'milice' ? [] : match[1].split(',').map(p => p.trim()).filter(p => p !== '')
       groups.push({ type, members, status: '' })
       current = groups.length - 1
-    } else if (current !== null) {
-      groups[current].status = `${groups[current].status}\n${line}`.trim()
     }
+    // Le détail qui suit un groupe (« Fermé », « Admission libre · Adhérer »…) n'est ni gardé ni exporté (Greg, 23/11/2026) : `status` reste vide.
   }
 
   return { armies, groups, zone: zone.length ? zone.join('\n') : null }

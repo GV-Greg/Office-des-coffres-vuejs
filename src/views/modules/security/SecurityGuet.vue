@@ -8,10 +8,12 @@
   import { formatFieldDate } from '@/modules/playerDates'
   import { parseReleve, collectPseudos, buildLocalReport, localGameDay } from '@/modules/customsLocalReport'
   import { buildSections } from '@/modules/customsPaste'
+  import { defaultCityId } from '@/modules/customsCity'
+  import { rememberLists, yesterdaysList, shiftIso } from '@/modules/customsLists'
   import customsApi from '@/use/customsApi'
   import useCustomsAccess from '@/use/useCustomsAccess'
-  import CustomsReportView from '@/components/customs/CustomsReportView.vue'
-  import CustomsExport from '@/components/customs/CustomsExport.vue'
+  import { customsReportToBBCode, CUSTOMS_EXPORT_DEFAULTS } from '@/modules/customsBBcode'
+  import CustomsRegistrySave from '@/components/customs/CustomsRegistrySave.vue'
 
   /*
     Le Relevé de guet — POINT DE COLLAGE UNIQUE du module Sécurité (fil admin/echanges/module-securite 12 à 14, décisions de Greg du 22/11/2026).
@@ -28,22 +30,25 @@
   const api = customsApi()
 
   // Clés du stockage « confort » : le dernier collage de chaque type, remplacé à chaque nouveau (texte légal du 22/11/2026).
-  const GUET_LAST_LIST_KEY = 'guet_last_list'
+  const GUET_LISTS_KEY = 'guet_lists' // { jour du jeu: liste } — aujourd'hui et hier seulement (modules/customsLists.js)
+  const GUET_OLD_LIST_KEY = 'guet_last_list' // ancienne clé : une liste SANS jour, abandonnée
   const VISIONS_LAST_KEY = 'guet_last_visions'
   const ARMIES_LAST_KEY = 'guet_last_armies_groups'
 
   // ── Le titre de sécurité, s'il y en a un (le serveur décide) ──
   const character = computed(() => (authStore.isLoggedIn ? authStore.activeCharacter : null))
-  const { access, ready } = useCustomsAccess(() => character.value?.id ?? null)
+  const { access } = useCustomsAccess(() => character.value?.id ?? null)
   const cities = computed(() => access.value?.readable_cities ?? [])
   const cityId = ref(null)
   const day = ref(null)
   const city = computed(() => cities.value.find(c => c.id === cityId.value) ?? null)
   const canColour = computed(() => !!access.value?.read_lists)
+  /** Mode « douanier » (Greg, 23/11/2026) : le titre permet d'inscrire au Registre, pas seulement de lire les marques. */
+  const customsMode = computed(() => !!access.value?.write_reports && (access.value.writable_cities?.length ?? 0) > 0)
   const canSave = computed(() => !!access.value?.write_reports && !!city.value && access.value.writable_cities.some(c => c.id === city.value.id))
 
   watch(access, (value) => {
-    cityId.value = value?.readable_cities[0]?.id ?? null
+    cityId.value = defaultCityId(value?.readable_cities, character.value)
     day.value = value?.today ?? null
   }, { immediate: true })
 
@@ -71,15 +76,28 @@
   const restored = reactive({ visions: false, armiesGroups: false })
 
   onMounted(() => {
-    const saved = cookieStore.getComfortData(GUET_LAST_LIST_KEY)
+    // La liste d'hier est celle gardée avec le jour d'HIER : celle d'aujourd'hui, déjà collée, ne la remplace plus au rechargement.
+    cookieStore.removeComfortData(GUET_OLD_LIST_KEY)
+    const lists = cookieStore.getComfortData(GUET_LISTS_KEY, {})
+    const gameToday = localGameDay()
+    const saved = yesterdaysList(lists, gameToday)
     if (saved) {
       yesterday.value = saved
       prefilledYesterday.value = true
     }
-    const savedVisions = cookieStore.getComfortData(VISIONS_LAST_KEY)
-    if (savedVisions) { visions.value = savedVisions; restored.visions = true }
-    const savedArmies = cookieStore.getComfortData(ARMIES_LAST_KEY)
-    if (savedArmies) { armiesGroups.value = savedArmies; restored.armiesGroups = true }
+    // Collée plus tôt AUJOURD'HUI : la liste du jour revient dans sa case, comme les visions et les armées du jour (on peut inscrire après un rechargement).
+    if (lists[gameToday]) today.value = lists[gameToday]
+    // Visions et armées sont gardées AVEC leur jour du jeu. Collées plus tôt AUJOURD'HUI, elles sont bien d'aujourd'hui : remplies, et inscriptibles.
+    // D'un autre jour (ou sans jour : ancienne forme), elles sont « retrouvées » : la mention le dit, mais elles s'inscrivent TELLES QUELLES (Greg, 23/11/2026).
+    const restore = (key, target, flag) => {
+      const saved = cookieStore.getComfortData(key)
+      const entry = typeof saved === 'string' ? { day: null, text: saved } : saved
+      if (!entry?.text) return
+      target.value = entry.text
+      restored[flag] = entry.day !== gameToday
+    }
+    restore(VISIONS_LAST_KEY, visions, 'visions')
+    restore(ARMIES_LAST_KEY, armiesGroups, 'armiesGroups')
   })
 
   // ── Le résultat ──
@@ -99,7 +117,32 @@
     return found
   })
   const yesterdayMismatch = computed(() => (parsed.value?.yesterday?.totalMatches === false ? { declared: parsed.value.yesterday.declaredTotal, read: parsed.value.yesterday.villagers.length } : null))
-  const guet = computed(() => report.value?.sections.guet ?? null)
+  // Le message pour le forum (BBCode, français fixe, dates en année du jeu) : « Confier au scribe » le fabrique ET le copie. Rien n'est enregistré.
+  const bbcode = ref('')
+  const copyFailed = ref(false)
+  const sealed = ref(null)
+  function buildBBCode(built) {
+    const diff = built.sections?.guet?.diff
+    const withDates = diff?.compared_to
+      ? { ...built, sections: { ...built.sections, guet: { ...built.sections.guet, diff: { ...diff, comparedLabel: formatFieldDate('customs_report_day', diff.compared_to, 'fr') } } } }
+      : built
+    return customsReportToBBCode(withDates, {
+      cityName: city.value?.name ?? '',
+      dayLabel: formatFieldDate('customs_report_day', built.reported_on, 'fr'),
+      nightFromLabel: formatFieldDate('customs_report_day', shiftIso(built.reported_on, -1), 'fr'),
+      options: { ...CUSTOMS_EXPORT_DEFAULTS },
+    })
+  }
+  async function copyBBCode() {
+    copyFailed.value = false
+    try {
+      await navigator.clipboard.writeText(bbcode.value)
+      push.success(t('SecurityCustoms.Export.Copied'))
+    } catch {
+      // presse-papiers indisponible (contexte non sécurisé, iframe…) : le message est alors montré, à copier à la main
+      copyFailed.value = true
+    }
+  }
 
   async function generate() {
     if (busy.value) return
@@ -123,19 +166,28 @@
       }
     }
     report.value = buildLocalReport(next, { day: withTitle ? day.value : localGameDay(), colours, previous })
+    sealed.value = null
+    bbcode.value = report.value.sections_present.length ? buildBBCode(report.value) : ''
+    if (bbcode.value) await copyBBCode()
 
     // Confort : le dernier collage de chaque type. No-op silencieux sans le consentement « Préférences » : le Relevé reste utilisable.
-    if (today.value.trim()) cookieStore.setComfortData(GUET_LAST_LIST_KEY, today.value)
-    if (visions.value.trim()) cookieStore.setComfortData(VISIONS_LAST_KEY, visions.value)
-    if (armiesGroups.value.trim()) cookieStore.setComfortData(ARMIES_LAST_KEY, armiesGroups.value)
+    if (today.value.trim() || yesterday.value.trim()) {
+      cookieStore.setComfortData(GUET_LISTS_KEY, rememberLists(cookieStore.getComfortData(GUET_LISTS_KEY, {}), {
+        day: withTitle ? day.value : localGameDay(), today: localGameDay(), todayText: today.value, yesterdayText: yesterday.value,
+      }))
+    }
+    const pastedDay = withTitle ? day.value : localGameDay()
+    // Un collage RETROUVÉ n'est pas réenregistré sous le jour d'aujourd'hui : il n'a pas été collé aujourd'hui tant qu'on ne l'a pas modifié.
+    if (visions.value.trim() && !restored.visions) cookieStore.setComfortData(VISIONS_LAST_KEY, { day: pastedDay, text: visions.value })
+    if (armiesGroups.value.trim() && !restored.armiesGroups) cookieStore.setComfortData(ARMIES_LAST_KEY, { day: pastedDay, text: armiesGroups.value })
     busy.value = false
   }
 
   // ── Inscription au Registre de douane (titre d'écriture, ville dite avant l'envoi) ──
   const sendable = computed(() => buildSections({
     guet: today.value,
-    visions: restored.visions ? '' : visions.value,
-    armiesGroups: restored.armiesGroups ? '' : armiesGroups.value,
+    visions: visions.value,
+    armiesGroups: armiesGroups.value,
   }, day.value ?? ''))
 
   async function save() {
@@ -146,6 +198,7 @@
       if (day.value !== access.value.today) body.date = day.value
       const result = await api.saveReport(character.value.id, body)
       push.success(t(`SecurityCustoms.Form.Sent.${result.mode}`))
+      sealed.value = { city: city.value.name, date: dayLabel(day.value) }
     } catch (error) {
       push.error(apiMessage(error, locale.value, t('Auth.Errors.NetworkError')))
     } finally {
@@ -154,72 +207,73 @@
   }
 
   // ── Export du guet (format historique du Relevé : liste, entrées, sorties) ──
-  const pseudoLines = list => list.map(entry => entry.pseudo)
-  function toExport() {
-    const villagers = pseudoLines(guet.value.villagers)
-    const arrivals = pseudoLines(guet.value.diff?.arrivals ?? [])
-    const departures = pseudoLines(guet.value.diff?.departures ?? [])
-    const link = name => `[url=https://www.lesroyaumes.com/FichePersonnage.php?login=${name}]${name}[/url]`
-    const text = `[size=15][color=blue][i]Liste des villageois (${villagers.length})[/i][/color][/size][quote]${villagers.map(link).join('\n')}[/quote]\n`
-      + `[size=15][color=blue][i]Entrées (${arrivals.length})[/i][/color][/size]\n[quote]${arrivals.map(n => `[char]${n}[/char]`).join('\n')}[/quote]\n`
-      + `[size=15][color=blue][i]Sorties (${departures.length})[/i][/color][/size]\n[quote]${departures.map(n => `[char]${n}[/char]`).join('\n')}[/quote]`
-    navigator.clipboard.writeText(text)
-  }
 </script>
 
 <template>
   <div class="w-full space-y-4" data-testid="guet-page">
-    <p class="text-sm text-slate-700 dark:text-slate-700" data-testid="guet-intro">{{ t('Security.Intro') }}</p>
+    <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+      <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl text-rose-600" data-testid="guet-title">{{ t('Security.PageTitle') }}</h1>
+      <p v-if="customsMode" class="mt-1 flex items-center gap-2 rounded-full border border-rose-300 bg-rose-50 px-4 py-1 text-sm font-semibold text-rose-800 dark:text-rose-800" data-testid="guet-customs-mode">
+        <v-icon name="fa-user-shield" class="!block" aria-hidden="true" />{{ t('Security.CustomsMode') }}
+      </p>
+    </div>
 
     <!-- Avec un titre de sécurité : où l'on regarde (ville) et, pour qui corrige, le jour. Le serveur dit tout. -->
-    <div v-if="access" class="flex flex-wrap items-end gap-3 rounded-lg border border-slate-300 bg-white p-3" data-testid="guet-registry-bar">
-      <label v-if="cities.length" class="text-sm text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.City') }}</span>
+    <div v-if="access && (cities.length || dayOptions.length)" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2" data-testid="guet-registry-bar">
+      <label v-if="cities.length" class="flex items-center gap-2 text-sm text-slate-800"><span class="font-bold">{{ t('SecurityCustoms.City') }}</span>
         <select v-model.number="cityId" class="rounded p-1" data-testid="guet-city">
           <option v-for="c in cities" :key="c.id" :value="c.id">{{ c.name }}</option>
         </select>
       </label>
-      <label v-if="dayOptions.length" class="text-sm text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.Day') }}</span>
+      <label v-if="dayOptions.length" class="flex items-center gap-2 text-sm text-slate-800"><span class="font-bold">{{ t('SecurityCustoms.Day') }}</span>
         <select v-model="day" class="rounded p-1" data-testid="guet-day">
           <option v-for="d in dayOptions" :key="d" :value="d">{{ dayLabel(d) }}</option>
         </select>
       </label>
-      <p class="flex-1 min-w-[16rem] text-xs text-slate-700 dark:text-slate-700" data-testid="guet-registry-note">
-        {{ t(cities.length ? 'Security.RegistryNote' : 'Security.ColoursOnlyNote') }}
-      </p>
+      <p v-if="customsMode" class="!my-0 text-sm text-slate-700 dark:text-slate-700" data-testid="guet-customs-mode-detail">{{ t('Security.CustomsModeDetail') }}</p>
     </div>
-    <p v-else-if="ready" class="text-xs text-slate-600 dark:text-slate-600" data-testid="guet-no-title">{{ t('Security.NoTitleNote') }}</p>
 
     <div class="grid grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-4 gap-4">
       <div>
-        <label class="block w-full font-bold text-center" for="guet-yesterday">{{ t('Security.YesterdayLabel') }}</label>
-        <span v-if="prefilledYesterday" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic">{{ t('Security.YesterdayPrefilled') }}</span>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-yesterday">{{ t('Security.YesterdayLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.YesterdayHint') }}</span>
         <textarea id="guet-yesterday" v-model="yesterday" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-yesterday" @input="prefilledYesterday = false"></textarea>
+        <span v-if="prefilledYesterday" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="yesterday-prefilled">{{ t('Security.YesterdayPrefilled') }}</span>
       </div>
       <div>
-        <label class="block w-full font-bold text-center" for="guet-today">{{ t('Security.TodayLabel') }}</label>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-today">{{ t('Security.TodayLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.TodayHint') }}</span>
         <textarea id="guet-today" v-model="today" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-today"></textarea>
       </div>
       <div>
-        <label class="block w-full font-bold text-center" for="guet-visions">{{ t('Security.VisionsLabel') }}</label>
-        <span v-if="restored.visions" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="visions-restored">{{ t('Security.Restored') }}</span>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-visions">{{ t('Security.VisionsLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.VisionsHint') }}</span>
         <textarea id="guet-visions" v-model="visions" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-visions" @input="restored.visions = false"></textarea>
+        <span v-if="restored.visions" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="visions-restored">{{ t('Security.Restored') }}</span>
       </div>
       <div>
-        <label class="block w-full font-bold text-center" for="guet-armies">{{ t('Security.ArmiesGroupsLabel') }}</label>
-        <span v-if="restored.armiesGroups" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="armies-restored">{{ t('Security.Restored') }}</span>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-armies">{{ t('Security.ArmiesGroupsLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.ArmiesGroupsHint') }}</span>
         <textarea id="guet-armies" v-model="armiesGroups" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-armies-groups" @input="restored.armiesGroups = false"></textarea>
+        <span v-if="restored.armiesGroups" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="armies-restored">{{ t('Security.Restored') }}</span>
       </div>
     </div>
 
-    <div class="flex justify-center">
-      <button type="button" class="odc-btn odc-btn--soft odc--green" :disabled="busy" data-testid="guet-generate" @click="generate">{{ t('Security.GenerateButton') }}</button>
+    <!-- « Confier au scribe » (l'export) et, à sa droite, l'inscription au registre : jamais automatique, la même plaque que le Bilan des mines, ville et jour DITS avant l'envoi. -->
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <button type="button" class="odc-btn odc-btn--soft odc--green" :disabled="busy" data-testid="guet-generate" @click="generate"><v-icon name="gi-quill" aria-hidden="true" />{{ t('Security.GenerateButton') }}</button>
+      <CustomsRegistrySave
+        v-if="canSave"
+        :city-name="city.name"
+        :day-label="dayLabel(day)"
+        :saving="saving"
+        :disabled="!Object.keys(sendable.sections).length"
+        :sealed="sealed"
+        @save="save"
+      />
     </div>
 
     <section v-if="report" class="space-y-3" data-testid="guet-result">
-      <h3 class="!mb-0 text-lg font-bold text-slate-800 dark:text-slate-800" data-testid="guet-result-title">
-        {{ city ? t('Security.ResultTitleCity', { date: dayLabel(report.reported_on), city: city.name }) : t('Security.ResultTitle', { date: dayLabel(report.reported_on) }) }}
-      </h3>
-
       <p v-if="previewError" role="alert" class="text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="guet-preview-error">{{ t('Security.PreviewFailed', { message: previewError }) }}</p>
       <p v-if="yesterdayMismatch" role="alert" class="text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="yesterday-mismatch">
         {{ t('Security.MismatchYesterday', yesterdayMismatch) }}
@@ -227,21 +281,12 @@
       <p v-for="problem in problems" :key="problem" role="alert" class="text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="guet-problem">{{ t(`SecurityCustoms.Form.Problem.${problem}`) }}</p>
       <p v-if="!report.sections_present.length && !problems.length" class="text-sm text-slate-700 dark:text-slate-700" data-testid="guet-nothing">{{ t('Security.NothingToShow') }}</p>
 
-      <CustomsReportView v-if="report.sections_present.length" :report="report" link-diff />
-
-      <div v-if="report.sections_present.length" class="flex flex-wrap items-start gap-3">
-        <button v-if="guet" type="button" class="odc-btn odc-btn--soft odc--green" data-testid="guet-export" @click="toExport"><v-icon name="gi-quill" aria-hidden="true" />{{ t('Security.ExportButton') }}</button>
-        <CustomsExport :report="report" :city-name="city?.name ?? ''" :title="t('Security.ExportDefenceTitle')" class="flex-1 min-w-[18rem]" />
+      <!-- « Confier au scribe » est l'EXPORT : le message est copié (Greg, 23/11/2026). Il n'est montré QUE si la copie a échoué, pour qu'on puisse le copier à la main. -->
+      <div v-if="bbcode && copyFailed" class="space-y-2">
+        <p role="alert" class="text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="guet-copy-failed">{{ t('Security.CopyFailed') }}</p>
+        <textarea readonly rows="10" class="w-full rounded-xl p-2 font-mono text-xs" :value="bbcode" data-testid="guet-bbcode" @focus="$event.target.select()"></textarea>
       </div>
 
-      <!-- Inscription : seulement avec un titre d'écriture ; la ville et le jour sont DITS avant l'envoi. -->
-      <div v-if="canSave" class="rounded-lg border border-slate-300 bg-white p-3 space-y-2" data-testid="guet-save-box">
-        <p class="text-sm text-slate-800 dark:text-slate-800" data-testid="guet-save-target">{{ t('SecurityCustoms.Form.WritesIn', { city: city.name, date: dayLabel(day) }) }}</p>
-        <p v-if="restored.visions || restored.armiesGroups" class="text-xs text-slate-700 dark:text-slate-700" data-testid="guet-save-restored">{{ t('Security.RestoredNotSaved') }}</p>
-        <button type="button" class="odc-btn odc-btn--soft odc--green" :disabled="saving || !Object.keys(sendable.sections).length" data-testid="guet-save" @click="save">
-          <v-icon name="gi-quill" aria-hidden="true" />{{ saving ? t('SecurityCustoms.Form.Sending') : t('SecurityCustoms.Form.Send') }}
-        </button>
-      </div>
     </section>
   </div>
 </template>

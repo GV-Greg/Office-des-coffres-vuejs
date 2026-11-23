@@ -72,9 +72,9 @@ function serve({ access = ACCESS(), report = REPORT(), days = ['2026-05-26', '20
   http.delete.mockImplementation(() => ok({ success: true }))
 }
 
-async function mountPage({ locale = 'fr', ...options } = {}) {
+async function mountPage({ locale = 'fr', characterCity = null, ...options } = {}) {
   setActivePinia(createPinia())
-  useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
+  useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice', city_id: characterCity }] }, token: 'jeton' })
   serve(options)
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
   const wrapper = mount(SecurityCustoms, { global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } } })
@@ -99,22 +99,32 @@ describe('Registre de douane — accès', () => {
   it('un rôle : le titre dit la province, la ville et le jour du jeu sont proposés, le bilan du jour est lu', async () => {
     const w = await mountPage()
 
-    expect(w.text()).toContain('Registre de douane : Artois')
+    expect(find(w, 'customs-title').text()).toBe('Registre de douane') // plus la province dans le titre
+    expect(find(w, 'province-select').text()).toBe('Artois') // elle précède la ville, avec le même rendu
+    expect(find(w, 'province-select').element.disabled).toBe(true)
     expect(w.findAll('[data-testid="city-select"] option').map(o => o.text())).toEqual(['Arras', 'Béthune'])
     expect(reportCalls()[0][1].params).toEqual({ city_id: 1, date: '2026-05-26' })
-    expect(find(w, 'no-trio').exists()).toBe(false)
+    expect(find(w, 'no-trio-button').exists()).toBe(false)
+  })
+
+  it('la ville proposée est celle du personnage ; à défaut, la première lisible', async () => {
+    expect(find(await mountPage({ access: ACCESS(), characterCity: 2 }), 'city-select').element.value).toBe('2')
+    expect(find(await mountPage({ access: ACCESS(), characterCity: 99 }), 'city-select').element.value).toBe('1')
   })
 
   it('sans trio connu, l\'écran le dit : c\'est l\'état courant d\'une province', async () => {
     const w = await mountPage({ access: ACCESS({ has_security_trio: false, role: 'customs', correct_reports: false }) })
 
-    expect(find(w, 'no-trio').text()).toContain('Aucun membre de la sécurité')
+    expect(find(w, 'no-trio-button').exists()).toBe(true) // un « i » à côté du titre, plus d'encart orange
+    expect(find(w, 'no-trio').exists()).toBe(false) // le texte est téléporté au <body>
+    expect(document.body.querySelector('[data-testid="no-trio"]').textContent).toContain('Aucun membre de la sécurité')
   })
 
   it('en anglais', async () => {
     const w = await mountPage({ locale: 'en' })
 
-    expect(w.text()).toContain('Customs Register: Artois')
+    expect(find(w, 'customs-title').text()).toBe('Customs Register')
+    expect(find(w, 'province-select').text()).toBe('Artois')
     expect(w.text()).toContain('Report of')
   })
 })
@@ -176,7 +186,7 @@ describe('Registre de douane — lecture du bilan', () => {
   it('un jour sans bilan : le message le dit', async () => {
     const w = await mountPage({ report: null })
 
-    expect(find(w, 'no-report').text()).toContain('Aucun bilan n\'a été inscrit pour Arras')
+    expect(find(w, 'no-report').text()).toContain('Aucun bilan inscrit pour Arras')
   })
 
   it('les chevrons passent d\'un jour à l\'autre et relisent le bilan de ce jour', async () => {
@@ -190,19 +200,12 @@ describe('Registre de douane — lecture du bilan', () => {
 })
 
 describe('Registre de douane — la saisie vit dans le Relevé de guet', () => {
-  it('qui peut saisir voit un lien vers le Relevé de guet ; aucun formulaire de collage ici', async () => {
+  it('aucun formulaire de collage ni bouton « Saisir un relevé » ici (le menu mène au Relevé de guet)', async () => {
     const w = await mountPage()
 
-    expect(find(w, 'enter-report').exists()).toBe(true)
-    expect(find(w, 'enter-report').text()).toContain('Saisir un relevé')
+    expect(find(w, 'enter-report').exists()).toBe(false)
     expect(find(w, 'customs-form').exists()).toBe(false)
     expect(w.find('textarea').exists()).toBe(false)
-  })
-
-  it('qui ne fait que lire (le dirigeant) n\'a pas le lien', async () => {
-    const w = await mountPage({ access: ACCESS({ write_reports: false, correct_reports: false, role: 'leader', writable_cities: [] }) })
-
-    expect(find(w, 'enter-report').exists()).toBe(false)
   })
 })
 
@@ -274,48 +277,91 @@ describe('Registre de douane — listes rouge et verte', () => {
   })
 })
 
-describe('Registre de douane — « Confier au scribe »', () => {
-  let written
-  beforeEach(() => {
-    written = null
-    Object.defineProperty(globalThis.navigator, 'clipboard', { configurable: true, value: { writeText: vi.fn(text => { written = text; return Promise.resolve() }) } })
+describe('Registre de douane — la mise en page du bilan (passe de design, 23/11/2026)', () => {
+  it('une ligne de synthèse : seuls les pseudos marqués et les groupes à surveiller prennent une couleur', async () => {
+    const w = await mountPage()
+    const chips = w.findAll('[data-testid="report-summary"] li').map(li => ({ text: li.text(), tone: li.attributes('data-tone') }))
+
+    expect(chips.find(c => c.tone === 'red').text).toBe('1 sur liste rouge')
+    expect(chips.find(c => c.tone === 'green').text).toBe('1 sur liste verte')
+    expect(chips.find(c => c.tone === 'alert').text).toBe('1 groupe à surveiller')
+    // les autres badges ont chacun leur teinte (bleu, sarcelle, violet, rose) ; rouge, vert et orange gardent leur sens de marque et d'alerte
+    expect(chips.filter(c => ['blue', 'teal', 'violet', 'rose'].includes(c.tone)).map(c => `${c.tone}: ${c.text}`)).toEqual(['blue: 3 habitants', 'teal: 1 arrivée', 'violet: 1 départ', 'rose: 3 groupes'])
   })
 
-  it('le bilan affiché part au presse-papiers en BBCode (français fixe, année du jeu), avec un toast', async () => {
-    const w = await mountPage({ locale: 'en' })
-    await find(w, 'customs-export-button').trigger('click')
-    await flushPromises()
+  it('aucune marque ni groupe à surveiller : aucun badge rouge, vert ni orange', async () => {
+    const calm = REPORT()
+    calm.sections.guet.villagers.forEach(v => { v.colour = null })
+    calm.sections.armies_groups.groups.forEach(g => { g.alert = false })
+    const w = await mountPage({ report: calm })
 
-    expect(written).toContain('[b][size=20]Bilan de défense du 26/05/1474 — Ville : Arras[/size][/b]')
-    expect(written).toContain('Comparé au bilan du 25/05/1474.')
-    expect(written).toContain('⚠ [char]Parti[/char]')
-    expect(written).not.toContain('Liste des villageois') // le brut n'existe pas côté écran
-    expect(push.success).toHaveBeenCalledWith('The report is copied, ready to paste on the forum.')
+    expect(w.findAll('[data-testid="report-summary"] li').every(li => !['red', 'green', 'alert'].includes(li.attributes('data-tone')))).toBe(true)
   })
 
-  it('l\'écran dit qu\'un bilan n\'est jamais public avant d\'exporter ; rien n\'est enregistré', async () => {
+  it('une section non inscrite se VOIT : une carte grisée dit « Non inscrit » (visions, armées, groupes, zone)', async () => {
+    const onlyGuet = REPORT()
+    delete onlyGuet.sections.visions
+    delete onlyGuet.sections.armies_groups
+    const w = await mountPage({ report: onlyGuet })
+    const muted = w.findAll('[data-tone="muted"]').map(c => c.text())
+
+    expect(muted).toHaveLength(4)
+    expect(muted.every(text => text.includes('Non inscrit'))).toBe(true)
+    expect(find(w, 'report-guet').exists()).toBe(true) // le guet, lui, est inscrit
+  })
+
+  it('le détail d\'un groupe (« Fermé », « Admission libre ») n\'est plus montré', async () => {
     const w = await mountPage()
 
-    expect(find(w, 'export-public-warning').text()).toContain('Un bilan n\'est jamais public')
-    expect(find(w, 'export-public-warning').text()).toContain('rien n\'est enregistré')
+    expect(find(w, 'report-armies-groups').text()).not.toContain('Admission libre')
+    expect(find(w, 'report-armies-groups').text()).not.toContain('Fermé')
   })
 
-  it('les options changent le BBCode : la liste complète des habitants sur demande, les marques à retirer', async () => {
+  it('au plus trois groupes : listés directement, sans dépliant', async () => {
     const w = await mountPage()
-    await find(w, 'opt-villagers').setValue(true)
-    await find(w, 'opt-colours').setValue(false)
-    await find(w, 'customs-export-button').trigger('click')
-    await flushPromises()
 
-    expect(written).toContain('[char]Emmie....[/char]')
-    expect(written).not.toContain('⚠ [char]') // plus de marque devant un pseudo (l'alerte « Groupe à surveiller » reste : ce n'est pas une liste)
-    expect(written).not.toContain('✔')
-    expect(written).toContain('⚠ Groupe à surveiller')
+    expect(find(w, 'report-armies-groups').find('details').exists()).toBe(false)
+    expect(find(w, 'report-armies-groups').findAll('li[data-alert]')).toHaveLength(3)
   })
 
-  it('sans bilan ce jour-là : pas d\'export', async () => {
-    const w = await mountPage({ report: null })
+  it('plus de trois groupes : seuls les groupes à surveiller restent visibles, les autres sont dans « Voir tous les groupes », comme les habitants', async () => {
+    const many = REPORT()
+    many.sections.armies_groups.groups = [
+      { type: 'groupe', alert: true, members: [{ pseudo: 'Sefrian', colour: null }], status: '' },
+      ...['Aldric', 'Brune', 'Cyrille', 'Doran'].map(pseudo => ({ type: 'lance', alert: false, members: [{ pseudo, colour: null }], status: '' })),
+    ]
+    const w = await mountPage({ report: many })
+    const card = find(w, 'report-armies-groups')
+
+    expect(card.find('details summary').text()).toBe('Voir tous les groupes (5)')
+    expect(card.find('details').findAll('li[data-alert]')).toHaveLength(5)
+    const visible = card.findAll('li[data-alert]').filter(li => !li.element.closest('details'))
+    expect(visible).toHaveLength(1)
+    expect(visible[0].attributes('data-alert')).toBe('true')
+  })
+
+  it('armées et contrôle de la zone sont sous les groupes, dans la même colonne', async () => {
+    const w = await mountPage()
+    const column = find(w, 'report-armies-groups').element.parentElement
+
+    expect(column.contains(find(w, 'report-armies').element)).toBe(true)
+    expect(column.contains(find(w, 'report-zone').element)).toBe(true)
+    expect(find(w, 'report-guet').element.parentElement).not.toBe(column)
+  })
+
+  it('la carte des groupes passe à l\'alerte (liseré orange) quand un groupe est à surveiller', async () => {
+    const w = await mountPage()
+
+    expect(find(w, 'report-armies-groups').attributes('data-tone')).toBe('alert')
+  })
+})
+
+describe('Registre de douane — pas d\'export ici (Greg, 23/11/2026)', () => {
+  it('le Registre se LIT : « Confier au scribe » vit dans le Relevé de guet', async () => {
+    const w = await mountPage()
 
     expect(find(w, 'customs-export').exists()).toBe(false)
+    expect(find(w, 'customs-export-button').exists()).toBe(false)
+    expect(w.text()).not.toContain('Confier au scribe')
   })
 })

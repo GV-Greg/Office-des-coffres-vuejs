@@ -1,6 +1,6 @@
 /*
   Le Relevé unique (module Sécurité, PR 3-2 ; fil admin/echanges/module-securite 12 à 14) : de cinq types de collage à UN bilan affichable, EN LOCAL,
-  dans la même forme que celui que le serveur sert — `CustomsReportView` et `CustomsExport` l'affichent donc tels quels, avec ou sans compte.
+  dans la même forme que celui que le serveur sert — `customsReportToBBCode` l'exporte et `CustomsReportView` l'afficherait donc tels quels, avec ou sans compte.
   Logique pure : rien n'est lu ni écrit ici.
 
   - Sans compte : aucune couleur (le serveur seul connaît les listes de la province) ; le différentiel du guet compare à la liste d'hier collée.
@@ -29,9 +29,10 @@ export function parseReleve(pastes, visionsDay = null) {
 
   let visions = null
   if (filled(pastes.visions)) {
-    const { entries } = parseVisions(pastes.visions)
-    const day = visionsDay ?? entries.map(e => e.date).sort().at(-1) ?? null
-    visions = day ? { day, ...visionsForDay(entries, day) } : { day: null, kept: [], otherDays: entries.length }
+    const { entries, undatedAssumed } = parseVisions(pastes.visions)
+    // Sans date dans le collage : le jour du relevé (celui que le serveur annonce, sinon le jour du jeu d'aujourd'hui).
+    const day = visionsDay ?? entries.map(e => e.date).filter(Boolean).sort().at(-1) ?? (undatedAssumed ? localGameDay() : null)
+    visions = { ...(day ? { day, ...visionsForDay(entries, day) } : { day: null, kept: [], otherDays: entries.length }), assumed: undatedAssumed }
   }
 
   const block = filled(pastes.armiesGroups) ? parseArmiesGroups(pastes.armiesGroups) : null
