@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-23] — PR #159 (Texte légal : les pseudos du Relevé de guet partent au serveur, sans être enregistrés)
+
+### Changed
+- **« Vos données »** (fil `admin/echanges/module-securite/15` à `17`, option B de Greg, non substantiel, sans `policy:notify`) : avec un titre de sécurité reconnu, les pseudos collés sont envoyés au serveur pour afficher les marques des listes rouge et verte ; ils ne sont pas enregistrés. Dit dans l'entrée du Relevé de guet (`Watch.Stored`) et dans celle de La Salle des gardes (`Security.Stored`), en FR et en EN. `Watch.Audience` n'affirme plus que ces données « ne quittent pas votre navigateur » sans réserve.
+- **« ni journalisés » volontairement absent** : les journaux de l'hébergeur ne sont pas vérifiés ; le garde-fou de test l'interdit tant que ce n'est pas fait.
+
+### Added
+- Tests `privacyWatch.unit.test.js` (+2) ; 1609 tests.
+
+### Deploy notes
+- Frontend seul : aucune migration, route, `config/*.php` ni paquet ; backend inchangé.
+
 ## [2026-11-23] — PR #158 (Fix : le bilan hebdomadaire d'un mandat renouvelé reprend les jours déjà couverts)
 
 ### Fixed
