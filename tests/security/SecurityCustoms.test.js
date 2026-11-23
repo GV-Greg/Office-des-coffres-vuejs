@@ -72,9 +72,9 @@ function serve({ access = ACCESS(), report = REPORT(), days = ['2026-05-26', '20
   http.delete.mockImplementation(() => ok({ success: true }))
 }
 
-async function mountPage({ locale = 'fr', ...options } = {}) {
+async function mountPage({ locale = 'fr', characterCity = null, ...options } = {}) {
   setActivePinia(createPinia())
-  useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
+  useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice', city_id: characterCity }] }, token: 'jeton' })
   serve(options)
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
   const wrapper = mount(SecurityCustoms, { global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } } })
@@ -102,13 +102,20 @@ describe('Registre de douane — accès', () => {
     expect(w.text()).toContain('Registre de douane : Artois')
     expect(w.findAll('[data-testid="city-select"] option').map(o => o.text())).toEqual(['Arras', 'Béthune'])
     expect(reportCalls()[0][1].params).toEqual({ city_id: 1, date: '2026-05-26' })
-    expect(find(w, 'no-trio').exists()).toBe(false)
+    expect(find(w, 'no-trio-button').exists()).toBe(false)
+  })
+
+  it('la ville proposée est celle du personnage ; à défaut, la première lisible', async () => {
+    expect(find(await mountPage({ access: ACCESS(), characterCity: 2 }), 'city-select').element.value).toBe('2')
+    expect(find(await mountPage({ access: ACCESS(), characterCity: 99 }), 'city-select').element.value).toBe('1')
   })
 
   it('sans trio connu, l\'écran le dit : c\'est l\'état courant d\'une province', async () => {
     const w = await mountPage({ access: ACCESS({ has_security_trio: false, role: 'customs', correct_reports: false }) })
 
-    expect(find(w, 'no-trio').text()).toContain('Aucun membre de la sécurité')
+    expect(find(w, 'no-trio-button').exists()).toBe(true) // un « i » à côté du titre, plus d'encart orange
+    expect(find(w, 'no-trio').exists()).toBe(false) // le texte est téléporté au <body>
+    expect(document.body.querySelector('[data-testid="no-trio"]').textContent).toContain('Aucun membre de la sécurité')
   })
 
   it('en anglais', async () => {

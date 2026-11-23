@@ -58,10 +58,10 @@ function serve({ access = null, preview = { success: true, today: '2026-10-27', 
 }
 
 // `again` : une SECONDE visite — le même magasin (consentement, stockage de confort), un nouvel écran.
-async function mountGuet({ locale = 'fr', loggedIn = false, again = false, ...options } = {}) {
+async function mountGuet({ locale = 'fr', loggedIn = false, again = false, characterCity = null, ...options } = {}) {
   if (!again) pinia = createPinia()
   setActivePinia(pinia)
-  if (loggedIn) useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice' }] }, token: 'jeton' })
+  if (loggedIn) useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice', city_id: characterCity }] }, token: 'jeton' })
   serve(options)
   const wrapper = mount(SecurityGuet, { global: { plugins: [pinia, createI18n({ legacy: false, locale, messages: { fr, en } })], stubs: { 'v-icon': true } }, attachTo: document.body })
   await flushPromises()
@@ -88,6 +88,107 @@ beforeEach(() => {
   vi.clearAllMocks()
   localStorage.clear()
   document.body.innerHTML = ''
+})
+
+describe('Relevé de guet — visions copiées sans leur ligne de date (le journal du jeu sépare la date)', () => {
+  const pasted = "Visions\nAujourd'hui, en chemin, vous avez croisé un groupe composé de Sheliss , de Yohanna. , de Sganamouche , de Roderick_alex et de Romaric_, Leely."
+
+  it('elles sont comptées pour le jour du relevé, et l\'écran le dit (plus de « aucune vision de ce jour »)', async () => {
+    const w = await mountGuet()
+    await fill(w, { today: real('guet-fr'), visions: pasted })
+    await generate(w)
+    expect(w.findAll('[data-testid="guet-problem"]').map(p => p.text()).join(' ')).not.toContain('Aucune vision')
+    expect(find(w, 'guet-visions-assumed').text()).toMatch(/^Visions collées sans date : elles sont comptées pour le /)
+    expect(find(w, 'report-visions').exists()).toBe(true)
+  })
+
+  it('en anglais aussi, et avec un titre : le jour est celui du serveur', async () => {
+    const en = await mountGuet({ locale: 'en', loggedIn: true, access: ACCESS() })
+    await fill(en, { today: real('guet-en'), visions: 'Visions\nToday, on the road you met Elyas.' })
+    await generate(en)
+    expect(find(en, 'guet-visions-assumed').text()).toContain('Visions pasted without a date')
+    expect(find(en, 'report-visions').exists()).toBe(true)
+  })
+})
+
+describe('Relevé de guet — la ville proposée par défaut (Greg, 23/11/2026)', () => {
+  it('c\'est la ville du personnage (douanier, maire…), pas la première de la liste', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), characterCity: 2 })
+    expect(find(w, 'guet-city').element.value).toBe('2')
+  })
+
+  it('si cette ville n\'est pas lisible (ou inconnue), la première des villes lisibles', async () => {
+    expect(find(await mountGuet({ loggedIn: true, access: ACCESS(), characterCity: 99 }), 'guet-city').element.value).toBe('1')
+    expect(find(await mountGuet({ loggedIn: true, access: ACCESS(), characterCity: null }), 'guet-city').element.value).toBe('1')
+  })
+})
+
+describe('Relevé de guet — présentation (fil module-securite 19, A1 à A5, 23/11/2026)', () => {
+  it('A1 : un h1 « Relevé de guet » / « Watch Report »', async () => {
+    expect(find(await mountGuet(), 'guet-title').element.tagName).toBe('H1')
+    expect(find(await mountGuet(), 'guet-title').text()).toBe('Relevé de guet')
+    expect(find(await mountGuet({ locale: 'en' }), 'guet-title').text()).toBe('Watch Report')
+  })
+
+  it('A2 : le bouton se nomme « Confier au scribe » (« Entrust to the scribe », l\'anglais déjà employé par les exports)', async () => {
+    expect(find(await mountGuet(), 'guet-generate').text()).toBe('Confier au scribe')
+    expect(find(await mountGuet({ locale: 'en' }), 'guet-generate').text()).toBe('Entrust to the scribe')
+  })
+
+  it('A3 et A4 : quatre libellés en `form-label`, chacun avec une seule phrase d\'aide', async () => {
+    const w = await mountGuet()
+    const labels = ['yesterday', 'today', 'visions', 'armies'].map(id => w.find(`label[for="guet-${id}"]`))
+    expect(labels.map(l => l.text())).toEqual(['Liste du guet d\'hier', 'Liste du guet d\'aujourd\'hui', 'Visions', 'Armées et groupes'])
+    for (const label of labels) {
+      expect(label.classes()).toContain('form-label')
+      expect(label.element.nextElementSibling.textContent).toMatch(/^Collez /)
+    }
+    expect(find(w, 'guet-intro').exists()).toBe(false) // la phrase d'introduction est supprimée (redondante avec les aides)
+    const en = await mountGuet({ locale: 'en' })
+    expect(en.find('label[for="guet-today"]').text()).toBe('Today\'s watch list')
+  })
+
+  it('libellés dans la couleur du module Sécurité (rose, comme le titre du menu), jamais en orange', async () => {
+    const w = await mountGuet()
+    // le titre aussi : le dégradé orange global du h1 est neutralisé
+    expect(find(w, 'guet-title').classes()).toEqual(expect.arrayContaining(['bg-none', 'text-rose-600']))
+    for (const id of ['yesterday', 'today', 'visions', 'armies']) {
+      const classes = w.find(`label[for="guet-${id}"]`).classes()
+      expect(classes).toContain('text-rose-700')
+      expect(classes.join(' ')).not.toMatch(/orange/)
+    }
+  })
+
+  it('« Pré-remplie automatiquement… » et « Retrouvé… » se lisent SOUS la zone de collage, pas entre le libellé et la zone', async () => {
+    const w = await mountGuet()
+    useCookieStore().consent.preferences = true
+    await fill(w, { today: aujourdhui, visions: real('visions-fr'), armies: allArmies('fr') })
+    await generate(w)
+
+    const second = await mountGuet({ again: true })
+    const under = (note, textarea) => {
+      expect(note.exists()).toBe(true)
+      expect(note.element.previousElementSibling).toBe(textarea.element)
+    }
+    under(find(second, 'yesterday-prefilled'), find(second, 'paste-yesterday'))
+    under(find(second, 'visions-restored'), find(second, 'paste-visions'))
+    under(find(second, 'armies-restored'), find(second, 'paste-armies-groups'))
+    expect(find(second, 'yesterday-prefilled').text()).toBe('Pré-remplie automatiquement depuis votre dernière visite')
+  })
+
+  it('A5 : le mode douanier n\'apparaît que pour qui peut INSCRIRE au Registre (jamais sans titre, ni avec un titre de lecture seule)', async () => {
+    const scribe = await mountGuet({ loggedIn: true, access: ACCESS() })
+    expect(find(scribe, 'guet-customs-mode').element.previousElementSibling).toBe(find(scribe, 'guet-title').element) // à droite du titre
+    expect(find(scribe, 'guet-customs-mode').text()).toBe('Mode douanier')
+    expect(find(scribe, 'guet-customs-mode-detail').text()).toBe('Vos relevés seront colorisés et conservés dans le Registre de douane') // le détail, sous le titre
+    expect(find(await mountGuet({ loggedIn: true, access: ACCESS(), locale: 'en' }), 'guet-customs-mode').text())
+      .toBe('Customs mode')
+
+    expect(find(await mountGuet(), 'guet-customs-mode').exists()).toBe(false) // sans compte
+    expect(find(await mountGuet({ loggedIn: true, access: null }), 'guet-customs-mode').exists()).toBe(false) // aucun titre
+    const reader = await mountGuet({ loggedIn: true, access: ACCESS({ write_reports: false, writable_cities: [], role: 'leader' }) })
+    expect(find(reader, 'guet-customs-mode').exists()).toBe(false) // lecture seule : rien n'est conservé
+  })
 })
 
 describe('Relevé de guet — le guet sur données réelles (préambule + tableau)', () => {
@@ -126,7 +227,7 @@ describe('Relevé de guet — le guet sur données réelles (préambule + tablea
     expect(previewCalls()).toHaveLength(0)
     expect(w.findAll('[data-colour="red"], [data-colour="green"]')).toHaveLength(0)
     expect(find(w, 'guet-diff').text()).toContain('Comparé à la liste d\'hier collée')
-    expect(find(w, 'guet-no-title').text()).toContain('Sans titre de sécurité reconnu')
+    expect(find(w, 'guet-registry-bar').exists()).toBe(false) // sans titre : ni encart ni note, le relevé se lit simplement
   })
 })
 
@@ -302,7 +403,7 @@ describe('Relevé de guet — avec un titre de sécurité', () => {
 
     expect(previewCalls()[0][1].city_id).toBeUndefined()
     expect(w.find('[data-testid="guet-city"]').exists()).toBe(false)
-    expect(find(w, 'guet-registry-note').text()).toContain('marques des listes rouge et verte')
+    expect(find(w, 'guet-registry-bar').exists()).toBe(false) // rien à choisir : pas d'encart vide
   })
 
   it('un simple joueur avec compte (aucun titre) : mode sans compte, aucun appel de couleurs', async () => {
@@ -311,7 +412,7 @@ describe('Relevé de guet — avec un titre de sécurité', () => {
     await generate(w)
 
     expect(previewCalls()).toHaveLength(0)
-    expect(find(w, 'guet-no-title').exists()).toBe(true)
+    expect(find(w, 'guet-registry-bar').exists()).toBe(false)
     expect(find(w, 'guet-save-box').exists()).toBe(false)
   })
 

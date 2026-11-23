@@ -41,6 +41,21 @@ describe('buildSections', () => {
     expect(summary.visions).toMatchObject({ kept: 0, otherDays: 12 })
   })
 
+  it('des visions SANS ligne de date (copie d\'une seule entrée du journal) : comptées pour le jour du bilan, brut sans le titre « Visions »', () => {
+    const paste = "Visions\nAujourd'hui, en chemin, vous avez croisé un groupe composé de Sheliss , de Yohanna. et de Romaric_, Leely."
+    const { sections, problems, summary } = buildSections({ guet: fixture('guet-fr'), visions: paste }, '2026-11-23')
+    expect(problems).toEqual([])
+    expect(summary.visions).toMatchObject({ kept: 1, assumed: true })
+    expect(sections.visions.report.entries).toHaveLength(1)
+    expect(sections.visions.raw).toBe("Aujourd'hui, en chemin, vous avez croisé un groupe composé de Sheliss , de Yohanna. et de Romaric_, Leely.")
+  })
+
+  it('un collage daté garde sa règle : les lignes AVANT la première date restent ignorées, rien n\'est supposé', () => {
+    const paste = "Aujourd'hui, en chemin, vous avez croisé Elyas.\nLe 21 Novembre 1474\nAujourd'hui, en chemin, vous avez croisé Agathe.."
+    const { summary } = buildSections({ guet: fixture('guet-fr'), visions: paste }, '2026-11-21')
+    expect(summary.visions).toMatchObject({ kept: 1, assumed: false })
+  })
+
   it('un collage illisible est signalé, pas envoyé', () => {
     const { sections, problems } = buildSections({ guet: 'rien de reconnaissable', armiesGroups: 'du texte quelconque' }, '2026-10-27')
     expect(sections).toEqual({})

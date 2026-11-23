@@ -29,9 +29,10 @@ export function parseReleve(pastes, visionsDay = null) {
 
   let visions = null
   if (filled(pastes.visions)) {
-    const { entries } = parseVisions(pastes.visions)
-    const day = visionsDay ?? entries.map(e => e.date).sort().at(-1) ?? null
-    visions = day ? { day, ...visionsForDay(entries, day) } : { day: null, kept: [], otherDays: entries.length }
+    const { entries, undatedAssumed } = parseVisions(pastes.visions)
+    // Sans date dans le collage : le jour du relevé (celui que le serveur annonce, sinon le jour du jeu d'aujourd'hui).
+    const day = visionsDay ?? entries.map(e => e.date).filter(Boolean).sort().at(-1) ?? (undatedAssumed ? localGameDay() : null)
+    visions = { ...(day ? { day, ...visionsForDay(entries, day) } : { day: null, kept: [], otherDays: entries.length }), assumed: undatedAssumed }
   }
 
   const block = filled(pastes.armiesGroups) ? parseArmiesGroups(pastes.armiesGroups) : null

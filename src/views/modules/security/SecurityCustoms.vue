@@ -5,6 +5,7 @@
   import { apiMessage } from '@/stores/mandateStore'
   import { useAuthStore } from '@/stores/authStore'
   import { formatFieldDate } from '@/modules/playerDates'
+  import { defaultCityId } from '@/modules/customsCity'
   import customsApi from '@/use/customsApi'
   import useCustomsAccess from '@/use/useCustomsAccess'
   import ChestLoader from '@/components/loading/ChestLoader.vue'
@@ -12,6 +13,7 @@
   import CustomsReportView from '@/components/customs/CustomsReportView.vue'
   import CustomsExport from '@/components/customs/CustomsExport.vue'
   import CustomsListsModal from '@/components/customs/CustomsListsModal.vue'
+  import InfoTip from '@/components/InfoTip.vue'
 
   /*
     Le Registre de douane (module Sécurité, « La Salle des gardes » ; brief admin/content/brief-module-securite.md ; fil admin/echanges/
@@ -84,7 +86,7 @@
   // À l'arrivée de l'accès : la première ville lisible et le jour du jeu en cours que le serveur annonce.
   watch(access, (value) => {
     if (!value) return
-    cityId.value = value.readable_cities[0]?.id ?? null
+    cityId.value = defaultCityId(value.readable_cities, authStore.activeCharacter)
     day.value = value.today
   }, { immediate: true })
   watch([cityId, day], load)
@@ -97,11 +99,11 @@
       <AccessDenied v-if="!access" :message="t('SecurityCustoms.NoAccess')" testid="customs-denied" />
 
       <div v-else class="space-y-4">
-        <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Title', { province: access.province.name }) }}</h2>
-
-        <p v-if="!access.has_security_trio" class="rounded border border-orange-500 bg-orange-100 p-2 text-sm text-orange-900 dark:text-orange-900" role="note" data-testid="no-trio">
-          {{ t('SecurityCustoms.NoTrio') }}
-        </p>
+        <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+          <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl text-rose-600" data-testid="customs-title">{{ t('SecurityCustoms.Title', { province: access.province.name }) }}</h1>
+          <!-- Aucun trio connu : c'est l'état courant d'une province, dit en infobulle plutôt qu'en encart. -->
+          <InfoTip v-if="!access.has_security_trio" :label="t('SecurityCustoms.NoTrioLabel')" :text="t('SecurityCustoms.NoTrio')" testid="no-trio" />
+        </div>
 
         <!-- Où l'on regarde : la ville et le jour. -->
         <div v-if="cities.length" class="flex flex-wrap items-end gap-3" data-testid="customs-bar">

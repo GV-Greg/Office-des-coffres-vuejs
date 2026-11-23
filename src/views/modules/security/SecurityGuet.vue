@@ -8,6 +8,7 @@
   import { formatFieldDate } from '@/modules/playerDates'
   import { parseReleve, collectPseudos, buildLocalReport, localGameDay } from '@/modules/customsLocalReport'
   import { buildSections } from '@/modules/customsPaste'
+  import { defaultCityId } from '@/modules/customsCity'
   import customsApi from '@/use/customsApi'
   import useCustomsAccess from '@/use/useCustomsAccess'
   import CustomsReportView from '@/components/customs/CustomsReportView.vue'
@@ -34,16 +35,18 @@
 
   // ── Le titre de sécurité, s'il y en a un (le serveur décide) ──
   const character = computed(() => (authStore.isLoggedIn ? authStore.activeCharacter : null))
-  const { access, ready } = useCustomsAccess(() => character.value?.id ?? null)
+  const { access } = useCustomsAccess(() => character.value?.id ?? null)
   const cities = computed(() => access.value?.readable_cities ?? [])
   const cityId = ref(null)
   const day = ref(null)
   const city = computed(() => cities.value.find(c => c.id === cityId.value) ?? null)
   const canColour = computed(() => !!access.value?.read_lists)
+  /** Mode « douanier » (Greg, 23/11/2026) : le titre permet d'inscrire au Registre, pas seulement de lire les marques. */
+  const customsMode = computed(() => !!access.value?.write_reports && (access.value.writable_cities?.length ?? 0) > 0)
   const canSave = computed(() => !!access.value?.write_reports && !!city.value && access.value.writable_cities.some(c => c.id === city.value.id))
 
   watch(access, (value) => {
-    cityId.value = value?.readable_cities[0]?.id ?? null
+    cityId.value = defaultCityId(value?.readable_cities, character.value)
     day.value = value?.today ?? null
   }, { immediate: true })
 
@@ -169,50 +172,56 @@
 
 <template>
   <div class="w-full space-y-4" data-testid="guet-page">
-    <p class="text-sm text-slate-700 dark:text-slate-700" data-testid="guet-intro">{{ t('Security.Intro') }}</p>
+    <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+      <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl text-rose-600" data-testid="guet-title">{{ t('Security.PageTitle') }}</h1>
+      <p v-if="customsMode" class="mt-1 flex items-center gap-2 rounded-full border border-rose-300 bg-rose-50 px-4 py-1 text-sm font-semibold text-rose-800 dark:text-rose-800" data-testid="guet-customs-mode">
+        <v-icon name="fa-user-shield" class="!block" aria-hidden="true" />{{ t('Security.CustomsMode') }}
+      </p>
+    </div>
 
     <!-- Avec un titre de sécurité : où l'on regarde (ville) et, pour qui corrige, le jour. Le serveur dit tout. -->
-    <div v-if="access" class="flex flex-wrap items-end gap-3 rounded-lg border border-slate-300 bg-white p-3" data-testid="guet-registry-bar">
-      <label v-if="cities.length" class="text-sm text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.City') }}</span>
+    <div v-if="access && (cities.length || dayOptions.length)" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2" data-testid="guet-registry-bar">
+      <label v-if="cities.length" class="flex items-center gap-2 text-sm text-slate-800"><span class="font-bold">{{ t('SecurityCustoms.City') }}</span>
         <select v-model.number="cityId" class="rounded p-1" data-testid="guet-city">
           <option v-for="c in cities" :key="c.id" :value="c.id">{{ c.name }}</option>
         </select>
       </label>
-      <label v-if="dayOptions.length" class="text-sm text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.Day') }}</span>
+      <label v-if="dayOptions.length" class="flex items-center gap-2 text-sm text-slate-800"><span class="font-bold">{{ t('SecurityCustoms.Day') }}</span>
         <select v-model="day" class="rounded p-1" data-testid="guet-day">
           <option v-for="d in dayOptions" :key="d" :value="d">{{ dayLabel(d) }}</option>
         </select>
       </label>
-      <p class="flex-1 min-w-[16rem] text-xs text-slate-700 dark:text-slate-700" data-testid="guet-registry-note">
-        {{ t(cities.length ? 'Security.RegistryNote' : 'Security.ColoursOnlyNote') }}
-      </p>
+      <p v-if="customsMode" class="!my-0 text-sm text-slate-700 dark:text-slate-700" data-testid="guet-customs-mode-detail">{{ t('Security.CustomsModeDetail') }}</p>
     </div>
-    <p v-else-if="ready" class="text-xs text-slate-600 dark:text-slate-600" data-testid="guet-no-title">{{ t('Security.NoTitleNote') }}</p>
 
     <div class="grid grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-4 gap-4">
       <div>
-        <label class="block w-full font-bold text-center" for="guet-yesterday">{{ t('Security.YesterdayLabel') }}</label>
-        <span v-if="prefilledYesterday" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic">{{ t('Security.YesterdayPrefilled') }}</span>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-yesterday">{{ t('Security.YesterdayLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.YesterdayHint') }}</span>
         <textarea id="guet-yesterday" v-model="yesterday" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-yesterday" @input="prefilledYesterday = false"></textarea>
+        <span v-if="prefilledYesterday" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="yesterday-prefilled">{{ t('Security.YesterdayPrefilled') }}</span>
       </div>
       <div>
-        <label class="block w-full font-bold text-center" for="guet-today">{{ t('Security.TodayLabel') }}</label>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-today">{{ t('Security.TodayLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.TodayHint') }}</span>
         <textarea id="guet-today" v-model="today" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-today"></textarea>
       </div>
       <div>
-        <label class="block w-full font-bold text-center" for="guet-visions">{{ t('Security.VisionsLabel') }}</label>
-        <span v-if="restored.visions" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="visions-restored">{{ t('Security.Restored') }}</span>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-visions">{{ t('Security.VisionsLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.VisionsHint') }}</span>
         <textarea id="guet-visions" v-model="visions" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-visions" @input="restored.visions = false"></textarea>
+        <span v-if="restored.visions" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="visions-restored">{{ t('Security.Restored') }}</span>
       </div>
       <div>
-        <label class="block w-full font-bold text-center" for="guet-armies">{{ t('Security.ArmiesGroupsLabel') }}</label>
-        <span v-if="restored.armiesGroups" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="armies-restored">{{ t('Security.Restored') }}</span>
+        <label class="form-label block w-full text-center text-rose-700" for="guet-armies">{{ t('Security.ArmiesGroupsLabel') }}</label>
+        <span class="block text-xs text-slate-600 dark:text-slate-600 text-center mb-1">{{ t('Security.ArmiesGroupsHint') }}</span>
         <textarea id="guet-armies" v-model="armiesGroups" rows="12" class="textarea-autoresize w-full rounded-xl p-2" data-testid="paste-armies-groups" @input="restored.armiesGroups = false"></textarea>
+        <span v-if="restored.armiesGroups" class="block text-xs text-slate-500 dark:text-slate-400 text-center italic" data-testid="armies-restored">{{ t('Security.Restored') }}</span>
       </div>
     </div>
 
     <div class="flex justify-center">
-      <button type="button" class="odc-btn odc-btn--soft odc--green" :disabled="busy" data-testid="guet-generate" @click="generate">{{ t('Security.GenerateButton') }}</button>
+      <button type="button" class="odc-btn odc-btn--soft odc--green" :disabled="busy" data-testid="guet-generate" @click="generate"><v-icon name="gi-quill" aria-hidden="true" />{{ t('Security.GenerateButton') }}</button>
     </div>
 
     <section v-if="report" class="space-y-3" data-testid="guet-result">
@@ -225,6 +234,7 @@
         {{ t('Security.MismatchYesterday', yesterdayMismatch) }}
       </p>
       <p v-for="problem in problems" :key="problem" role="alert" class="text-sm font-bold text-orange-800 dark:text-orange-800" data-testid="guet-problem">{{ t(`SecurityCustoms.Form.Problem.${problem}`) }}</p>
+      <p v-if="parsed?.visions?.assumed && parsed.visions.kept.length" class="text-xs text-slate-700 dark:text-slate-700" data-testid="guet-visions-assumed">{{ t('Security.VisionsAssumed', { date: dayLabel(parsed.visions.day) }) }}</p>
       <p v-if="!report.sections_present.length && !problems.length" class="text-sm text-slate-700 dark:text-slate-700" data-testid="guet-nothing">{{ t('Security.NothingToShow') }}</p>
 
       <CustomsReportView v-if="report.sections_present.length" :report="report" link-diff />

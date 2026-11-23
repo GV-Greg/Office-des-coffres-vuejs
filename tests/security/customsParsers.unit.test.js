@@ -31,6 +31,23 @@ describe('guet — collages réels FR et EN', () => {
   })
 })
 
+describe('visions en chemin — collage sans ligne de date', () => {
+  it('sans AUCUNE date : les lignes sont gardées (date null) et supposées du jour du relevé', () => {
+    const r = parseVisions("Visions\nAujourd'hui, en chemin, vous avez croisé Elyas.")
+    expect(r.entries).toEqual([{ date: null, singles: ['Elyas'], groups: [] }])
+    expect(r.undatedAssumed).toBe(true)
+    expect(visionsForDay(r.entries, '2026-11-23').kept).toHaveLength(1)
+  })
+
+  it('avec une date, les lignes qui la précèdent restent ignorées', () => {
+    const r = parseVisions("Aujourd'hui, en chemin, vous avez croisé Elyas.\nLe 21 Novembre 1474\nAujourd'hui, en chemin, vous avez croisé Agathe..")
+    expect(r.entries).toHaveLength(1)
+    expect(r.entries[0].date).not.toBeNull()
+    expect(r.undatedAssumed).toBe(false)
+    expect(r.ignoredLines).toBeGreaterThan(0)
+  })
+})
+
 describe('visions en chemin — journal multi-jours à dates de jeu explicites', () => {
   it('douze lignes sur dix jours, résultats IDENTIQUES en français et en anglais', () => {
     const fr = parseVisions(fixture('visions-fr'))

@@ -43,7 +43,7 @@ export function buildSections(pastes, day) {
   if (filled(pastes.visions)) {
     const parsed = parseVisions(pastes.visions)
     const forDay = visionsForDay(parsed.entries, day)
-    summary.visions = { kept: forDay.kept.length, otherDays: forDay.otherDays, ignoredLines: parsed.ignoredLines }
+    summary.visions = { kept: forDay.kept.length, otherDays: forDay.otherDays, ignoredLines: parsed.ignoredLines, assumed: parsed.undatedAssumed }
     if (forDay.kept.length === 0) {
       problems.push('visions_none')
     } else {

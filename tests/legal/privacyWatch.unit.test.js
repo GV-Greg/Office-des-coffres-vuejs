@@ -35,7 +35,7 @@ describe('Politique cookies et « Vos données » — Relevé de guet (collage u
 
   /*
     Pseudos en transit (fil module-securite 15 et 16, B retenue par Greg le 22/11/2026, non substantiel, sans policy:notify) :
-    avec un titre de sécurité, « Générer le relevé » envoie au serveur les PSEUDOS collés (jamais un texte) pour les colorer ;
+    avec un titre de sécurité, la génération du relevé (bouton « Confier au scribe ») envoie au serveur les PSEUDOS collés (jamais un texte) pour les colorer ;
     le serveur ne les écrit pas (CustomsPreviewTest). 🔴 « ni journalisés » est INTERDIT tant que les journaux de l'hébergeur ne sont pas vérifiés.
   */
   it.each([
