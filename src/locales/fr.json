@@ -856,6 +856,7 @@
       "BilanPeriod": "{label}, du {from} au {to}",
       "BilanFigures": "Valeur produite {valeur} ; salaires {salaire} ; entretien {entretien}. Net :",
       "BilanCoverage": "Aucun jour couvert sur {days} : le bilan ne compte que les jours où le registre a des données. | Un jour couvert sur {days} : le bilan ne compte que les jours où le registre a des données. | {covered} jours couverts sur {days} : le bilan ne compte que les jours où le registre a des données.",
+      "FirstBilanTomorrow": "Premier bilan disponible demain : aucun jour complet n'est encore compté pour ce mandat.",
       "BilanPrices": "Prix et salaire/heure en vigueur chaque jour (à défaut, ceux du dernier relevé).",
       "LevelsTitle": "Historique des niveaux",
       "LevelsNone": "aucun changement de niveau relevé",

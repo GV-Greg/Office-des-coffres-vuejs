@@ -856,6 +856,7 @@
       "BilanPeriod": "{label}, from {from} to {to}",
       "BilanFigures": "Value produced {valeur}; wages {salaire}; upkeep {entretien}. Net:",
       "BilanCoverage": "No day covered out of {days}: the report only counts days on which the registry has data. | One day covered out of {days}: the report only counts days on which the registry has data. | {covered} days covered out of {days}: the report only counts days on which the registry has data.",
+      "FirstBilanTomorrow": "First report available tomorrow: no full day has been counted for this mandate yet.",
       "BilanPrices": "Prices and wage/hour in force each day (otherwise those of the last report).",
       "LevelsTitle": "Level history",
       "LevelsNone": "no level change recorded",

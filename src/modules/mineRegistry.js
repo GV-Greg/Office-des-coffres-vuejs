@@ -94,6 +94,12 @@ export function mandateBilans(registry, priceSets = []) {
 export function daysWithoutData(registry) {
   const start = registry?.mandate?.in_office_from
   if (!start) return null
+  const covered = coveredDays(registry)
+  return periodDates(start, registry.today).filter(day => !covered.has(day))
+}
+
+/** Jours pour lesquels un relevé en vigueur contient une donnée, pour une mine au moins. */
+function coveredDays(registry) {
   const covered = new Set()
   for (const r of activeAscending(registry.reports)) {
     for (const mine of r.report?.mines ?? []) {
@@ -102,7 +108,7 @@ export function daysWithoutData(registry) {
       }
     }
   }
-  return periodDates(start, registry.today).filter(day => !covered.has(day))
+  return covered
 }
 
 /**
@@ -166,13 +172,16 @@ export function weekRange(registry) {
 
 /**
  * Bilan d'UNE semaine du mandat (lundi → dimanche), recalculé jour par jour avec les prix en vigueur ce
- * jour-là (table des prix, à défaut le relevé inscrit le plus proche). Les jours avant l'entrée en fonction et à
- * partir d'aujourd'hui sont écartés : ils ne sont pas (encore) dans le registre du lecteur.
+ * jour-là (table des prix, à défaut le relevé inscrit le plus proche). Les jours à partir d'aujourd'hui sont écartés,
+ * et ceux avant l'entrée en fonction aussi — SAUF s'ils ont des données (Cowork, 23/11/2026) : une semaine du
+ * calendrier ne connaît pas les frontières de mandat, et les relevés servis (fenêtre « prédécesseurs », ou ceux d'un
+ * mandat précédent le même jour) couvrent déjà ces jours. Les bilans de mi-mandat et de fin (R4) ne bougent pas.
  * `complete` : les 7 jours sont appariés — seule une semaine complète s'exporte (règle du Bilan public, §2.4).
  */
 export function weeklyBilan(registry, priceSets, monday) {
   const start = registry?.mandate?.in_office_from
-  const days = weekDates(monday).filter(day => (!start || day >= start) && day < registry.today)
+  const covered = start ? coveredDays(registry) : null
+  const days = weekDates(monday).filter(day => day < registry.today && (!start || day >= start || covered.has(day)))
   const bilan = computePeriodBilan(mergedMines(registry), priceResolver(priceSets, day => nearestReportPrices(registry.reports, day)), 0, days)
   return {
     monday, sunday: getWeekBounds(monday).sunday, bilan,
