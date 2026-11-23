@@ -1,6 +1,5 @@
 <script setup>
   import { ref, computed, watch } from 'vue'
-  import { RouterLink } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { apiMessage } from '@/stores/mandateStore'
   import { useAuthStore } from '@/stores/authStore'
@@ -11,7 +10,6 @@
   import ChestLoader from '@/components/loading/ChestLoader.vue'
   import AccessDenied from '@/components/loading/AccessDenied.vue'
   import CustomsReportView from '@/components/customs/CustomsReportView.vue'
-  import CustomsExport from '@/components/customs/CustomsExport.vue'
   import CustomsListsModal from '@/components/customs/CustomsListsModal.vue'
   import InfoTip from '@/components/InfoTip.vue'
 
@@ -64,7 +62,6 @@
   }
 
   // La SAISIE n'est plus ici : elle se fait dans le Relevé de guet, point de collage unique (fil module-securite 12 à 14). Le Registre se lit, se consulte, se corrige par là.
-  const canEnter = computed(() => !!access.value?.write_reports)
   const canOpenLists = computed(() => !!access.value && (access.value.read_lists || access.value.add_red_only))
 
   async function load() {
@@ -100,14 +97,19 @@
 
       <div v-else class="space-y-4">
         <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-          <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl text-rose-600" data-testid="customs-title">{{ t('SecurityCustoms.Title', { province: access.province.name }) }}</h1>
+          <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl text-rose-600" data-testid="customs-title">{{ t('SecurityCustoms.Title') }}</h1>
           <!-- Aucun trio connu : c'est l'état courant d'une province, dit en infobulle plutôt qu'en encart. -->
           <InfoTip v-if="!access.has_security_trio" :label="t('SecurityCustoms.NoTrioLabel')" :text="t('SecurityCustoms.NoTrio')" testid="no-trio" />
         </div>
 
-        <!-- Où l'on regarde : la ville et le jour. -->
-        <div v-if="cities.length" class="flex flex-wrap items-end gap-3" data-testid="customs-bar">
-          <label class="text-sm"><span class="block font-bold">{{ t('SecurityCustoms.City') }}</span>
+        <!-- Où l'on regarde : la province (dite par le serveur, pas un choix), la ville et le jour. -->
+        <div v-if="cities.length" class="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm" data-testid="customs-bar">
+          <label class="text-sm text-slate-800 dark:text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.Province') }}</span>
+            <select disabled class="rounded p-1 disabled:opacity-100 disabled:text-slate-800" data-testid="province-select">
+              <option>{{ access.province.name }}</option>
+            </select>
+          </label>
+          <label class="text-sm text-slate-800 dark:text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.City') }}</span>
             <select v-model.number="cityId" class="rounded p-1" data-testid="city-select">
               <option v-for="c in cities" :key="c.id" :value="c.id">{{ c.name }}</option>
             </select>
@@ -116,7 +118,7 @@
             <button type="button" class="odc-btn odc-btn--soft odc-btn--icon odc-btn--sm odc--slate" :disabled="!olderDay" :aria-label="t('SecurityCustoms.OlderDay')" :title="t('SecurityCustoms.OlderDay')" data-testid="older-day" @click="day = olderDay">
               <v-icon name="fa-chevron-left" aria-hidden="true" />
             </button>
-            <label class="text-sm"><span class="block font-bold">{{ t('SecurityCustoms.Day') }}</span>
+            <label class="text-sm text-slate-800 dark:text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.Day') }}</span>
               <select v-model="day" class="rounded p-1" data-testid="day-select">
                 <option v-for="d in dayOptions" :key="d" :value="d">{{ dayLabel(d) }}{{ days.includes(d) ? '' : ` — ${t('SecurityCustoms.NoReportShort')}` }}</option>
               </select>
@@ -138,17 +140,11 @@
         <p v-if="error" role="alert" class="font-bold text-red-800 dark:text-red-800" data-testid="customs-error">{{ error }}</p>
 
         <section v-if="city" :aria-busy="loading">
-          <h3 class="!mb-0 text-lg font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.ReportTitle', { date: dayLabel(day), city: city.name }) }}</h3>
+          <h3 class="!mb-3 text-xl font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.ReportTitle', { date: dayLabel(day), city: city.name }) }}</h3>
           <p v-if="loading" class="text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Loading') }}</p>
-          <CustomsReportView v-else-if="report" :report="report" class="mt-2" />
-          <CustomsExport v-if="report && !loading" :report="report" :city-name="city.name" class="mt-3" />
+          <CustomsReportView v-else-if="report" :report="report" />
           <p v-else class="mt-1 text-sm text-slate-800 dark:text-slate-800" data-testid="no-report">{{ t('SecurityCustoms.NoReport', { city: city.name }) }}</p>
         </section>
-
-        <!-- On saisit un relevé dans le Relevé de guet : un seul endroit pour tous les collages. -->
-        <RouterLink v-if="canEnter" :to="{ name: 'security-guet' }" class="odc-btn odc-btn--soft odc--green inline-flex" data-testid="enter-report">
-          <v-icon name="gi-quill" aria-hidden="true" />{{ t('SecurityCustoms.EnterReport') }}
-        </RouterLink>
 
         <CustomsListsModal v-if="canOpenLists" :show="showLists" :character-id="character.id" :access="access" @close="showLists = false" @changed="load" />
       </div>

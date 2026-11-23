@@ -1,6 +1,6 @@
 /*
   Le Relevé unique (module Sécurité, PR 3-2 ; fil admin/echanges/module-securite 12 à 14) : de cinq types de collage à UN bilan affichable, EN LOCAL,
-  dans la même forme que celui que le serveur sert — `CustomsReportView` et `CustomsExport` l'affichent donc tels quels, avec ou sans compte.
+  dans la même forme que celui que le serveur sert — `customsReportToBBCode` l'exporte et `CustomsReportView` l'afficherait donc tels quels, avec ou sans compte.
   Logique pure : rien n'est lu ni écrit ici.
 
   - Sans compte : aucune couleur (le serveur seul connaît les listes de la province) ; le différentiel du guet compare à la liste d'hier collée.

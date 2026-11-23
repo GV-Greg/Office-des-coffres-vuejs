@@ -7,7 +7,7 @@ import { DATA_PAGE_SECTIONS } from '../../src/modules/dataPageSections.js'
 
 /*
   Garde-fou — le Relevé de guet devient le point de collage unique (fil module-securite 12 à 14, texte validé par Greg le 22/11/2026, non substantiel) :
-  cinq types de collage, le navigateur ne garde que le DERNIER collage de chaque type, sans historique, et ces textes peuvent citer des pseudos de tiers.
+  cinq types de collage, le navigateur ne garde que le DERNIER collage de chaque type — sauf la liste des villageois : aujourd'hui et hier, chacune avec son jour (23/11/2026) —, et ces textes peuvent citer des pseudos de tiers.
   Le texte légal passe AVANT le code (PR 3-2). Lecture par fs : un import de fr.json est précompilé et rend undefined.
 */
 const localesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/locales')
@@ -15,8 +15,8 @@ const locale = lang => JSON.parse(readFileSync(resolve(localesDir, `${lang}.json
 
 describe('Politique cookies et « Vos données » — Relevé de guet (collage unique)', () => {
   it.each([
-    ['fr', ['liste des villageois', 'visions', 'armées', 'groupes', 'contrôle de la zone', 'dernier collage de chaque type', 'sans historique', 'noms de personnages d\'autres joueurs']],
-    ['en', ['villager list', 'visions', 'armies', 'groups', 'control of the area', 'last paste of each type', 'no history', 'other players\' characters']],
+    ['fr', ['liste des villageois', 'visions', 'armées', 'groupes', 'contrôle de la zone', 'dernier collage de chaque type', 'sans autre historique que la liste des villageois d\'aujourd\'hui et celle d\'hier', 'noms de personnages d\'autres joueurs']],
+    ['en', ['villager list', 'visions', 'armies', 'groups', 'control of the area', 'last paste of each type', 'no other history than the villager list of today and of yesterday', 'other players\' characters']],
   ])('%s : les cookies de préférences disent ce que le Relevé garde', (lang, terms) => {
     const data = locale(lang).Cookies.Section3.Preferences.Data
     for (const term of terms) expect(data).toContain(term)

@@ -183,9 +183,8 @@ export function parseArmiesGroups(raw) {
       const members = type === 'milice' ? [] : match[1].split(',').map(p => p.trim()).filter(p => p !== '')
       groups.push({ type, members, status: '' })
       current = groups.length - 1
-    } else if (current !== null) {
-      groups[current].status = `${groups[current].status}\n${line}`.trim()
     }
+    // Le détail qui suit un groupe (« Fermé », « Admission libre · Adhérer »…) n'est ni gardé ni exporté (Greg, 23/11/2026) : `status` reste vide.
   }
 
   return { armies, groups, zone: zone.length ? zone.join('\n') : null }

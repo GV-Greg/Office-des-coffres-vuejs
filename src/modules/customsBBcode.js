@@ -38,16 +38,18 @@ const names = (entries, colours) => entries.map(entry => name(entry, colours))
 
 /**
  * @param {object} report un bilan tel que l'API le sert (`sections.guet|visions|armies_groups`, pseudos `{ pseudo, colour }`)
- * @param {{ cityName: string, dayLabel: string, options?: object }} context `dayLabel` : le jour du bilan en année du jeu, déjà formaté (jj/mm/1474)
+ * @param {{ cityName: string, dayLabel: string, nightFromLabel?: string, options?: object }} context `dayLabel` : le jour du bilan en année du jeu, déjà formaté (jj/mm/1474)
  * @returns {string} le BBCode, ou '' s'il n'y a rien à exporter
  */
-export function customsReportToBBCode(report, { cityName, dayLabel, options = {} }) {
+export function customsReportToBBCode(report, { cityName, dayLabel, nightFromLabel = '', options = {} }) {
   const o = { ...CUSTOMS_EXPORT_DEFAULTS, ...options }
   const sections = report?.sections ?? {}
   const blocks = []
 
   // Sans ville (Relevé de guet sans titre de sécurité) : pas de « Ville : … ».
-  blocks.push(`[b][size=20]Bilan de défense du ${dayLabel}${cityName ? ` — Ville : ${safe(cityName)}` : ''}[/size][/b]`)
+  // Le bilan du jour J couvre la NUIT J-1 → J (l'en-tête des visions) : « Relevé de défense de la nuit du J-1 au J » (Greg, 23/11/2026).
+  const night = nightFromLabel ? `de la nuit du ${nightFromLabel} au ${dayLabel}` : `du ${dayLabel}`
+  blocks.push(`[b][size=20]Relevé de défense ${night}${cityName ? ` - Ville : ${safe(cityName)}` : ''}[/size][/b]`)
 
   const guet = sections.guet
   if (guet) {
@@ -92,10 +94,10 @@ export function customsReportToBBCode(report, { cityName, dayLabel, options = {}
       const lines = [heading('Groupes')]
       for (const group of block.groups) {
         const label = GROUP_TYPES_FR[group.type] ?? group.type
-        const status = oneLine(group.status)
+        // Le détail d'un groupe (« Fermé », « Admission libre · Adhérer »…) n'est pas exporté (Greg, 23/11/2026), même sur un ancien bilan qui le porte.
         const alert = group.alert ? `[color=${CUSTOMS_COLORS.red}][b]⚠ Groupe à surveiller[/b][/color] ` : ''
         const members = (group.members ?? []).length ? ` : ${names(group.members, o.colours).join(', ')}` : ''
-        lines.push(`${alert}[b]${label}[/b]${members}${status ? ` — ${status}` : ''}`)
+        lines.push(`${alert}[b]${label}[/b]${members}`)
       }
       blocks.push(lines.join('\n'))
     }

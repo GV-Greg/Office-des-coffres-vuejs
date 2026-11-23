@@ -6,6 +6,27 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-23] — PR #160 (Salle des gardes : le Relevé de guet devient l'export, le Registre de douane se lit)
+
+### Changed
+- **Relevé de guet** (fil `admin/echanges/module-securite/19`, retours de Greg en séance le 23/11/2026) : « Confier au scribe » **EST l'export** — il fabrique le message BBCode pour le forum et le copie (« Relevé de défense de la nuit du … au … - Ville : … ») ; le bilan n'est plus affiché dans le Relevé, il se relit dans le Registre. Titre `h1` rose avec le badge « Mode douanier » (pour qui peut inscrire), libellés et phrases d'aide par zone, ville par défaut = celle du personnage, plus de phrase d'introduction ni de note « sans titre ».
+- **Inscription au registre** : une **plaque** (`CustomsRegistrySave`) à droite du bouton, même conception que celle du Bilan des mines (ville et jour dits avant l'envoi, aide « i », parchemin scellé), toujours explicite ; bouton inactif sans rien à inscrire. Un collage « retrouvé » s'inscrit tel quel.
+- **Registre de douane** : titre sans la province (province, ville, jour dans une carte), plus de bouton « Saisir un relevé » ni d'export ; **passe de design** : ligne de synthèse en badges colorés, trois colonnes de cartes teintées (Habitants et Visions | Entrées et sorties | Groupes, Armées, Contrôle de la zone), groupes repliés au-delà de trois, section non inscrite = carte grisée « Non inscrit. » ; « aucun membre de la sécurité connu » passe en infobulle « i » (`InfoTip`). Menu de la Salle des gardes : un « i » par page ouvrant une modale d'aide.
+- **Le détail d'un groupe** (« Fermé », « Admission libre »…) n'est ni gardé, ni exporté, ni affiché.
+
+### Fixed
+- **Rechargement du Relevé** : la liste d'aujourd'hui, déjà gardée, revenait comme « liste d'hier » et écrasait celle d'hier. Les listes sont désormais gardées **par jour du jeu** (`guet_lists`, aujourd'hui et hier seulement, la plus ancienne effacée) ; visions et armées sont gardées avec leur jour, et reviennent dans leur case le même jour. **Texte légal** (cookies §3, « Vos données ») mis à jour dans la même PR : non substantiel (navigateur seulement), sans `policy:notify`.
+- **Visions copiées sans ligne de date** (le journal du jeu sépare la date) : comptées pour le jour du relevé au lieu d'être ignorées.
+
+### Added
+- `InfoTip.vue`, `ReportCard.vue`, `ReportGroupList.vue`, `CustomsRegistrySave.vue`, `modules/customsLists.js`, `modules/customsCity.js` ; tests `customsLists.unit.test.js` et compléments (Relevé, Registre, parseurs, export) ; 1644 tests.
+
+### Removed
+- `CustomsExport.vue` (l'export vit dans le Relevé), la note « sans titre », la clé `guet_last_list`.
+
+### Deploy notes
+- Frontend seul : aucune migration, route, `config/*.php` ni paquet ; backend inchangé. Les bilans déjà inscrits restent lisibles (le détail des groupes qu'ils portent n'est plus montré).
+
 ## [2026-11-23] — PR #159 (Texte légal : les pseudos du Relevé de guet partent au serveur, sans être enregistrés)
 
 ### Changed

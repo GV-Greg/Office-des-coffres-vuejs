@@ -106,6 +106,8 @@ describe('armées, groupes et contrôle de la zone', () => {
     expect(armies[0]).toMatchObject({ name: '👑🦁 Legio Aurea ⚔️', commander: 'Lucas_' })
     expect(armies[1]).toMatchObject({ name: 'Furor arma ministrat', commander: 'Leonin' })
     expect(armies[0].status).toContain('\n')
+    // Le détail des groupes (« Fermé », « Admission libre · Adhérer »…) n'est pas gardé (Greg, 23/11/2026).
+    expect(parseArmiesGroups(fixture('groupes-fr')).groups.every(g => g.status === '')).toBe(true)
   })
 
   it('groupes : tous les membres sont sur la ligne de nom, séparés par des virgules (une armée n\'a qu\'un commandant), cinq types, mêmes résultats en FR et en EN', () => {
