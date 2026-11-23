@@ -33,6 +33,23 @@ describe('Politique cookies et « Vos données » — Relevé de guet (collage u
     expect(watch.Stored).toMatch(lang === 'fr' ? /Sans compte, rien n'est enregistré sur nos serveurs/ : /Without an account, nothing is stored on our servers/)
   })
 
+  /*
+    Pseudos en transit (fil module-securite 15 et 16, B retenue par Greg le 22/11/2026, non substantiel, sans policy:notify) :
+    avec un titre de sécurité, « Générer le relevé » envoie au serveur les PSEUDOS collés (jamais un texte) pour les colorer ;
+    le serveur ne les écrit pas (CustomsPreviewTest). 🔴 « ni journalisés » est INTERDIT tant que les journaux de l'hébergeur ne sont pas vérifiés.
+  */
+  it.each([
+    ['fr', /pseudos collés[^.]*sont envoyés au serveur pour afficher les marques des listes rouge et verte ; ils ne sont pas enregistrés/, /journalis/i],
+    ['en', /nicknames[^.]*are sent to the server to show the marks of the red and green lists; they are not stored/, /logged/i],
+  ])('%s : « Vos données » dit que les pseudos partent au serveur sans être enregistrés — et ne promet pas plus', (lang, sentence, forbidden) => {
+    const { Watch, Security } = locale(lang).Data
+    expect(Watch.Stored).toMatch(sentence)
+    expect(Security.Stored).toMatch(sentence)
+    // la phrase « ne quittent pas votre navigateur » ne doit plus être absolue
+    expect(Watch.Audience).toMatch(lang === 'fr' ? /sauf les pseudos envoyés pour les marques des listes/ : /except the nicknames sent for the list marks/)
+    expect(`${Watch.Stored} ${Watch.Audience} ${Security.Stored}`).not.toMatch(forbidden)
+  })
+
   it('le Relevé reste un outil SANS accès : la page « Vos données » n\'exige pas de compte pour lui', () => {
     expect(DATA_PAGE_SECTIONS.find(s => s.id === 'guet')).toMatchObject({ key: 'Watch', access: 'none' })
   })
