@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-23] — PR #158 (Fix : le bilan hebdomadaire d'un mandat renouvelé reprend les jours déjà couverts)
+
+### Fixed
+- **Registre des mines, mandat renouvelé** (fil `admin/echanges/bilans-passes-mines/04` et `05`, signalé par Greg le 23/11/2026) : le jour où un nouveau mandat entre en fonction, le bilan de la semaine affichait « Aucun jour couvert sur 0 » alors que les relevés de la semaine existent (écrits sous l'ancien mandat, déjà servis par le serveur dans la fenêtre « prédécesseurs »). `weeklyBilan` garde désormais, dans la semaine, les jours antérieurs à l'entrée en fonction qui ont des données. R4 est intacte : les bilans de mi-mandat et de fin se calculent toujours depuis l'entrée en fonction.
+- **Sans aucun jour à compter**, l'écran dit « Premier bilan disponible demain » (FR et EN) au lieu d'un tableau de zéros, pour la semaine comme pour la période en cours.
+
+### Added
+- Tests `minePrices.unit.test.js` (+3) et `EconomyRegistry.test.js` (+2) ; 1607 tests.
+
+### Deploy notes
+- Frontend seul : aucune migration, route, `config/*.php` ni paquet ; aucun changement backend ni de texte légal.
+
 ## [2026-11-23] — PR #156 (Export BBCode des bilans de mi-mandat et de fin de mandat)
 
 ### Added
