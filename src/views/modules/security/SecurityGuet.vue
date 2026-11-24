@@ -207,18 +207,24 @@ import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
     try {
       const data = await api.reports(character.value.id, city.value.id, day.value)
       if (asked !== existingKey()) return // une réponse périmée (autre ville ou autre jour entre-temps)
-      if (data?.report) existing.value = { date: dayLabel(day.value) }
+      if (data?.report) existing.value = { date: dayLabel(day.value), sections: data.report.sections_present ?? [] }
     } catch {
       existing.value = null // sans droit de lecture ou hors ligne : rien n'est dit, l'inscription reste possible
     }
   }
   watch([() => character.value?.id, cityId, day, canSave, sealed], loadExisting, { immediate: true })
 
+  // Une case VIDÉE retire sa section du relevé existant (Greg, 24/11/2026 : des visions inscrites par mégarde restaient) — seulement les visions et les armées/groupes
+  // (jamais le guet), seulement si le relevé du jour les contient, et seulement pour une case laissée vide. Le serveur dit si on en a le droit.
+  const removals = computed(() => ['visions', 'armies_groups'].filter(key => existing.value?.sections.includes(key) && !sendable.value.sections[key]))
+  const nothingToSend = computed(() => !Object.keys(sendable.value.sections).length && !removals.value.length)
+
   async function save() {
-    if (saving.value || !canSave.value || !Object.keys(sendable.value.sections).length) return
+    if (saving.value || !canSave.value || nothingToSend.value) return
     saving.value = true
     try {
       const body = { city_id: city.value.id, sections: sendable.value.sections }
+      if (removals.value.length) body.remove_sections = removals.value
       if (day.value !== access.value.today) body.date = day.value
       const result = await api.saveReport(character.value.id, body)
       push.success(t(`SecurityCustoms.Form.Sent.${result.mode}`))
@@ -293,7 +299,7 @@ import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
         :city-name="city.name"
         :day-label="dayLabel(day)"
         :saving="saving"
-        :disabled="!Object.keys(sendable.sections).length"
+        :disabled="nothingToSend"
         :sealed="sealed"
         @save="save"
       />

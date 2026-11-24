@@ -703,6 +703,34 @@ describe('Relevé de guet — un relevé de ce jour existe déjà (Greg, 24/11/2
     expect(reportCalls()).toHaveLength(0)
   })
 
+  it('une case VIDÉE retire sa section du relevé existant : seulement visions et armées/groupes, jamais le guet, seulement si elles y sont inscrites', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT({ sections_present: ['guet', 'visions', 'armies_groups'] }) })
+    await fill(w, { today: aujourdhui, visions: '', armies: allArmies('fr') }) // les visions sont vidées, les armées gardées
+
+    await find(w, 'guet-save').trigger('click')
+    await flushPromises()
+
+    const body = saveCalls()[0][1]
+    expect(body.remove_sections).toEqual(['visions'])
+    expect(Object.keys(body.sections)).toEqual(['guet', 'armies_groups'])
+  })
+
+  it('retirer seul suffit : le bouton est actif sans rien à inscrire ; sans relevé existant, une case vide ne retire rien', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT({ sections_present: ['guet', 'visions'] }) })
+    await fill(w, { today: '', visions: '', armies: '' })
+    expect(find(w, 'guet-save').attributes('disabled')).toBeUndefined() // retirer les visions est un geste
+
+    await find(w, 'guet-save').trigger('click')
+    await flushPromises()
+    expect(saveCalls()[0][1]).toEqual({ city_id: 1, sections: {}, remove_sections: ['visions'] })
+
+    http.post.mockClear()
+    const empty = await mountGuet({ loggedIn: true, access: ACCESS(), reports: null })
+    await fill(empty, { today: '', visions: '', armies: '' })
+    expect(find(empty, 'guet-save').attributes('disabled')).toBeDefined() // rien à inscrire, rien à retirer
+    expect(saveCalls()).toHaveLength(0)
+  })
+
   it('en anglais', async () => {
     const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT(), locale: 'en' })
 
