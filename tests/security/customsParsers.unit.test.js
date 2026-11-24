@@ -172,3 +172,19 @@ describe('ce que l\'Office garde comme brut (Greg, 22/11/2026)', () => {
     expect(extractVisionsRaw(fixture('visions-fr'), '2026-11-22')).toBe('')
   })
 })
+
+describe('parseArmiesGroups — un collage sans en-tête (Greg, 24/11/2026)', () => {
+  it('la liste des groupes copiée SANS « Groupes présents ici : » est lue comme des groupes ; le détail qui suit n\'est pas gardé', () => {
+    const result = parseArmiesGroups("Corps d'armes de Lynne\nFermé    \nGroupe de maréchaux de Buldo\nembauches éventuelles à la mairie ou à la caserne    \n")
+
+    expect(result.groups.map(g => [g.type, g.members])).toEqual([['corps_armes', ['Lynne']], ['marechaux', ['Buldo']]])
+    expect(result.armies).toEqual([])
+    expect(JSON.stringify(result)).not.toMatch(/Fermé|embauches/)
+  })
+
+  it('avec un en-tête, le texte avant le premier reste ignoré (comportement inchangé)', () => {
+    const result = parseArmiesGroups("Corps d'armes de Perdu\nGroupes présents ici :\nLance de Sheliss, Yohanna.\n")
+
+    expect(result.groups.map(g => g.type)).toEqual(['lance'])
+  })
+})
