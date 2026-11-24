@@ -177,14 +177,14 @@ describe('Relevé de guet — présentation (fil module-securite 19, A1 à A5, 2
     await fill(w, { today: aujourdhui, visions: real('visions-fr'), armies: allArmies('fr') })
     await generate(w)
 
-    vi.setSystemTime(new Date('2026-11-23T12:00:00Z')) // le lendemain : la liste d'hier, les visions et les armées sont « retrouvées »
+    vi.setSystemTime(new Date('2026-11-23T12:00:00Z')) // le lendemain : la liste d'hier et les armées sont « retrouvées » ; les visions repartent VIDES
     const second = await mountGuet({ again: true })
     const under = (note, textarea) => {
       expect(note.exists()).toBe(true)
       expect(note.element.previousElementSibling).toBe(textarea.element)
     }
     under(find(second, 'yesterday-prefilled'), find(second, 'paste-yesterday'))
-    under(find(second, 'visions-restored'), find(second, 'paste-visions'))
+    expect(find(second, 'visions-restored').exists()).toBe(false)
     under(find(second, 'armies-restored'), find(second, 'paste-armies-groups'))
     expect(find(second, 'yesterday-prefilled').text()).toBe('Pré-remplie automatiquement depuis votre dernière visite')
   })
@@ -354,16 +354,32 @@ describe('Relevé de guet — le dernier collage de chaque type (stockage « Pr�
     expect(find(second, 'armies-restored').exists()).toBe(false)
   })
 
-  it('un collage RETROUVÉ n\'est pas réenregistré sous le jour d\'aujourd\'hui par « Confier au scribe » (sinon il deviendrait inscriptible au rechargement)', async () => {
+  it('un collage RETROUVÉ (armées, groupes, zone) n\'est pas réenregistré sous le jour d\'aujourd\'hui par « Confier au scribe » (sinon il deviendrait inscriptible au rechargement)', async () => {
     const first = await mountGuet()
     useCookieStore().consent.preferences = true
-    useCookieStore().setComfortData('guet_last_visions', 'ancienne forme, sans jour') // gardé avant les jours
+    useCookieStore().setComfortData('guet_last_armies_groups', 'ancienne forme, sans jour') // gardé avant les jours
     const w = await mountGuet({ again: true })
-    expect(find(w, 'visions-restored').exists()).toBe(true)
+    expect(find(w, 'armies-restored').exists()).toBe(true)
     await fill(w, { today: real('guet-fr') })
     await generate(w)
 
-    expect(useCookieStore().getComfortData('guet_last_visions')).toBe('ancienne forme, sans jour')
+    expect(useCookieStore().getComfortData('guet_last_armies_groups')).toBe('ancienne forme, sans jour')
+    expect(first).toBeTruthy()
+  })
+
+  it('les VISIONS sont celles d\'une nuit : la case repart VIDE chaque jour (Greg, 24/11/2026), la reprise d\'un autre jour est effacée ; celle du jour revient', async () => {
+    const store = () => useCookieStore()
+    const first = await mountGuet()
+    store().consent.preferences = true
+    store().setComfortData('guet_last_visions', { day: '2020-01-01', text: 'visions de la veille' })
+    store().setComfortData('guet_last_armies_groups', { day: '2020-01-01', text: 'armées de la veille' })
+    const w = await mountGuet({ again: true })
+
+    expect(find(w, 'paste-visions').element.value).toBe('') // vide : celles de la veille ne servent à rien
+    expect(find(w, 'visions-restored').exists()).toBe(false)
+    expect(store().getComfortData('guet_last_visions')).toBeNull() // effacée, pas gardée pour rien
+    expect(find(w, 'paste-armies-groups').element.value).toBe('armées de la veille') // les groupes : comme avant
+    expect(find(w, 'armies-restored').exists()).toBe(true)
     expect(first).toBeTruthy()
   })
 

@@ -350,7 +350,7 @@
     "Province": "My desk"
   },
   "Security": {
-    "Title": "The Guardroom",
+    "Title": "Security Chest",
     "EntriesExits": "Watch Report",
     "PageTitle": "Watch Report",
     "CustomsMode": "Customs mode",
@@ -390,6 +390,7 @@
     "Link": "Customs Register",
     "Title": "Customs Register",
     "Province": "Province",
+    "Loading": "Loading…",
     "NoAccess": "The register's doors stay shut: the Office knows no security title for your character in any province (Constable, Sergeant, Captain, mayor, Judge, Public Prosecutor, leader, or validated customs officer).",
     "NoTrio": "No member of the security (Constable, Sergeant, Captain) is known to the Office for your province. In their absence, mayors and validated customs officers keep the red and green lists.",
     "HelpButton": "How do I read the customs register?",
@@ -426,7 +427,6 @@
     "NewerDay": "Next day",
     "NoReportShort": "no report",
     "ListsButton": "Red and green lists",
-    "Loading": "Loading…",
     "ReportTitle": "Report of {date} — {city}",
     "NoReport": "No report recorded for {city}.",
     "List": {
@@ -513,50 +513,51 @@
       "Copied": "The report is copied, ready to paste on the forum."
     }
   },
-  "SecurityProvince": {
-    "Title": "Province overview",
-    "Link": "Province overview",
+  "SecurityCustomsTable": {
+    "Title": "Customs Table",
+    "Link": "Customs Table",
     "NoAccess": "The Office knows no role for your character that reads the reports of several towns of their province.",
-    "Note": "Each line carries the day of its report.",
-    "Coverage": {
-      "Title": "Coverage",
-      "Age": "today | yesterday | {n} days ago",
-      "NoReport": "No report",
-      "MovesTitle": "Compared with the report of {date}",
-      "Open": "Open the report of {city}"
-    },
+    "Note": "Situation of the province, day by day",
+    "ExpandAll": "Expand all",
+    "CollapseAll": "Collapse all",
+    "NoReportAtAll": "No report recorded in the province.",
+    "Moves": "Arrivals and departures",
+    "Day": "Report",
     "Marks": {
-      "Title": "On the lists",
-      "FilterColour": "List",
-      "All": "All",
-      "Red": "Red",
-      "Green": "Green",
-      "FilterCity": "Town",
-      "AllCities": "All towns",
-      "Count": "{count} line | {count} lines",
-      "Empty": "No nickname of the lists in the reports.",
-      "As": {
+      "Title": "Inhabitants",
+      "Pseudo": "Nickname",
+      "As": "Seen as",
+      "Empty": "No one to watch.",
+      "Roles": {
         "villager": "inhabitant",
         "vision": "met on the road",
         "army_commander": "leads the army",
         "group_member": "member of a group"
       }
     },
-    "Watch": {
-      "Title": "Groups to watch",
-      "Empty": "No group to watch."
+    "Groups": {
+      "Lead": {
+        "lance": "Armed Retinue made up of",
+        "corps_armes": "Armed Mob made up of",
+        "marechaux": "Marshal group made up of",
+        "groupe": "Group made up of",
+        "milice": "Militia"
+      }
     },
     "Armies": {
-      "Title": "Armies",
+      "Army": "Army",
+      "Leader": "Leader",
       "Empty": "No army."
     },
-    "HelpButton": "How do I read the province overview?",
-    "HelpTitle": "The province overview",
-    "HelpPurpose": "The overview gives the situation of the province: what the latest reports of each town say about the nicknames of the lists, the groups to watch and the armies.",
+    "WithoutReport": "Towns without a report",
+    "NoReport": "No report",
+    "HelpButton": "How do I read the Customs Table?",
+    "HelpTitle": "The Customs Table",
+    "HelpPurpose": "The Customs Table lays out the registers of the province: the latest report of each town you read, town by town, on a single page.",
     "HelpOverview": "It is read-only: nothing is entered or recorded in it. Each line comes from the most recent report of its town that contains the section, and carries its day. To enter a report, use the Watch Report.",
-    "HelpStep1": "Coverage: one line per town, with the age of its latest report (orange from two days), the number of arrivals and departures, and ▸ to open the report in the Customs Register.",
-    "HelpStep2": "On the lists: the nicknames of the red and green lists, where and how they were seen, with the day of the report. Filter by list or by town.",
-    "HelpStep3": "Groups to watch and armies: those of the latest reports of each town, each with its town and its day.",
+    "HelpStep1": "One block per town: its plate says the age of the latest report (orange from two days) and, in orange, the number of nicknames on the red list and of groups to watch.",
+    "HelpStep2": "In a block: the arrivals and departures (the nicknames), the nicknames of the red and green lists with their role, the groups to watch and the armies, each with the day of its report.",
+    "HelpStep3": "\"Expand all\" and \"Collapse all\" open or close every block; \"Open in the Customs Register\" leads to the town's full report. Towns without a report are at the bottom, greyed.",
     "HelpStep4": "A nickname seen in two towns appears twice, with two days: the Office never compares towns with each other."
   },
   "SecurityOfficers": {

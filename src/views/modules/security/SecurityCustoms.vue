@@ -9,6 +9,7 @@
   import useCustomsAccess from '@/use/useCustomsAccess'
   import ChestLoader from '@/components/loading/ChestLoader.vue'
   import AccessDenied from '@/components/loading/AccessDenied.vue'
+  import AccessLoader from '@/components/loading/AccessLoader.vue'
   import CustomsReportView from '@/components/customs/CustomsReportView.vue'
   import CustomsListsModal from '@/components/customs/CustomsListsModal.vue'
   import InfoTip from '@/components/InfoTip.vue'
@@ -110,7 +111,7 @@
         </div>
 
         <!-- Où l'on regarde : la province (dite par le serveur, pas un choix), la ville et le jour. -->
-        <div v-if="cities.length" class="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm" data-testid="customs-bar">
+        <div v-if="cities.length" class="flex flex-wrap items-end gap-3 rounded-xl border border-yellow-700/40 bg-white px-4 py-3" data-testid="customs-bar">
           <label class="text-sm text-slate-800 dark:text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.Province') }}</span>
             <select disabled class="rounded p-1 disabled:opacity-100 disabled:text-slate-800" data-testid="province-select">
               <option>{{ access.province.name }}</option>
@@ -148,7 +149,8 @@
 
         <section v-if="city" :aria-busy="loading">
           <h3 class="!mb-3 text-xl font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.ReportTitle', { date: dayLabel(day), city: city.name }) }}</h3>
-          <p v-if="loading" class="text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Loading') }}</p>
+          <!-- Changer de ville ou de jour : le petit loader de composant du Bilan des mines (AccessLoader : le cadenas, aux couleurs de la Sécurité, aligné en haut), qui garde la place du bilan. -->
+          <AccessLoader v-if="loading" icon-class="text-rose-700 dark:text-rose-700" min-height="16rem" top />
           <CustomsReportView v-else-if="report" :report="report" />
           <p v-else class="mt-1 text-sm text-slate-800 dark:text-slate-800" data-testid="no-report">{{ t('SecurityCustoms.NoReport', { city: city.name }) }}</p>
         </section>

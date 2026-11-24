@@ -88,15 +88,21 @@
     // Collée plus tôt AUJOURD'HUI : la liste du jour revient dans sa case, comme les visions et les armées du jour (on peut inscrire après un rechargement).
     if (lists[gameToday]) today.value = lists[gameToday]
     // Visions et armées sont gardées AVEC leur jour du jeu. Collées plus tôt AUJOURD'HUI, elles sont bien d'aujourd'hui : remplies, et inscriptibles.
-    // D'un autre jour (ou sans jour : ancienne forme), elles sont « retrouvées » : la mention le dit, mais elles s'inscrivent TELLES QUELLES (Greg, 23/11/2026).
-    const restore = (key, target, flag) => {
+    // Les ARMÉES d'un autre jour (ou sans jour : ancienne forme) sont « retrouvées » : la mention le dit, mais elles s'inscrivent TELLES QUELLES (Greg, 23/11/2026).
+    // Les VISIONS, elles, sont celles d'UNE nuit : la case repart VIDE chaque jour (Greg, 24/11/2026 : « reprendre ceux de la veille ne sert à rien »), et
+    // celles d'un autre jour sont effacées du navigateur plutôt que gardées pour rien.
+    const restore = (key, target, flag, sameDayOnly = false) => {
       const saved = cookieStore.getComfortData(key)
       const entry = typeof saved === 'string' ? { day: null, text: saved } : saved
       if (!entry?.text) return
+      if (sameDayOnly && entry.day !== gameToday) {
+        cookieStore.removeComfortData(key)
+        return
+      }
       target.value = entry.text
       restored[flag] = entry.day !== gameToday
     }
-    restore(VISIONS_LAST_KEY, visions, 'visions')
+    restore(VISIONS_LAST_KEY, visions, 'visions', true)
     restore(ARMIES_LAST_KEY, armiesGroups, 'armiesGroups')
   })
 

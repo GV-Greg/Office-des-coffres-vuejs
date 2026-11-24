@@ -110,5 +110,21 @@
     "type": "feature",
     "fr": "Dans la Salle des comptes, le Registre des stocks garde la mémoire des inventaires de votre ville ou de votre province, d'un titulaire au suivant : inscrivez vos inventaires, comparez-les et relisez les bilans de votre mandat.",
     "en": "In the Counting Room, the Stock Registry keeps the memory of your city's or province's inventories, from one office-holder to the next: record your inventories, compare them and review the reports of your term."
+  },
+  {
+    "id": "security-guardroom-open",
+    "date": "2026-11-24",
+    "scope": "public",
+    "type": "feature",
+    "fr": "La Salle des gardes ouvre ses portes : confiez les informations de votre ville au scribe du Relevé du guet, il vous les rend prêts à afficher dans votre bureau.",
+    "en": "The Guardroom opens its doors: entrust your town's information to the scribe of the Watch Report, and get it back ready to display in your office."
+  },
+  {
+    "id": "security-guardroom-registry-table",
+    "date": "2026-11-24",
+    "scope": "private",
+    "type": "feature",
+    "fr": "Dans la Salle des gardes, le Registre de douane permet de revenir sur vos relevés de guet et la Table des douanes donne une vision globale des relevés de toute la province.",
+    "en": "In the Guardroom, the Customs Register lets you look back at your watch reports, and the Customs Table gives an overview of the reports from the whole province."
   }
 ]

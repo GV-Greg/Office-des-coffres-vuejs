@@ -41,19 +41,32 @@ describe('Menu de la Sécurité', () => {
 
     expect(w.find('[data-testid="customs-link"]').text()).toBe('Registre de douane')
     expect(w.text()).toContain('Relevé de guet')
-    expect(w.text()).toContain('La Salle des gardes')
+    expect(w.text()).toContain('Coffres Sécurité') // comme « Coffres Économie » et « Coffres Animation »
   })
 
-  it('« Vue de la province » : seulement si le serveur dit AU MOINS DEUX villes lisibles', async () => {
+  it('même gabarit que les menus d\'Économie et d\'Animation : colonne de gauche de 13 rem fixes, contenu qui prend le reste, titre centré', async () => {
+    const w = await mountMenu()
+    const menu = w.find('h3').element.parentElement
+    const content = menu.nextElementSibling
+
+    expect(menu.className).toContain('laptop:w-52')
+    expect(menu.className).toContain('laptop:shrink-0')
+    expect(content.className).toContain('laptop:flex-1')
+    expect(content.className).toContain('laptop:min-w-0')
+    expect(w.find('h3').classes()).toContain('text-center')
+    expect(w.find('h3').text()).toBe('Coffres Sécurité')
+  })
+
+  it('« Table des douanes » : seulement si le serveur dit AU MOINS DEUX villes lisibles', async () => {
     const two = await mountMenu({ access: { province: { id: 3, name: 'Artois' }, readable_cities: [{ id: 1 }, { id: 2 }] } })
-    expect(two.find('[data-testid="province-link"]').text()).toBe('Vue de la province')
-    expect(two.find('[data-testid="province-help"]').exists()).toBe(true)
+    expect(two.find('[data-testid="customs-table-link"]').text()).toBe('Table des douanes')
+    expect(two.find('[data-testid="customs-table-help"]').exists()).toBe(true)
 
     const one = await mountMenu({ access: { province: { id: 3, name: 'Artois' }, readable_cities: [{ id: 1 }] } })
-    expect(one.find('[data-testid="province-link"]').exists()).toBe(false)
+    expect(one.find('[data-testid="customs-table-link"]').exists()).toBe(false)
     expect(one.find('[data-testid="customs-link"]').exists()).toBe(true) // le Registre, lui, reste
 
-    expect((await mountMenu({ access: null })).find('[data-testid="province-link"]').exists()).toBe(false)
+    expect((await mountMenu({ access: null })).find('[data-testid="customs-table-link"]').exists()).toBe(false)
   })
 
   it('sans rôle : le lien n\'existe pas', async () => {
@@ -72,7 +85,7 @@ describe('Menu de la Sécurité', () => {
     const w = await mountMenu({ access: { province: { id: 3, name: 'Artois' } }, locale: 'en' })
 
     expect(w.find('[data-testid="customs-link"]').text()).toBe('Customs Register')
-    expect(w.text()).toContain('The Guardroom')
+    expect(w.text()).toContain('Security Chest')
   })
 
   it('« Douaniers » n\'est plus dans ce menu : la validation est un onglet de Mon bureau (Greg, 22/11/2026)', async () => {

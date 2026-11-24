@@ -25,11 +25,12 @@ export default function customsApi() {
      */
     preview: (characterId, body) => http.post(`${base(characterId)}/customs-preview`, body, auth()).then(({ data }) => data),
     /**
-     * Vue d'ensemble de la province (PR 5) : LECTURE SEULE, agrégée par le serveur — la couverture de chaque ville lisible et, fusionnés, les pseudos
+     * Table des douanes = vue d'ensemble de la province (PR 5) : LECTURE SEULE, agrégée par le serveur — la couverture de chaque ville lisible et, fusionnés, les pseudos
      * des listes, les groupes à surveiller et les armées, chaque ligne datée de son jour de bilan. Jamais le brut, l'auteur ni les listes d'habitants.
-     * → { province, today, cities, marks, groups_to_watch, armies }.
+     * `date` (facultative, AAAA-MM-JJ) : la situation AU jour D — pour chaque ville, ses bilans jusqu'à ce jour. Sans date : aujourd'hui.
+     * → { province, today, as_of, days, cities, marks, groups, armies } ; chaque ville porte aussi sa liste d'habitants (`villagers`).
      */
-    province: characterId => http.get(`${base(characterId)}/customs-province`, auth()).then(({ data }) => data),
+    province: (characterId, date) => http.get(`${base(characterId)}/customs-province`, auth({ params: date ? { date } : {} })).then(({ data }) => data),
     /** Les douaniers (PR 2) : le statut du personnage et, s'il valide, sa province, les demandes en attente et les douaniers en vigueur. */
     officer: characterId => http.get(`${base(characterId)}/customs`, auth()).then(({ data }) => data),
     requestOfficer: (characterId, cityId) => http.post(`${base(characterId)}/customs`, { city_id: cityId }, auth()).then(({ data }) => data),
