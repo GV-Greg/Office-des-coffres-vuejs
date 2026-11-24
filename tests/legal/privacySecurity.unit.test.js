@@ -65,6 +65,18 @@ describe('Politique — La Salle des gardes', () => {
     for (const title of ['douanier', 'prévôt des maréchaux', 'connétable', 'capitaine', 'juge', 'procureur', 'maire']) expect(intro).toContain(title)
   })
 
+  it('la correction d\'un bilan (24/11/2026) : l\'AUTEUR corrige le sien le jour du jeu même ; seuls le prévôt et le connétable (Constable et Sergeant) corrigent celui d\'un autre ou saisissent un jour passé', () => {
+    const fr = locale('fr').Legal.Privacy.Section6.SecurityHolders
+    expect(fr).toContain('l\'auteur d\'un bilan peut le corriger le jour du jeu même')
+    expect(fr).toContain('seuls le prévôt et le connétable corrigent le bilan d\'un autre ou saisissent un jour passé')
+    expect(fr).not.toContain('corrigent un bilan déjà saisi')
+
+    const en = locale('en').Legal.Privacy.Section6.SecurityHolders
+    expect(en).toContain('the author of a report can correct it on the game day itself')
+    expect(en).toContain('only the Constable and the Sergeant correct someone else\'s report or enter a past day')
+    expect(en).not.toContain('correct a report already entered')
+  })
+
   it('EN : les titres sont ceux du jeu (Constable, Sergeant, Captain, Public Prosecutor), « The Guardroom »', () => {
     const { Legal } = locale('en')
     const all = `${Legal.Privacy.Section3.SecurityIntro} ${Legal.Privacy.Section6.SecurityHolders} ${Legal.Data.Security.Title}`
