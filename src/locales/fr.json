@@ -404,6 +404,7 @@
     "HelpStep5": "Pour saisir un nouveau bilan, « Saisir un relevé » (si votre titre le permet) mène au Relevé de guet. « Confier au scribe » exporte le bilan affiché en BBCode : le publier sur un forum le rend public.",
     "Registry": {
       "Title": "Registre de douane",
+        "Existing": "Un relevé du {date} existe déjà pour cette ville.",
       "ReportOf": "Relevé du {date}",
       "Save": "Inscrire au registre",
       "Sealing": "Inscription…",

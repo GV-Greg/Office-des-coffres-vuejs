@@ -14,6 +14,7 @@
   import useCustomsAccess from '@/use/useCustomsAccess'
   import { customsReportToBBCode, CUSTOMS_EXPORT_DEFAULTS } from '@/modules/customsBBcode'
   import CustomsRegistrySave from '@/components/customs/CustomsRegistrySave.vue'
+import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
 
   /*
     Le Relevé de guet — POINT DE COLLAGE UNIQUE du module Sécurité (fil admin/echanges/module-securite 12 à 14, décisions de Greg du 22/11/2026).
@@ -196,6 +197,23 @@
     armiesGroups: armiesGroups.value,
   }, day.value ?? ''))
 
+  // ── Le relevé de ce jour existe-t-il déjà ? (Greg, 24/11/2026 : « que ce soit visible dans le relevé du guet ») — lecture seule, avant l'envoi ──
+  const existing = ref(null)
+  const existingKey = () => `${character.value?.id}|${city.value?.id}|${day.value}`
+  async function loadExisting() {
+    existing.value = null
+    if (!canSave.value || !character.value || !day.value) return
+    const asked = existingKey()
+    try {
+      const data = await api.reports(character.value.id, city.value.id, day.value)
+      if (asked !== existingKey()) return // une réponse périmée (autre ville ou autre jour entre-temps)
+      if (data?.report) existing.value = { date: dayLabel(day.value) }
+    } catch {
+      existing.value = null // sans droit de lecture ou hors ligne : rien n'est dit, l'inscription reste possible
+    }
+  }
+  watch([() => character.value?.id, cityId, day, canSave, sealed], loadExisting, { immediate: true })
+
   async function save() {
     if (saving.value || !canSave.value || !Object.keys(sendable.value.sections).length) return
     saving.value = true
@@ -226,6 +244,8 @@
 
     <!-- Avec un titre de sécurité : où l'on regarde (ville) et, pour qui corrige, le jour. Le serveur dit tout. -->
     <div v-if="access && (cities.length || dayOptions.length)" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2" data-testid="guet-registry-bar">
+      <!-- Un relevé de ce jour existe déjà (Greg, 24/11/2026) : sur la ligne de la ville, DEVANT elle, bien en vue et sans détail — ni dans la plaque d'inscription, ni sur sa propre ligne. -->
+      <ExistingReportNotice v-if="existing" :message="t('SecurityCustoms.Registry.Existing', { date: existing.date })" />
       <label v-if="cities.length" class="flex items-center gap-2 text-sm text-slate-800"><span class="font-bold">{{ t('SecurityCustoms.City') }}</span>
         <select v-model.number="cityId" class="rounded p-1" data-testid="guet-city">
           <option v-for="c in cities" :key="c.id" :value="c.id">{{ c.name }}</option>

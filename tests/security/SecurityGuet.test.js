@@ -49,8 +49,12 @@ const ACCESS = (over = {}) => ({
 })
 
 let pinia
-function serve({ access = null, preview = { success: true, today: '2026-10-27', colours: [], previous: null } } = {}) {
-  http.get.mockImplementation(url => (url.endsWith('customs-access') ? ok({ success: true, access }) : ok({})))
+function serve({ access = null, preview = { success: true, today: '2026-10-27', colours: [], previous: null }, reports = null } = {}) {
+  http.get.mockImplementation((url) => {
+    if (url.endsWith('customs-access')) return ok({ success: true, access })
+    if (url.endsWith('customs-reports')) return typeof reports === 'function' ? reports() : ok({ success: true, days: [], report: reports })
+    return ok({})
+  })
   http.post.mockImplementation((url) => {
     if (url.endsWith('customs-preview')) return typeof preview === 'function' ? preview() : ok(preview)
     return ok({ success: true, mode: 'created' })
@@ -665,5 +669,43 @@ describe('Relevé de guet — inscription au Registre de douane', () => {
     await generate(w)
 
     expect(find(w, 'guet-save-box').exists()).toBe(false)
+  })
+})
+
+describe('Relevé de guet — un relevé de ce jour existe déjà (Greg, 24/11/2026)', () => {
+  const REPORT = (over = {}) => ({ id: 5, city_id: 1, reported_on: '2026-10-27', sections: {}, sections_present: ['guet', 'armies_groups'], by_me: true, can_complete: true, can_correct: false, ...over })
+  const reportCalls = () => http.get.mock.calls.filter(([url]) => url.endsWith('customs-reports'))
+
+  it('le bandeau le dit SIMPLEMENT, au-dessus des cases de collage et hors de la plaque d\'inscription', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT() })
+
+    expect(reportCalls()[0][0]).toBe('characters/7/customs-reports')
+    expect(reportCalls()[0][1].params).toEqual({ city_id: 1, date: '2026-10-27' })
+    expect(find(w, 'guet-existing').text()).toBe('Un relevé du 27/10/1474 existe déjà pour cette ville.')
+    expect(find(w, 'guet-save-box').element.contains(find(w, 'guet-existing').element)).toBe(false)
+    expect(find(w, 'guet-existing').element.compareDocumentPosition(find(w, 'paste-yesterday').element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy() // avant les cases
+    expect(find(w, 'guet-existing').text()).not.toMatch(/guet|visions|armées|Artifice|auteur/i) // ni détail, ni auteur
+  })
+
+  it('aucun relevé ce jour-là, ou aucun droit de lecture : rien n\'est dit, l\'inscription reste possible', async () => {
+    expect(find(await mountGuet({ loggedIn: true, access: ACCESS(), reports: null }), 'guet-existing').exists()).toBe(false)
+
+    const refused = () => refuse(403, { fr: 'Refusé.', en: 'Refused.' })
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: refused })
+    expect(find(w, 'guet-existing').exists()).toBe(false)
+    expect(find(w, 'guet-save-box').exists()).toBe(true)
+  })
+
+  it('sans compte ou sans droit d\'écriture : aucune demande au serveur', async () => {
+    await mountGuet()
+    await mountGuet({ loggedIn: true, access: ACCESS({ write_reports: false, writable_cities: [] }), reports: REPORT() })
+
+    expect(reportCalls()).toHaveLength(0)
+  })
+
+  it('en anglais', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT(), locale: 'en' })
+
+    expect(find(w, 'guet-existing').text()).toBe('A report for 27/10/1474 already exists for this town.')
   })
 })
