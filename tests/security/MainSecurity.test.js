@@ -44,6 +44,18 @@ describe('Menu de la Sécurité', () => {
     expect(w.text()).toContain('La Salle des gardes')
   })
 
+  it('« Vue de la province » : seulement si le serveur dit AU MOINS DEUX villes lisibles', async () => {
+    const two = await mountMenu({ access: { province: { id: 3, name: 'Artois' }, readable_cities: [{ id: 1 }, { id: 2 }] } })
+    expect(two.find('[data-testid="province-link"]').text()).toBe('Vue de la province')
+    expect(two.find('[data-testid="province-help"]').exists()).toBe(true)
+
+    const one = await mountMenu({ access: { province: { id: 3, name: 'Artois' }, readable_cities: [{ id: 1 }] } })
+    expect(one.find('[data-testid="province-link"]').exists()).toBe(false)
+    expect(one.find('[data-testid="customs-link"]').exists()).toBe(true) // le Registre, lui, reste
+
+    expect((await mountMenu({ access: null })).find('[data-testid="province-link"]').exists()).toBe(false)
+  })
+
   it('sans rôle : le lien n\'existe pas', async () => {
     expect((await mountMenu({ access: null })).find('[data-testid="customs-link"]').exists()).toBe(false)
   })

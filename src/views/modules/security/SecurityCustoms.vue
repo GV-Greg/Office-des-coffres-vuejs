@@ -22,6 +22,12 @@
     L'auteur d'un bilan n'est jamais nommé (politique §6). Rien n'est gardé dans le navigateur. La saisie vit dans le Relevé de guet (point de collage unique).
     « Aucun membre de la sécurité n'est connu de l'Office pour votre province » est l'état COURANT d'une province (le repli maire/douanier), dit à l'écran.
   */
+  // La vue de la province ouvre un bilan précis : `?city=&day=` (routes `props`). Facultatif ; le serveur reste maître des villes et des jours lisibles.
+  const props = defineProps({
+    initialCity: { type: Number, default: null },
+    initialDay: { type: String, default: null },
+  })
+
   const { t, locale } = useI18n()
   const authStore = useAuthStore()
   const api = customsApi()
@@ -83,8 +89,9 @@
   // À l'arrivée de l'accès : la première ville lisible et le jour du jeu en cours que le serveur annonce.
   watch(access, (value) => {
     if (!value) return
-    cityId.value = defaultCityId(value.readable_cities, authStore.activeCharacter)
-    day.value = value.today
+    const asked = value.readable_cities.find(c => c.id === props.initialCity)
+    cityId.value = asked ? asked.id : defaultCityId(value.readable_cities, authStore.activeCharacter)
+    day.value = props.initialDay && /^\d{4}-\d{2}-\d{2}$/.test(props.initialDay) && props.initialDay <= value.today ? props.initialDay : value.today
   }, { immediate: true })
   watch([cityId, day], load)
   watch(() => character.value?.id, () => { report.value = null; days.value = [] })

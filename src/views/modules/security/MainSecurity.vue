@@ -17,12 +17,16 @@
   // (GET characters/{id}/customs-access), jamais recalculée ici.
   const { access } = useCustomsAccess(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id : null))
   const canOpenCustoms = computed(() => !!access.value)
+  // Vue de la province : seulement si le serveur dit AU MOINS DEUX villes lisibles (un maire simple a le Registre pour sa ville) — jamais recalculé ici.
+  const canOpenProvince = computed(() => (access.value?.readable_cities?.length ?? 0) >= 2)
 
   // Aides « i » du menu (même gabarit que les modules d'Économie) : une modale par page.
   const showGuetHelp = ref(false)
   const showCustomsHelp = ref(false)
+  const showProvinceHelp = ref(false)
   const guetHelpSteps = computed(() => [1, 2, 3, 4, 5, 6].map(n => t(`Security.HelpStep${n}`)))
   const customsHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`SecurityCustoms.HelpStep${n}`)))
+  const provinceHelpSteps = computed(() => [1, 2, 3, 4].map(n => t(`SecurityProvince.HelpStep${n}`)))
   </script>
 
 <template>
@@ -50,6 +54,16 @@
               <v-icon name="fa-info-circle" scale="0.9" />
             </button>
           </div>
+          <div v-if="canOpenProvince" class="inline-flex items-center gap-1.5 mt-2">
+            <RouterLink :to="{ name: 'security-province' }" class="inline-flex items-center font-bold" data-testid="province-link">
+              <v-icon name="gi-chest" scale="2" class="mr-1"/>
+              {{ t('SecurityProvince.Link') }}
+            </RouterLink>
+            <button type="button" class="text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-500"
+                    :aria-label="t('SecurityProvince.HelpButton')" :title="t('SecurityProvince.HelpButton')" data-testid="province-help" @click="showProvinceHelp = true">
+              <v-icon name="fa-info-circle" scale="0.9" />
+            </button>
+          </div>
       </div>
       <div class="w-full laptop:w-5/6 mt-2 laptop:mt-0 laptop:ml-2 p-1">
         <RouterView />
@@ -71,6 +85,14 @@
       :overview="t('SecurityCustoms.HelpOverview')"
       :steps="customsHelpSteps"
       @close="showCustomsHelp = false"
+    />
+    <HelpModal
+      :show="showProvinceHelp"
+      :title="t('SecurityProvince.HelpTitle')"
+      :purpose="t('SecurityProvince.HelpPurpose')"
+      :overview="t('SecurityProvince.HelpOverview')"
+      :steps="provinceHelpSteps"
+      @close="showProvinceHelp = false"
     />
   </div>
 </template>

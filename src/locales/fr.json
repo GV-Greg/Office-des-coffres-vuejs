@@ -513,6 +513,52 @@
       "Copied": "Le bilan est copié, prêt à coller sur le forum."
     }
   },
+  "SecurityProvince": {
+    "Title": "Vue de la province",
+    "Link": "Vue de la province",
+    "NoAccess": "L'Office ne connaît à votre personnage aucun rôle qui lise les bilans de plusieurs villes de sa province.",
+    "Note": "Chaque ligne porte le jour de son bilan.",
+    "Coverage": {
+      "Title": "Couverture",
+      "Age": "aujourd'hui | hier | il y a {n} jours",
+      "NoReport": "Aucun bilan",
+      "MovesTitle": "Comparé au bilan du {date}",
+      "Open": "Ouvrir le bilan de {city}"
+    },
+    "Marks": {
+      "Title": "Sur les listes",
+      "FilterColour": "Liste",
+      "All": "Toutes",
+      "Red": "Rouge",
+      "Green": "Verte",
+      "FilterCity": "Ville",
+      "AllCities": "Toutes les villes",
+      "Count": "{count} ligne | {count} lignes",
+      "Empty": "Aucun pseudo des listes dans les bilans.",
+      "As": {
+        "villager": "habitant",
+        "vision": "croisé en chemin",
+        "army_commander": "commande l'armée",
+        "group_member": "membre d'un groupe"
+      }
+    },
+    "Watch": {
+      "Title": "Groupes à surveiller",
+      "Empty": "Aucun groupe à surveiller."
+    },
+    "Armies": {
+      "Title": "Armées",
+      "Empty": "Aucune armée."
+    },
+    "HelpButton": "Comment lire la vue de la province ?",
+    "HelpTitle": "La vue de la province",
+    "HelpPurpose": "La vue d'ensemble donne la situation de la province : ce que les derniers bilans de chaque ville disent des pseudos des listes, des groupes à surveiller et des armées.",
+    "HelpOverview": "Elle se lit seulement : rien n'y est saisi ni enregistré. Chaque ligne vient du bilan le plus récent de sa ville qui contient la rubrique, et porte son jour. Pour saisir un relevé, utilisez le Relevé de guet.",
+    "HelpStep1": "Couverture : une ligne par ville, avec l'âge de son dernier bilan (en orange dès deux jours), le nombre d'arrivées et de départs, et ▸ pour ouvrir le bilan dans le Registre de douane.",
+    "HelpStep2": "Sur les listes : les pseudos des listes rouge et verte, où et comment ils ont été vus, avec le jour du bilan. Filtrez par liste ou par ville.",
+    "HelpStep3": "Groupes à surveiller et armées : ceux des derniers bilans de chaque ville, chacun avec sa ville et son jour.",
+    "HelpStep4": "Un pseudo vu dans deux villes apparaît deux fois, avec deux jours : l'Office ne compare jamais les villes entre elles."
+  },
   "SecurityOfficers": {
     "Title": "Valider les douaniers",
     "Cancel": "Annuler",

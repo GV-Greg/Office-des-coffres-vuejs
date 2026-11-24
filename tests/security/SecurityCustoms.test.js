@@ -72,12 +72,12 @@ function serve({ access = ACCESS(), report = REPORT(), days = ['2026-05-26', '20
   http.delete.mockImplementation(() => ok({ success: true }))
 }
 
-async function mountPage({ locale = 'fr', characterCity = null, ...options } = {}) {
+async function mountPage({ locale = 'fr', characterCity = null, props = {}, ...options } = {}) {
   setActivePinia(createPinia())
   useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice', city_id: characterCity }] }, token: 'jeton' })
   serve(options)
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
-  const wrapper = mount(SecurityCustoms, { global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } } })
+  const wrapper = mount(SecurityCustoms, { props, global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } } })
   await flushPromises()
   return wrapper
 }
@@ -353,6 +353,25 @@ describe('Registre de douane — la mise en page du bilan (passe de design, 23/1
     const w = await mountPage()
 
     expect(find(w, 'report-armies-groups').attributes('data-tone')).toBe('alert')
+  })
+})
+
+describe('Registre de douane — ouvert depuis la vue de la province (`?city=&day=`)', () => {
+  it('la ville et le jour demandés sont préselectionnés, et le bilan de ce jour-là est lu', async () => {
+    const w = await mountPage({ props: { initialCity: 2, initialDay: '2026-05-25' } })
+
+    expect(find(w, 'city-select').element.value).toBe('2')
+    expect(find(w, 'day-select').element.value).toBe('2026-05-25')
+    expect(reportCalls()[0][1].params).toEqual({ city_id: 2, date: '2026-05-25' })
+  })
+
+  it('une ville que le serveur ne dit pas lisible, un jour mal formé ou futur : ignorés, on retombe sur la ville du personnage et le jour du jeu', async () => {
+    const w = await mountPage({ props: { initialCity: 99, initialDay: 'demain' } })
+    expect(find(w, 'city-select').element.value).toBe('1')
+    expect(find(w, 'day-select').element.value).toBe('2026-05-26')
+
+    const future = await mountPage({ props: { initialCity: 1, initialDay: '2026-06-30' } })
+    expect(find(future, 'day-select').element.value).toBe('2026-05-26')
   })
 })
 
