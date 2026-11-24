@@ -137,6 +137,18 @@ export const useAuthStore = defineStore('auth', () => {
     return response.data
   }
 
+  // « Mot de passe oublié » (24/11/2026) : la demande répond TOUJOURS pareil, que l'adresse ait un compte ou non ; la confirmation (jeton + adresse du lien
+  // reçu, nouveau mot de passe) lève l'erreur axios si le lien est invalide, expiré ou déjà utilisé (`code: 'invalid_token'`, une seule réponse). Sans jeton d'accès.
+  const forgotPassword = async (email) => {
+    const response = await http.post('auth/forgot-password', { email })
+    return response.data
+  }
+
+  const resetPassword = async (payload) => {
+    const response = await http.post('auth/reset-password', payload)
+    return response.data
+  }
+
   // Lien de confirmation reçu par email (05/10/2026) : il pointe vers ce site — jamais vers l'API,
   // dont le domaine « admin » ferait passer l'email pour de l'hameçonnage — et la page rappelle
   // l'API avec les paramètres signés, tels quels. Renvoie le jeton d'accès ; lève l'erreur axios
@@ -370,6 +382,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     resendVerification,
+    forgotPassword,
+    resetPassword,
     confirmEmail,
     logout,
     deleteAccount,

@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 24/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 25/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -18,6 +18,8 @@ vue-i18n 9 + notivue (toasts) + oh-vue-icons. Parle au backend Laravel via `src/
 | `/` | `welcome` | — (`meta.public`) |
 | `/login` | `login` | `redirectToHomeIfLoggedIn` |
 | `/register` | `register` | `redirectToHomeIfLoggedIn` |
+| `/forgot-password` | `forgot-password` | — (`meta.public`, **chargée à la demande**) — « Mot de passe oublié » |
+| `/reset-password` | `reset-password` | — (`meta.public`, chargée à la demande, **sans** garde « déjà connecté » : un joueur connecté qui clique le lien de l'email doit pouvoir l'utiliser) — `?token&email` |
 | `/verify-email` | `verify-email` | — |
 | `/maintenance/:secret` | `maintenance-bypass` | — (`meta.public`) — retient le secret (onglet) puis redirige vers `home` |
 | `/legal/cookies` | `legal-cookies` | — (`meta.public`) |
@@ -46,7 +48,7 @@ Les deux guards sont **exportés** nommément (testables dans `tests/auth/`). `r
 
 - **`authStore.js`** (style setup) — tokens Passport. State : `user` (localStorage), `token` (string brute, localStorage), `refreshToken` (**localStorage si « Rester connecté », sessionStorage sinon**). `user.characters` = liste (0, 1 ou N personnages).
   Getters : `isLoggedIn`, `getUser`, `getToken`, `getCharacters`, `hasCharacters`, `isAdmin`, `activeCharacter`/`defaultCharacter`.
-  Actions : `register` (email+password, ne connecte pas), `resendVerification`, `login` (par **email**, avec `remember_me`), `refreshAccessToken`, `logout`, `deleteAccount` (DELETE `auth/account`, art. 17 : purge session locale + comfort data du compte), `checkAuth` (**une seule requête `auth/me` en vol par token**, garde-fou `authStore.test.js`), `createCharacter`, `updateCharacterCity`, `setActiveCharacter`/`setDefaultCharacter`.
+  Actions : `register` (email+password, ne connecte pas), `resendVerification`, `forgotPassword`, `resetPassword`, `login` (par **email**, avec `remember_me`), `refreshAccessToken`, `logout`, `deleteAccount` (DELETE `auth/account`, art. 17 : purge session locale + comfort data du compte), `checkAuth` (**une seule requête `auth/me` en vol par token**, garde-fou `authStore.test.js`), `createCharacter`, `updateCharacterCity`, `setActiveCharacter`/`setDefaultCharacter`.
   **Deux niveaux de personnage** : `defaultCharacter` = choix persistant (comfort data `default_character_id`), `activeCharacter` = session en cours.
   🔴 **Intercepteur axios 401 avec mutex** : un seul `auth/refresh` même si plusieurs requêtes échouent, rejoue l'originale ; `auth/login` et `auth/refresh` exclus. Un **refus** du refresh purge avec toast « session expirée » ; un refresh sans réponse garde la session.
 - **`mandateStore.js`** (style setup) — mandats : `mandates`, `characters` (avec `requestable`), `offices` (référentiel FR/EN). ⚠️ **Le frontend ne recode aucune règle** : titres, motifs et causes arrivent de l'API en FR/EN (Q11), refus avec `messages[champ][langue]` (Q9) ; `apiFieldErrors` / `apiMessage` choisissent la langue. Seuls les **statuts** et le texte d'interface sont dans les locales (`Profil.Mandates.*`). Arbitrages : `admin/echanges/mandats-lot2/`.
@@ -67,6 +69,7 @@ Les deux guards sont **exportés** nommément (testables dans `tests/auth/`). `r
 - **`legal/DataPageView.vue`** — « Vos données, outil par outil » : badge d'accès par outil, `modules/dataPageSections.js` = source unique. 🔴 **Version B** : les énumérations de la politique ne perdent jamais une ligne, la page renvoie à la politique pour durée/destinataires. Gardes-fous `dataPageSingleSource` et `badgeContrast`.
 - **`LoginView.vue`** — connexion par **email**. Carte claire deux thèmes, alerte « email non vérifié » + renvoi, case « Rester connecté » (comfort data `remember_me_preference`). Comparaison `error_message === 'Email non vérifié.'` **volontairement pas traduite** (message brut API).
 - **`RegisterView.vue`** — email + mot de passe + confirmation seulement (pseudo/ville dans `AddCharacterView`). Après soumission : écran « vérifiez votre boîte mail ».
+- **`ForgotPasswordView.vue` / `ResetPasswordView.vue`** — « Mot de passe oublié » (24/11/2026, fil `admin/echanges/mot-de-passe-oublie/` : textes validés par Greg, backend `POST auth/forgot-password` et `auth/reset-password`). Lien « Mot de passe oublié ? » sous le champ du mot de passe de `LoginView`. **Demande** : l'adresse part, la page dit **toujours** « si un compte existe… » (le serveur ne révèle rien) ; 429 → message de patience. **Choix** : le lien de l'email arrive sur `/reset-password?token&email` (site des joueurs, jamais l'API ni le domaine d'administration) ; 8 à 190 caractères et confirmation identique contrôlés avant l'envoi ; une réponse `invalid_token` (jeton faux, expiré après 60 min ou déjà utilisé) → UNE page « lien invalide ou expiré » avec le chemin pour redemander ; un lien incomplet (sans jeton ou adresse) est invalide d'emblée, sans appel. 🔴 **Rien n'est gardé dans le navigateur** (ni jeton ni mot de passe, gardé par test). `authStore.forgotPassword` / `resetPassword` : sans jeton d'accès. Namespace i18n `PasswordReset` (+ `Login.ForgotLink`). Tests `tests/auth/PasswordReset.test.js`.
 - **`VerifyEmailView.vue`** — le lien email pointe ici (`?id&hash&expires&signature`). Rappelle l'API en JSON. Si `token` : connexion auto puis redirection. Tout autre cas : message + mini-formulaire de renvoi.
 - **`AddCharacterView.vue`** — sélecteur cascade royaume→province→ville (fetch `GET map`, ~300 villes en un seul payload), pseudo.
 - **`ProfilView.vue`** — titre « Mon personnage / Mes personnages » (pluriel vue-i18n) sur la même ligne que « Ajouter un personnage », pleine largeur (1600 px max) ; personnages côte à côte dès 1500 px (identité au-dessus des postes), compte en colonne fixe de 19 rem. Deux colonnes laptop : à gauche personnages en cartes (liseré vert validé / rouge en attente, identité, actions, étoile = personnage par défaut) ; à droite zone dangereuse (`<details>` replié, `DeleteAccountModal`).
@@ -121,7 +124,7 @@ Couverture complète. **Une seule instance i18n** (`src/i18n/index.js`), utilis�
 
 **Français embarqué, anglais chargé à la demande** (chunk). `setLocale()` charge puis bascule, **ne rejette jamais**. Langue appliquée dans `main.js` **avant `app.mount()`**. `fallbackLocale: 'fr'`. Parité gardée par `i18n-parity.unit.test.js`.
 
-Namespaces : `Cookies`, `Common`, `Profil`, `Validation`, `Welcome`, `Home`, `NotFound`, `Auth`, `Login`, `Register`, `NavBar`, `NavMenu`, `Security`, `SecurityCustoms`, `SecurityCustomsTable`, `Economy`, `EconomyBalance`, `EconomyMenu`, `EconomyInventoryRegistry`, `EconomyMines`, `Animation`, `Announcement`, `Company`, `Legal`, `Maintenance` + clés plates `username`/`password`/`email`/`confirmation`.
+Namespaces : `Cookies`, `Common`, `Profil`, `Validation`, `Welcome`, `Home`, `NotFound`, `Auth`, `Login`, `Register`, `NavBar`, `NavMenu`, `Security`, `SecurityCustoms`, `SecurityCustomsTable`, `PasswordReset`, `Economy`, `EconomyBalance`, `EconomyMenu`, `EconomyInventoryRegistry`, `EconomyMines`, `Animation`, `Announcement`, `Company`, `Legal`, `Maintenance` + clés plates `username`/`password`/`email`/`confirmation`.
 
 ⚠️ **Pièges** : `@` littéral dans JSON casse la compilation ; `tm()` sans `rt()` = AST à l'écran.
 

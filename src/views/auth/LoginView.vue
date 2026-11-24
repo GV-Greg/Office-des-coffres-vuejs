@@ -142,6 +142,12 @@
           </div>
           <div class="form-group">
             <InputPassword v-model="user.password" name="password" :label="t('password')" :placeholder="t('Auth.PasswordPlaceholder')" />
+            <!-- « Mot de passe oublié » (24/11/2026) : sous le champ qu'on a oublié, à droite. -->
+            <p class="mt-1 text-right text-sm">
+              <RouterLink :to="{ name: 'forgot-password' }" class="font-bold text-blue-700 hover:underline underline-offset-2" data-testid="forgot-link">
+                {{ t('Login.ForgotLink') }}
+              </RouterLink>
+            </p>
           </div>
           <div class="mb-5 flex items-center gap-2.5">
             <input id="remember-me" v-model="rememberMe" type="checkbox" name="remember_me" class="remember-check" />
