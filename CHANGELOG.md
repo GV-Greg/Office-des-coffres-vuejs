@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-24] — PR #162 (Texte légal : l'auteur d'un bilan peut le corriger le jour du jeu même)
+
+### Changed
+- **Politique de confidentialité §6** (FR + EN, fil `admin/echanges/module-securite/22` et `23`, besoin de terrain de Greg) : « l'auteur d'un bilan peut le corriger le jour du jeu même ; seuls le prévôt et le connétable corrigent le bilan d'un autre ou saisissent un jour passé ». Date de la politique : 24/11/2026. Garde-fou `privacySecurity.unit.test.js` complété (1645 tests).
+
+### Deploy notes
+- Texte seul, aucune migration, route, `config/*.php` ni paquet. **À mettre en ligne AVANT le changement backend** (l'auteur corrige son bilan), puis `php artisan policy:notify` (un seul email par jour).
+
 ## [2026-11-23] — PR #160 (Salle des gardes : le Relevé de guet devient l'export, le Registre de douane se lit)
 
 ### Changed
