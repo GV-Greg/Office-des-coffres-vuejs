@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-24] — PR #163 (Relevé de guet : « un relevé existe déjà », retrait d'une section, groupes sans en-tête)
+
+### Added
+- **Bandeau « Un relevé du JJ/MM existe déjà pour cette ville. »** (`ExistingReportNotice.vue`, fil `admin/echanges/module-securite/22` et `23`) : sur la ligne de la ville, devant elle, fond orange et texte blanc ; lecture seule (`GET customs-reports`), rien sans droit de lecture ni sans relevé, ni détail ni auteur.
+- **Une case vidée retire sa section** du relevé existant : le Relevé envoie `remove_sections` pour les visions et les armées/groupes laissés vides ET inscrits dans le relevé du jour (jamais le guet) ; le bouton reste actif quand il n'y a que des sections à retirer. Backend : `back #111`.
+
+### Fixed
+- **Un collage de groupes sans en-tête** (« Groupes présents ici : ») était ignoré en entier : il se lit maintenant comme une liste de groupes. Avec un en-tête, rien ne change.
+
+### Deploy notes
+- **PR empilée sur `front #161`** (Table des douanes) : mergée dans sa branche, elle part en production avec #161. Frontend seul ; la règle serveur est `back #111` (mergée le 24/11/2026).
+
 ## [2026-11-23] — PR #160 (Salle des gardes : le Relevé de guet devient l'export, le Registre de douane se lit)
 
 ### Changed
