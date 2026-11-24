@@ -6,6 +6,23 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-24] — PR #161 (Sécurité : la Table des douanes, vue d'ensemble de la province)
+
+### Added
+- **Table des douanes** (`/app/secu/customs-table`, ex-« Vue d'ensemble de la province » ; `SecurityCustomsTable.vue`, fils `admin/echanges/module-securite/18` à `20`, retouches de Greg des 23 et 24/11/2026) : le Registre de douane étendu à toute la province, en **lecture seule** (`GET customs-province`, `back #110`). **Un bloc par ville qui a un bilan AU JOUR AFFICHÉ** (les autres en « Villes sans bilan », grisées) ; **navigation dans les jours** ; plaque ardoise bordée d'ambre : habitants · groupes · arrivées · départs, sans date ; rubriques arrivées et départs (pseudos), habitants (listes rouge/verte + accordéon fermé des autres), groupes (tous, en phrases, « Groupe composé de » en exergue), armées ; pseudos sans cadre. Visible à partir de **deux villes lisibles** (le serveur le dit).
+- **Chroniques** d'ouverture de la Salle des gardes (une publique, une pour les membres) ; l'annonce Discord part à ce merge.
+- `ExistingReportNotice.vue`, `AccessLoader` (props `icon`, `message`, `iconClass`, `top`), `CustomsPseudo` (variante `plain`).
+
+### Changed
+- **Registre et Table** : petit loader de composant (`AccessLoader`, cadenas rose, aligné en haut) au changement de jour ; menu de gauche « Coffres Sécurité » au gabarit d'Économie et d'Animation ; modale des listes rouge et verte au gabarit des modales d'information ; rubriques du bilan en plaques ardoise à corps clair (`ReportCard`).
+- **Relevé de guet** : les visions repartent **vides chaque jour** ; encart d'inscription « Relevé du … » au lieu de « Bilan du … ». Contient aussi `front #163` (bandeau « un relevé existe déjà », retrait d'une section, groupes sans en-tête) et le texte légal de `front #162`.
+
+### Fixed
+- `border-amber-700` n'existe pas dans le thème (aucun CSS produit) → `border-yellow-700` (trouvé par le garde-fou Tailwind).
+
+### Deploy notes
+- 🔴 **Merger avec `back #110`** (route `customs-province`) ; **`php artisan route:cache` en SSH** puis sonde 401 sur `customs-province`. Aucune migration, `config/*.php` ni paquet.
+
 ## [2026-11-24] — PR #162 (Texte légal : l'auteur d'un bilan peut le corriger le jour du jeu même)
 
 ### Changed
@@ -13,6 +30,19 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 
 ### Deploy notes
 - Texte seul, aucune migration, route, `config/*.php` ni paquet. **À mettre en ligne AVANT le changement backend** (l'auteur corrige son bilan), puis `php artisan policy:notify` (un seul email par jour).
+
+## [2026-11-24] — PR #163 (Relevé de guet : « un relevé existe déjà », retrait d'une section, groupes sans en-tête)
+
+### Added
+- **Bandeau « Un relevé du JJ/MM existe déjà pour cette ville. »** (`ExistingReportNotice.vue`, fil `admin/echanges/module-securite/22` et `23`) : sur la ligne de la ville, devant elle, fond orange et texte blanc ; lecture seule (`GET customs-reports`), rien sans droit de lecture ni sans relevé, ni détail ni auteur.
+- **Une case vidée retire sa section** du relevé existant : le Relevé envoie `remove_sections` pour les visions et les armées/groupes laissés vides ET inscrits dans le relevé du jour (jamais le guet) ; le bouton reste actif quand il n'y a que des sections à retirer. Backend : `back #111`.
+
+### Fixed
+- **Un collage de groupes sans en-tête** (« Groupes présents ici : ») était ignoré en entier : il se lit maintenant comme une liste de groupes. Avec un en-tête, rien ne change.
+
+### Deploy notes
+- **PR empilée sur `front #161`** (Table des douanes) : mergée dans sa branche, elle part en production avec #161. Frontend seul ; la règle serveur est `back #111` (mergée le 24/11/2026).
+
 
 ## [2026-11-23] — PR #160 (Salle des gardes : le Relevé de guet devient l'export, le Registre de douane se lit)
 

@@ -90,21 +90,24 @@
   <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4" data-testid="lists-modal">
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" @click="close"></div>
     <div ref="panel" role="dialog" aria-modal="true" :aria-label="t('SecurityCustoms.Lists.Title', { province: access.province.name })"
-         class="relative w-full max-w-3xl max-h-[90vh] flex flex-col bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden text-slate-800">
+         class="relative w-full max-w-2xl laptop:max-w-3xl max-h-[90vh] flex flex-col bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
       <div class="h-1.5 bg-gradient-to-r from-orange-400 to-red-600 shrink-0"></div>
       <div class="p-6 overflow-y-auto space-y-4">
         <div class="flex items-start justify-between gap-4">
-          <h3 class="!mb-0 text-lg font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Lists.Title', { province: access.province.name }) }}</h3>
+          <h3 class="!mb-0 flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-100">
+            <v-icon name="gi-scroll-unfurled" scale="1.2" class="text-orange-500 shrink-0" aria-hidden="true" />
+            {{ t('SecurityCustoms.Lists.Title', { province: access.province.name }) }}
+          </h3>
           <ModalCloseButton @click="close" />
         </div>
 
-        <p class="text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Lists.Intro') }}</p>
-        <p v-if="!access.write_lists" class="text-sm font-bold text-slate-800 dark:text-slate-800" data-testid="lists-readonly">
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ t('SecurityCustoms.Lists.Intro') }}</p>
+        <p v-if="!access.write_lists" class="text-sm font-bold text-slate-800 dark:text-slate-100" data-testid="lists-readonly">
           {{ t(access.add_red_only ? 'SecurityCustoms.Lists.JudgeOnly' : 'SecurityCustoms.Lists.ReadOnly') }}
         </p>
-        <p v-if="error" role="alert" class="font-bold text-red-800 dark:text-red-800" data-testid="lists-error">{{ error }}</p>
+        <p v-if="error" role="alert" class="font-bold text-red-700 dark:text-red-300" data-testid="lists-error">{{ error }}</p>
 
-        <form v-if="canAdd" class="grid gap-2 rounded-lg border border-slate-300 p-3 tablet:grid-cols-[1fr_auto_2fr_auto] items-end" data-testid="lists-add" @submit.prevent="add">
+        <form v-if="canAdd" class="grid gap-2 rounded-lg border border-slate-300 dark:border-slate-600 p-3 tablet:grid-cols-[1fr_auto_2fr_auto] items-end text-slate-800 dark:text-slate-100" data-testid="lists-add" @submit.prevent="add">
           <label class="text-sm"><span class="block font-bold">{{ t('SecurityCustoms.Lists.Pseudo') }}</span>
             <input v-model="form.pseudo" type="text" required maxlength="40" pattern="\S{1,40}" autocomplete="off" class="w-full rounded p-1" data-testid="lists-pseudo">
           </label>
@@ -121,15 +124,15 @@
           </button>
         </form>
 
-        <p v-if="loading" class="text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Loading') }}</p>
-        <p v-else-if="!entries.length" class="text-sm text-slate-800 dark:text-slate-800" data-testid="lists-empty">{{ t('SecurityCustoms.Lists.Empty') }}</p>
+        <p v-if="loading" class="text-sm text-slate-700 dark:text-slate-300">{{ t('SecurityCustoms.Loading') }}</p>
+        <p v-else-if="!entries.length" class="text-sm text-slate-700 dark:text-slate-300" data-testid="lists-empty">{{ t('SecurityCustoms.Lists.Empty') }}</p>
         <ul v-else class="space-y-2" data-testid="lists-entries">
-          <li v-for="entry in entries" :key="entry.id" class="rounded-lg border border-slate-200 p-2" :data-entry="entry.id">
+          <li v-for="entry in entries" :key="entry.id" class="rounded-lg border border-slate-200 dark:border-slate-600 p-2" :data-entry="entry.id">
             <div class="flex flex-wrap items-center gap-2">
               <CustomsPseudo :pseudo="entry.pseudo" :colour="entry.colour" />
-              <span class="text-xs text-slate-600">{{ t('SecurityCustoms.Lists.Since', { date: addedOn(entry.added_on) }) }}</span>
-              <span v-if="entry.added_by" class="text-xs text-slate-600" data-testid="added-by">{{ t('SecurityCustoms.Lists.AddedBy', { pseudo: entry.added_by }) }}</span>
-              <span v-else-if="entry.by_me" class="text-xs text-slate-600">{{ t('SecurityCustoms.Lists.ByMe') }}</span>
+              <span class="text-xs text-slate-600 dark:text-slate-400">{{ t('SecurityCustoms.Lists.Since', { date: addedOn(entry.added_on) }) }}</span>
+              <span v-if="entry.added_by" class="text-xs text-slate-600 dark:text-slate-400" data-testid="added-by">{{ t('SecurityCustoms.Lists.AddedBy', { pseudo: entry.added_by }) }}</span>
+              <span v-else-if="entry.by_me" class="text-xs text-slate-600 dark:text-slate-400">{{ t('SecurityCustoms.Lists.ByMe') }}</span>
               <span class="ml-auto flex gap-1">
                 <button v-if="entry.can_edit && editing?.id !== entry.id" type="button" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" :disabled="busy" @click="startEdit(entry)">
                   <v-icon name="fa-edit" aria-hidden="true" />{{ t('SecurityCustoms.Lists.Edit') }}
@@ -139,7 +142,7 @@
                 </button>
               </span>
             </div>
-            <p v-if="entry.reason && editing?.id !== entry.id" class="text-sm mt-1 text-slate-800 dark:text-slate-800">{{ entry.reason }}</p>
+            <p v-if="entry.reason && editing?.id !== entry.id" class="text-sm mt-1 text-slate-800 dark:text-slate-100">{{ entry.reason }}</p>
             <form v-if="editing?.id === entry.id" class="mt-2 flex flex-wrap items-end gap-2" @submit.prevent="saveEdit">
               <select v-model="editing.colour" class="rounded p-1"><option value="red">{{ t('SecurityCustoms.List.Red') }}</option><option value="green">{{ t('SecurityCustoms.List.Green') }}</option></select>
               <input v-model="editing.reason" type="text" maxlength="300" class="flex-1 rounded p-1" :aria-label="t('SecurityCustoms.Lists.Reason')">

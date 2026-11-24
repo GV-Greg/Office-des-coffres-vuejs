@@ -60,10 +60,10 @@ const ENTRIES = () => [
   { id: 2, colour: 'green', pseudo: 'Artifice', reason: null, added_on: '2026-05-21', by_me: true, added_by: null, can_remove: true, can_edit: false },
 ]
 
-function serve({ access = ACCESS(), report = REPORT(), days = ['2026-05-26', '2026-05-25'], entries = ENTRIES() } = {}) {
+function serve({ access = ACCESS(), report = REPORT(), days = ['2026-05-26', '2026-05-25'], entries = ENTRIES(), onReport = null } = {}) {
   http.get.mockImplementation((url) => {
     if (url.endsWith('customs-access')) return ok({ success: true, access })
-    if (url.endsWith('customs-reports')) return ok({ success: true, days, report })
+    if (url.endsWith('customs-reports')) return onReport ? onReport() : ok({ success: true, days, report })
     if (url.endsWith('customs-lists')) return ok({ success: true, entries })
     return ok({})
   })
@@ -72,12 +72,12 @@ function serve({ access = ACCESS(), report = REPORT(), days = ['2026-05-26', '20
   http.delete.mockImplementation(() => ok({ success: true }))
 }
 
-async function mountPage({ locale = 'fr', characterCity = null, ...options } = {}) {
+async function mountPage({ locale = 'fr', characterCity = null, props = {}, ...options } = {}) {
   setActivePinia(createPinia())
   useAuthStore().$patch({ user: { characters: [{ id: 7, pseudo: 'Artifice', city_id: characterCity }] }, token: 'jeton' })
   serve(options)
   const i18n = createI18n({ legacy: false, locale, messages: { fr, en } })
-  const wrapper = mount(SecurityCustoms, { global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } } })
+  const wrapper = mount(SecurityCustoms, { props, global: { plugins: [i18n], stubs: { RouterLink: { template: '<a><slot /></a>' }, 'v-icon': true } } })
   await flushPromises()
   return wrapper
 }
@@ -217,6 +217,18 @@ describe('Registre de douane — listes rouge et verte', () => {
     return w
   }
 
+  it('même design que les modales d\'information (HelpModal) : fond sombre en thème sombre, filet, barre dégradée, titre avec le parchemin, textes par thème', async () => {
+    const w = await openLists()
+    const panel = find(w, 'lists-modal').find('[role="dialog"]')
+
+    expect(panel.classes()).toEqual(expect.arrayContaining(['bg-white', 'dark:bg-slate-800', 'border-slate-200', 'dark:border-slate-700', 'rounded-2xl', 'shadow-2xl']))
+    expect(panel.find('.bg-gradient-to-r').exists()).toBe(true) // la barre orange → rouge du haut
+    expect(panel.find('h3 v-icon-stub').attributes('name')).toBe('gi-scroll-unfurled')
+    expect(panel.find('h3').classes()).toContain('dark:text-slate-100')
+    // aucun texte ne reste « sombre sur sombre » : les textes de la modale ont leur variante pour le thème sombre
+    expect(panel.html()).not.toMatch(/dark:text-slate-800/)
+  })
+
   it('la modale lit les entrées ; « ajouté par » n\'apparaît que si le serveur le sert (le trio)', async () => {
     const w = await openLists()
 
@@ -353,6 +365,48 @@ describe('Registre de douane — la mise en page du bilan (passe de design, 23/1
     const w = await mountPage()
 
     expect(find(w, 'report-armies-groups').attributes('data-tone')).toBe('alert')
+  })
+})
+
+describe('Registre de douane — le chargement au changement de ville ou de jour', () => {
+  it('changer de jour : le petit loader de composant du Bilan des mines (le cadenas, aux couleurs de la Sécurité, aligné en haut) garde la place du bilan, plus un simple « Chargement… »', async () => {
+    let release
+    let calls = 0
+    const onReport = () => (++calls === 1 ? ok({ success: true, days: ['2026-05-26', '2026-05-25'], report: REPORT() }) : new Promise((resolve) => { release = () => resolve({ data: { success: true, days: [], report: null } }) }))
+    const w = await mountPage({ onReport })
+    expect(find(w, 'access-loader').exists()).toBe(false)
+
+    await find(w, 'older-day').trigger('click')
+    const loader = find(w, 'access-loader')
+    expect(loader.exists()).toBe(true)
+    expect(loader.classes()).toContain('justify-start')
+    expect(loader.find('v-icon-stub').attributes('name')).toBe('gi-padlock')
+    expect(loader.find('v-icon-stub').classes()).toContain('text-rose-700')
+    expect(find(w, 'customs-report').exists()).toBe(false) // l'ancien bilan n'est pas montré pendant l'attente
+    expect(w.text()).not.toMatch(/Chargement…|Loading…/)
+
+    release()
+    await flushPromises()
+    expect(find(w, 'access-loader').exists()).toBe(false)
+  })
+})
+
+describe('Registre de douane — ouvert depuis la vue de la province (`?city=&day=`)', () => {
+  it('la ville et le jour demandés sont préselectionnés, et le bilan de ce jour-là est lu', async () => {
+    const w = await mountPage({ props: { initialCity: 2, initialDay: '2026-05-25' } })
+
+    expect(find(w, 'city-select').element.value).toBe('2')
+    expect(find(w, 'day-select').element.value).toBe('2026-05-25')
+    expect(reportCalls()[0][1].params).toEqual({ city_id: 2, date: '2026-05-25' })
+  })
+
+  it('une ville que le serveur ne dit pas lisible, un jour mal formé ou futur : ignorés, on retombe sur la ville du personnage et le jour du jeu', async () => {
+    const w = await mountPage({ props: { initialCity: 99, initialDay: 'demain' } })
+    expect(find(w, 'city-select').element.value).toBe('1')
+    expect(find(w, 'day-select').element.value).toBe('2026-05-26')
+
+    const future = await mountPage({ props: { initialCity: 1, initialDay: '2026-06-30' } })
+    expect(find(future, 'day-select').element.value).toBe('2026-05-26')
   })
 })
 

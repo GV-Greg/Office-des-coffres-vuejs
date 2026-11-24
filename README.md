@@ -95,7 +95,7 @@ npm run test:watch     # Mode watch — boucle de dev, ne repaie le démarrage q
 npm run test:auth      # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
-1645 tests verts au 24/11/2026, répartis par domaine dans `tests/{auth,cookies,eco,anim,security,
+1696 tests verts au 24/11/2026, répartis par domaine dans `tests/{auth,cookies,eco,anim,security,
 mandates,province,common,enforcement,legal,fixtures}` — structure, scripts et méthode ("quoi lancer, et quand")
 détaillés dans `docs/TESTS.md`.
 

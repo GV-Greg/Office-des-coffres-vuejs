@@ -5,16 +5,24 @@
     Attente INLINE d'une zone dont le contenu dépend d'un droit (formulaire de prix du Bilan, par exemple) : la place est
     réservée, un cadenas fermé dit ce qui se passe, et la zone n'est remplacée qu'une fois la réponse du serveur connue —
     plus de formulaire qui apparaît puis change. Pour un chargement de PAGE, voir ChestLoader.
+    Aussi pour les BLOCS d'une page qui se rechargent (changer de jour dans le Registre de douane, Greg 24/11/2026) : `icon`, `message` et `iconClass`
+    changent l'image et la phrase, `top` l'aligne en haut ; par défaut, le cadenas du Bilan des mines, centré.
   */
-  defineProps({ minHeight: { type: String, default: '7.5rem' } })
+  defineProps({
+    minHeight: { type: String, default: '7.5rem' },
+    icon: { type: String, default: 'gi-padlock' },
+    message: { type: String, default: '' },
+    iconClass: { type: String, default: 'text-yellow-700 dark:text-yellow-700' },
+    top: { type: Boolean, default: false }, // aligné EN HAUT de sa zone (blocs d'une page) au lieu d'être centré (Bilan des mines)
+  })
   const { t } = useI18n()
 </script>
 
 <template>
-  <div class="flex flex-col justify-center gap-3" :style="{ minHeight }" role="status" aria-live="polite" data-testid="access-loader">
+  <div class="flex flex-col gap-3" :class="top ? 'justify-start' : 'justify-center'" :style="{ minHeight }" role="status" aria-live="polite" data-testid="access-loader">
     <div class="flex items-center gap-3 font-bold text-slate-800 dark:text-slate-800">
-      <v-icon name="gi-padlock" scale="1.6" class="text-yellow-700 dark:text-yellow-700" aria-hidden="true" />
-      <span>{{ t('Chest.Access') }}</span>
+      <v-icon :name="icon" scale="1.6" :class="iconClass" aria-hidden="true" />
+      <span>{{ message || t('Chest.Access') }}</span>
     </div>
     <div class="space-y-2" aria-hidden="true">
       <span class="skeleton block h-2.5 w-3/4 rounded bg-slate-200" />

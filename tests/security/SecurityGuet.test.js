@@ -49,8 +49,12 @@ const ACCESS = (over = {}) => ({
 })
 
 let pinia
-function serve({ access = null, preview = { success: true, today: '2026-10-27', colours: [], previous: null } } = {}) {
-  http.get.mockImplementation(url => (url.endsWith('customs-access') ? ok({ success: true, access }) : ok({})))
+function serve({ access = null, preview = { success: true, today: '2026-10-27', colours: [], previous: null }, reports = null } = {}) {
+  http.get.mockImplementation((url) => {
+    if (url.endsWith('customs-access')) return ok({ success: true, access })
+    if (url.endsWith('customs-reports')) return typeof reports === 'function' ? reports() : ok({ success: true, days: [], report: reports })
+    return ok({})
+  })
   http.post.mockImplementation((url) => {
     if (url.endsWith('customs-preview')) return typeof preview === 'function' ? preview() : ok(preview)
     return ok({ success: true, mode: 'created' })
@@ -177,14 +181,14 @@ describe('Relevé de guet — présentation (fil module-securite 19, A1 à A5, 2
     await fill(w, { today: aujourdhui, visions: real('visions-fr'), armies: allArmies('fr') })
     await generate(w)
 
-    vi.setSystemTime(new Date('2026-11-23T12:00:00Z')) // le lendemain : la liste d'hier, les visions et les armées sont « retrouvées »
+    vi.setSystemTime(new Date('2026-11-23T12:00:00Z')) // le lendemain : la liste d'hier et les armées sont « retrouvées » ; les visions repartent VIDES
     const second = await mountGuet({ again: true })
     const under = (note, textarea) => {
       expect(note.exists()).toBe(true)
       expect(note.element.previousElementSibling).toBe(textarea.element)
     }
     under(find(second, 'yesterday-prefilled'), find(second, 'paste-yesterday'))
-    under(find(second, 'visions-restored'), find(second, 'paste-visions'))
+    expect(find(second, 'visions-restored').exists()).toBe(false)
     under(find(second, 'armies-restored'), find(second, 'paste-armies-groups'))
     expect(find(second, 'yesterday-prefilled').text()).toBe('Pré-remplie automatiquement depuis votre dernière visite')
   })
@@ -354,16 +358,32 @@ describe('Relevé de guet — le dernier collage de chaque type (stockage « Pr�
     expect(find(second, 'armies-restored').exists()).toBe(false)
   })
 
-  it('un collage RETROUVÉ n\'est pas réenregistré sous le jour d\'aujourd\'hui par « Confier au scribe » (sinon il deviendrait inscriptible au rechargement)', async () => {
+  it('un collage RETROUVÉ (armées, groupes, zone) n\'est pas réenregistré sous le jour d\'aujourd\'hui par « Confier au scribe » (sinon il deviendrait inscriptible au rechargement)', async () => {
     const first = await mountGuet()
     useCookieStore().consent.preferences = true
-    useCookieStore().setComfortData('guet_last_visions', 'ancienne forme, sans jour') // gardé avant les jours
+    useCookieStore().setComfortData('guet_last_armies_groups', 'ancienne forme, sans jour') // gardé avant les jours
     const w = await mountGuet({ again: true })
-    expect(find(w, 'visions-restored').exists()).toBe(true)
+    expect(find(w, 'armies-restored').exists()).toBe(true)
     await fill(w, { today: real('guet-fr') })
     await generate(w)
 
-    expect(useCookieStore().getComfortData('guet_last_visions')).toBe('ancienne forme, sans jour')
+    expect(useCookieStore().getComfortData('guet_last_armies_groups')).toBe('ancienne forme, sans jour')
+    expect(first).toBeTruthy()
+  })
+
+  it('les VISIONS sont celles d\'une nuit : la case repart VIDE chaque jour (Greg, 24/11/2026), la reprise d\'un autre jour est effacée ; celle du jour revient', async () => {
+    const store = () => useCookieStore()
+    const first = await mountGuet()
+    store().consent.preferences = true
+    store().setComfortData('guet_last_visions', { day: '2020-01-01', text: 'visions de la veille' })
+    store().setComfortData('guet_last_armies_groups', { day: '2020-01-01', text: 'armées de la veille' })
+    const w = await mountGuet({ again: true })
+
+    expect(find(w, 'paste-visions').element.value).toBe('') // vide : celles de la veille ne servent à rien
+    expect(find(w, 'visions-restored').exists()).toBe(false)
+    expect(store().getComfortData('guet_last_visions')).toBeNull() // effacée, pas gardée pour rien
+    expect(find(w, 'paste-armies-groups').element.value).toBe('armées de la veille') // les groupes : comme avant
+    expect(find(w, 'armies-restored').exists()).toBe(true)
     expect(first).toBeTruthy()
   })
 
@@ -649,5 +669,71 @@ describe('Relevé de guet — inscription au Registre de douane', () => {
     await generate(w)
 
     expect(find(w, 'guet-save-box').exists()).toBe(false)
+  })
+})
+
+describe('Relevé de guet — un relevé de ce jour existe déjà (Greg, 24/11/2026)', () => {
+  const REPORT = (over = {}) => ({ id: 5, city_id: 1, reported_on: '2026-10-27', sections: {}, sections_present: ['guet', 'armies_groups'], by_me: true, can_complete: true, can_correct: false, ...over })
+  const reportCalls = () => http.get.mock.calls.filter(([url]) => url.endsWith('customs-reports'))
+
+  it('le bandeau le dit SIMPLEMENT, au-dessus des cases de collage et hors de la plaque d\'inscription', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT() })
+
+    expect(reportCalls()[0][0]).toBe('characters/7/customs-reports')
+    expect(reportCalls()[0][1].params).toEqual({ city_id: 1, date: '2026-10-27' })
+    expect(find(w, 'guet-existing').text()).toBe('Un relevé du 27/10/1474 existe déjà pour cette ville.')
+    expect(find(w, 'guet-save-box').element.contains(find(w, 'guet-existing').element)).toBe(false)
+    expect(find(w, 'guet-existing').element.compareDocumentPosition(find(w, 'paste-yesterday').element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy() // avant les cases
+    expect(find(w, 'guet-existing').text()).not.toMatch(/guet|visions|armées|Artifice|auteur/i) // ni détail, ni auteur
+  })
+
+  it('aucun relevé ce jour-là, ou aucun droit de lecture : rien n\'est dit, l\'inscription reste possible', async () => {
+    expect(find(await mountGuet({ loggedIn: true, access: ACCESS(), reports: null }), 'guet-existing').exists()).toBe(false)
+
+    const refused = () => refuse(403, { fr: 'Refusé.', en: 'Refused.' })
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: refused })
+    expect(find(w, 'guet-existing').exists()).toBe(false)
+    expect(find(w, 'guet-save-box').exists()).toBe(true)
+  })
+
+  it('sans compte ou sans droit d\'écriture : aucune demande au serveur', async () => {
+    await mountGuet()
+    await mountGuet({ loggedIn: true, access: ACCESS({ write_reports: false, writable_cities: [] }), reports: REPORT() })
+
+    expect(reportCalls()).toHaveLength(0)
+  })
+
+  it('une case VIDÉE retire sa section du relevé existant : seulement visions et armées/groupes, jamais le guet, seulement si elles y sont inscrites', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT({ sections_present: ['guet', 'visions', 'armies_groups'] }) })
+    await fill(w, { today: aujourdhui, visions: '', armies: allArmies('fr') }) // les visions sont vidées, les armées gardées
+
+    await find(w, 'guet-save').trigger('click')
+    await flushPromises()
+
+    const body = saveCalls()[0][1]
+    expect(body.remove_sections).toEqual(['visions'])
+    expect(Object.keys(body.sections)).toEqual(['guet', 'armies_groups'])
+  })
+
+  it('retirer seul suffit : le bouton est actif sans rien à inscrire ; sans relevé existant, une case vide ne retire rien', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT({ sections_present: ['guet', 'visions'] }) })
+    await fill(w, { today: '', visions: '', armies: '' })
+    expect(find(w, 'guet-save').attributes('disabled')).toBeUndefined() // retirer les visions est un geste
+
+    await find(w, 'guet-save').trigger('click')
+    await flushPromises()
+    expect(saveCalls()[0][1]).toEqual({ city_id: 1, sections: {}, remove_sections: ['visions'] })
+
+    http.post.mockClear()
+    const empty = await mountGuet({ loggedIn: true, access: ACCESS(), reports: null })
+    await fill(empty, { today: '', visions: '', armies: '' })
+    expect(find(empty, 'guet-save').attributes('disabled')).toBeDefined() // rien à inscrire, rien à retirer
+    expect(saveCalls()).toHaveLength(0)
+  })
+
+  it('en anglais', async () => {
+    const w = await mountGuet({ loggedIn: true, access: ACCESS(), reports: REPORT(), locale: 'en' })
+
+    expect(find(w, 'guet-existing').text()).toBe('A report for 27/10/1474 already exists for this town.')
   })
 })

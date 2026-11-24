@@ -350,7 +350,7 @@
     "Province": "Mon bureau"
   },
   "Security": {
-    "Title": "La Salle des gardes",
+    "Title": "Coffres Sécurité",
     "EntriesExits": "Relevé de guet",
     "PageTitle": "Relevé de guet",
     "CustomsMode": "Mode douanier",
@@ -390,6 +390,7 @@
     "Link": "Registre de douane",
     "Title": "Registre de douane",
     "Province": "Province",
+    "Loading": "Chargement…",
     "NoAccess": "Les portes du registre restent closes : l'Office ne connaît à votre personnage aucun titre de sécurité dans une province (prévôt, connétable, capitaine, maire, juge, procureur, dirigeant, ou douanier validé).",
     "NoTrio": "Aucun membre de la sécurité (prévôt, connétable, capitaine) n'est connu de l'Office pour votre province. En leur absence, les maires et les douaniers validés tiennent les listes rouge et verte.",
     "HelpButton": "Comment lire le registre de douane ?",
@@ -403,11 +404,12 @@
     "HelpStep5": "Pour saisir un nouveau bilan, « Saisir un relevé » (si votre titre le permet) mène au Relevé de guet. « Confier au scribe » exporte le bilan affiché en BBCode : le publier sur un forum le rend public.",
     "Registry": {
       "Title": "Registre de douane",
-      "ReportOf": "Bilan du {date}",
+        "Existing": "Un relevé du {date} existe déjà pour cette ville.",
+      "ReportOf": "Relevé du {date}",
       "Save": "Inscrire au registre",
       "Sealing": "Inscription…",
       "Sealed": "Inscrit au registre",
-      "Saved": "Bilan du {date} · {city}",
+      "Saved": "Relevé du {date} · {city}",
       "HelpButton": "Comment fonctionne l'inscription ?",
       "HelpTitle": "L'inscription au Registre de douane",
       "HelpPurpose": "L'inscription garde le bilan de la ville au Registre de douane, pour que le trio de sécurité, les douaniers et les maires le relisent. Rien n'est inscrit tant que vous ne cliquez pas.",
@@ -426,7 +428,6 @@
     "NewerDay": "Jour suivant",
     "NoReportShort": "aucun bilan",
     "ListsButton": "Listes rouge et verte",
-    "Loading": "Chargement…",
     "ReportTitle": "Bilan du {date} — {city}",
     "NoReport": "Aucun bilan inscrit pour {city}.",
     "List": {
@@ -512,6 +513,53 @@
     "Export": {
       "Copied": "Le bilan est copié, prêt à coller sur le forum."
     }
+  },
+  "SecurityCustomsTable": {
+    "Title": "Table des douanes",
+    "Link": "Table des douanes",
+    "NoAccess": "L'Office ne connaît à votre personnage aucun rôle qui lise les bilans de plusieurs villes de sa province.",
+    "Note": "Situation de la province au jour le jour",
+    "ExpandAll": "Tout déplier",
+    "CollapseAll": "Tout replier",
+    "NoReportAtAll": "Aucun bilan inscrit dans la province.",
+    "Moves": "Arrivées et départs",
+    "Day": "Bilan",
+    "Marks": {
+      "Title": "Habitants",
+      "Pseudo": "Pseudo",
+      "As": "Vu comme",
+      "Empty": "Aucune personne à surveiller.",
+      "Roles": {
+        "villager": "habitant",
+        "vision": "croisé en chemin",
+        "army_commander": "commande l'armée",
+        "group_member": "membre d'un groupe"
+      }
+    },
+    "Groups": {
+      "Lead": {
+        "lance": "Lance composée de",
+        "corps_armes": "Corps d'armes composé de",
+        "marechaux": "Groupe de maréchaux composé de",
+        "groupe": "Groupe composé de",
+        "milice": "Milice"
+      }
+    },
+    "Armies": {
+      "Army": "Armée",
+      "Leader": "Chef",
+      "Empty": "Aucune armée."
+    },
+    "WithoutReport": "Villes sans bilan",
+    "NoReport": "Aucun bilan",
+    "HelpButton": "Comment lire la Table des douanes ?",
+    "HelpTitle": "La Table des douanes",
+    "HelpPurpose": "La Table des douanes étale les registres de la province : le dernier bilan de chaque ville que vous lisez, ville par ville, sur une seule page.",
+    "HelpOverview": "Elle se lit seulement : rien n'y est saisi ni enregistré. Chaque ligne vient du bilan le plus récent de sa ville qui contient la rubrique, et porte son jour. Pour saisir un relevé, utilisez le Relevé de guet.",
+    "HelpStep1": "Un bloc par ville : sa plaque dit l'âge du dernier bilan (en orange dès deux jours) et, en orange, le nombre de pseudos sur la liste rouge et de groupes à surveiller.",
+    "HelpStep2": "Dans un bloc : les arrivées et les départs (les pseudos), les pseudos des listes rouge et verte avec leur rôle, les groupes à surveiller et les armées, chacun avec le jour de son bilan.",
+    "HelpStep3": "« Tout déplier » et « Tout replier » ouvrent ou ferment tous les blocs ; « Ouvrir dans le Registre de douane » mène au bilan complet de la ville. Les villes sans bilan sont en bas, grisées.",
+    "HelpStep4": "Un pseudo vu dans deux villes apparaît deux fois, avec deux jours : l'Office ne compare jamais les villes entre elles."
   },
   "SecurityOfficers": {
     "Title": "Valider les douaniers",

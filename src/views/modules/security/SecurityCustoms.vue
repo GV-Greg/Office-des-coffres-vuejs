@@ -9,6 +9,7 @@
   import useCustomsAccess from '@/use/useCustomsAccess'
   import ChestLoader from '@/components/loading/ChestLoader.vue'
   import AccessDenied from '@/components/loading/AccessDenied.vue'
+  import AccessLoader from '@/components/loading/AccessLoader.vue'
   import CustomsReportView from '@/components/customs/CustomsReportView.vue'
   import CustomsListsModal from '@/components/customs/CustomsListsModal.vue'
   import InfoTip from '@/components/InfoTip.vue'
@@ -22,6 +23,12 @@
     L'auteur d'un bilan n'est jamais nommé (politique §6). Rien n'est gardé dans le navigateur. La saisie vit dans le Relevé de guet (point de collage unique).
     « Aucun membre de la sécurité n'est connu de l'Office pour votre province » est l'état COURANT d'une province (le repli maire/douanier), dit à l'écran.
   */
+  // La vue de la province ouvre un bilan précis : `?city=&day=` (routes `props`). Facultatif ; le serveur reste maître des villes et des jours lisibles.
+  const props = defineProps({
+    initialCity: { type: Number, default: null },
+    initialDay: { type: String, default: null },
+  })
+
   const { t, locale } = useI18n()
   const authStore = useAuthStore()
   const api = customsApi()
@@ -83,8 +90,9 @@
   // À l'arrivée de l'accès : la première ville lisible et le jour du jeu en cours que le serveur annonce.
   watch(access, (value) => {
     if (!value) return
-    cityId.value = defaultCityId(value.readable_cities, authStore.activeCharacter)
-    day.value = value.today
+    const asked = value.readable_cities.find(c => c.id === props.initialCity)
+    cityId.value = asked ? asked.id : defaultCityId(value.readable_cities, authStore.activeCharacter)
+    day.value = props.initialDay && /^\d{4}-\d{2}-\d{2}$/.test(props.initialDay) && props.initialDay <= value.today ? props.initialDay : value.today
   }, { immediate: true })
   watch([cityId, day], load)
   watch(() => character.value?.id, () => { report.value = null; days.value = [] })
@@ -103,7 +111,7 @@
         </div>
 
         <!-- Où l'on regarde : la province (dite par le serveur, pas un choix), la ville et le jour. -->
-        <div v-if="cities.length" class="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm" data-testid="customs-bar">
+        <div v-if="cities.length" class="flex flex-wrap items-end gap-3 rounded-xl border border-yellow-700/40 bg-white px-4 py-3" data-testid="customs-bar">
           <label class="text-sm text-slate-800 dark:text-slate-800"><span class="block font-bold">{{ t('SecurityCustoms.Province') }}</span>
             <select disabled class="rounded p-1 disabled:opacity-100 disabled:text-slate-800" data-testid="province-select">
               <option>{{ access.province.name }}</option>
@@ -141,7 +149,8 @@
 
         <section v-if="city" :aria-busy="loading">
           <h3 class="!mb-3 text-xl font-bold text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.ReportTitle', { date: dayLabel(day), city: city.name }) }}</h3>
-          <p v-if="loading" class="text-sm text-slate-800 dark:text-slate-800">{{ t('SecurityCustoms.Loading') }}</p>
+          <!-- Changer de ville ou de jour : le petit loader de composant du Bilan des mines (AccessLoader : le cadenas, aux couleurs de la Sécurité, aligné en haut), qui garde la place du bilan. -->
+          <AccessLoader v-if="loading" icon-class="text-rose-700 dark:text-rose-700" min-height="16rem" top />
           <CustomsReportView v-else-if="report" :report="report" />
           <p v-else class="mt-1 text-sm text-slate-800 dark:text-slate-800" data-testid="no-report">{{ t('SecurityCustoms.NoReport', { city: city.name }) }}</p>
         </section>

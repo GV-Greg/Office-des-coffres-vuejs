@@ -212,6 +212,16 @@ const router = createRouter({
           name: 'security-customs',
           component: () => import('@/views/modules/security/SecurityCustoms.vue'),
           beforeEnter: redirectToHomeIfNotLoggedIn,
+          // La vue de la province renvoie ici avec `?city=&day=` : la ville et le jour du bilan à ouvrir.
+          props: route => ({ initialCity: Number(route.query.city) || null, initialDay: typeof route.query.day === 'string' ? route.query.day : null }),
+        },
+        {
+          // « Table des douanes » (PR 5, Greg le 24/11/2026) : la vue d'ensemble de la province, chargée à la demande ; le serveur dit si on la voit
+          // (au moins deux villes lisibles).
+          path: 'customs-table',
+          name: 'security-customs-table',
+          component: () => import('@/views/modules/security/SecurityCustomsTable.vue'),
+          beforeEnter: redirectToHomeIfNotLoggedIn,
         },
         // L'ancienne page des douaniers est devenue un onglet de Mon bureau (Greg, 22/11/2026) : on garde l'adresse pour les signets.
         {
@@ -382,7 +392,7 @@ const router = createRouter({
 // navigation (Accueil, compte, pages publiques) reste dans le contexte "office".
 const CHEST_MODULE_ROUTE_NAMES = new Set([
   'economy', 'economy-mines', 'economy-registry', 'economy-prices', 'economy-inventory', 'economy-inventory-balance', 'economy-inventory-registry',
-  'security', 'security-guet', 'security-customs',
+  'security', 'security-guet', 'security-customs', 'security-customs-table',
   'animation', 'animation-decode', 'animation-public', 'animation-mine', 'animation-create', 'animation-manage', 'animation-reset', 'animation-confirm-email',
   'animation-rewards', 'animation-rewards-mine', 'animation-rewards-create', 'animation-rewards-manage', 'animation-rewards-reset', 'animation-rewards-confirm-email', 'animation-rewards-public',
 ])
@@ -390,7 +400,7 @@ const CHEST_MODULE_ROUTE_NAMES = new Set([
 // Couleur du module (charte §3.3) : la porte de l'overlay et le coffre de la page la reprennent.
 const MODULE_ACCENT_BY_ROUTE = {
   economy: 'gold', 'economy-mines': 'gold', 'economy-registry': 'gold', 'economy-prices': 'gold', 'economy-inventory': 'gold', 'economy-inventory-balance': 'gold', 'economy-inventory-registry': 'gold',
-  security: 'rose', 'security-guet': 'rose', 'security-customs': 'rose',
+  security: 'rose', 'security-guet': 'rose', 'security-customs': 'rose', 'security-customs-table': 'rose',
   animation: 'teal', 'animation-decode': 'teal', 'animation-public': 'teal', 'animation-mine': 'teal', 'animation-create': 'teal', 'animation-manage': 'teal', 'animation-reset': 'teal', 'animation-confirm-email': 'teal',
   'animation-rewards': 'teal', 'animation-rewards-mine': 'teal', 'animation-rewards-create': 'teal', 'animation-rewards-manage': 'teal', 'animation-rewards-reset': 'teal', 'animation-rewards-confirm-email': 'teal', 'animation-rewards-public': 'teal',
 }

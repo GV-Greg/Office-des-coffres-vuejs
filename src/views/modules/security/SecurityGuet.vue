@@ -14,6 +14,7 @@
   import useCustomsAccess from '@/use/useCustomsAccess'
   import { customsReportToBBCode, CUSTOMS_EXPORT_DEFAULTS } from '@/modules/customsBBcode'
   import CustomsRegistrySave from '@/components/customs/CustomsRegistrySave.vue'
+import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
 
   /*
     Le Relevé de guet — POINT DE COLLAGE UNIQUE du module Sécurité (fil admin/echanges/module-securite 12 à 14, décisions de Greg du 22/11/2026).
@@ -88,15 +89,21 @@
     // Collée plus tôt AUJOURD'HUI : la liste du jour revient dans sa case, comme les visions et les armées du jour (on peut inscrire après un rechargement).
     if (lists[gameToday]) today.value = lists[gameToday]
     // Visions et armées sont gardées AVEC leur jour du jeu. Collées plus tôt AUJOURD'HUI, elles sont bien d'aujourd'hui : remplies, et inscriptibles.
-    // D'un autre jour (ou sans jour : ancienne forme), elles sont « retrouvées » : la mention le dit, mais elles s'inscrivent TELLES QUELLES (Greg, 23/11/2026).
-    const restore = (key, target, flag) => {
+    // Les ARMÉES d'un autre jour (ou sans jour : ancienne forme) sont « retrouvées » : la mention le dit, mais elles s'inscrivent TELLES QUELLES (Greg, 23/11/2026).
+    // Les VISIONS, elles, sont celles d'UNE nuit : la case repart VIDE chaque jour (Greg, 24/11/2026 : « reprendre ceux de la veille ne sert à rien »), et
+    // celles d'un autre jour sont effacées du navigateur plutôt que gardées pour rien.
+    const restore = (key, target, flag, sameDayOnly = false) => {
       const saved = cookieStore.getComfortData(key)
       const entry = typeof saved === 'string' ? { day: null, text: saved } : saved
       if (!entry?.text) return
+      if (sameDayOnly && entry.day !== gameToday) {
+        cookieStore.removeComfortData(key)
+        return
+      }
       target.value = entry.text
       restored[flag] = entry.day !== gameToday
     }
-    restore(VISIONS_LAST_KEY, visions, 'visions')
+    restore(VISIONS_LAST_KEY, visions, 'visions', true)
     restore(ARMIES_LAST_KEY, armiesGroups, 'armiesGroups')
   })
 
@@ -190,11 +197,34 @@
     armiesGroups: armiesGroups.value,
   }, day.value ?? ''))
 
+  // ── Le relevé de ce jour existe-t-il déjà ? (Greg, 24/11/2026 : « que ce soit visible dans le relevé du guet ») — lecture seule, avant l'envoi ──
+  const existing = ref(null)
+  const existingKey = () => `${character.value?.id}|${city.value?.id}|${day.value}`
+  async function loadExisting() {
+    existing.value = null
+    if (!canSave.value || !character.value || !day.value) return
+    const asked = existingKey()
+    try {
+      const data = await api.reports(character.value.id, city.value.id, day.value)
+      if (asked !== existingKey()) return // une réponse périmée (autre ville ou autre jour entre-temps)
+      if (data?.report) existing.value = { date: dayLabel(day.value), sections: data.report.sections_present ?? [] }
+    } catch {
+      existing.value = null // sans droit de lecture ou hors ligne : rien n'est dit, l'inscription reste possible
+    }
+  }
+  watch([() => character.value?.id, cityId, day, canSave, sealed], loadExisting, { immediate: true })
+
+  // Une case VIDÉE retire sa section du relevé existant (Greg, 24/11/2026 : des visions inscrites par mégarde restaient) — seulement les visions et les armées/groupes
+  // (jamais le guet), seulement si le relevé du jour les contient, et seulement pour une case laissée vide. Le serveur dit si on en a le droit.
+  const removals = computed(() => ['visions', 'armies_groups'].filter(key => existing.value?.sections.includes(key) && !sendable.value.sections[key]))
+  const nothingToSend = computed(() => !Object.keys(sendable.value.sections).length && !removals.value.length)
+
   async function save() {
-    if (saving.value || !canSave.value || !Object.keys(sendable.value.sections).length) return
+    if (saving.value || !canSave.value || nothingToSend.value) return
     saving.value = true
     try {
       const body = { city_id: city.value.id, sections: sendable.value.sections }
+      if (removals.value.length) body.remove_sections = removals.value
       if (day.value !== access.value.today) body.date = day.value
       const result = await api.saveReport(character.value.id, body)
       push.success(t(`SecurityCustoms.Form.Sent.${result.mode}`))
@@ -220,6 +250,8 @@
 
     <!-- Avec un titre de sécurité : où l'on regarde (ville) et, pour qui corrige, le jour. Le serveur dit tout. -->
     <div v-if="access && (cities.length || dayOptions.length)" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2" data-testid="guet-registry-bar">
+      <!-- Un relevé de ce jour existe déjà (Greg, 24/11/2026) : sur la ligne de la ville, DEVANT elle, bien en vue et sans détail — ni dans la plaque d'inscription, ni sur sa propre ligne. -->
+      <ExistingReportNotice v-if="existing" :message="t('SecurityCustoms.Registry.Existing', { date: existing.date })" />
       <label v-if="cities.length" class="flex items-center gap-2 text-sm text-slate-800"><span class="font-bold">{{ t('SecurityCustoms.City') }}</span>
         <select v-model.number="cityId" class="rounded p-1" data-testid="guet-city">
           <option v-for="c in cities" :key="c.id" :value="c.id">{{ c.name }}</option>
@@ -267,7 +299,7 @@
         :city-name="city.name"
         :day-label="dayLabel(day)"
         :saving="saving"
-        :disabled="!Object.keys(sendable.sections).length"
+        :disabled="nothingToSend"
         :sealed="sealed"
         @save="save"
       />
