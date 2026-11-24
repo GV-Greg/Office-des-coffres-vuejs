@@ -154,7 +154,10 @@ export function parseArmiesGroups(raw) {
   const armies = []
   const groups = []
   const zone = []
-  let section = null
+  // Un collage SANS aucun en-tête (« Groupes présents ici : » — on a copié seulement la liste des groupes, Greg, 24/11/2026) se lit comme une liste de groupes :
+  // sans cela, toutes ses lignes étaient ignorées et rien n'était pris. Avec un en-tête, le comportement est inchangé (le texte avant le premier est ignoré).
+  const headed = lines(raw).some(original => SECTION_HEADERS.some(([, pattern]) => pattern.test(original.trim())))
+  let section = headed ? null : 'groups'
   let current = null
 
   for (const original of lines(raw)) {

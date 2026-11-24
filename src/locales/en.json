@@ -404,6 +404,7 @@
     "HelpStep5": "To enter a new report, \"Enter a report\" (if your title allows it) leads to the Watch Report. \"Entrust to the scribe\" exports the displayed report as BBCode: publishing it on a forum makes it public.",
     "Registry": {
       "Title": "Customs Register",
+        "Existing": "A report for {date} already exists for this town.",
       "ReportOf": "Report of {date}",
       "Save": "Record in the register",
       "Sealing": "Recording…",
