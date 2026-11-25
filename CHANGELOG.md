@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #166 (Modèle de PR : la case « Promesse légale »)
+
+### Added
+- **`.github/pull_request_template.md`** (section « Promesse légale », piste 7) : même modèle que le backend (`back #114`). Une PR qui tient une promesse d'un texte légal, ou en dépend, le dit avec le n° de la PR du texte.
+
+### Deploy notes
+- Aucun code applicatif, route, `config/*.php` ni paquet.
+
 ## [2026-11-25] — PR #165 (« Mot de passe oublié » : les pages de demande et de nouveau mot de passe)
 
 ### Added
