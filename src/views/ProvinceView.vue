@@ -10,7 +10,7 @@
   import NavMenu from '@/components/NavMenu.vue'
 
   /*
-    « Ma province » (fil admin/echanges/mandats-historique, 04 §11, 07) : l'historique des postes de
+    « Ma province » : l'historique des postes de
     la province de RÉSIDENCE du personnage actif — résidence seule, décision de Greg. Le personnage
     se change par le sélecteur de la NavBar (SelectorCharacter), déjà présent sur toutes les pages.
 

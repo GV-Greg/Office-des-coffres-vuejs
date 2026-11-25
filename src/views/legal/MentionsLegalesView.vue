@@ -12,7 +12,7 @@
   const contactEmail = computed(() => t('Legal.Common.Contact.Email').replace('[at]', '@'))
 
   // Date de dernière publication du contenu de cette page — à mettre à jour manuellement
-  // à chaque modification substantielle (voir admin/content/policy-mentions-legales-draft.md).
+  // à chaque modification substantielle.
   const LAST_UPDATED = '2026-09-06'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',

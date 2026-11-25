@@ -1,7 +1,7 @@
 /*
   Lecture d'un collage du guet (« Liste des villageois »), logique pure.
 
-  Brief : admin/content/brief-module-securite.md §6.1, corrigé par la donnée réelle
+  Spécification corrigée par la donnée réelle
   (tests/fixtures/Bug_ExportSorties.txt, pseudos confirmés par Greg le 02/08/2026).
 
   ⚠️ Deux écarts du brief avec le collage réel, tranchés en faveur du collage réel :

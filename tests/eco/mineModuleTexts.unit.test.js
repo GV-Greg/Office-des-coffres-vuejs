@@ -5,7 +5,7 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /*
-  Textes de présentation du Registre des mines (lot 3 des prix, brief admin/content/brief-prix-registre.md) :
+  Textes de présentation du Registre des mines (prix) :
   l'aide dit ce que le module permet de FAIRE — prix, semaines, export. Garde-fou : une aide qui cite un bouton doit le
   citer TEL QU'IL S'AFFICHE. Lecture par fs : un import de fr.json est précompilé par le plugin vue-i18n (undefined en test).
 */

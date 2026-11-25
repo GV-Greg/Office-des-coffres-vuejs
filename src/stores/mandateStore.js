@@ -4,8 +4,7 @@ import { http } from '@/api.js'
 import { useAuthStore } from '@/stores/authStore'
 
 /*
-  Mandats de maire et de conseiller comtal (admin/content/brief-mandats.md, lot 2 ; arbitrages
-  admin/echanges/mandats-lot1/ et mandats-lot2/).
+  Mandats de maire et de conseiller comtal.
 
   Toutes les RÈGLES vivent dans le backend : ce store ne recode ni le cumul (`requestable` arrive
   de l'API, Q6), ni le renouvellement (`renewable` par mandat), ni les libellés des postes, motifs

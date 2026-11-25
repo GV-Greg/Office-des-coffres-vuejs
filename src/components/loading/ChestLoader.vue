@@ -18,7 +18,7 @@
     - Le titre « Ouverture du coffre… » ne change pas jusqu'au bout.
     - Prêt : la lueur jaillit, le coffre s'efface, PUIS le contenu apparaît d'un bloc (slot) — jamais les deux en même temps.
     Une seule annonce `role="status"`. Durées : modules/chestTiming.js.
-    Maquette validée : admin/content/demo-animations-chargement.html.
+    Maquette validée.
   */
   const props = defineProps({
     loading: { type: Boolean, default: false },

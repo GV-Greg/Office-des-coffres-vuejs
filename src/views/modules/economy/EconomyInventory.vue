@@ -248,7 +248,7 @@ function clear() {
 }
 
 // ─── Registre des stocks : la ville (maire) et la province (commissaire au commerce) ─────────────────────────────
-// Le même collage sert le Bilan (ici) et le Registre (l'historique de la ville ou de la province, fil admin/echanges/registre-stocks).
+// Le même collage sert le Bilan (ici) et le Registre (l'historique de la ville ou de la province).
 // Jamais au niveau personnel (pas de registre personnel). L'inscription est un geste volontaire, jamais automatique ; un autre texte le même jour
 // REMPLACE l'ancien (qui reste conservé) après confirmation : le serveur répond 409 en nommant l'auteur de l'inscription à remplacer.
 const hasRegistry = computed(() => level.value !== 'personal')

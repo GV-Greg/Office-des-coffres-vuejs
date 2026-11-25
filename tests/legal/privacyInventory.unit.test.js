@@ -7,8 +7,8 @@ import { DATA_PAGE_SECTIONS } from '../../src/modules/dataPageSections.js'
 
 /*
   Garde-fou — la « Gestion des stocks » (les inventaires, en base pour un joueur connecté) dans la politique, « Vos données » et les
-  cookies. Texte de Cowork (fil admin/echanges/inventaire-scopes/02-reponse-cowork.md), validé par Greg le 11/11/2026 ; la phrase
-  d'accès de l'éditeur est la « formulation retenue » de admin/strategies/donnees-utilisateur.md §5bis. Les formulations qui suivent
+  cookies. Texte de Cowork, validé par Greg le 11/11/2026 ; la phrase
+  d'accès de l'éditeur est la « formulation retenue » de la stratégie des données utilisateur. Les formulations qui suivent
   sont des ENGAGEMENTS : un seul exemplaire remplacé, historique de la province, chiffrement, qui lit, ce qui part avec le personnage.
   Les termes anglais sont ceux du site (« Trade Minister », pas « trade commissioner » comme dans le brouillon de Cowork).
 
@@ -47,7 +47,7 @@ describe('Politique — Bilan des stocks', () => {
     expect(all).toContain('without an account, they stay in your browser')
   })
 
-  // Registre des stocks (fil admin/echanges/registre-stocks, texte de Cowork du 20/11/2026) : instantanés datés de la ville et de la
+  // Registre des stocks (20/11/2026) : instantanés datés de la ville et de la
   // province, et pseudo du rédacteur remplacé visible dans l'historique. Rien sur le niveau personnel (reporté) ni sur le bailli.
   it.each([
     ['fr', 'Registre des stocks', 'instantané daté', 'instantanés datés', 'le pseudo du rédacteur précédent reste visible'],

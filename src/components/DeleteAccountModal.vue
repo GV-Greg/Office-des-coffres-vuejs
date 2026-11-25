@@ -3,8 +3,7 @@ import ModalCloseButton from '@/components/buttons/ModalCloseButton.vue'
   import { ref, computed, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
 
-  // Modale de suppression de compte, en deux étapes délibérément séparées (art. 17 RGPD, spec
-  // admin/content/feature-account-deletion.md) : l'étape 1 dit ce qui va disparaître, l'étape 2
+  // Modale de suppression de compte, en deux étapes délibérément séparées (art. 17 RGPD, spec) : l'étape 1 dit ce qui va disparaître, l'étape 2
   // redemande le mot de passe. Le jeton seul ne suffit pas pour une action irréversible — une
   // session laissée ouverte sur un poste partagé ne doit pas pouvoir effacer le compte.
   const props = defineProps({

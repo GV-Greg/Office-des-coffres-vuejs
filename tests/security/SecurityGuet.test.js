@@ -12,7 +12,7 @@ import { useAuthStore } from '../../src/stores/authStore'
 import { http } from '../../src/api.js'
 
 /*
-  Le Relevé de guet — POINT DE COLLAGE UNIQUE du module Sécurité (fil admin/echanges/module-securite 12 à 14, 22/11/2026) : cinq types de collage, même
+  Le Relevé de guet — POINT DE COLLAGE UNIQUE du module Sécurité (22/11/2026) : cinq types de collage, même
   écran, même parseur. Sans compte : tout se lit dans le navigateur, aucun appel au serveur, le dernier collage de chaque type est gardé avec le consentement
   « Préférences ». Avec un titre de sécurité : couleurs et dernier bilan de la ville (`customs-preview`, pseudos seulement), inscription au Registre.
   ⚠️ Aucune règle côté site : droits, villes et jours viennent de `customs-access`.

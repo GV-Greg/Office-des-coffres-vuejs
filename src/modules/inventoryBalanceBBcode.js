@@ -2,7 +2,7 @@
 // (inventoryBBcode.js), avec l'écart annoté sur chaque ligne. Logique pure, sans dépendance Vue.
 // Le contenu forum est en FRANÇAIS FIXE, indépendant de la langue de l'interface.
 //
-// Annotation (brief admin/content/brief-comparaison-inventaires.md) :
+// Annotation :
 //   hausse     [color=#16a34a]▲ +3[/color]
 //   baisse     [color=#dc2626]▼ -2[/color]
 //   identique  rien : aucun tiret (Greg, 19/11/2026)

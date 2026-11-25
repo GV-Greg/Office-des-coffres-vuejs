@@ -10,7 +10,7 @@ import { useAuthStore } from '../../src/stores/authStore'
 import { http } from '../../src/api.js'
 
 /*
-  La Table des douanes (PR 5 ; fils admin/echanges/module-securite 18, 19 et 20) : un Registre de douane ÉTENDU, en lecture seule. Pour chaque ville
+  La Table des douanes (PR 5) : un Registre de douane ÉTENDU, en lecture seule. Pour chaque ville
   qui a un bilan AU JOUR AFFICHÉ, un bloc dépliable — arrivées et départs (les PSEUDOS), habitants et listes, groupes (tous), armées —, les autres villes
   en bas, grisées, « Aucun bilan » (Greg, 24/11/2026 : une ville sans bilan aujourd'hui n'a pas de bloc). Jamais de différentiel entre villes. Le serveur
   agrège et dit qui la voit (au moins deux villes lisibles). Aucune règle côté site, rien n'est gardé dans le navigateur.

@@ -1,8 +1,7 @@
 import { gameYear } from '@/modules/gameCalendar'
 
 /**
- * Le calendrier appartient au CHAMP DE DATE, pas à l'écran (fil admin/echanges/mandats-historique,
- * 06 et 09) : une date se montre toujours dans la même année sur toutes les surfaces joueur.
+ * Le calendrier appartient au CHAMP DE DATE, pas à l'écran : une date se montre toujours dans la même année sur toutes les surfaces joueur.
  * Ce tableau est la SEULE déclaration de cette règle côté frontend — aucun composant ne choisit
  * lui-même entre 1474 et 2026.
  *

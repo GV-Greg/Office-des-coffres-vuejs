@@ -13,7 +13,7 @@ import { useMandateStore, apiFieldErrors } from '../../src/stores/mandateStore'
 import { http } from '../../src/api.js'
 import { push } from 'notivue'
 
-// Mandats, lot 2 (admin/content/brief-mandats.md ; arbitrages admin/echanges/mandats-lot2/).
+// Mandats, lot 2.
 // Les règles et les libellés (titres, motifs, causes) viennent de l'API : ces tests vérifient
 // que l'interface les AFFICHE sans les recoder, dans la langue de l'interface.
 
@@ -63,7 +63,7 @@ beforeEach(() => {
   document.body.innerHTML = ''
 })
 
-// Fix du 11/11/2026 (admin/content/fix-affichage-poste-demande.md) : une demande de poste en attente de vérification affichait
+// Fix du 11/11/2026 : une demande de poste en attente de vérification affichait
 // « sans poste » au lieu du poste demandé, parce que la carte lisait le poste DÉTENU. L'API envoie le poste demandé dès l'inscription.
 describe('Titre d\'un conseiller dont la demande est en attente', () => {
   const pendingCouncil = (overrides = {}) => mandate({

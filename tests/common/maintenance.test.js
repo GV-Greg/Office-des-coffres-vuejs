@@ -15,7 +15,7 @@ import GateIllustration from '../../src/components/loading/GateIllustration.vue'
 import useNavigationLoading from '../../src/use/useNavigationLoading.js'
 import { PROBE_TIMEOUT_MS, TRY_BYPASS_TIMEOUT_MS, probeMaintenance, tryBypass } from '../../src/use/maintenanceProbe.js'
 
-// Mode maintenance (brief admin/content/brief-mode-maintenance.md, 18/11/2026).
+// Mode maintenance (18/11/2026).
 
 const SECRET = 'secret-de-test-0123456789'
 const maintenanceError = (data = { success: false, message: 'maintenance', retry_after: 300 }, status = 503) => {

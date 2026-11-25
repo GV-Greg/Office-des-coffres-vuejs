@@ -6,8 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { DATA_PAGE_SECTIONS } from '../../src/modules/dataPageSections.js'
 
 /*
-  Garde-fou — le chapitre « Animation » de la politique et de la politique des cookies (Décode le code et Grille des
-  lots, UN seul texte : admin/content/policy-animation.md, analysé par Cowork le 11/11/2026). Rien ne se déploie avant que
+  Garde-fou — le chapitre « Animation » de la politique et de la politique des cookies (Décode le code et Grille des lots, UN seul :, analysé le 11/11/2026). Rien ne se déploie avant que
   ce texte soit en ligne (D40), et la Grille des lots reste inactive jusque-là. Les formulations qui suivent sont des
   ENGAGEMENTS : durée de conservation, effacement à la clôture, ce que la page figée ne montre jamais. Ceux de Décode le
   code, en ligne depuis le 28/10/2026, n'ont pas changé d'un mot ; la Grille des lots s'y ajoute.

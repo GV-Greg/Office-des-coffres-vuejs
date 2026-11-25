@@ -7,8 +7,7 @@ import { DATA_PAGE_SECTIONS } from '../../src/modules/dataPageSections'
 
 /*
   Garde-fou — « Vos données » et la politique de confidentialité ne disent jamais deux fois la même
-  chose (brief admin/content/brief-pages-donnees-joueur.md §3 : « aucun fait n'est écrit aux deux
-  endroits » — celui qu'on ne relit pas deviendra faux).
+  chose (« aucun fait n'est écrit aux deux endroits » — celui qu'on ne relit pas deviendra faux).
 
   Et deux phrases qui ne se simplifient pas : les données du Bilan et du Guet ne sont pas « rien »,
   elles sont dans le navigateur (relevé par Claude Code, fil pages-donnees-joueur, R3).

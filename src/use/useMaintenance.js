@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 
-// Mode maintenance (brief admin/content/brief-mode-maintenance.md, 18/11/2026).
+// Mode maintenance (18/11/2026).
 //
 // Quand l'Office est fermé, l'API répond 503 `{ message: "maintenance", retry_after }` à tout appel.
 // api.js le signale ici (reportMaintenance) et MaintenanceNotice affiche sa page, embarquée dans

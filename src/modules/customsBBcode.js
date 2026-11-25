@@ -1,5 +1,4 @@
-// Export BBCode d'un bilan de défense (Registre de douane, module Sécurité ; brief admin/content/brief-module-securite.md §7 : « BBCode comme les
-// autres modules, avec possibilité de personnalisation du format de bilan »). Logique pure, sans dépendance Vue. Le contenu forum est en FRANÇAIS
+// Export BBCode d'un bilan de défense (Registre de douane, module Sécurité ; : « BBCode comme les autres modules, avec possibilité de personnalisation du format de bilan »). Logique pure, sans dépendance Vue. Le contenu forum est en FRANÇAIS
 // FIXE, indépendant de la langue de l'interface, et les dates sont en année du JEU (1474), comme partout côté joueur.
 //
 // Comme La Balance : le SIGNE porte l'information, la couleur n'est qu'un repère.

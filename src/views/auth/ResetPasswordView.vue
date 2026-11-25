@@ -1,6 +1,6 @@
 <script setup>
 /*
-  « Mot de passe oublié » — choix du nouveau mot de passe (fil admin/echanges/mot-de-passe-oublie). Le lien de l'email arrive ici :
+  « Mot de passe oublié » — choix du nouveau mot de passe. Le lien de l'email arrive ici :
   /reset-password?token=…&email=… (jamais vers l'API ni le domaine d'administration). Le jeton ne sert qu'une fois et 60 minutes : un jeton faux, expiré ou
   déjà utilisé donne UNE seule réponse du serveur (`invalid_token`), dite sans détail, avec le chemin pour redemander un lien. Rien n'est gardé dans le navigateur.
 */

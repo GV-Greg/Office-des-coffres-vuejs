@@ -1,7 +1,6 @@
 // Sections de la page « Vos données, outil par outil » (/legal/data) — SOURCE UNIQUE de la liste
 // des outils : le sommaire et les ancres de la page, et les liens « une ligne par outil » de la
-// politique de confidentialité (§3), lisent tous cette liste (brief admin/content/
-// brief-pages-donnees-joueur.md, §1 et §3). Un outil ajouté ici apparaît partout à la fois.
+// politique de confidentialité (§3), lisent tous cette liste. Un outil ajouté ici apparaît partout à la fois.
 //
 // `id` = ancre de la section (#bilan-des-mines…), stable : un lien donné à un joueur doit survivre.
 // `key` = clé i18n sous Legal.Data. `upcoming: true` = outil pas encore ouvert, marqué « à venir »

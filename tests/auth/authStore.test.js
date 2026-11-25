@@ -320,7 +320,7 @@ describe('Auth Store', () => {
       expect(cookieStore.getComfortData('default_character_id')).toBeNull()
       expect(cookieStore.getComfortData('last_login_email')).toBeNull()
       // Le visiteur reste sur le site : son choix de thème et son consentement n'ont aucune
-      // raison d'être remis à zéro (admin/strategies/cookies.md).
+      // raison d'être remis à zéro.
       expect(cookieStore.getComfortData('theme')).toBe('dark')
     })
 

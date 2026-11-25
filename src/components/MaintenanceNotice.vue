@@ -8,7 +8,7 @@
   import logoVertical from '@/assets/logo/logo-vertical.svg'
 
   /*
-    Mode maintenance (brief admin/content/brief-mode-maintenance.md, 18/11/2026) : deux pièces, une seule monture dans App.vue.
+    Mode maintenance (18/11/2026) : deux pièces, une seule monture dans App.vue.
     - La page de maintenance : plein écran, le logo de l'Office (Greg, 18/11/2026), la porte de la salle et un message, sans lien ni navigation. Embarquée dans
       l'application, elle s'affiche sans aucun appel à l'API (celle-ci répond 503). La langue est celle déjà appliquée par
       main.js (préférence mémorisée, sinon navigateur) — l'API n'est pas consultée.

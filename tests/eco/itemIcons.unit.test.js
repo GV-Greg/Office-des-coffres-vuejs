@@ -12,7 +12,7 @@ import { fetchItemIcons, clearItemIconCache } from '../../src/use/itemIconsApi'
 import { http } from '../../src/api.js'
 
 /*
-  Icônes d'items dans l'export BBCode (brief admin/content/brief-icones-items.md, phase 2). L'Office ne connaît que l'ID chez Celsius ;
+  Icônes d'items dans l'export BBCode (phase 2). L'Office ne connaît que l'ID chez Celsius ;
   le site en tire une URL du CDN pour écrire un `[img]`, et rien d'autre : jamais une image dans l'interface (Greg, 13/11/2026).
 */
 vi.mock('../../src/api.js', () => ({ http: { get: vi.fn() } }))

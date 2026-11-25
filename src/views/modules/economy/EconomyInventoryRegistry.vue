@@ -14,7 +14,7 @@ import ChestLoader from '@/components/loading/ChestLoader.vue'
 import AccessDenied from '@/components/loading/AccessDenied.vue'
 
 /*
-  Le Registre des stocks (PR 3a ; fil admin/echanges/registre-stocks, brief admin/content/brief-registre-et-reorganisation-sdc.md §3.9) :
+  Le Registre des stocks (PR 3a) :
   la mémoire d'une ville ou d'une province, transmise d'un titulaire au suivant. LECTURE : l'historique des inventaires inscrits depuis
   le Bilan des stocks, navigable dans le temps, et la comparaison de deux inscriptions (le moteur de La Balance, `inventoryCompare.js`).
   PR 3b : la fiche de prise de poste, les bilans de mi-mandat et de fin de mandat (évolution entre l'inventaire hérité et la dernière inscription

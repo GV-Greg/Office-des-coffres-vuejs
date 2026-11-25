@@ -18,8 +18,7 @@
   }
 
   const visibleNews = computed(() => newsOfType('feature'))
-  // Le registre porte deux types dans UNE liste, distingués par un badge : « fix » (réparation) et « improvement » (amélioration d'une salle
-  // ou d'un module déjà annoncé dans les chroniques — brief admin/content/brief-registre-ameliorations.md, 11/11/2026).
+  // Le registre porte deux types dans UNE liste, distingués par un badge : « fix » (réparation) et « improvement » (amélioration d'une salle ou d'un module déjà annoncé dans les chroniques —, 11/11/2026).
   const visibleRegistry = computed(() => newsOfType('fix', 'improvement'))
 
   // Le sens est porté par le TEXTE du badge ; la couleur ne fait que le redoubler (carte claire dans les deux thèmes : mêmes classes en dark:).

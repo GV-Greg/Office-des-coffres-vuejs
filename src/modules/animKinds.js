@@ -1,7 +1,7 @@
 /*
   Les types d'activité du module Animation, déclarés UNE fois : tout ce qui distingue « Décode le code » de « Grille des lots »
   dans les écrans qu'ils partagent (entrée, création, retrouver, réinitialiser, confirmer l'email). Ajouter un type d'activité = une
-  entrée ici (voir admin/strategies/animation.md), pas une copie des vues.
+  entrée ici, pas une copie des vues.
 
     - `api`    : noms des routes (`anim/{key}-manage`, `anim/{key}-slug`, collection privée) et clés de la réponse JSON.
     - `ns`     : espace de textes propre au type. Une clé absente de `Animation.{ns}` retombe sur `Animation.*` (textes communs de

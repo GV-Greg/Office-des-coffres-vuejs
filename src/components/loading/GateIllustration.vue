@@ -7,7 +7,7 @@
     Même langage que l'ancien overlay : une silhouette game-icons d'une seule couleur (`gi-dungeon-gate`, l'arche aux deux
     torches), sa lueur et son ombre chaude. Il surgit en 0,6 s, la lueur pulse 2 fois puis reste fixe : rien en boucle
     (charte §8). Orange hors module ; couleur du module sinon (foncée en clair, claire en sombre).
-    Maquette : admin/content/demo-animations-chargement.html (proposition « Le portique aux torches »).
+    Maquette : proposition « Le portique aux torches ».
   */
   const props = defineProps({ accent: { type: String, default: 'office' } })
   const vars = computed(() => {

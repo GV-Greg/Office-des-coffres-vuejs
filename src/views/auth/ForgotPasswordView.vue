@@ -1,6 +1,6 @@
 <script setup>
 /*
-  « Mot de passe oublié » — demande du lien (fil admin/echanges/mot-de-passe-oublie, 24/11/2026). Le serveur répond TOUJOURS pareil, que l'adresse ait un
+  « Mot de passe oublié » — demande du lien (24/11/2026). Le serveur répond TOUJOURS pareil, que l'adresse ait un
   compte ou non : la page dit donc la même chose dans les deux cas (« si un compte existe… »), jamais « aucun compte ». Rien n'est gardé dans le navigateur.
 */
   import { reactive, ref } from 'vue'

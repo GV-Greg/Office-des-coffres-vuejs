@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import DecodeActivityView from '../../src/views/modules/animation/DecodeActivityView.vue'
 import { http } from '../../src/api.js'
 
-// Décode le code — page publique en lecture seule (brief admin/modules/animation/brief-coffres-scelles.md, lot 2).
+// Décode le code — page publique en lecture seule.
 
 vi.mock('../../src/api.js', () => ({ http: { get: vi.fn() } }))
 const auth = reactive({ getToken: 'jeton', isLoggedIn: false, activeCharacter: null })

@@ -130,7 +130,7 @@ const router = createRouter({
     },
     {
       // « Vos données, outil par outil » : le détail propre à chaque outil, dont la politique renvoie
-      // ici (brief admin/content/brief-pages-donnees-joueur.md).
+      // ici.
       path: '/legal/data',
       name: 'legal-data',
       component: () => import('@/views/legal/DataPageView.vue'),

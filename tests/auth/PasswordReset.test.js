@@ -14,7 +14,7 @@ import { push } from 'notivue'
 import { withRealLocales } from '../helpers/withRealLocales.js'
 
 /*
-  « Mot de passe oublié » côté joueur (fil admin/echanges/mot-de-passe-oublie, 24/11/2026). Le serveur répond TOUJOURS pareil à la demande (pas d'oracle) : la page
+  « Mot de passe oublié » côté joueur (24/11/2026). Le serveur répond TOUJOURS pareil à la demande (pas d'oracle) : la page
   dit la même chose dans tous les cas. Le lien de l'email arrive sur /reset-password?token&email ; un jeton faux, expiré ou déjà utilisé n'a qu'UNE réponse
   (`invalid_token`). Aucun stockage local, aucun jeton gardé.
 */

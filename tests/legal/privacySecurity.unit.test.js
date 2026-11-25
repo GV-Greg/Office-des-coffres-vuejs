@@ -7,7 +7,7 @@ import { DATA_PAGE_SECTIONS } from '../../src/modules/dataPageSections.js'
 
 /*
   Garde-fou — La Salle des gardes (module Sécurité) dans la politique et « Vos données ». Texte de Cowork du 22/11/2026, repris par la v2
-  de Claude Code (admin/content/policy-securite-draft-v2.md) et validée par Greg. C'est le premier module qui conserve des pseudos de
+  de Claude Code et validée par Greg. C'est le premier module qui conserve des pseudos de
   tiers SANS compte : les formulations ci-dessous sont des ENGAGEMENTS. Plusieurs sont des décisions de Greg du 22/11/2026 :
     - le trio = prévôt + connétable + capitaine (le juge n'en fait pas partie) ;
     - aucune procédure de retrait annoncée (D1 refusée) ;

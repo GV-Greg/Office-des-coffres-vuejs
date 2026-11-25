@@ -4,8 +4,7 @@ import animApi from '@/use/animApi'
 import { ANIM_KINDS } from '@/modules/animKinds'
 
 /*
-  Appels de l'API de « Décode le code » (brief admin/modules/animation/brief-coffres-scelles.md ; spécification à jour : tour 12 du
-  fil admin/echanges/animation-coffres-scelles). Le socle commun à toutes les activités (lecture publique, slug, mode privé, mode sans
+  Appels de l'API de « Décode le code » (à jour : tour 12). Le socle commun à toutes les activités (lecture publique, slug, mode privé, mode sans
   compte, réinitialisation) vit dans `use/animApi.js` ; ce fichier n'ajoute que les gestes PROPRES à Décode. Aucune règle ici : qui peut
   gérer une activité, ce qui se supprime ou se rouvre, la note d'une combinaison, les règles du slug et du mot de passe — tout vient du
   serveur, les refus arrivent en FR et EN (`apiMessage`).

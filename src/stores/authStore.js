@@ -19,7 +19,7 @@ let refreshPromise = null
 // d'attente de `api.js` dépassé, réseau coupé) ou d'une erreur serveur, qui ne disent rien de la
 // session : la purger transformerait un incident passager en déconnexion. Avant le délai
 // d'attente, un refresh qui traînait pendait indéfiniment — réversible ; purger sur ce délai
-// aurait été une régression (brief admin/content/brief-rate-limit.md, 29/09/2026).
+// aurait été une régression (29/09/2026).
 const isSessionRejected = (error) => [400, 401].includes(error?.response?.status)
 
 export const useAuthStore = defineStore('auth', () => {
@@ -28,8 +28,8 @@ export const useAuthStore = defineStore('auth', () => {
   // State
   // auth_user/auth_token (localStorage) et auth_refresh_token/auth_remember_me
   // (localStorage si "Rester connecté", sessionStorage sinon) : strictement nécessaire au
-  // service demandé (rester connecté), exempté du consentement cookies — voir
-  // admin/strategies/cookies.md §2/§4/#6. Le couple access+refresh token vient de Passport
+  // service demandé (rester connecté), exempté du consentement cookies .
+  // Le couple access+refresh token vient de Passport
   // (migration Sanctum → Passport du 09/08/2026, voir backend/docs/DECISIONS.md) : l'access
   // token est court (15 min), le refresh token long (30 j si "Rester connecté", 12h sinon) —
   // stockage choisi en cohérence (sessionStorage s'efface à la fermeture de l'onglet).
@@ -210,7 +210,7 @@ export const useAuthStore = defineStore('auth', () => {
   // liées au compte — `default_character_id` désignerait un personnage qui n'existe plus, et
   // `last_login_email` est une donnée personnelle qui n'a pas à survivre à un effacement.
   // Le consentement cookies lui-même n'est pas touché : le visiteur reste sur le site, le
-  // resolliciter sans raison irait contre admin/strategies/cookies.md.
+  // resolliciter sans raison irait contre la stratégie cookies du projet.
   const deleteAccount = async (password) => {
     await http.delete('auth/account', {
       headers: { Authorization: `Bearer ${token.value}` },

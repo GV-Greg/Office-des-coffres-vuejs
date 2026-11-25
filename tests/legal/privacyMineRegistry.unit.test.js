@@ -5,11 +5,10 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /*
-  Garde-fou — le texte du Registre des mines dans la politique (validé par Greg le 06/10/2026,
-  admin/content/policy-registre-mines-draft.md). Deux formulations sont des ENGAGEMENTS, pas du
+  Garde-fou — le texte du Registre des mines dans la politique (validé le 06/10/2026). Deux formulations sont des ENGAGEMENTS, pas du
   style : « le lien avec votre compte est supprimé » (pseudonymisation, jamais « anonymisé » comme
   promesse) et « aucun relevé ne peut être effacé » (ajout seul, brief Registre §3). Et l'anglais
-  porte les termes du JEU relevés par Greg (admin/jeu/mines.md §7.12), jamais une traduction.
+  porte les termes du JEU relevés par Greg, jamais une traduction.
 
   Lecture par fs : un import de fr.json est précompilé par le plugin vue-i18n et rend undefined.
 */
@@ -61,7 +60,7 @@ describe('Politique — Registre des mines', () => {
     expect(text).not.toMatch(/Mine management|breaking threshold|mines commissioner/i)
   })
 
-  // Greg, 16/10/2026 (admin/content/policy-prix-registre-draft.md) : les prix de la province.
+  // Greg, 16/10/2026 : les prix de la province.
   it.each(['fr', 'en'])('%s : les insertions des prix existent (§3, §5, §6)', (lang) => {
     const p = privacy(lang)
     expect(p.Section3.MinePricesIntro).toBeTruthy()
@@ -89,7 +88,7 @@ describe('Politique — Registre des mines', () => {
     expect(privacy('en').Section3.MineRegistryFields[2].Text).toContain("province's price table")
   })
 
-  // Bilans de mandat passés (fil admin/echanges/bilans-passes-mines 01 et 02, 22/11/2026) : un ancien titulaire relit, en lecture seule, les relevés de
+  // Bilans de mandat passés (22/11/2026) : un ancien titulaire relit, en lecture seule, les relevés de
   // la période de SON mandat — jamais ceux de ses successeurs. Texte validé par Greg et Cowork, NON substantiel (pas de policy:notify). Le texte passe
   // AVANT le code.
   it.each([

@@ -6,8 +6,7 @@ import useMaintenance from '@/use/useMaintenance'
 import GateIllustration from '@/components/loading/GateIllustration.vue'
 
 /*
-  Overlay GLOBAL : un changement de page ou un envoi à l'API. Mise en scène (maquette validée,
-  admin/content/demo-animations-chargement.html) : on ENTRE dans la salle — le portique aux torches surgit dans une lueur à la
+  Overlay GLOBAL : un changement de page ou un envoi à l'API. Mise en scène (maquette validée) : on ENTRE dans la salle — le portique aux torches surgit dans une lueur à la
   couleur du module (neutre hors module) ; le coffre est réservé au chargement INTERNE d'une page (ChestLoader).
   Envoi : le parchemin et la plume du greffe apparaissent de haut en bas (une fois). Mouvement fini (charte §8) : le portique surgit, la lueur pulse deux fois puis reste fixe.
 */

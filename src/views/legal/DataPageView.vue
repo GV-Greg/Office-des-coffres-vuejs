@@ -9,8 +9,7 @@
   import { DATA_PAGE_SECTIONS, BADGE_CLASSES } from '@/modules/dataPageSections'
 
   /*
-    « Vos données, outil par outil » (brief admin/content/brief-pages-donnees-joueur.md ; fil
-    admin/echanges/pages-donnees-joueur). Une seule page, un sommaire, une section par outil.
+    « Vos données, outil par outil ». Une seule page, un sommaire, une section par outil.
 
     🔴 Version B (Greg, 06/10/2026) : les énumérations de la politique de confidentialité (§4 bases
     légales, §5 durées, §6 destinataires) ne perdent jamais une ligne. Cette page porte ce qu'elles

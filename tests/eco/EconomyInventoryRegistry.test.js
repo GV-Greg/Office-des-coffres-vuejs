@@ -10,7 +10,7 @@ import { useAuthStore } from '../../src/stores/authStore'
 import { http } from '../../src/api.js'
 
 /*
-  Le Registre des stocks (PR 3a, fil admin/echanges/registre-stocks) : lecture de l'historique d'une ville ou d'une province, navigation
+  Le Registre des stocks (PR 3a) : lecture de l'historique d'une ville ou d'une province, navigation
   dans le temps, comparaison de deux inscriptions. Aucune règle côté site : le serveur dit les niveaux ouverts. L'auteur d'une inscription
   en vigueur n'est jamais nommé ; seul le rédacteur d'une inscription REMPLACÉE l'est.
 */

@@ -15,7 +15,7 @@ import { push } from 'notivue'
 import { createPinia, setActivePinia } from 'pinia'
 import { useCookieStore } from '../../src/stores/cookieStore'
 
-// Prix des mines par période — écrans (lot 2 ; brief admin/content/brief-prix-registre.md). L'écran n'a
+// Prix des mines par période — écrans. L'écran n'a
 // aucune règle : qui peut ajouter ou corriger vient de l'API (`access.prices`, `editable`).
 
 vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn() } }))

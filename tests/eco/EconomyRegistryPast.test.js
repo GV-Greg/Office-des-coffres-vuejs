@@ -11,8 +11,7 @@ import { http } from '../../src/api.js'
 import { createPinia, setActivePinia } from 'pinia'
 
 /*
-  Registre des mines — bilans de mandat PASSÉS (brief admin/modules/economie/brief-bilans-passes-mines.md ; fil admin/echanges/bilans-passes-mines,
-  22/11/2026). Un ancien titulaire relit, EN LECTURE SEULE, les relevés de SON mandat : le serveur les fenêtre, l'écran affiche. ⚠️ Aucune règle côté
+  Registre des mines — bilans de mandat PASSÉS (22/11/2026). Un ancien titulaire relit, EN LECTURE SEULE, les relevés de SON mandat : le serveur les fenêtre, l'écran affiche. ⚠️ Aucune règle côté
   site : les mandats lisibles viennent de `GET characters/{id}/mine-registry` (`past_mandates`) et le registre d'un mandat de `…/mandates/{id}`.
 */
 vi.mock('../../src/api.js', () => ({ http: { get: vi.fn() } }))

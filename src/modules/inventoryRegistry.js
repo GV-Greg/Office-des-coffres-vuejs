@@ -1,4 +1,4 @@
-// Lectures du Registre des stocks (PR 3b ; fil admin/echanges/registre-stocks, réponses de Cowork 12 : Q1 à Q6). Logique PURE, sans dépendance Vue :
+// Lectures du Registre des stocks (PR 3b, 12). Logique PURE, sans dépendance Vue :
 // l'écran lui passe la réponse du serveur ; aucune règle du jeu n'est recodée ici — les repères du mandat (`mandate` : entrée en fonction,
 // mi-mandat, fin, début de la fenêtre « prédécesseurs ») viennent TOUS du serveur, ce module ne fait que des comparaisons de dates et le
 // calcul d'évolution avec le moteur de La Balance (`inventoryCompare.js`).

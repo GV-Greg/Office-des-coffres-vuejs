@@ -8,7 +8,7 @@ import { computePeriodBilan, periodDates } from '../../src/modules/mineParser'
 import { currentPeriodBilan, weeklyBilan, weekRange, mandateBilans } from '../../src/modules/mineRegistry'
 import { bilanToBBcode } from '../../src/modules/mineBBcode'
 
-// Prix des mines par période — logique pure (lot 2 ; brief admin/content/brief-prix-registre.md).
+// Prix des mines par période — logique pure.
 // Un jeu entre en vigueur à sa date d'effet et le reste jusqu'au suivant ; le bilan se calcule JOUR PAR JOUR.
 
 const set = (effective_from, over = {}) => ({

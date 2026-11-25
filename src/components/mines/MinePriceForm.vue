@@ -6,7 +6,7 @@
   import { toGameDateIso, toRealDateIso } from '@/modules/gameCalendar'
 
   /*
-    Formulaire d'un jeu de prix (lot 2 des prix du Registre, brief admin/content/brief-prix-registre.md) :
+    Formulaire d'un jeu de prix (prix du Registre) :
     date d'effet, cinq prix, taux horaire. Partagé par la modale rapide du registre et par la page de
     l'historique (ajout et correction). Aucune règle : le serveur décide (autorisation, date couverte,
     doublon) et ses refus s'affichent tels quels, dans la langue de l'interface (`error`).

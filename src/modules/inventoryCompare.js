@@ -1,5 +1,4 @@
-// Comparaison de deux inventaires (La Balance des stocks, brief admin/content/brief-comparaison-inventaires.md ; fil
-// admin/echanges/inventaire-comparaison/). Logique pure, sans dépendance Vue : les textes et l'affichage vivent dans
+// Comparaison de deux inventaires (La Balance des stocks). Logique pure, sans dépendance Vue : les textes et l'affichage vivent dans
 // EconomyInventoryBalance.vue, le BBCode dans inventoryBalanceBBcode.js.
 //
 // Entrées : deux inventaires déjà lus et fusionnés par nom (`parseInventoryText` puis `resolveItems`) :

@@ -13,8 +13,7 @@
   const contactEmail = computed(() => t('Legal.Common.Contact.Email').replace('[at]', '@'))
 
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
-  // à chaque modification substantielle (voir Legal.Cookies.Section8 / draft
-  // admin/content/policy-cookies-draft.md).
+  // à chaque modification substantielle (Legal.Cookies.Section8 / draft).
   const LAST_UPDATED = '2026-11-11'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',

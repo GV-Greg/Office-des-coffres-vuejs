@@ -2,7 +2,7 @@ import { http } from '@/api.js'
 import { useAuthStore } from '@/stores/authStore'
 
 /*
-  Appels de l'API du Registre de douane (module Sécurité, PR 3-1 ; fil admin/echanges/module-securite). Aucune règle ici : qui lit, qui écrit,
+  Appels de l'API du Registre de douane (module Sécurité, PR 3-1). Aucune règle ici : qui lit, qui écrit,
   quels jours et quelles villes, le serveur le dit (`customs-access`) ; les refus arrivent en FR et EN (`apiMessage`).
   Le serveur reçoit le JSON analysé ET le brut gardé (customsPaste.js), valide la FORME, ne re-parse jamais.
   Les jetons sont attachés à la main, comme partout (api.js).

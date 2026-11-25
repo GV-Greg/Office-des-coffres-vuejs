@@ -12,7 +12,7 @@
   import CustomsPseudo from '@/components/customs/CustomsPseudo.vue'
 
   /*
-    La Table des douanes (module Sécurité, « La Salle des gardes » ; PR 5, fils admin/echanges/module-securite 18, 19 et 20) : la table de commandement où
+    La Table des douanes (module Sécurité, « La Salle des gardes » ; PR 5) : la table de commandement où
     le trio étale les registres de la province. Pour CHAQUE ville lisible, le dernier bilan en résumé — arrivées et départs (les pseudos), pseudos des listes
     rouge et verte avec leur rôle, groupes à surveiller, armées — dans un bloc dépliable ; les villes sans bilan en bas, grisées. LECTURE SEULE : un Registre de
     douane étendu, les mêmes données présentées ensemble.

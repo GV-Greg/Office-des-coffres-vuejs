@@ -15,8 +15,7 @@
   import InfoTip from '@/components/InfoTip.vue'
 
   /*
-    Le Registre de douane (module Sécurité, « La Salle des gardes » ; brief admin/content/brief-module-securite.md ; fil admin/echanges/
-    module-securite). Les bilans de défense d'une ville, jour par jour, et les listes rouge et verte de la province.
+    Le Registre de douane (module Sécurité, « La Salle des gardes », admin/echanges). Les bilans de défense d'une ville, jour par jour, et les listes rouge et verte de la province.
 
     ⚠️ Aucune règle côté site : qui lit, qui écrit, quelles villes, quels jours, le serveur le dit (`customs-access`) ; un refus s'affiche tel quel,
     en FR ou EN. Le parseur des collages est ICI (frontend, comme les mines) ; le serveur reçoit l'analyse ET le brut gardé, ne re-parse jamais.
