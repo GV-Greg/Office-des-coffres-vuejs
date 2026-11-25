@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { http, HTTP_TIMEOUT_MS } from '../../src/api.js'
 

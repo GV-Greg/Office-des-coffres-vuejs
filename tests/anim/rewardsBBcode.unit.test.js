@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { exportResults, exportRules } from '../../src/modules/rewardsBBcode.js'
 
