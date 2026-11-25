@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #167 (Tests : 10 fichiers sans DOM en environnement `node`)
+
+### Changed
+- **10 fichiers de test** passent en `// @vitest-environment node` : `tests/anim` (5), `common/api`, `eco/inventoryCompare`, `enforcement` (2), `security/guetParser`. Trois autres candidats (`authNavigationLoader`, `entryLoader`, `eco/inventoryStore`) lisent `window` ou `localStorage` et restent en jsdom. Gain de temps réel **non mesurable** (190 s contre 186 à 207 s).
+
+### Deploy notes
+- Aucun code applicatif.
+
 ## [2026-11-25] — PR #166 (Modèle de PR : la case « Promesse légale »)
 
 ### Added
