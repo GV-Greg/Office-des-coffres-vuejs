@@ -37,6 +37,7 @@ scripts pointent sur le dossier entier (`vitest run tests/<domaine>`).
 | Script | Ce qu'il fait |
 |---|---|
 | `npm test` / `npm run test:run` | Suite complète, one-shot |
+| `npm run test:fast [-- --lint] [-- <filtre>]` | **Passe rapide sous WSL** : copie le dossier de travail vers le système de fichiers Linux puis y lance la suite (voir ci-dessous) |
 | `npm run test:watch` | Mode watch (dev interactif uniquement) |
 | `npm run test:changed` | Seulement les tests impactés par le diff git |
 | `npm run test:logic` | Tests `.unit.test.js` uniquement (voir piège ci-dessous) |
@@ -72,6 +73,19 @@ l'intérêt réel de `.unit.test.js` : pas de découpage arbitraire, juste évit
 quand le test n'en a pas besoin. En développement, le mode watch (`npm run test:watch`) ne paie
 le démarrage qu'une fois — chaque sauvegarde ne relance que les fichiers concernés, en moins
 d'une seconde.
+
+### Passe rapide sous WSL (`scripts/test-fast.sh`)
+
+Mesuré le 25/11/2026, même commit, même machine : la suite complète prend **186 s sur `/mnt/d`** et **16 à 18 s sur le système de fichiers Linux de WSL** (÷ 10) ; le lint, 13 s contre 4 s. Le coût de `/mnt/d` est celui d'ouvrir des milliers de fichiers à travers le pont vers Windows, pas du calcul. Le script **copie** le dossier de travail (`rsync`, 0,5 à 1,5 s) vers `~/odc-front-fast` (réglable : `ODC_FAST_DIR`, jamais sous `/mnt`), puis y lance Vitest :
+
+```bash
+npm run test:fast                      # toute la suite (≈ 19 s au total)
+npm run test:fast -- tests/security    # un dossier ou un fichier, comme `vitest run`
+npm run test:fast -- --lint            # eslint puis la suite
+npm run test:fast -- --lint-only       # eslint seulement
+```
+
+L'IDE et le serveur de dev restent sur le dossier de travail : le script ne le modifie jamais. `node_modules` vit dans la copie ; `npm ci` n'y est relancé que si `package-lock.json` a changé (empreinte gardée dans `node_modules/.odc-lock-hash`). Le code de sortie est celui d'eslint ou de Vitest, comme en CI. **Limites** : la copie ignore `.git`, `dist` et `node_modules` du dossier de travail ; la CI reste la référence (elle ne passe pas par ce script) ; hors WSL (dépôt déjà sur ext4), le script lance simplement Vitest sur place.
 
 ## CI
 
