@@ -6,6 +6,20 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #165 (« Mot de passe oublié » : les pages de demande et de nouveau mot de passe)
+
+### Added
+- **`/forgot-password`** (fil `admin/echanges/mot-de-passe-oublie/`, `back #113`) : l'adresse part, la page dit **toujours** « si un compte existe… » (le serveur ne révèle rien) ; 429 → message de patience ; pas de double envoi.
+- **`/reset-password?token&email`** (le lien de l'email, site des joueurs) : 8 à 190 caractères et confirmation contrôlés avant l'envoi ; `invalid_token` (faux, expiré après 60 minutes, déjà utilisé) → **une seule** page « lien invalide ou expiré » avec le chemin pour redemander ; lien incomplet invalide d'emblée, sans appel.
+- Lien **« Mot de passe oublié ? »** sous le champ du mot de passe de la connexion ; `authStore.forgotPassword` / `resetPassword` ; i18n FR + EN (`PasswordReset`, `Login.ForgotLink`). **Rien n'est gardé dans le navigateur** (gardé par test). 1719 tests.
+
+### Changed
+- Les deux pages sont des routes **publiques chargées à la demande**, sans garde « déjà connecté » (un joueur connecté qui clique le lien de l'email doit pouvoir l'utiliser).
+- **Aucun écran de chargement** entre les pages d'authentification (connexion, inscription, mot de passe oublié, nouveau mot de passe) : « Vous entrez dans la salle… » n'avait pas de sens (Greg, 25/11/2026).
+
+### Deploy notes
+- Frontend seul. Le backend (`back #113`, routes `auth/forgot-password` et `reset-password`, `route:cache` fait et sondé le 25/11/2026 : 422 sans corps) et le texte légal (`front #164`) sont en ligne.
+
 ## [2026-11-25] — PR #164 (Texte légal : la réinitialisation du mot de passe, Politique §4 et §5)
 
 ### Changed

@@ -79,6 +79,19 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      // « Mot de passe oublié » (24/11/2026) : publiques toutes les deux, SANS garde « déjà connecté » — un joueur connecté qui clique le lien de l'email doit pouvoir l'utiliser.
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('@/views/auth/ForgotPasswordView.vue'), // chargée à la demande : hors du bundle initial
+      meta: { public: true },
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: () => import('@/views/auth/ResetPasswordView.vue'),
+      meta: { public: true },
+    },
+    {
       path: '/verify-email',
       name: 'verify-email',
       component: VerifyEmailView,
@@ -405,9 +418,18 @@ const MODULE_ACCENT_BY_ROUTE = {
   'animation-rewards': 'teal', 'animation-rewards-mine': 'teal', 'animation-rewards-create': 'teal', 'animation-rewards-manage': 'teal', 'animation-rewards-reset': 'teal', 'animation-rewards-confirm-email': 'teal', 'animation-rewards-public': 'teal',
 }
 
+// Pages d'authentification (connexion, inscription, mot de passe oublié, nouveau mot de passe) : on passe de l'une à l'autre SANS écran de chargement
+// (Greg, 25/11/2026 : « Vous entrez dans la salle… » entre la connexion et « mot de passe oublié » n'avait pas de sens). Les pages « mot de passe oublié » sont
+// chargées à la demande : au premier passage, le chargement dépasse le délai d'affichage de l'overlay et il apparaissait.
+const AUTH_PAGE_ROUTE_NAMES = new Set(['login', 'register', 'forgot-password', 'reset-password'])
+
 const { startNavigationLoading, stopNavigationLoading } = useNavigationLoading()
 
 router.beforeEach((to, from, next) => {
+  if (AUTH_PAGE_ROUTE_NAMES.has(to.name) && AUTH_PAGE_ROUTE_NAMES.has(from.name)) {
+    next()
+    return
+  }
   // Du portail d'accueil (le cadenas « Entrer dans l'Office ») vers l'Accueil ou la connexion : on entre dans l'Office, pas dans
   // « la salle » — contexte 'entry', même portique que 'office', autre phrase. `login` compte aussi : pour un connecté, /login
   // redirige vers `home` APRÈS le délai d'affichage ; sans cela le loader dirait « la salle » puis, la redirection faite, « l'Office ».
