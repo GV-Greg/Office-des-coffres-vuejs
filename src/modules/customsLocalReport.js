@@ -1,5 +1,5 @@
 /*
-  Le Relevé unique (module Sécurité, PR 3-2 ; fil admin/echanges/module-securite 12 à 14) : de cinq types de collage à UN bilan affichable, EN LOCAL,
+  Le Relevé unique (module Sécurité, PR 3-2) : de cinq types de collage à UN bilan affichable, EN LOCAL,
   dans la même forme que celui que le serveur sert — `customsReportToBBCode` l'exporte et `CustomsReportView` l'afficherait donc tels quels, avec ou sans compte.
   Logique pure : rien n'est lu ni écrit ici.
 

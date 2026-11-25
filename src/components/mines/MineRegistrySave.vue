@@ -13,8 +13,7 @@
   import HelpModal from '@/components/HelpModal.vue'
 
   /*
-    Registre des mines — enregistrer le collage du Bilan (PR 2 ; brief admin/content/
-    brief-registre-mines.md §2, §6 ; fil admin/echanges/registre-mines, R3).
+    Registre des mines — enregistrer le collage du Bilan (PR 2).
     « Un collage, deux destinations » : le même texte sert le Bilan public et le Registre ; ce bloc
     n'apparaît que pour un personnage que l'Office connaît comme commissaire aux mines ou bailli.
 

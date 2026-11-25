@@ -11,7 +11,7 @@ const NUM = String.raw`-?\d+(?:[.,]\d+)?`
 
 // Écran français OU anglais (brief Bilan §5 bis, Greg 07/10/2026) : la langue est celle du TEXTE
 // collé, jamais celle de l'interface — un joueur peut jouer en anglais et lire l'Office en français.
-// Libellés anglais relevés par Greg (admin/jeu/mines.md §7.12), jamais traduits par nous.
+// Libellés anglais relevés par Greg, jamais traduits par nous.
 const SECTION_MARKERS = [
   { key: 'heures', re: /nombre d'heures travaill|number of hours worked/i },
   { key: 'production', re: /production des \d+ derniers jours|output of the past \w+ days/i },

@@ -4,7 +4,7 @@ import { compareInventories, formatDiff, formatEcusDiff, STATUS } from '../../sr
 import { exportBalanceToBBCode, annotation, BALANCE_COLORS } from '../../src/modules/inventoryBalanceBBcode'
 
 /*
-  La Balance des stocks, logique pure (brief admin/content/brief-comparaison-inventaires.md ; fil inventaire-comparaison) :
+  La Balance des stocks, logique pure :
   hausse / baisse / identique / nouveau / disparu, écart du trésor, et le BBCode annoté (flèche verte ou rouge, tiret gris ;
   « Nouveau » n'est jamais dans l'export, les disparus sont une section finale).
 */

@@ -17,7 +17,7 @@
 import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
 
   /*
-    Le Relevé de guet — POINT DE COLLAGE UNIQUE du module Sécurité (fil admin/echanges/module-securite 12 à 14, décisions de Greg du 22/11/2026).
+    Le Relevé de guet — POINT DE COLLAGE UNIQUE du module Sécurité (22/11/2026).
     On y colle les cinq types : la liste des villageois (hier et aujourd'hui), les visions en chemin, les armées, les groupes et le contrôle de la zone.
     Même écran, même parseur (frontend, comme les mines), même mise en forme pour tous. Ce que le compte ajoute :
     - sans compte : tout se lit dans le navigateur ; avec le consentement « Préférences », le dernier collage de chaque type est gardé (jamais d'historique) ;

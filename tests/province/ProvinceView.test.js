@@ -10,7 +10,7 @@ import NavMenu from '../../src/components/NavMenu.vue'
 import { provinceHistoryToBBcode } from '../../src/modules/provinceBBcode'
 import { http } from '../../src/api.js'
 
-// « Ma province » (fil admin/echanges/mandats-historique). Locales lues sur disque : un import
+// « Ma province ». Locales lues sur disque : un import
 // de src/locales/*.json rend des messages précompilés.
 vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn() } }))
 vi.mock('../../src/api.js', () => ({ http: { get: vi.fn() } }))

@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
   Le backend APPLIQUE ces règles (config/accounts.php, accounts:purge : suppression à 1 an sans
   connexion, comptes non confirmés à 30 jours et au plus tôt une semaine après un rappel). Le texte
   est ce que le joueur lit avant de perdre son compte : les chaînes ont été validées par Greg le
-  04/10/2026 (admin/echanges/politique-promesses/02-reponse-cowork.md) et ne se reformulent pas en
+  04/10/2026 et ne se reformulent pas en
   passant. Changer une durée ici sans changer config/accounts.php (ou l'inverse) romprait une
   promesse ; et toute modification substantielle se notifie (policy:notify, §10).
 

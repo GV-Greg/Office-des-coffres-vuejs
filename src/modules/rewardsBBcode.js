@@ -1,5 +1,5 @@
 /**
- * Export BBCode de la Grille des lots (brief admin/content/brief-grille-des-lots.md).
+ * Export BBCode de la Grille des lots.
  * Le BBCode est TOUJOURS en français fixe, indépendant de la langue de l'interface
  * (contenu de forum francophone, comme SecurityGuet et EconomyMines).
  */

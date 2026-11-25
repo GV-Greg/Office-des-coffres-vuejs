@@ -11,7 +11,7 @@ import { http } from '../../src/api.js'
 import { push } from 'notivue'
 
 /*
-  Valider les douaniers (module Sécurité ; brief §4, fil admin/echanges/module-securite) : le joueur DEMANDE le rôle depuis son PROFIL (Greg, 22/11/2026),
+  Valider les douaniers (module Sécurité) : le joueur DEMANDE le rôle depuis son PROFIL (Greg, 22/11/2026),
   le trio de la province le valide dans l'onglet « Douaniers » de MON BUREAU (tests/province/MonBureauOfficers.test.js), en cascade ; seule la saisie d'un bilan remet le compteur d'inactivité à zéro. ⚠️ Aucune règle côté site :
   tout vient de GET characters/{id}/customs.
 */

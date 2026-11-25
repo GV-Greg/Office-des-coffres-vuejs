@@ -62,7 +62,7 @@ export function evaluateCssBudget({ rawSize, brotliSize }) {
   if (rawSize > CSS_BUDGET.rawMaxBytes) {
     warnings.push(
       `${CSS_BUDGET.label} : ${formatKo(rawSize)} brut — budget ${formatKo(CSS_BUDGET.rawMaxBytes)}`
-      + ` (dette connue, voir admin/suivi/performance.md #4 — pas bloquant tant que le brotli reste sous budget)`
+      + ` (dette connue — pas bloquant tant que le brotli reste sous budget)`
     )
   }
 

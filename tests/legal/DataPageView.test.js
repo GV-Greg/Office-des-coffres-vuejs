@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import DataPageView from '../../src/views/legal/DataPageView.vue'
 import { DATA_PAGE_SECTIONS } from '../../src/modules/dataPageSections'
 
-// Page « Vos données, outil par outil » (brief admin/content/brief-pages-donnees-joueur.md).
+// Page « Vos données, outil par outil ».
 // Montée avec les VRAIS textes : un import de fr.json est précompilé par le plugin vue-i18n et rend
 // undefined en test — lecture par fs.
 

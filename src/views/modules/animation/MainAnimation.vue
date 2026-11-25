@@ -6,8 +6,7 @@
   import useDecodeActivities from '@/use/useDecodeActivities'
 
   /*
-    Module Animation (brief admin/modules/animation/brief-coffres-scelles.md ; spécification à jour : tour 12 du fil
-    animation-coffres-scelles). Coquille du module : un menu à gauche et la page à droite.
+    Module Animation (à jour : tour 12). Coquille du module : un menu à gauche et la page à droite.
 
     Le menu ne porte QUE les liens des pages du module — aujourd'hui « Décode le code » seule. Les gestes d'une activité (organiser sans
     compte, retrouver la sienne, mes activités) vivent sur la page de l'activité, pas ici. Le titre du module ramène à son ACCUEIL

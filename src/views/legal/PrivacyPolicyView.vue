@@ -13,8 +13,7 @@
   const contactEmail = computed(() => t('Legal.Common.Contact.Email').replace('[at]', '@'))
 
   // Date de dernière publication du contenu de cette politique — à mettre à jour manuellement
-  // à chaque modification substantielle (voir Legal.Privacy.Section10 / draft
-  // admin/content/policy-privacy-draft.md).
+  // à chaque modification substantielle (Legal.Privacy.Section10 / draft).
   // Date de MISE EN LIGNE de la dernière modification : la page « Vos données » (front #90), qui lui
   // ajoute une ligne par outil (§3) — même date que DataPageView.vue.
   const LAST_UPDATED = '2026-11-24'
@@ -106,8 +105,7 @@
               </li>
             </ul>
 
-            <!-- Registre des mines (texte validé par Greg le 06/10/2026,
-                 admin/content/policy-registre-mines-draft.md) : posé AVANT l'ouverture de
+            <!-- Registre des mines (validé le 06/10/2026) : posé AVANT l'ouverture de
                  l'écriture — une règle ne s'applique qu'après que le texte la dit. -->
             <p class="mt-4">{{ t('Legal.Privacy.Section3.MineRegistryIntro') }}</p>
             <ul class="list-disc list-inside space-y-1" data-testid="privacy-mine-registry">
@@ -116,8 +114,7 @@
               </li>
             </ul>
 
-            <!-- Prix des mines de la province (texte validé par Greg le 16/10/2026,
-                 admin/content/policy-prix-registre-draft.md). -->
+            <!-- Prix des mines de la province (validé le 16/10/2026). -->
             <p class="mt-4">{{ t('Legal.Privacy.Section3.MinePricesIntro') }}</p>
             <ul class="list-disc list-inside space-y-1" data-testid="privacy-mine-prices">
               <li v-for="(field, index) in minePricesFields" :key="`mine-prices-${index}`">
@@ -126,8 +123,8 @@
             </ul>
 
             <!-- Animation (Décode le code, Grille des lots) : UN chapitre commun aux activités, une phrase
-                 par activité pour ce qui les distingue. Texte : admin/content/policy-animation.md, analysé
-                 par Cowork (fil animation-textes-legaux, 11/11/2026). Un type d'activité de plus = une ligne
+                 par activité pour ce qui les distingue. Texte analysé
+                 par Cowork (11/11/2026). Un type d'activité de plus = une ligne
                  dans `AnimActivities`, pas un bloc de plus. Remplace le bloc « Décode le code » (28/10/2026). -->
             <p class="mt-4">{{ t('Legal.Privacy.Section3.AnimIntro') }}</p>
             <ul class="list-disc list-inside space-y-1" data-testid="privacy-anim">
@@ -143,9 +140,8 @@
               </li>
             </ul>
 
-            <!-- Gestion des stocks (inventaires) : texte de Cowork, validé par Greg le 11/11/2026
-                 (fil admin/echanges/inventaire-scopes/02-reponse-cowork.md). Phrase d'accès de l'éditeur : la
-                 « formulation retenue » de admin/strategies/donnees-utilisateur.md §5bis. -->
+            <!-- Gestion des stocks (inventaires) : texte de Cowork, validé par Greg le 11/11/2026. Phrase d'accès de l'éditeur : la
+                 « formulation retenue » de la stratégie des données utilisateur -->
             <p class="mt-4">{{ t('Legal.Privacy.Section3.InventoryIntro') }}</p>
             <ul class="list-disc list-inside space-y-1" data-testid="privacy-inventory">
               <li v-for="(field, index) in inventoryFields" :key="`inventory-${index}`">
@@ -155,7 +151,7 @@
             <p class="mt-2">{{ t('Legal.Privacy.Section3.InventoryNote') }}</p>
 
             <!-- La Salle des gardes (module Sécurité) : texte de Cowork du 22/11/2026, repris par la v2 de Claude Code
-                 (admin/content/policy-securite-draft-v2.md) et validée par Greg. Premier module qui conserve des
+ et validée par Greg. Premier module qui conserve des
                  pseudos de tiers sans compte : durée sans limite assumée au §5, aucune procédure de retrait annoncée
                  (Greg, 22/11/2026), inconsultabilité par l'éditeur gardée par SecurityNotConsultableTest côté backend. -->
             <p class="mt-4">{{ t('Legal.Privacy.Section3.SecurityIntro') }}</p>

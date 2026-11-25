@@ -7,7 +7,6 @@
     à la charte §3.1 documentée (illustration de chargement). La couleur du MODULE ne sert qu'à la lueur et aux faisceaux.
     Le couvercle se retourne : la façade s'aplatit, le dessous se déploie. Tout est transition ou animation FINIE
     (charte §8) ; le mouvement réduit les coupe par la règle globale de base.css.
-    Voir admin/content/demo-animations-chargement.html.
   */
   const props = defineProps({
     open: { type: Boolean, default: false },

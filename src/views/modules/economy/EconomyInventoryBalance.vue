@@ -15,7 +15,7 @@ import { useInventoryStore } from '@/stores/inventoryStore'
 import AccessLoader from '@/components/loading/AccessLoader.vue'
 
 /*
-  La Balance des stocks (4ᵉ module de la Salle des comptes ; fil admin/echanges/inventaire-comparaison/, décisions de Greg du 19/11/2026) :
+  La Balance des stocks (4ᵉ module de la Salle des comptes, du 19/11/2026) :
   on colle un ancien inventaire et l'inventaire actuel, l'Office pèse l'écart. 🔴 Elle NE STOCKE RIEN : les deux champs ne sont ni
   mémorisés (ni cookie, ni stockage local, ni serveur) ni enregistrés par « Confier au scribe », qui n'exporte que le BBCode.
   Le bouton « Récupérer » relit, en LECTURE PURE (`inventoryStore.readLastPaste`), le dernier inventaire retenu par la Gestion des stocks

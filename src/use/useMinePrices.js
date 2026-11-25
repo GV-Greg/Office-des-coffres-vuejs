@@ -2,7 +2,7 @@ import { http } from '@/api.js'
 import { useAuthStore } from '@/stores/authStore'
 
 /*
-  Appels de l'API des prix des mines (brief admin/content/brief-prix-registre.md, lot 2). Aucune règle :
+  Appels de l'API des prix des mines. Aucune règle :
   qui lit, écrit ou corrige est décidé par le serveur (`access.prices`, `editable` de chaque jeu) ;
   les refus arrivent en FR et EN (`apiMessage`). Les jetons sont attachés à la main, comme partout (api.js).
 */

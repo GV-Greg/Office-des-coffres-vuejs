@@ -11,7 +11,7 @@ import { http } from '../../src/api.js'
 import { push } from 'notivue'
 
 /*
-  Le Registre de douane (module Sécurité, PR 3-1 ; fil admin/echanges/module-securite) : bilans d'une ville jour par jour, saisie par collage, listes
+  Le Registre de douane (module Sécurité, PR 3-1) : bilans d'une ville jour par jour, saisie par collage, listes
   rouge et verte. ⚠️ Aucune règle côté site : qui lit, écrit, quelles villes et quels jours, le serveur le dit (`customs-access`). L'auteur d'un bilan
   n'est jamais nommé ; le brut n'est jamais servi. Le parseur est au frontend : l'écran envoie l'analyse ET le brut gardé.
 */

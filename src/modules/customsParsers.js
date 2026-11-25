@@ -1,8 +1,8 @@
 /*
   Parseurs des collages du Registre de douane (module Sécurité), logique pure, FR et EN.
-  Validés sur les COLLAGES RÉELS de Greg du 22/11/2026 (tests/fixtures/customs/, copies de admin/exemples/collage-*.txt).
+  Validés sur les COLLAGES RÉELS de Greg du 22/11/2026 (tests/fixtures/customs/, copies des collages fournis).
 
-  🔴 UN SEUL parseur, au FRONTEND, comme le Registre des mines (décision de Greg, 22/11/2026, fil admin/echanges/module-securite/11) :
+  🔴 UN SEUL parseur, au FRONTEND, comme le Registre des mines (22/11/2026) :
   le serveur reçoit le JSON analysé + le collage brut, valide la FORME, ne re-parse jamais. Aucun jumeau PHP.
 
   Corrections du brief par les collages réels :

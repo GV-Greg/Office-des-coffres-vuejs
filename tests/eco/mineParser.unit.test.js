@@ -128,7 +128,7 @@ describe('mergeMinesData', () => {
   })
 })
 
-// Brief Bilan §6b (fil admin/echanges/bilan-mines, Q7) : le numéro « Mine N » est une numérotation
+// Brief Bilan §6b : le numéro « Mine N » est une numérotation
 // d'affichage qui glisse quand une mine ouvre ou ferme, et le nom n'est pas unique (deux « Mine de
 // fer », nœuds 226 et 228). Le nœud est l'identifiant stable : la fusion se clavette sur lui. Le
 // Registre en héritera — persister avant ce correctif voudrait dire migrer des données.
@@ -628,8 +628,7 @@ describe('thresholdAlert — en constat, jamais en prédiction', () => {
 // incalculable avec le décalage d'un jour), figeaient précisément ce défaut : ils sont retirés.
 
 // Brief Bilan §5 bis (Greg, 07/10/2026) : le parseur lit l'écran ANGLAIS — l'aide anglaise envoie le
-// joueur sur « Management of the mines ». Libellés repris du collage réel de Greg (07/10, nœuds 236,
-// 228, 232 ; admin/jeu/mines.md §7.12). 🔴 AUCUNE conversion d'unité : « tons of stone » et « ounces
+// joueur sur « Management of the mines ». Libellés repris du collage réel de Greg (07/10, nœuds 236, 228, 232). 🔴 AUCUNE conversion d'unité : « tons of stone » et « ounces
 // of iron » portent les MÊMES nombres que les quintaux et les kilos — une conversion introduirait un
 // facteur 10 silencieux. D'où le jumeau français aux mêmes chiffres : les deux doivent donner le même
 // relevé, le même état et le même bilan. Le point décimal anglais (139.97) est lu comme la virgule.

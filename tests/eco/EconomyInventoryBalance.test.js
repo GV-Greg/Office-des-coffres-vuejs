@@ -11,7 +11,7 @@ import { useCookieStore } from '../../src/stores/cookieStore'
 import { http } from '../../src/api.js'
 
 /*
-  La Balance des stocks (4ᵉ module de la Salle des comptes ; fil admin/echanges/inventaire-comparaison/, 19/11/2026) : deux champs de
+  La Balance des stocks (4ᵉ module de la Salle des comptes, 19/11/2026) : deux champs de
   collage (ancien, actuel), une comparaison automatique, « Récupérer » qui relit le dernier inventaire retenu par la Gestion des stocks
   (lecture pure), « Confier au scribe » qui exporte sans rien enregistrer. 🔴 Elle ne stocke RIEN : ni cookie, ni stockage local, ni serveur.
 */

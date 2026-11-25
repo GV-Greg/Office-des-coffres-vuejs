@@ -2,7 +2,7 @@ import { http } from '@/api.js'
 import { useAuthStore } from '@/stores/authStore'
 
 /*
-  Appels de l'API des inventaires (fil admin/echanges/inventaire-scopes et inventaire-bilans, 11/11/2026). Aucune règle ici :
+  Appels de l'API des inventaires (11/11/2026). Aucune règle ici :
   qui lit, écrit ou copie est décidé par le serveur, par le poste tenu MAINTENANT ; les refus arrivent en FR et EN (`apiMessage`).
   Trois niveaux : `personal` (le personnage), `city` (le maire), `province` (le commissaire au commerce, le dirigeant lit).
   Les jetons sont attachés à la main, comme partout (api.js).
@@ -31,7 +31,7 @@ export default function inventoryApi() {
     getText: (characterId, level) => http.get(`${base(characterId)}/inventory/${level}`, auth()).then(({ data }) => data.inventory),
     putText: (characterId, level, raw) => http.put(`${base(characterId)}/inventory/${level}`, { raw }, auth()).then(({ data }) => data.inventory),
     /**
-     * Le REGISTRE d'un niveau (fil admin/echanges/registre-stocks) : `province` (commissaire au commerce ; le dirigeant lit) ou `city` (le maire).
+     * Le REGISTRE d'un niveau : `province` (commissaire au commerce ; le dirigeant lit) ou `city` (le maire).
      * { province|city: { id, name }, snapshots: [{ id, taken_on, saved_at, office_key, by_me, replaced, raw }], can_write }.
      * `replaced` = le rédacteur de l'inscription que celle-ci a remplacée ({ pseudo, office_label: { fr, en }, … }) ou null ; l'auteur d'une
      * inscription en vigueur n'est jamais nommé (`by_me` seulement).

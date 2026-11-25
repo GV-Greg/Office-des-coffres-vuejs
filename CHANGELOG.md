@@ -127,7 +127,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 ## [2026-11-22] — PR #155 (Fix : le niveau du mandat renouvelé n'est plus proposé en radios désactivées)
 
 ### Fixed
-- **Modal « Renouveler le mandat »** (fil `admin/echanges/mandats-lot3/09-bug-radios-renouvellement.md`, signalé par Greg le 22/11/2026) : les deux radios « Maire » / « Conseil comtal » ne réagissaient pas au clic — par conception, le niveau d'un renouvellement est celui du mandat renouvelé et ne se choisit pas, mais des radios désactivées, sans rien de visiblement coché, ressemblaient à un bug. Le niveau est maintenant **dit en texte** (« Niveau : Conseil comtal »), comme le lieu juste dessous ; plus de radios en renouvellement. Une **demande** de poste garde ses radios, cliquables.
+- **Modal « Renouveler le mandat »** (fil `admin/echanges/_clos/mandats-lot3/09-bug-radios-renouvellement.md`, signalé par Greg le 22/11/2026) : les deux radios « Maire » / « Conseil comtal » ne réagissaient pas au clic — par conception, le niveau d'un renouvellement est celui du mandat renouvelé et ne se choisit pas, mais des radios désactivées, sans rien de visiblement coché, ressemblaient à un bug. Le niveau est maintenant **dit en texte** (« Niveau : Conseil comtal »), comme le lieu juste dessous ; plus de radios en renouvellement. Une **demande** de poste garde ses radios, cliquables.
 
 ### Added
 - Tests dans `CharacterMandates.test.js` (niveau dit en texte, en anglais, radios d'une demande restées actives) ; 1598 tests.
@@ -205,7 +205,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 ## [2026-11-22] — PR #150 (Texte légal du Relevé unique : ce que le navigateur garde)
 
 ### Changed
-- **Politique cookies §3 et « Vos données » → Relevé de guet** (FR et EN ; fil `admin/echanges/module-securite/` 12 à 14, `admin/content/policy-cookies-releve-draft.md`, validé par Greg le 22/11/2026, **non substantiel**) : le navigateur garde, avec le consentement « Préférences », le dernier collage de chaque type (liste des villageois, visions, armées, groupes, contrôle de la zone), remplacé à chaque nouveau collage, sans historique ; ces textes peuvent citer des pseudos de tiers. Sans compte, rien n'est enregistré sur nos serveurs ; avec un compte et un rôle reconnu, le relevé peut être inscrit au Registre de douane (renvoi vers « La Salle des gardes »).
+- **Politique cookies §3 et « Vos données » → Relevé de guet** (FR et EN ; fil `admin/echanges/module-securite/` 12 à 14, `admin/content/archives/policy-cookies-releve-draft.md`, validé par Greg le 22/11/2026, **non substantiel**) : le navigateur garde, avec le consentement « Préférences », le dernier collage de chaque type (liste des villageois, visions, armées, groupes, contrôle de la zone), remplacé à chaque nouveau collage, sans historique ; ces textes peuvent citer des pseudos de tiers. Sans compte, rien n'est enregistré sur nos serveurs ; avec un compte et un rôle reconnu, le relevé peut être inscrit au Registre de douane (renvoi vers « La Salle des gardes »).
 - Rubrique « Audience » du Relevé complétée (écart voulu au brouillon : elle contredisait sinon le « Stockage »).
 
 ### Added
@@ -217,7 +217,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 ## [2026-11-22] — PR #148 (Texte légal de La Salle des gardes — PR 3-0 ; `bcrypt` retiré de la politique)
 
 ### Added
-- **Politique de confidentialité et « Vos données »** pour le module Sécurité (fil `admin/echanges/module-securite/`, `admin/content/policy-securite-draft-v2.md`, validé par Greg le 22/11/2026) : §3 (statut de douanier, listes rouge et verte, bilans de défense, texte collé conservé tel quel — liste des villageois sans préambule, armées, groupes, contrôle de la zone, lignes des visions du jour), §4 (bases légales), §5 (conservation **sans limite**, « le lien est supprimé »), §6 (le trio = prévôt + connétable + capitaine, maire, douaniers, juge, procureur, dirigeant), §7 (personnes citées : le recours relève du jeu, **aucune procédure de retrait annoncée**). Section « La Salle des gardes » de « Vos données » marquée **« à venir »** (à retirer avec la PR 3-1). Rien n'est exporté de ces listes ni de ces bilans, seulement une trace d'activité sans contenu.
+- **Politique de confidentialité et « Vos données »** pour le module Sécurité (fil `admin/echanges/module-securite/`, `admin/content/archives/policy-securite-draft-v2.md`, validé par Greg le 22/11/2026) : §3 (statut de douanier, listes rouge et verte, bilans de défense, texte collé conservé tel quel — liste des villageois sans préambule, armées, groupes, contrôle de la zone, lignes des visions du jour), §4 (bases légales), §5 (conservation **sans limite**, « le lien est supprimé »), §6 (le trio = prévôt + connétable + capitaine, maire, douaniers, juge, procureur, dirigeant), §7 (personnes citées : le recours relève du jeu, **aucune procédure de retrait annoncée**). Section « La Salle des gardes » de « Vos données » marquée **« à venir »** (à retirer avec la PR 3-1). Rien n'est exporté de ces listes ni de ces bilans, seulement une trace d'activité sans contenu.
 - Titres anglais relevés en jeu : Constable (prévôt des maréchaux), Sergeant (connétable), Captain, Public Prosecutor ; « The Guardroom ».
 
 ### Changed
@@ -243,7 +243,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 ## [2026-11-21] — PR #146 (Registre des stocks : prise de poste, bilans de mandat, jours sans inscription, exports BBCode — PR 3b)
 
 ### Added
-- **Registre des stocks, lectures du mandat** (fil `admin/echanges/registre-stocks/`, réponses de Cowork Q1 à Q6), sous l'inscription ouverte et tirées des dates du serveur (`mandate`, back #103) — aucune règle de durée côté site : **Prise de poste** (l'inventaire hérité, et les inscriptions d'autres dans les 30 jours avant l'entrée en fonction, dates cliquables, personne n'est nommé) ; **Bilans de votre mandat** (mi-mandat et fin : évolution entre l'inventaire hérité et la dernière inscription strictement avant la date, moteur de la Balance ; avant la date « disponible le JJ/MM, dans N jours », jamais un bilan partiel ; « pas assez d'inscriptions » dit laquelle manque) ; **Jours sans inscription** (périodes depuis l'entrée en fonction jusqu'à hier, sans seuil ni couleur).
+- **Registre des stocks, lectures du mandat** (fil `admin/echanges/_clos/registre-stocks/`, réponses de Cowork Q1 à Q6), sous l'inscription ouverte et tirées des dates du serveur (`mandate`, back #103) — aucune règle de durée côté site : **Prise de poste** (l'inventaire hérité, et les inscriptions d'autres dans les 30 jours avant l'entrée en fonction, dates cliquables, personne n'est nommé) ; **Bilans de votre mandat** (mi-mandat et fin : évolution entre l'inventaire hérité et la dernière inscription strictement avant la date, moteur de la Balance ; avant la date « disponible le JJ/MM, dans N jours », jamais un bilan partiel ; « pas assez d'inscriptions » dit laquelle manque) ; **Jours sans inscription** (périodes depuis l'entrée en fonction jusqu'à hier, sans seuil ni couleur).
 - **Exports BBCode « Confier au scribe »** (français fixe, catégories du niveau, options d'export du joueur, rien d'enregistré) : une inscription (« Inventaire du {date} — {lieu} »), un bilan (« Bilan de mi-mandat, du … au … »), la comparaison libre.
 - **Annonce à la chronique** : « Le Registre des stocks garde la mémoire des inventaires de votre ville ou de votre province » (rubrique Chroniques, comptes connectés ; Discord au merge).
 
@@ -289,7 +289,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 ## [2026-11-20] — PR #143 (Politique §3 et §5 : Registre des stocks)
 
 ### Changed
-- **Texte légal** (FR/EN, texte de Cowork validé par Greg, fil `admin/echanges/registre-stocks/`) : `Legal.Privacy.Section3.InventoryFields[3]` (inventaire municipal : « un seul exemplaire du dernier collage » ; l'inventaire peut aussi être enregistré, **à l'initiative du maire**, comme un **instantané daté** — Registre des stocks — dont l'historique est conservé et transmis au successeur), `[4]` (inventaire comtal : instantanés datés aussi) et `InventoryNote` (le **pseudo du rédacteur précédent reste visible** dans l'historique quand un inventaire est remplacé).
+- **Texte légal** (FR/EN, texte de Cowork validé par Greg, fil `admin/echanges/_clos/registre-stocks/`) : `Legal.Privacy.Section3.InventoryFields[3]` (inventaire municipal : « un seul exemplaire du dernier collage » ; l'inventaire peut aussi être enregistré, **à l'initiative du maire**, comme un **instantané daté** — Registre des stocks — dont l'historique est conservé et transmis au successeur), `[4]` (inventaire comtal : instantanés datés aussi) et `InventoryNote` (le **pseudo du rédacteur précédent reste visible** dans l'historique quand un inventaire est remplacé).
 - **§5 (durée)** : l'historique des inventaires **d'une province ou d'une ville** est conservé sans limite de durée (mémoire de gestion du poste).
 - Garde-fous dans `privacyInventory.unit.test.js` : ni historique personnel (reporté) ni accès du bailli promis ; §5 ville ; distinction « dernier collage » / registre.
 
@@ -310,7 +310,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 
 ### Deploy notes
 - Frontend seul : aucune migration, aucune route backend, aucun `config/*.php`, aucun paquet ; rien à lancer en SSH.
-- Première PR du brief `brief-registre-et-reorganisation-sdc` (fil `admin/echanges/registre-stocks/`).
+- Première PR du brief `brief-registre-et-reorganisation-sdc` (fil `admin/echanges/_clos/registre-stocks/`).
 
 ## [2026-11-20] — PR #140 (La Balance des stocks : menu, phrase de reprise, boutons de niveau)
 
@@ -415,7 +415,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 
 ### Changed
 - Le titre de la section devient « **Registre des réparations et des améliorations** » / « Repairs and improvements registry » (`Home.RegistryTitle`, qui remplace `Home.Fixes` ; `Home.TagFix` et `Home.TagImprovement` ajoutées, FR + EN).
-- Aucune interface d'administration (le brief n'en veut pas) : Greg publie une entrée comme aujourd'hui, en choisissant `"type": "improvement"`. Brief : `admin/content/brief-registre-ameliorations.md`.
+- Aucune interface d'administration (le brief n'en veut pas) : Greg publie une entrée comme aujourd'hui, en choisissant `"type": "improvement"`. Brief : `admin/content/archives/brief-registre-ameliorations.md`.
 
 ### Prod
 - Aucune route, aucune dépendance. 5 tests ajoutés (README : 1165).
@@ -423,7 +423,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 ## [2026-11-11] — PR #112 (Fix : le poste demandé s'affiche tant que la demande est en attente)
 
 ### Fixed
-- Sur la carte d'un mandat (Profil), une demande de **conseiller** en attente de vérification affichait « Conseil comtal de … — **sans poste** » au lieu du poste demandé (le maire s'affichait correctement). La carte lisait le poste **détenu**, vide tant que rien n'est validé ; elle lit désormais le poste **demandé** que l'API envoie dès l'inscription (`pending_office_label`) pendant que le statut est « en attente ». Un mandat validé garde le poste détenu, sa déclaration de poste en attente garde sa mention propre, une demande inscrite sans titre reste « sans poste ». Aucun changement backend. Signalement : `admin/content/fix-affichage-poste-demande.md`.
+- Sur la carte d'un mandat (Profil), une demande de **conseiller** en attente de vérification affichait « Conseil comtal de … — **sans poste** » au lieu du poste demandé (le maire s'affichait correctement). La carte lisait le poste **détenu**, vide tant que rien n'est validé ; elle lit désormais le poste **demandé** que l'API envoie dès l'inscription (`pending_office_label`) pendant que le statut est « en attente ». Un mandat validé garde le poste détenu, sa déclaration de poste en attente garde sa mention propre, une demande inscrite sans titre reste « sans poste ». Aucun changement backend. Signalement : `admin/content/archives/fix-affichage-poste-demande.md`.
 
 ### Prod
 - Aucune route, aucune dépendance. 4 tests ajoutés (README : 1160).
@@ -492,7 +492,7 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - Activité **« Grille des lots »** (`rewards`) : une grille N×M de cases numérotées, des lots à inscrire, un tirage au sort, l'attribution des cases réclamées, la clôture. Deux modes comme Décode le code : **privé** (« Ma grille », lié au personnage) et **sans compte** (créer, retrouver sa grille, réinitialiser le mot de passe, confirmer l'email). Page publique `/public/activite/grille/:slug` (visible dès le tirage), export BBCode en liste `[list][*]` (règles et résultats).
 - Le **tirage fait passer la grille directement à « tirée »** (décision de Greg, 10/11/2026) : plus d'étape « confirmer » ; la page publique s'ouvre au tirage.
 - **Écrans communs à toutes les activités d'Animation** (`modules/animKinds.js`, `use/animApi.js`, `use/useAnimKind.js`, `AnimCreateForm`, `AnimStartPanel`, `AnimPublicShell`, `Anim{CreateAnonymous,Manage,Reset,ConfirmEmail}View`) : Décode le code et la grille en sont deux déclarations ; les vues `Decode*` ne sont plus que des enveloppes. Aucun changement de comportement pour Décode.
-- **Textes légaux** (analysés par Cowork, validés par Greg le 11/11/2026, `admin/content/policy-animation.md`) : **un seul chapitre « Animation »** aux §3, §5 et §6 de la politique de confidentialité (les engagements de Décode conservés mot pour mot, une ligne par activité), cookies Préférences (adresse mémorisée « de chaque type »), **une seule entrée « Animation »** de « Vos données » ; `privacyAnimDecode` devient `privacyAnimation`.
+- **Textes légaux** (analysés par Cowork, validés par Greg le 11/11/2026, `admin/content/archives/policy-animation.md`) : **un seul chapitre « Animation »** aux §3, §5 et §6 de la politique de confidentialité (les engagements de Décode conservés mot pour mot, une ligne par activité), cookies Préférences (adresse mémorisée « de chaque type »), **une seule entrée « Animation »** de « Vos données » ; `privacyAnimDecode` devient `privacyAnimation`.
 - Garde-fou `tests/enforcement/anim-i18n-keys` : toute clé de texte littérale du module Animation existe en français et en anglais.
 - Entrée `rewards-grid-activity` de la Chronique (`whatsNew.json`) : annonce Discord au déploiement. ⚠️ Le type `rewards` naît inactif côté serveur : l'entrée est visible dès le déploiement, **l'activer** (`/anim`) juste après.
 - 100+ tests (`tests/anim/Rewards*`, `useRewardsGrid`, `rewardsBBcode`).
@@ -595,7 +595,7 @@ Passe de migration vers `CHARTE-GRAPHIQUE.md` §6.7, avec l'accord de Greg (17/1
 
 ## [2026-10-16] — PR #94 (Politique : les prix des mines de la province)
 
-Texte validé par Greg le 16/10/2026 (`admin/content/policy-prix-registre-draft.md`), posé avant l'entrée de journal côté back.
+Texte validé par Greg le 16/10/2026 (`admin/content/archives/policy-prix-registre-draft.md`), posé avant l'entrée de journal côté back.
 
 ### Changed
 - §3 : la ligne « Les prix et le taux horaire » du Registre dit que les prix viennent de la table de la province, plus d'une saisie du joueur.
@@ -607,7 +607,7 @@ Texte validé par Greg le 16/10/2026 (`admin/content/policy-prix-registre-draft.
 
 ## [2026-10-16] — PR #93 (Registre des mines : textes de présentation, lot 3 des prix)
 
-Lot 3 du brief `admin/content/brief-prix-registre.md` : les aides décrivent ce que le module permet de faire.
+Lot 3 du brief `admin/content/archives/brief-prix-registre.md` : les aides décrivent ce que le module permet de faire.
 
 ### Changed
 - Aide du registre : neuf étapes — page en deux colonnes, bilan en cours remplaçable par une semaine (◀ ▶, prix jour par jour),
@@ -634,7 +634,7 @@ Hors lot : les textes légaux (politique, « Vos données ») ne disent encore r
 
 ## [2026-10-15] — PR #92 (Registre des mines : prix par période, bilans hebdomadaires, export BBCode)
 
-Brief `admin/content/brief-prix-registre.md`, décisions de Greg des 14 et 15/10/2026. Dépend de back #63.
+Brief `admin/content/archives/brief-prix-registre.md`, décisions de Greg des 14 et 15/10/2026. Dépend de back #63.
 ⚠️ Déployé (21:53 UTC) **avant** back #63 (22:29 UTC) : pendant cette demi-heure, un relevé enregistré par un gérant
 du registre est parti **sans prix** (le site n'en envoie plus, le serveur ne les figeait pas encore).
 
@@ -680,7 +680,7 @@ du registre est parti **sans prix** (le site n'en envoie plus, le serveur ne les
 
 ## [2026-10-10] — PR #88 (Registre des mines, PR 4b : la page de lecture)
 
-Brief `admin/content/brief-registre-mines.md` §7 ; fil `admin/echanges/registre-mines` (R4). ⛔ Après back #60.
+Brief `admin/content/archives/brief-registre-mines.md` §7 ; fil `admin/echanges/_clos/registre-mines` (R4). ⛔ Après back #60.
 
 ### Added
 - **`/app/eco/registre`** (`EconomyRegistry`) : âge du dernier relevé, état du parc au dernier relevé en
@@ -711,7 +711,7 @@ Brief `admin/content/brief-registre-mines.md` §7 ; fil `admin/echanges/registre
 
 ## [2026-10-08] — PR #86 (Registre des mines, PR 2 : l'écran)
 
-Brief `admin/content/brief-registre-mines.md` §2, §6 ; fil `admin/echanges/registre-mines` (R3).
+Brief `admin/content/archives/brief-registre-mines.md` §2, §6 ; fil `admin/echanges/_clos/registre-mines` (R3).
 ⛔ Après back #58 (route d'accès, `route:cache` en SSH).
 
 ### Added
@@ -736,8 +736,8 @@ Brief `admin/content/brief-registre-mines.md` §2, §6 ; fil `admin/echanges/reg
 
 ## [2026-10-08] — PR #84 (politique : le Registre des mines)
 
-Fil `admin/echanges/registre-mines` (07, ordre des PR) ; texte validé par Greg le 06/10
-(`admin/content/policy-registre-mines-draft.md`).
+Fil `admin/echanges/_clos/registre-mines` (07, ordre des PR) ; texte validé par Greg le 06/10
+(`admin/content/archives/policy-registre-mines-draft.md`).
 
 ### Added
 - **`/legal/privacy`** : trois insertions pour le Registre des mines, FR + EN — §3 ce qui est conservé
@@ -751,7 +751,7 @@ Fil `admin/echanges/registre-mines` (07, ordre des PR) ; texte validé par Greg 
 
 ## [2026-10-07] — PR #83 (le Bilan lit l'écran anglais)
 
-Brief `admin/content/brief-bilan-mines.md` §5 bis, fil `admin/echanges/bilan-mines/08`.
+Brief `admin/content/archives/brief-bilan-mines.md` §5 bis, fil `admin/echanges/_clos/bilan-mines/08`.
 
 ### Fixed
 - L'aide anglaise (front #82) envoyait le joueur sur « Management of the mines », mais
@@ -762,7 +762,7 @@ Brief `admin/content/brief-bilan-mines.md` §5 bis, fil `admin/echanges/bilan-mi
 
 ## [2026-10-07] — PR #82 (Bilan des mines : un bilan juste)
 
-Brief `admin/content/brief-bilan-mines.md`, fil `admin/echanges/bilan-mines`.
+Brief `admin/content/archives/brief-bilan-mines.md`, fil `admin/echanges/_clos/bilan-mines`.
 
 ### Fixed
 - **Décalage d'un jour** du relevé (`mineParser.js`) : pour le jour D, production[D], consommation[D]
@@ -808,7 +808,7 @@ Brief `admin/content/brief-bilan-mines.md`, fil `admin/echanges/bilan-mines`.
 
 ## [2026-10-04] — PR #79 (politique de confidentialité : 1 an, comptes non confirmés)
 
-Étape 5 du brief `admin/content/brief-politique-promesses.md` — pendant de back #45 à #50.
+Étape 5 du brief `admin/content/archives/brief-politique-promesses.md` — pendant de back #45 à #50.
 
 ### Changed
 - **`/legal/privacy` §5** : compte inactif supprimé après **1 an** sans connexion (au lieu de 2), et
@@ -847,7 +847,7 @@ Pendant frontend de back #44 (déployée le 04/10).
 
 ### Added
 - **Bloc « Postes » dans le Profil** (`components/mandates/`, `stores/mandateStore.js` ;
-  `admin/content/brief-mandats.md`, arbitrages `admin/echanges/mandats-lot2/`) : demander un
+  `admin/content/archives/brief-mandats.md`, arbitrages `admin/echanges/_clos/mandats-lot2/`) : demander un
   poste de maire ou de conseiller comtal, suivre son statut, annuler une demande, renouveler un
   mandat, déclarer son poste au conseil (avertissement en trois temps), historique des postes.
   Aucune règle ni aucun libellé recodé côté frontend : `requestable`, `renewable`, titres, motifs,
@@ -1012,7 +1012,7 @@ Pendant frontend de back #44 (déployée le 04/10).
 ## [2026-09-27] — PR #64
 
 ### Changed
-- **Menu circulaire : variante X3, mix M1 + D2** (brief `admin/content/brief-menu-d2.md`) —
+- **Menu circulaire : variante X3, mix M1 + D2** (brief `admin/content/archives/brief-menu-d2.md`) —
   anneau laiton lumineux et états de D2 (halo de survol, page courante enfoncée et cerclée d'or,
   plaque dorée), biseau fin et icône gravée de M1, plaque ardoise bordée d'ambre, icône recentrée
   optiquement. Couleurs sorties dans `components/navMenuPalette.js` (teintes repos/survol/page
@@ -1033,7 +1033,7 @@ Pendant frontend de back #44 (déployée le 04/10).
 
 ### Added
 - **Identité visuelle arrêtée le 27/09/2026** (sources hors dépôt dans `ODC/logo/`, brief
-  `admin/content/brief-identite-visuelle.md`) :
+  `admin/content/archives/brief-identite-visuelle.md`) :
   - favicon « écu seul » (`favicon.ico`, `favicon.svg`, `apple-touch-icon.png`) ;
   - logo horizontal dans la `NavBar` (écu seul sous `tablet`), visible accueil compris ; logo
     vertical à la place du titre texte de `WelcomeView` ;
@@ -1334,7 +1334,7 @@ Pendant frontend de back #44 (déployée le 04/10).
 ### Changed
 - `/legal/privacy` §7 (FR + EN) : la mention « fonctionnalité à venir — pour l'instant, passer par
   email » est remplacée par le renvoi vers le Profil, le canal email restant en secours. Reporté
-  aussi dans `admin/content/policy-privacy-draft.md`, source de vérité admin.
+  aussi dans `admin/content/archives/policy-privacy-draft.md`, source de vérité admin.
 
 ### Fixed
 - **L'encart de suppression ne suivait pas la vue.** Son fond était `bg-white dark:bg-slate-800`

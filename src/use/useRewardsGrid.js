@@ -4,7 +4,7 @@ import animApi from '@/use/animApi'
 import { ANIM_KINDS } from '@/modules/animKinds'
 
 /*
-  Appels de l'API de la Grille des lots (brief admin/content/brief-grille-des-lots.md). Le socle commun à toutes les activités vit dans
+  Appels de l'API de la Grille des lots. Le socle commun à toutes les activités vit dans
   `use/animApi.js` ; ce fichier n'ajoute que les gestes PROPRES à la grille. Aucune règle ici : qui peut gérer, ce qui se supprime ou se
   rouvre, les règles du slug et du mot de passe — tout vient du serveur, les refus arrivent en FR et EN (`apiMessage`).
   ⚠️ Le tirage fait passer la grille DIRECTEMENT à `confirmed` (décision de Greg, 10/11/2026 : l'étape « confirmer » ne laissait rien à

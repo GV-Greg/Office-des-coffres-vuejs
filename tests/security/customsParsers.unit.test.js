@@ -6,9 +6,8 @@ import { parseVisions, visionsForDay, parseArmiesGroups, ALERT_GROUP_TYPES, PARS
 import { parseGuet } from '../../src/modules/guetParser.js'
 
 /*
-  Parseurs des collages du Registre de douane sur les COLLAGES RÉELS fournis par Greg le 22/11/2026 (tests/fixtures/customs/, copies de
-  admin/exemples/collage-*.txt, FR et EN). Brief admin/content/brief-module-securite.md §6, corrigé par admin/echanges/module-securite/
-  07-cc-analyse-collages.md et 08-greg-reponses-collages.md. Un seul parseur, au frontend, comme les mines (décision de Greg, fil 11).
+  Parseurs des collages du Registre de douane sur les COLLAGES RÉELS fournis par Greg le 22/11/2026 (tests/fixtures/customs/, copies des collages,
+  FR et EN). Spécification corrigée par l'analyse de ces collages. Un seul parseur, au frontend, comme les mines (décision de Greg, fil 11).
 */
 
 const fixture = name => readFileSync(resolve(process.cwd(), `tests/fixtures/customs/collage-${name}.txt`), 'utf8')

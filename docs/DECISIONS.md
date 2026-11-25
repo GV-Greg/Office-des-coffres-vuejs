@@ -69,7 +69,7 @@ plat pour `NavMenu`) — ce n'est pas une incohérence à corriger, c'est un cho
 > ci-dessous. La partie « boutons `odc-*` » reste valable.
 
 **Contexte** — Greg a arrêté une identité visuelle (logo, favicon, menu circulaire M1, boutons
-« relief 3D »), sources hors dépôt dans `ODC/logo/`, brief `admin/content/brief-identite-visuelle.md`.
+« relief 3D »), sources hors dépôt dans `ODC/logo/`, brief `admin/content/archives/brief-identite-visuelle.md`.
 Elle entre en conflit avec l'entrée précédente, « `NavMenu` exempté de la charte de boutons »,
 dont le veto (« ne jamais convertir `NavMenu` vers la palette dégradée ») protégeait le design
 plat d'origine.
@@ -94,7 +94,7 @@ des deux côtés (`btn-grad-contrast`, `odc-buttons-contrast`).
 ## Menu circulaire : mix M1 + D2 (variante X3) (27/09/2026)
 
 **Contexte** — Le menu M1, fusionné par #62, a été jugé à l'écran moins lumineux et moins lisible
-que la planche D2. Brief `admin/content/brief-menu-d2.md` : revenir à D2, ou mélanger les deux
+que la planche D2. Brief `admin/content/archives/brief-menu-d2.md` : revenir à D2, ou mélanger les deux
 en gardant le relief de M1. Trois mélanges comparés hors dépôt
 (`logo/menu-circulaire/mix/menu-mix-comparaison.html`, fond sombre et fond clair, 4 états).
 

@@ -1,7 +1,7 @@
 import { brotliCompressSync } from 'node:zlib'
 import { evaluateJsBudgets, evaluateCssBudget } from './checkBundleBudget.mjs'
 
-// Performance #8 (admin/suivi/performance.md) : échoue le build si un chunk JS suivi dépasse son
+// Performance #8 : échoue le build si un chunk JS suivi dépasse son
 // budget, avertit (sans bloquer) sur le poids brut du CSS. Lit directement le contenu en mémoire
 // depuis `bundle` (writeBundle) plutôt que de relire dist/ sur disque — pas de course possible
 // avec l'écriture des fichiers.
@@ -43,7 +43,7 @@ export function bundleBudgetPlugin() {
       const failures = [...jsFailures, ...cssFailures]
       if (failures.length > 0) {
         throw new Error(
-          `Budget bundle dépassé (admin/suivi/performance.md #8) :\n${failures.map((f) => `  - ${f}`).join('\n')}`
+          `Budget bundle dépassé :\n${failures.map((f) => `  - ${f}`).join('\n')}`
         )
       }
     },

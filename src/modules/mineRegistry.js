@@ -1,5 +1,4 @@
-// Registre des mines — lectures calculées sur les relevés inscrits (PR 4c ; brief
-// admin/content/brief-registre-mines.md §7 ; fil admin/echanges/registre-mines, R4). Logique pure,
+// Registre des mines — lectures calculées sur les relevés inscrits (PR 4c). Logique pure,
 // testée sans DOM. Le serveur sert les faits ; ces lectures les interprètent avec le parseur qui les a
 // produits — jamais une règle de mandat (dates, autorisations) : celles-là arrivent de l'API.
 

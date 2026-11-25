@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Logique pure (parcours de fichiers), aucun DOM à monter.
 //
-// Garde-fou de admin/strategies/cookies.md §9 : tout accès direct au stockage local doit passer
+// Garde-fou de la stratégie cookies : tout accès direct au stockage local doit passer
 // par cookieStore.js, jamais être dispersé dans des composants ou d'autres stores. Le jeton
 // d'auth (authStore.js) est l'unique exception documentée — strictement nécessaire au service
 // demandé (login), exempté de consentement CNIL.
@@ -18,8 +18,7 @@ const ALLOWED_FILES = [
   path.join('use', 'useMaintenance.js'), // secret d'administrateur du mode maintenance : onglet seul, voir commentaire dans le fichier
 ]
 
-// src/services/* est du code mort confirmé (item #15 de admin/strategies/cookies.md, PR
-// chore/remove-dead-services) : encore présent tant que cette PR n'est pas mergée. Exclu du
+// src/services/* est du code mort confirmé (PR chore/remove-dead-services) : encore présent tant que cette PR n'est pas mergée. Exclu du
 // scan plutôt que whitelisté fichier par fichier — l'exclusion devient sans objet une fois le
 // dossier supprimé.
 const EXCLUDED_DIRS = [path.join('services')]

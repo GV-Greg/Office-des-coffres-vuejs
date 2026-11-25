@@ -1,7 +1,7 @@
 import { formatFieldDate } from '@/modules/playerDates'
 
 /*
-  Export forum de « Ma province » (fil admin/echanges/mandats-historique, 02 Q7) :
+  Export forum de « Ma province » :
   - BBcode en FRANÇAIS FIXE, quelle que soit la langue de l'interface — même exception que
     SecurityGuet et EconomyMines : le forum du comté est francophone ;
   - dates en ANNÉE DU JEU (1474), par le module unique des champs de date.

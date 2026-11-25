@@ -63,7 +63,7 @@ describe('evaluateCssBudget', () => {
     const { failures, warnings } = evaluateCssBudget({ rawSize: 200 * 1024, brotliSize: 20 * 1024 })
     expect(failures).toEqual([])
     expect(warnings).toHaveLength(1)
-    expect(warnings[0]).toContain('performance.md #4')
+    expect(warnings[0]).toContain('dette connue')
   })
 
   it('échoue si le brotli dépasse le budget, quel que soit le brut', () => {
@@ -80,7 +80,7 @@ describe('evaluateCssBudget', () => {
     expect(failures[0]).toContain('CSS total')
   })
 
-  it('reflète les seuils documentés dans admin/suivi/performance.md #8', () => {
+  it('reflète les seuils documentés de la stratégie de performance', () => {
     expect(CSS_BUDGET.rawMaxBytes).toBe(150 * 1024)
     expect(CSS_BUDGET.brotliMaxBytes).toBe(25 * 1024)
   })

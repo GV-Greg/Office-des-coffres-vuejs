@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 import ChestLoader from '../../src/components/loading/ChestLoader.vue'
 import { timing } from '../../src/modules/chestTiming'
 
-// Coffre de chargement interne (charte §8, maquette admin/content/demo-animations-chargement.html). Les durées
+// Coffre de chargement interne (charte, maquette). Les durées
 // sont celles du VRAI module : tests/setup.js les rend instantanées, on les remet ici et on pilote le temps.
 
 const dir = dirname(fileURLToPath(import.meta.url))

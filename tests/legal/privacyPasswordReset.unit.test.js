@@ -5,8 +5,7 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /*
-  Garde-fou — « Mot de passe oublié » dans la politique (§4 et §5). Texte proposé par Claude Code le 24/11/2026 (fil admin/echanges/mot-de-passe-oublie
-  01 et 02), VALIDÉ par Greg (03, toutes les recommandations) : modification NON substantielle, aucun email aux comptes. Les engagements ci-dessous sont
+  Garde-fou — « Mot de passe oublié » dans la politique (§4 et §5). Texte proposé par Claude Code le 24/11/2026, VALIDÉ par Greg (03, toutes les recommandations) : modification NON substantielle, aucun email aux comptes. Les engagements ci-dessous sont
   tenus par le code backend livré après ce texte : jeton valable 60 minutes, haché, effacé à l'usage / à l'expiration (nettoyage quotidien `auth:clear-resets`)
   / à la suppression du compte ; tous les appareils déconnectés ; email d'avis du changement. Si l'un d'eux change, ce texte change AVANT.
 

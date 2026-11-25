@@ -2,7 +2,7 @@
 // ⚠️ TEST JUMEAU. Le même test existe dans le dépôt backend (`tests/Unit/GameCalendarTwinTest.php`),
 // sur `app/Support/GameCalendar.php`. Il fige la table d'ancrages ET des conversions calculées : une
 // divergence de donnée OU de logique entre les deux copies échoue dans le dépôt où elle a été
-// introduite (fil admin/echanges/mandats-historique, 10).
+// introduite.
 //
 // Si ce test échoue parce que vous avez VOLONTAIREMENT changé le calendrier : faites le même
 // changement dans le jumeau backend, et mettez à jour les deux tests ensemble.

@@ -1,5 +1,4 @@
-// Prix des mines par période — logique pure, testée sans DOM (brief admin/content/brief-prix-registre.md,
-// lot 2 ; décisions de Greg des 14-15/10/2026). Le serveur sert les jeux de prix (GET provinces/{id}/mine-prices) ;
+// Prix des mines par période — logique pure, testée sans DOM (14-15/10/2026). Le serveur sert les jeux de prix (GET provinces/{id}/mine-prices) ;
 // ici, seulement leur lecture : quel jeu est en vigueur CE jour-là, et quoi faire quand aucun ne l'est.
 // ⚠️ Aucune règle d'autorisation : qui peut écrire ou corriger vient de l'API (`editable`, `access.prices`).
 

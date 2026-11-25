@@ -14,7 +14,7 @@
   import AccessDenied from '@/components/loading/AccessDenied.vue'
 
   /*
-    Historique des prix des mines (lot 2 des prix du Registre ; brief admin/content/brief-prix-registre.md).
+    Historique des prix des mines (prix du Registre).
     Un jeu de prix entre en vigueur à sa date d'effet et le reste jusqu'au suivant ; l'historique peut
     s'étendre sur des années. Pas de suppression : un prix faux se corrige. ⚠️ Aucune règle ici : qui peut
     ajouter vient de l'API (`access.prices.write`), qui peut corriger un jeu vient de son drapeau

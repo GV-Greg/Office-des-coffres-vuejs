@@ -19,8 +19,7 @@
   import AccessDenied from '@/components/loading/AccessDenied.vue'
 
   /*
-    Registre des mines — lecture (PR 4b ; brief admin/content/brief-registre-mines.md §7 ; fil
-    admin/echanges/registre-mines, R4). Pour le commissaire aux mines, le bailli et le dirigeant.
+    Registre des mines — lecture (PR 4b). Pour le commissaire aux mines, le bailli et le dirigeant.
 
     Le serveur sert les FAITS (GET characters/{id}/mine-registry/reports) : relevés, estampilles,
     mandat du lecteur, prédécesseur. Ici, seulement de l'affichage et des lectures de ces faits avec
@@ -28,7 +27,7 @@
     jamais « votre prédécesseur était X » : le registre sait qui a écrit, pas qui occupait le poste.
     Dates en jour/mois, comme les alertes du Bilan : un relevé est un jour du jeu.
 
-    Bilans de mandat PASSÉS (fil admin/echanges/bilans-passes-mines, 22/11/2026) : un ancien titulaire relit, EN LECTURE SEULE, les relevés de
+    Bilans de mandat PASSÉS (22/11/2026) : un ancien titulaire relit, EN LECTURE SEULE, les relevés de
     SON mandat (le serveur les fenêtre : jamais ceux de ses successeurs). Un sélecteur de mandat choisit entre le mandat en cours (s'il y en a un)
     et les mandats passés ; la règle (qui, quels mandats, quelle fenêtre) vient de `GET characters/{id}/mine-registry` (`past_mandates`) et de
     `…/mandates/{id}` — jamais recalculée ici. Pour un mandat terminé, « aujourd'hui » devient le jour où il a pris fin : les bilans, les semaines et
