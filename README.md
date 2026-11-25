@@ -95,9 +95,11 @@ npm run test:watch     # Mode watch — boucle de dev, ne repaie le démarrage q
 npm run test:auth      # Un domaine ciblé — voir docs/TESTS.md pour la liste complète
 ```
 
-1719 tests verts au 25/11/2026, répartis par domaine dans `tests/{auth,cookies,eco,anim,security,
+Tests répartis par domaine dans `tests/{auth,cookies,eco,anim,security,
 mandates,province,common,enforcement,legal,fixtures}` — structure, scripts et méthode ("quoi lancer, et quand")
 détaillés dans `docs/TESTS.md`.
+
+Le décompte s'affiche à la fin de `npm test` et dans la CI : il n'est **plus recopié ici** (c'était la source de presque tous les conflits entre PR, et `scripts/docs-sync-check.sh` refuse sa réapparition).
 
 Fixtures réelles dans `tests/fixtures/` :
 - `Bug_ExportSorties.txt` — données anonymisées, non-régression du parsing des sorties (Guet)
