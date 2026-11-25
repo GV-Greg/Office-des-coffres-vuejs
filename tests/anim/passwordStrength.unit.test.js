@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { passwordStrength, MIN_PASSWORD_LENGTH } from '../../src/modules/passwordStrength'
 

@@ -6,6 +6,31 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #168 (Le décompte de tests n'est plus recopié dans le README)
+
+### Changed
+- **Le décompte de tests n'est plus dans le `README.md`** : il s'affiche à la fin de `npm test` et dans la CI. `docs/ARCHITECTURE.md` et `docs/TESTS.md` n'y renvoient plus.
+- **`scripts/docs-sync-check.sh`** refuse désormais tout nombre recopié (« N tests verts ») dans un `.md`, sauf `CHANGELOG.md`.
+
+### Deploy notes
+- Aucun code applicatif.
+
+## [2026-11-25] — PR #167 (Tests : 10 fichiers sans DOM en environnement `node`)
+
+### Changed
+- **10 fichiers de test** passent en `// @vitest-environment node` : `tests/anim` (5), `common/api`, `eco/inventoryCompare`, `enforcement` (2), `security/guetParser`. Trois autres candidats (`authNavigationLoader`, `entryLoader`, `eco/inventoryStore`) lisent `window` ou `localStorage` et restent en jsdom. Gain de temps réel **non mesurable** (190 s contre 186 à 207 s).
+
+### Deploy notes
+- Aucun code applicatif.
+
+## [2026-11-25] — PR #166 (Modèle de PR : la case « Promesse légale »)
+
+### Added
+- **`.github/pull_request_template.md`** (section « Promesse légale », piste 7) : même modèle que le backend (`back #114`). Une PR qui tient une promesse d'un texte légal, ou en dépend, le dit avec le n° de la PR du texte.
+
+### Deploy notes
+- Aucun code applicatif, route, `config/*.php` ni paquet.
+
 ## [2026-11-25] — PR #165 (« Mot de passe oublié » : les pages de demande et de nouveau mot de passe)
 
 ### Added

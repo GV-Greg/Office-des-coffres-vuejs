@@ -1,7 +1,7 @@
 # Tests — Office des Coffres (frontend)
 
 Référence structurelle chargée à la demande (voir `_IA/ODC/ODC-strategie-tests.md` pour le
-raisonnement complet). Décompte à jour dans `README.md`, ne pas dupliquer ici.
+raisonnement complet). Le décompte s'affiche à la fin de la suite et dans la CI (plus recopié, 25/11/2026).
 
 ## Principe : adapter la portée du test au périmètre du changement
 

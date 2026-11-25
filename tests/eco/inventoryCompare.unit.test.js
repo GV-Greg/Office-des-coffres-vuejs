@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { parseInventoryText, resolveItems } from '../../src/modules/inventoryParser'
 import { compareInventories, formatDiff, formatEcusDiff, STATUS } from '../../src/modules/inventoryCompare'
