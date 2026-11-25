@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import useDecodeActivities from '../../src/use/useDecodeActivities'
 import { http } from '../../src/api.js'
