@@ -38,7 +38,7 @@ describe('Politique — La Salle des gardes', () => {
     expect(Section3.SecurityIntro).toBeTruthy()
     expect(Section3.SecurityFields).toHaveLength(3)
     expect(Section3.SecurityNote).toBeTruthy()
-    expect(Section4.Rows).toHaveLength(9)
+    expect(Section4.Rows).toHaveLength(10) // + le jeton de réinitialisation (24/11), inséré avant les lignes de la Salle des gardes
     expect(Section4.Rows.slice(-2).map(r => r.LegalBasis)).toHaveLength(2)
     expect(Section5.Security).toBeTruthy()
     expect(Section6.SecurityHolders).toBeTruthy()

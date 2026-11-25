@@ -219,6 +219,7 @@
               <li>{{ t('Legal.Privacy.Section5.ActiveAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.InactiveAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.UnverifiedAccount') }}</li>
+              <li>{{ t('Legal.Privacy.Section5.PasswordReset') }}</li>
               <li>{{ t('Legal.Privacy.Section5.DeletedAccount') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Mandates') }}</li>
               <li>{{ t('Legal.Privacy.Section5.MineRegistry') }}</li>

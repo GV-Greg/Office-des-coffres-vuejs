@@ -6,6 +6,17 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #164 (Texte légal : la réinitialisation du mot de passe, Politique §4 et §5)
+
+### Changed
+- **Politique de confidentialité §4** (FR + EN, fil `admin/echanges/mot-de-passe-oublie/01` à `03`, textes validés par Greg) : nouvelle ligne « Jeton de réinitialisation du mot de passe (haché) » (finalité, base « exécution du contrat »). **§5** : nouveau paragraphe `PasswordReset` — jeton conservé haché, **60 minutes au plus**, effacé à l'usage, à l'expiration (nettoyage quotidien) ou à la suppression du compte ; un nouveau mot de passe déconnecte tous les appareils et un email d'avis prévient du changement. **Non substantielle** : aucun nouveau traitement ni destinataire (l'email de réinitialisation est annoncé au §3), aucun `policy:notify`.
+
+### Added
+- Garde-fou `tests/legal/privacyPasswordReset.unit.test.js` ; deux tests qui comptaient les lignes du §4 ajustés (9 → 10). 1701 tests.
+
+### Deploy notes
+- Texte seul, aucune migration, route, `config/*.php` ni paquet. ⚠️ **Les engagements du texte sont tenus par `back #113`** (`auth:clear-resets` planifié, déconnexion, email d'avis) : à merger **juste après**, pour que le texte ne reste pas en avance sur le code.
+
 ## [2026-11-24] — PR #161 (Sécurité : la Table des douanes, vue d'ensemble de la province)
 
 ### Added

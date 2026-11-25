@@ -1864,6 +1864,11 @@
             "LegalBasis": "Exécution du contrat"
           },
           {
+            "Data": "Jeton de réinitialisation du mot de passe (haché)",
+            "Purpose": "Vous permettre de choisir un nouveau mot de passe si vous l'avez oublié, grâce à un lien envoyé à votre adresse email",
+            "LegalBasis": "Exécution du contrat"
+          },
+          {
             "Data": "Personnage(s) : pseudo, ville, statut",
             "Purpose": "Faire fonctionner les outils privés liés à votre compte (à venir : Douane, Registre des mines)",
             "LegalBasis": "Exécution du contrat"
@@ -1906,6 +1911,7 @@
         "ActiveAccount": "Compte actif : vos données sont conservées tant que votre compte existe.",
         "InactiveAccount": "Compte inactif : après 1 an sans connexion, votre compte peut être supprimé automatiquement, après un email de préavis à l'adresse déclarée.",
         "UnverifiedAccount": "Compte non confirmé : si l'adresse email n'est pas confirmée, le compte est supprimé au bout de 30 jours, et au plus tôt une semaine après un rappel envoyé à cette adresse.",
+        "PasswordReset": "Réinitialisation du mot de passe : le jeton du lien reçu par email est conservé haché, 60 minutes au plus ; il est effacé dès que vous choisissez un nouveau mot de passe, à son expiration (nettoyage quotidien) ou à la suppression de votre compte. Choisir un nouveau mot de passe vous déconnecte de tous vos appareils, et un email vous prévient du changement.",
         "DeletedAccount": "Compte supprimé : suppression immédiate et définitive des données personnelles associées (adresse email, mot de passe haché, personnages liés).",
         "TechnicalLogs": "Logs techniques (accès serveur, erreurs applicatives) : conservés 12 mois maximum pour investigation d'incidents et sécurité du service, puis effacés.",
         "Mandates": "Postes déclarés : vos demandes et vos mandats, y compris terminés, refusés ou révoqués avec leur motif, sont conservés tant que votre compte existe. À la suppression de votre personnage ou de votre compte, tout est effacé SAUF l'historique des postes tenus : le nom de votre personnage, le poste, la province ou la ville, les dates et la façon dont le poste a pris fin. Ces informations sont publiques dans le jeu ; ce qui en reste est un pseudonyme et un rôle, et l'Office ne conserve plus rien qui relie ce pseudonyme à vous (ni adresse email, ni compte).",
