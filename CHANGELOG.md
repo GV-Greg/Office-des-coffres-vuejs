@@ -6,6 +6,15 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #168 (Le décompte de tests n'est plus recopié dans le README)
+
+### Changed
+- **Le décompte de tests n'est plus dans le `README.md`** : il s'affiche à la fin de `npm test` et dans la CI. `docs/ARCHITECTURE.md` et `docs/TESTS.md` n'y renvoient plus.
+- **`scripts/docs-sync-check.sh`** refuse désormais tout nombre recopié (« N tests verts ») dans un `.md`, sauf `CHANGELOG.md`.
+
+### Deploy notes
+- Aucun code applicatif.
+
 ## [2026-11-25] — PR #167 (Tests : 10 fichiers sans DOM en environnement `node`)
 
 ### Changed
