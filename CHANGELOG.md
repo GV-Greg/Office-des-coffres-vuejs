@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #169 (Plus aucun renvoi à `admin/` dans le code)
+
+### Changed
+- **Code** (commentaires, messages de test et de CI) : les chemins `admin/…` sont **retirés**, le « pourquoi » reste. Le test du budget CSS vérifie « dette connue » au lieu d'un renvoi vers la stratégie de performance.
+- **Doc** (CHANGELOG, ARCHITECTURE, README) : chemins réécrits vers `admin/content/archives/` et `admin/echanges/_clos/`.
+
+### Added
+- **`scripts/docs-sync-check.sh`** : refuse toute référence `admin/…` dans le code.
+
+### Deploy notes
+- Changements de commentaires et de documentation ; aucun comportement modifié.
+
 ## [2026-11-25] — PR #168 (Le décompte de tests n'est plus recopié dans le README)
 
 ### Changed
