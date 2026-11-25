@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-25] — PR #170 (Passe rapide des tests sous WSL : `scripts/test-fast.sh`)
+
+### Added
+- **`scripts/test-fast.sh`** et **`npm run test:fast`** : copie le dossier de travail vers le système de fichiers Linux de WSL (`~/odc-front-fast`, `rsync`, 0,5 à 1,5 s), réinstalle les dépendances seulement si `package-lock.json` a changé, puis lance Vitest (`--lint` ajoute eslint, `--lint-only` le lance seul ; les autres arguments vont à `vitest run`). Mesuré le 25/11/2026, même commit et même machine : suite complète **186 s sur `/mnt/d`, 16 à 18 s sur ext4** (÷ 10), lint 13,4 s contre 3,8 s.
+- Garde-fous : copie sous `/mnt` ou dans le dépôt refusée, dossier de travail jamais modifié, code de sortie = celui d'eslint / Vitest.
+
+### Changed
+- `docs/TESTS.md` : section « Passe rapide sous WSL » et ligne `test:fast` du tableau des scripts. **La CI ne change pas** et reste la référence.
+
+### Deploy notes
+- Aucun code applicatif, route, `config/*.php` ni paquet.
+
 ## [2026-11-25] — PR #169 (Plus aucun renvoi à `admin/` dans le code)
 
 ### Changed

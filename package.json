@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:run": "vitest run",
+    "test:fast": "bash scripts/test-fast.sh",
     "test:changed": "vitest run --changed",
     "test:logic": "vitest run unit.test",
     "test:auth": "vitest run tests/auth",
