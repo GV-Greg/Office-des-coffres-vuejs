@@ -148,7 +148,7 @@ Namespaces : `Cookies`, `Common`, `Profil`, `Validation`, `Welcome`, `Home`, `No
 
 ## Tests (`frontend/tests/`)
 
-Décompte à jour dans `README.md` (source unique). Structure dans `docs/TESTS.md` : dossier = domaine (`auth/`, `cookies/`, `eco/`, `legal/`, `mandates/`, `province/`, `security/`, `common/`, `enforcement/`, `fixtures/`). Toute vue `useI18n()` → plugin `createI18n({ legacy: false })` dans `global.plugins` du test.
+Le décompte s'affiche à la fin de la suite et dans la CI : **plus recopié** dans le `README.md` (25/11/2026, `scripts/docs-sync-check.sh` le refuse). Structure dans `docs/TESTS.md` : dossier = domaine (`auth/`, `cookies/`, `eco/`, `legal/`, `mandates/`, `province/`, `security/`, `common/`, `enforcement/`, `fixtures/`). Toute vue `useI18n()` → plugin `createI18n({ legacy: false })` dans `global.plugins` du test.
 
 ## Contraintes projet
 
