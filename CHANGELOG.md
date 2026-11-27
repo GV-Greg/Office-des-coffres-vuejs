@@ -6,6 +6,14 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-27] — PR #172 (Aide de la Salle des gardes, annonce de la signature des exports)
+
+### Added
+- Registre des améliorations : les exports sont signés de l'Office et gardent repliée la copie d'origine (entrée publique, annoncée sur Discord).
+
+### Changed
+- L'aide du Relevé de guet dit que le message emporte, replié, tout ce qui a été collé. La phrase « Un bilan n'est jamais public » quitte les aides du Relevé et du Registre de douane (FR et EN) ; la politique de confidentialité est inchangée.
+
 ## [2026-11-27] — PR #171 (Signature des exports BBCode et collage d'origine en spoiler)
 
 ### Added
