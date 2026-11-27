@@ -148,6 +148,26 @@ describe('Bloc « Postes »', () => {
     expect(wrapper.find('[data-testid="request-office"]').exists()).toBe(true)
   })
 
+  // 27/11/2026 : fin passée, mais poste conservé en attendant le successeur — le serveur le dit (`kept_until`).
+  it.each([
+    ['fr', 'Poste conservé', 'poste conservé jusqu\'à l\'arrivée du successeur, au plus tard le'],
+    ['en', 'Office kept', 'office kept until the successor arrives'],
+  ])('%s : un poste conservé reste en vue, avec la date de fin et la date limite', (locale, badge, sentence) => {
+    const kept = mandate({ status: 'expired', renewable: false, kept_until: '2026-06-27T02:00:00+00:00' })
+    const wrapper = mountBlock({ locale, mandates: [kept] })
+
+    expect(wrapper.find('[data-testid="mandate-status"]').text()).toBe(badge)
+    expect(wrapper.find('[data-testid="mandate-kept"]').text()).toContain(sentence)
+    expect(wrapper.find('[data-testid="mandate-kept"]').text()).toContain('27')
+  })
+
+  it('sans poste conservé, un mandat terminé et non renouvelable part dans les mandats passés', () => {
+    const wrapper = mountBlock({ mandates: [mandate({ status: 'expired', renewable: false, kept_until: null })] })
+
+    expect(wrapper.find('[data-testid="mandate-kept"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="mandate-row"]').exists()).toBe(false)
+  })
+
   it('« Demander un poste » suit can_request de l\'API, sans recoder la règle', () => {
     const blocked = { mayor: { can_request: false, blocked_by: 'active' }, council: { can_request: false, blocked_by: 'pending' } }
     expect(mountBlock({ requestable: blocked }).find('[data-testid="request-office"]').exists()).toBe(false)

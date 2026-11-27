@@ -6,6 +6,21 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-27] — PR #175 (Profil : poste conservé en attendant le successeur)
+
+### Added
+- Profil : un mandat dont la fin est passée mais dont le poste est conservé reste en vue, avec « Poste conservé » et la date limite (FR et EN), d'après `kept_until` servi par l'API.
+
+## [2026-11-27] — PR #174 (Aide du Registre des mines : un prix se corrige jusqu'au terme du mandat)
+
+### Changed
+- L'aide du Registre des mines (FR et EN) ne promet plus de corriger un prix jusqu'à 7 jours après le mandat : jusqu'à son terme.
+
+## [2026-11-27] — PR #173 (Politique : un conseiller reste en poste jusqu'à son successeur)
+
+### Changed
+- Politique de confidentialité (FR et EN) : §6, un conseiller reste en poste au terme de son mandat tant qu'aucun successeur n'est connu, 30 jours au plus, sans pouvoir modifier un prix ; §5, les prix des mines se verrouillent au terme du mandat (plus de délai de 7 jours). Date de la politique : 27/11/2026.
+
 ## [2026-11-27] — PR #172 (Aide de la Salle des gardes, annonce de la signature des exports)
 
 ### Added

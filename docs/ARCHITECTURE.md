@@ -116,7 +116,7 @@ Les deux guards sont **exportés** nommément (testables dans `tests/auth/`). `r
 - **`DeleteAccountModal.vue`** — deux étapes (art. 17 RGPD), redemande le mot de passe. Émet `confirm(password, { onError })`.
 - **`HelpModal.vue`** — aide contextuelle générique (props `show`/`title`/`steps`).
 - **`CityCascadeSelect.vue`** — cascade royaume→province→ville. Prop `stopAt="province"`.
-- **`CharacterMandates.vue`** — mandats du Profil (badges lisibles sans couleur, actions, historique replié). `MandateRequestModal`, `DeclareOfficeModal` (focus piégé via `useDialogFocus`).
+- **`CharacterMandates.vue`** — mandats du Profil (badges lisibles sans couleur, actions, historique replié). Un mandat terminé dont le poste est **conservé** en attendant le successeur (`kept_until`, dit par le serveur) reste en vue avec sa date limite ; le site ne calcule rien. `MandateRequestModal`, `DeclareOfficeModal` (focus piégé via `useDialogFocus`).
 - **`NavMenu.vue`** — menu circulaire X3 (anneau laiton, biseau, 5 éléments). Couleurs dans `navMenuPalette.js` (source unique). `aria-current="page"` exact pour Accueil. 88 px (72 sous `tablet`).
 - **`SelectorMenu.vue`** = `SelectorTheme` + `SelectorLanguage`.
 

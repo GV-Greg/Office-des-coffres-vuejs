@@ -16,7 +16,7 @@
   // à chaque modification substantielle (Legal.Privacy.Section10 / draft).
   // Date de MISE EN LIGNE de la dernière modification : la page « Vos données » (front #90), qui lui
   // ajoute une ligne par outil (§3) — même date que DataPageView.vue.
-  const LAST_UPDATED = '2026-11-24'
+  const LAST_UPDATED = '2026-11-27'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
@@ -232,6 +232,7 @@
             <ul class="list-disc list-inside space-y-2">
               <li>{{ t('Legal.Privacy.Section6.Yourself') }}</li>
               <li>{{ t('Legal.Privacy.Section6.Editor') }}</li>
+              <li>{{ t('Legal.Privacy.Section6.CouncilOffices') }}</li>
               <li>{{ t('Legal.Privacy.Section6.ProvincePlayers') }}</li>
               <!-- Avant « Personne d'autre en dehors de ce qui précède », qui clôt l'énumération. -->
               <li>{{ t('Legal.Privacy.Section6.MineRegistryHolders') }}</li>
