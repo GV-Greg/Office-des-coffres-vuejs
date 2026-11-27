@@ -679,12 +679,18 @@
       "prices": {
         "Name": "Prices & Wages",
         "Description": "View and manage the province's price list, so each report is calculated at the fair rate of the day."
+      },
+      "births": {
+        "Name": "Birth Register",
+        "Description": "Before opening the grain sacks, count what your births will cost and avoid waste."
       }
-    }
+    },
+    "BirthsLink": "Birth Register"
   },
   "EconomyMenu": {
     "MinesGroup": "Mines",
-    "InventoriesGroup": "Inventories"
+    "InventoriesGroup": "Inventories",
+    "FinancesGroup": "Finances"
   },
   "EconomyInventoryRegistry": {
     "PageTitle": "Stock Registry: {name}",
@@ -901,6 +907,52 @@
     "HelpStep3": "The comparison shows by itself: ▲ increased, ▼ decreased, nothing when the quantity is the same. New items carry a badge, disappeared ones are struck through in a section of their own.",
     "HelpStep4": "If you hold an office, choose the level (personal, city or province) at the top of the page so that \"Load\" brings back the right inventory.",
     "HelpStep5": "Click \"Entrust it to the scribe\" to copy the annotated BBCode, ready to paste on the forum. Nothing is saved."
+  },
+  "EconomyBirths": {
+    "PageTitle": "The Birth Register",
+    "Intro": "Before opening the grain sacks, count what each birth will cost the county.",
+    "SpeciesLabel": "Species",
+    "IngredientLabel": "Fed with",
+    "QuantityLabel": "Number of animals",
+    "Species": {
+      "cow": "Cow",
+      "goat": "Goat",
+      "sheep": "Sheep",
+      "ewe": "Ewe",
+      "pig": "Pig",
+      "bees": "Bees"
+    },
+    "Ingredients": {
+      "maize": "Maize",
+      "wheat": "Wheat",
+      "marjoram": "Marjoram",
+      "elderberry": "Black elderberry"
+    },
+    "Units": {
+      "maize": "sacks of maize",
+      "wheat": "sacks of wheat",
+      "marjoram": "sprigs of marjoram",
+      "elderberry": "black elderberries"
+    },
+    "UnitsOne": {
+      "maize": "sack of maize",
+      "wheat": "sack of wheat"
+    },
+    "Births": "{n} birth | {n} births",
+    "Lost": "{waste} lost",
+    "NothingLost": "nothing lost",
+    "Summary": "For {n} birth, take out {real} {unit}. | For {n} births, take out {real} {unit}.",
+    "Theoretical": "Exact cost: {amount}",
+    "Price": "Paid by the breeder: {price} ecus per animal",
+    "Waste": "Beware, you will waste {waste} {unit} for {n} birth. | Beware, you will waste {waste} {unit} for {n} births.",
+    "NoWaste": "Nothing is lost.",
+    "HelpButton": "How do I read the Birth Register?",
+    "HelpTitle": "The Birth Register",
+    "HelpPurpose": "The Birth Register works out what animals cost before you have them born in the game.",
+    "HelpOverview": "The game takes a whole number of sacks, sprigs or berries, rounded up: anything above is lost. Nothing is recorded.",
+    "HelpStep1": "Choose the species, then what feeds it: one ingredient at a time.",
+    "HelpStep2": "Choose the number of animals, from 1 to 4.",
+    "HelpStep3": "Read what to set aside, and compare the four batches. The sack drawn is the last one you open: its hatched part is lost."
   },
   "EconomyMines": {
     "Title": "Mines report",

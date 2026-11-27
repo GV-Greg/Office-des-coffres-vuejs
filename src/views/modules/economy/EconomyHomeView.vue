@@ -13,7 +13,7 @@ const stockRegistryAccess = inject('economyStockRegistryAccess', null)
 // `past_mandates` : un ancien titulaire relit ses bilans en lecture seule (fil bilans-passes-mines).
 const canAccessMandateTools = computed(() => !!(access?.value?.read || access?.value?.write || (access?.value?.past_mandates?.length ?? 0) > 0))
 
-// Deux groupes, comme le menu de gauche : Mines, puis Inventaires. Un groupe sans carte n'est pas affiché.
+// Les mêmes groupes que le menu de gauche : Mines, Inventaires, puis Finances. Un groupe sans carte n'est pas affiché.
 // Un groupe d'une seule carte n'occupe qu'une colonne ; deux cartes ou plus, deux colonnes.
 const columnsOf = group => Math.min(group.items.length, 2)
 
@@ -66,9 +66,20 @@ const groups = computed(() => {
     })
   }
 
+  const finances = [
+    {
+      key: 'births',
+      title: t('Economy.Cards.births.Name'),
+      description: t('Economy.Cards.births.Description'),
+      to: { name: 'economy-births' },
+      icon: 'gi-cow',
+    },
+  ]
+
   return [
     { key: 'mines', title: t('EconomyMenu.MinesGroup'), items: mines },
     { key: 'inventories', title: t('EconomyMenu.InventoriesGroup'), items: inventories },
+    { key: 'finances', title: t('EconomyMenu.FinancesGroup'), items: finances },
   ].filter(g => g.items.length > 0)
 })
 </script>

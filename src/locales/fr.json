@@ -679,12 +679,18 @@
       "prices": {
         "Name": "Prix et salaires",
         "Description": "Consultez et tenez à jour le barème des prix de la province, pour que chaque bilan soit calculé au juste tarif."
+      },
+      "births": {
+        "Name": "Livre des naissances",
+        "Description": "Avant d'ouvrir les sacs de grain, comptez ce que coûtent vos naissances et évitez le gaspillage."
       }
-    }
+    },
+    "BirthsLink": "Livre des naissances"
   },
   "EconomyMenu": {
     "MinesGroup": "Mines",
-    "InventoriesGroup": "Inventaires"
+    "InventoriesGroup": "Inventaires",
+    "FinancesGroup": "Finances"
   },
   "EconomyInventoryRegistry": {
     "PageTitle": "Registre des stocks : {name}",
@@ -901,6 +907,52 @@
     "HelpStep3": "La comparaison s'affiche d'elle-même : ▲ en hausse, ▼ en baisse, rien si la quantité est identique. Les nouveaux articles portent un badge, les disparus sont barrés dans une section à part.",
     "HelpStep4": "Si tu tiens un poste, choisis le niveau (personnel, ville ou province) en haut de la page pour que « Récupérer » reprenne le bon inventaire.",
     "HelpStep5": "Clique sur « Confier au scribe » pour copier le BBCode annoté, prêt à coller sur le forum. Rien n'est enregistré."
+  },
+  "EconomyBirths": {
+    "PageTitle": "Le Livre des naissances",
+    "Intro": "Avant d'ouvrir les sacs de grain, comptez ce que chaque naissance coûtera au comté.",
+    "SpeciesLabel": "Espèce",
+    "IngredientLabel": "Nourri avec",
+    "QuantityLabel": "Nombre d'animaux",
+    "Species": {
+      "cow": "Vache",
+      "goat": "Chèvre",
+      "sheep": "Mouton",
+      "ewe": "Brebis",
+      "pig": "Cochon",
+      "bees": "Abeilles"
+    },
+    "Ingredients": {
+      "maize": "Maïs",
+      "wheat": "Blé",
+      "marjoram": "Marjolaine",
+      "elderberry": "Sureau noir"
+    },
+    "Units": {
+      "maize": "sacs de maïs",
+      "wheat": "sacs de blé",
+      "marjoram": "brins de marjolaine",
+      "elderberry": "baies de sureau noir"
+    },
+    "UnitsOne": {
+      "maize": "sac de maïs",
+      "wheat": "sac de blé"
+    },
+    "Births": "{n} naissance | {n} naissances",
+    "Lost": "{waste} perdu",
+    "NothingLost": "rien de perdu",
+    "Summary": "Pour {n} naissance, sortez {real} {unit}. | Pour {n} naissances, sortez {real} {unit}.",
+    "Theoretical": "Coût exact : {amount}",
+    "Price": "Prix payé par l'éleveur : {price} écus l'animal",
+    "Waste": "Attention, vous allez gaspiller {waste} {unit} pour {n} naissance. | Attention, vous allez gaspiller {waste} {unit} pour {n} naissances.",
+    "NoWaste": "Rien ne se perd.",
+    "HelpButton": "Comment lire le Livre des naissances ?",
+    "HelpTitle": "Le Livre des naissances",
+    "HelpPurpose": "Le Livre des naissances calcule ce que coûtent les animaux avant de les faire naître en jeu.",
+    "HelpOverview": "Le jeu prend un nombre entier de sacs, de brins ou de baies, arrondi au supérieur : ce qui dépasse est perdu. Rien n'est enregistré.",
+    "HelpStep1": "Choisissez l'espèce, puis ce qui la nourrit : un seul ingrédient à la fois.",
+    "HelpStep2": "Choisissez le nombre d'animaux, de 1 à 4.",
+    "HelpStep3": "Lisez ce qu'il faut prévoir, et comparez les quatre lots. Le sac dessiné est le dernier que vous ouvrez : sa partie hachurée est perdue."
   },
   "EconomyMines": {
     "Title": "Bilan des mines",
