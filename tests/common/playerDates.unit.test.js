@@ -11,6 +11,7 @@ describe('playerDates — un calendrier par champ', () => {
       history_started_at: 'game', history_ended_at: 'game',
       price_effective_from: 'game', price_created_at: 'game', price_updated_at: 'game',
       inventory_snapshot_date: 'game',
+      livestock_birth_day: 'game', livestock_price_from: 'game', livestock_mandate_from: 'game', livestock_mandate_until: 'game', // Livre des naissances
       mine_mandate_from: 'game', mine_mandate_until: 'game', customs_report_day: 'game', customs_list_added_on: 'game', // Registre de douane : jour d'un bilan, jour d'ajout d'une entrée de liste
       customs_requested_at: 'real', customs_in_office_from: 'real', customs_last_report_at: 'real', customs_lapses_at: 'real', // douaniers : actes de l'Office
       processed_at: 'real', revoked_at: 'real',

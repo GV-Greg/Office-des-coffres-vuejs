@@ -426,7 +426,7 @@
     "HelpStep5": "Pour saisir un nouveau bilan, « Saisir un relevé » (si votre titre le permet) mène au Relevé de guet. « Confier au scribe » exporte le bilan affiché en BBCode : le publier sur un forum le rend public.",
     "Registry": {
       "Title": "Registre de douane",
-        "Existing": "Un relevé du {date} existe déjà pour cette ville.",
+      "Existing": "Un relevé du {date} existe déjà pour cette ville.",
       "ReportOf": "Relevé du {date}",
       "Save": "Inscrire au registre",
       "Sealing": "Inscription…",
@@ -951,10 +951,48 @@
     "HelpButton": "Comment lire le Livre des naissances ?",
     "HelpTitle": "Le Livre des naissances",
     "HelpPurpose": "Le Livre des naissances calcule ce que coûtent les animaux avant de les faire naître en jeu.",
-    "HelpOverview": "Le jeu prend un nombre entier de sacs, de brins ou de baies, arrondi au supérieur : ce qui dépasse est perdu. Rien n'est enregistré.",
+    "HelpOverview": "Le jeu prend un nombre entier de sacs, de brins ou de baies, arrondi au supérieur : ce qui dépasse est perdu. Sans poste de bailli, rien n'est enregistré.",
     "HelpStep1": "Choisissez l'espèce, puis ce qui la nourrit : un seul ingrédient à la fois.",
     "HelpStep2": "Choisissez le nombre d'animaux, de 1 à 4.",
-    "HelpStep3": "Lisez ce qu'il faut prévoir, et comparez les quatre lots. Le sac dessiné est le dernier que vous ouvrez : sa partie hachurée est perdue."
+    "HelpStep3": "Lisez ce qu'il faut prévoir, et comparez les quatre lots. Le sac dessiné est le dernier que vous ouvrez : sa partie hachurée est perdue.",
+    "Tabs": {
+      "Label": "Pages du Livre des naissances",
+      "calculator": "Calculer",
+      "history": "Historique"
+    },
+    "NotConfigured": "Aucune espèce animale n'est configurée pour la province : {province}.",
+    "Configure": "Définir les espèces dans Mon bureau",
+    "Record": {
+      "Day": "Née le",
+      "Save": "Inscrire la naissance",
+      "Saved": "Naissance inscrite au Livre.",
+      "Done": "Inscrite.",
+      "Cost": "Coût : {cost} écus",
+      "NoPrice": "Aucun prix de la nourriture à cette date."
+    },
+    "History": {
+      "Title": "Les naissances du comté",
+      "TitleFor": "Les naissances : {province}",
+      "NotReader": "Cet historique est réservé au bailli et au dirigeant de la province.",
+      "Mandate": "Mandat",
+      "CurrentMandate": "Mandat en cours",
+      "PastMandate": "{province}, du {from} au {to}",
+      "ReadOnly": "Mandat terminé, lecture seule",
+      "TotalTitle": "Nourriture dépensée",
+      "Ecus": "{amount} écus",
+      "Animals": "pour {n} animal né | pour {n} animaux nés",
+      "Partial": "Total partiel : {n} naissance sans prix. | Total partiel : {n} naissances sans prix.",
+      "PricesSince": "Prix de la nourriture depuis le {date}, en écus",
+      "NoPrices": "Aucun prix de la nourriture inscrit.",
+      "ListTitle": "Les naissances inscrites",
+      "Empty": "Aucune naissance inscrite.",
+      "Unpriced": "sans prix",
+      "Withdraw": "Retirer",
+      "Keep": "Garder",
+      "ConfirmWithdraw": "Retirer cette naissance du Livre ?",
+      "Withdrawn": "Naissance retirée du Livre."
+    },
+    "HelpStep4": "Bailli en poste : « Inscrire la naissance » l'ajoute au Livre de la province ; elle se retire le jour même depuis l'historique. Les espèces et les prix de la nourriture se règlent dans Mon bureau."
   },
   "EconomyMines": {
     "Title": "Bilan des mines",
@@ -2145,7 +2183,25 @@
     "ManagePrices": "Modifier les prix",
     "PricesHistory": "Historique des prix",
     "CatPersoPanel": "Catégories d'inventaire — Personnel",
-    "TabOfficers": "Douaniers"
+    "TabOfficers": "Douaniers",
+    "TabLivestock": "Cheptel",
+    "Livestock": {
+      "Title": "Cheptel : {province}",
+      "SpeciesTitle": "Espèces élevées dans la province",
+      "SpeciesDesc": "Le Livre des naissances ne propose que celles que vous cochez.",
+      "Save": "Enregistrer",
+      "SpeciesSaved": "Espèces de la province enregistrées.",
+      "PricesTitle": "Prix de la nourriture, en écus l’unité",
+      "PricesDesc": "Un jeu de prix vaut à partir de sa date, jusqu’au suivant. Laissez vide ce que la province n’achète pas.",
+      "PricesReadOnly": "Les prix sont tenus par le bailli, pendant son mandat.",
+      "EffectiveFrom": "À partir du",
+      "AddPrice": "Ajouter ces prix",
+      "Update": "Mettre à jour",
+      "Cancel": "Annuler",
+      "Edit": "Corriger",
+      "PriceSaved": "Prix de la nourriture enregistrés.",
+      "NoPrices": "Aucun prix inscrit."
+    }
   },
   "Chest": {
     "Opening": "Ouverture du coffre…",

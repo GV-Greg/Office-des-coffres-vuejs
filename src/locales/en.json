@@ -426,7 +426,7 @@
     "HelpStep5": "To enter a new report, \"Enter a report\" (if your title allows it) leads to the Watch Report. \"Entrust to the scribe\" exports the displayed report as BBCode: publishing it on a forum makes it public.",
     "Registry": {
       "Title": "Customs Register",
-        "Existing": "A report for {date} already exists for this town.",
+      "Existing": "A report for {date} already exists for this town.",
       "ReportOf": "Report of {date}",
       "Save": "Record in the register",
       "Sealing": "Recording…",
@@ -951,10 +951,48 @@
     "HelpButton": "How do I read the Birth Register?",
     "HelpTitle": "The Birth Register",
     "HelpPurpose": "The Birth Register works out what animals cost before you have them born in the game.",
-    "HelpOverview": "The game takes a whole number of sacks, sprigs or berries, rounded up: anything above is lost. Nothing is recorded.",
+    "HelpOverview": "The game takes a whole number of sacks, sprigs or berries, rounded up: anything left over is lost. Without the Sheriff’s office, nothing is recorded.",
     "HelpStep1": "Choose the species, then what feeds it: one ingredient at a time.",
     "HelpStep2": "Choose the number of animals, from 1 to 4.",
-    "HelpStep3": "Read what to set aside, and compare the four batches. The sack drawn is the last one you open: its hatched part is lost."
+    "HelpStep3": "Read what to set aside, and compare the four batches. The sack drawn is the last one you open: its hatched part is lost.",
+    "Tabs": {
+      "Label": "Birth Register pages",
+      "calculator": "Calculate",
+      "history": "History"
+    },
+    "NotConfigured": "No animal species is set up for the province: {province}.",
+    "Configure": "Set the species in My office",
+    "Record": {
+      "Day": "Born on",
+      "Save": "Record the birth",
+      "Saved": "Birth recorded in the Register.",
+      "Done": "Recorded.",
+      "Cost": "Cost: {cost} écus",
+      "NoPrice": "No food price on this date."
+    },
+    "History": {
+      "Title": "The county's births",
+      "TitleFor": "Births: {province}",
+      "NotReader": "This history is reserved for the province's Sheriff and leader.",
+      "Mandate": "Term",
+      "CurrentMandate": "Current term",
+      "PastMandate": "{province}, from {from} to {to}",
+      "ReadOnly": "Ended term, read only",
+      "TotalTitle": "Food spent",
+      "Ecus": "{amount} écus",
+      "Animals": "for {n} animal born | for {n} animals born",
+      "Partial": "Partial total: {n} birth without a price. | Partial total: {n} births without a price.",
+      "PricesSince": "Food prices since {date}, in écus",
+      "NoPrices": "No food price recorded.",
+      "ListTitle": "Recorded births",
+      "Empty": "No birth recorded.",
+      "Unpriced": "no price",
+      "Withdraw": "Withdraw",
+      "Keep": "Keep",
+      "ConfirmWithdraw": "Withdraw this birth from the Register?",
+      "Withdrawn": "Birth withdrawn from the Register."
+    },
+    "HelpStep4": "Sheriff in office: “Record the birth” adds it to the province’s Register; it can be withdrawn the same day from the history. Species and food prices are set in My office."
   },
   "EconomyMines": {
     "Title": "Mines report",
@@ -2145,7 +2183,25 @@
     "ManagePrices": "Edit prices",
     "PricesHistory": "Price history",
     "CatPersoPanel": "Inventory categories — Personal",
-    "TabOfficers": "Customs officers"
+    "TabOfficers": "Customs officers",
+    "TabLivestock": "Livestock",
+    "Livestock": {
+      "Title": "Livestock: {province}",
+      "SpeciesTitle": "Species raised in the province",
+      "SpeciesDesc": "The Birth Register only offers the ones you tick.",
+      "Save": "Save",
+      "SpeciesSaved": "Province species saved.",
+      "PricesTitle": "Food prices, in écus per unit",
+      "PricesDesc": "A price set applies from its date until the next one. Leave empty what the province does not buy.",
+      "PricesReadOnly": "Prices are kept by the Sheriff, during their term.",
+      "EffectiveFrom": "From",
+      "AddPrice": "Add these prices",
+      "Update": "Update",
+      "Cancel": "Cancel",
+      "Edit": "Correct",
+      "PriceSaved": "Food prices saved.",
+      "NoPrices": "No price recorded."
+    }
   },
   "Chest": {
     "Opening": "Opening the chest…",

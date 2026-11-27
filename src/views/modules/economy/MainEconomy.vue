@@ -17,7 +17,7 @@
   const showBalanceHelp = ref(false)
   const showStockRegistryHelp = ref(false)
   const showBirthsHelp = ref(false)
-  const birthsHelpSteps = computed(() => [1, 2, 3].map(n => t(`EconomyBirths.HelpStep${n}`)))
+  const birthsHelpSteps = computed(() => [1, 2, 3, 4].map(n => t(`EconomyBirths.HelpStep${n}`)))
   const inventoryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventory.HelpStep${n}`)))
   const balanceHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyBalance.HelpStep${n}`)))
   const stockRegistryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventoryRegistry.HelpStep${n}`)))

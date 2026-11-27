@@ -11,6 +11,8 @@ import { provinceHistoryToBBcode } from '@/modules/provinceBBcode'
 import useMineAccess from '@/use/useMineAccess.js'
 import useMinePrices from '@/use/useMinePrices.js'
 import useCustomsOfficer from '@/use/useCustomsOfficer'
+import useLivestock from '@/use/useLivestock'
+import LivestockOfficeSection from '@/components/livestock/LivestockOfficeSection.vue'
 import NavMenu from '@/components/NavMenu.vue'
 import MinePricesModal from '@/components/mines/MinePricesModal.vue'
 import InventoryLevelsAccordion from '@/components/economy/InventoryLevelsAccordion.vue'
@@ -90,19 +92,26 @@ const onPricesSaved = () => {
 const { state: officerState, ready: officerReady } = useCustomsOfficer(() => character.value?.id ?? null)
 const canValidateOfficers = computed(() => officerReady.value && !!officerState.value?.decider)
 
+// --- Cheptel (Livre des naissances) : espèces de la province et prix de la nourriture, pour qui le serveur le dit ---
+const { book: livestock, ready: livestockReady, refresh: refreshLivestock, saveSpecies, createPrice, updatePrice } = useLivestock(() => character.value?.id ?? null)
+const canSetLivestock = computed(() => livestockReady.value && !!livestock.value?.can_configure)
+const livestockApi = { saveSpecies, createPrice, updatePrice, refresh: refreshLivestock }
+
 // --- Sections (onglets) ---
-// Une section à la fois, choisie par l'adresse : /app/mon-bureau[/province|prix|douaniers|categories]. « Prix » n'existe que pour qui
-// gère les prix d'une province, « Douaniers » que pour qui valide les demandes de douanier. Remplace les panneaux repliables : la page
+// Une section à la fois, choisie par l'adresse : /app/mon-bureau[/province|prix|cheptel|douaniers|categories]. « Prix » n'existe que
+// pour qui gère les prix d'une province, « Cheptel » que pour le bailli et le dirigeant, « Douaniers » que pour qui valide les demandes. Remplace les panneaux repliables : la page
 // n'empile plus des sujets indépendants.
 const sections = computed(() => [
   { key: 'province', label: t('MonBureau.TabProvince'), icon: 'gi-tower-flag', color: 'odc--violet' },
   ...(pricesProvince.value ? [{ key: 'prix', label: t('MonBureau.TabPrices'), icon: 'fa-coins', color: 'odc--gold' }] : []),
+  ...(canSetLivestock.value ? [{ key: 'cheptel', label: t('MonBureau.TabLivestock'), icon: 'gi-cow', color: 'odc--gold' }] : []),
   ...(canValidateOfficers.value ? [{ key: 'douaniers', label: t('MonBureau.TabOfficers'), icon: 'fa-user-shield', color: 'odc--violet' }] : []),
   { key: 'categories', label: t('MonBureau.TabCategories'), icon: 'fa-tag', color: 'odc--gold' },
 ])
 const activeSection = computed(() => {
   const asked = route.params.section
   if (asked === 'prix') return accessReady.value && !pricesProvince.value ? 'province' : 'prix'
+  if (asked === 'cheptel') return livestockReady.value && !canSetLivestock.value ? 'province' : 'cheptel'
   if (asked === 'douaniers') return officerReady.value && !canValidateOfficers.value ? 'province' : 'douaniers'
   return asked === 'categories' ? 'categories' : 'province'
 })
@@ -333,6 +342,20 @@ const activeSection = computed(() => {
                 {{ t('MonBureau.PricesHistory') }}
               </RouterLink>
             </div>
+          </div>
+        </section>
+
+        <!-- Cheptel : espèces élevées et prix de la nourriture (Livre des naissances). -->
+        <section v-if="activeSection === 'cheptel' && canSetLivestock" class="w-full max-w-4xl mx-auto min-w-0 rounded-xl bg-white shadow-md overflow-hidden" aria-labelledby="panel-livestock">
+          <div class="flex items-center gap-2 px-4 pt-3">
+            <v-icon name="gi-cow" class="text-yellow-700 shrink-0" aria-hidden="true" />
+            <h2 id="panel-livestock" class="flex-1 !mt-0 !mb-0 !text-left text-base font-bold text-yellow-800 dark:text-yellow-800 leading-tight">
+              {{ t('MonBureau.Livestock.Title', { province: livestock.province.name }) }}
+            </h2>
+            <RouterLink :to="{ name: 'economy-births' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate">{{ t('Economy.BirthsLink') }}</RouterLink>
+          </div>
+          <div class="px-4 pb-3 pt-2">
+            <LivestockOfficeSection :book="livestock" :api="livestockApi" />
           </div>
         </section>
 

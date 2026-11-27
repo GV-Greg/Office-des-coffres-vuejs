@@ -1,13 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
+import { createTestingPinia } from '@pinia/testing'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import EconomyBirths from '../../src/views/modules/economy/EconomyBirths.vue'
 import { http } from '../../src/api.js'
 
-// Le Livre des naissances : un calculateur public. Il ne stocke rien et n'appelle pas le serveur.
+// Le Livre des naissances sans compte : un calculateur public, qui ne stocke rien et n'appelle pas le serveur (avec un poste : livestockPages.test.js).
 vi.mock('../../src/api.js', () => ({ http: { get: vi.fn(), post: vi.fn(), put: vi.fn() } }))
 
 const localesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/locales')
@@ -15,7 +16,10 @@ const fr = JSON.parse(readFileSync(resolve(localesDir, 'fr.json'), 'utf-8'))
 const en = JSON.parse(readFileSync(resolve(localesDir, 'en.json'), 'utf-8'))
 
 const mountPage = (locale = 'fr') => mount(EconomyBirths, {
-  global: { plugins: [createI18n({ legacy: false, locale, messages: { fr, en } })], stubs: { 'v-icon': true } },
+  global: {
+    plugins: [createI18n({ legacy: false, locale, messages: { fr, en } }), createTestingPinia({ createSpy: vi.fn, stubActions: false })],
+    stubs: { 'v-icon': true, RouterLink: true },
+  },
 })
 const find = (w, id) => w.find(`[data-testid="${id}"]`)
 const click = (w, id) => find(w, id).trigger('click')

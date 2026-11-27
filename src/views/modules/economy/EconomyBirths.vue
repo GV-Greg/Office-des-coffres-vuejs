@@ -1,17 +1,31 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router'
 import { SPECIES, BATCH_SIZES, ingredientsOf, speciesByKey, birthCost } from '@/modules/birthCosts'
+import { useAuthStore } from '@/stores/authStore'
+import useLivestock from '@/use/useLivestock'
+import LivestockTabs from '@/components/livestock/LivestockTabs.vue'
+import BirthRecordBar from '@/components/livestock/BirthRecordBar.vue'
+import AccessLoader from '@/components/loading/AccessLoader.vue'
 
 /*
   Le Livre des naissances (partie Finances de la Salle des comptes) : un calculateur PUBLIC. On choisit une espèce, UN ingrédient et un
-  nombre d'animaux ; l'Office dit ce qu'il faut prévoir et ce qui sera perdu. 🔴 Rien n'est enregistré, ni envoyé : tout est calculé
-  dans le navigateur à partir des coûts fixes du jeu (modules/birthCosts.js).
+  nombre d'animaux ; l'Office dit ce qu'il faut prévoir et ce qui sera perdu. Les coûts, fixés par le jeu, sont calculés dans le
+  navigateur (modules/birthCosts.js). 🔴 Sans compte ou sans poste, rien n'est envoyé ni enregistré.
+  Le bailli et le dirigeant n'y voient que les espèces élevées dans leur province (réglées dans Mon bureau) ; le bailli y inscrit
+  les naissances. ⚠️ Qui peut quoi : le serveur le dit.
 
   Mise en page : tout tient sans défiler. Les quatre lots sont côte à côte — la colonne EST le choix du nombre d'animaux — et chacun
   montre son dernier sac, rempli de ce qui sert : la part hachurée est perdue.
 */
 const { t, locale } = useI18n()
+
+const authStore = useAuthStore()
+const { book, ready, refresh, record } = useLivestock(() => (authStore.isLoggedIn ? authStore.activeCharacter?.id ?? null : null))
+const province = computed(() => book.value?.province ?? null)
+const canReadHistory = computed(() => !!province.value || (book.value?.past_mandates?.length ?? 0) > 0)
+const offered = computed(() => (province.value ? SPECIES.filter(s => book.value.species?.includes(s.key)) : SPECIES))
 
 const species = ref(SPECIES[0].key)
 const ingredient = ref(ingredientsOf(SPECIES[0].key)[0])
@@ -24,6 +38,11 @@ function chooseSpecies(key) {
   species.value = key
   if (!ingredientsOf(key).includes(ingredient.value)) ingredient.value = ingredientsOf(key)[0]
 }
+
+// La liste de la province arrive après la page : l'espèce choisie doit en faire partie.
+watch(offered, list => {
+  if (list.length && !list.some(s => s.key === species.value)) chooseSpecies(list[0].key)
+}, { immediate: true })
 
 const batches = computed(() => BATCH_SIZES.map(n => ({ n, ...birthCost(species.value, ingredient.value, n) })))
 const result = computed(() => batches.value[quantity.value - 1])
@@ -42,17 +61,34 @@ const level = waste => 22 + 64 * waste
 
 <template>
   <div class="w-full max-w-5xl mx-auto">
-    <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
-      <h2 class="!mt-0 !mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyBirths.PageTitle') }}</h2>
-      <p class="!m-0 text-sm italic text-slate-600 dark:text-slate-600">{{ t('EconomyBirths.Intro') }}</p>
+    <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-slate-300 pb-2">
+      <div class="min-w-0">
+        <h2 class="!mt-0 !mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyBirths.PageTitle') }}</h2>
+        <p class="!m-0 text-sm italic text-slate-600 dark:text-slate-600">{{ t('EconomyBirths.Intro') }}</p>
+      </div>
+      <LivestockTabs v-if="canReadHistory" current="calculator" />
     </header>
+
+    <!-- Connecté : on attend de savoir quelles espèces montrer, plutôt que d'en retirer sous les yeux. -->
+    <AccessLoader v-if="!ready" class="mt-4" top />
+
+    <!-- La province n'a réglé aucune espèce : pas de calculateur, le chemin pour les régler. -->
+    <div v-else-if="!offered.length" class="mt-4 rounded-2xl border border-slate-300 bg-white px-6 py-8 text-center" data-testid="births-not-configured">
+      <v-icon name="gi-cow" scale="2.5" class="text-yellow-700" aria-hidden="true" />
+      <p class="!mt-2 text-base font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyBirths.NotConfigured', { province: province.name }) }}</p>
+      <RouterLink :to="{ name: 'province', params: { section: 'cheptel' } }" class="odc-btn odc-btn--soft odc--gold mt-2" data-testid="births-configure">
+        {{ t('EconomyBirths.Configure') }}
+      </RouterLink>
+    </div>
+
+    <template v-else>
 
     <!-- Les deux choix, sur la plaque ardoise bordée d'ambre (charte §3.1, matière des plaques du menu). -->
     <div class="births-plate mt-4 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 rounded-2xl px-4 py-3">
       <div role="group" aria-labelledby="births-species-label" class="flex flex-wrap items-center gap-2">
         <span id="births-species-label" class="plate-label mr-1 text-sm font-bold">{{ t('EconomyBirths.SpeciesLabel') }}</span>
         <button
-          v-for="s in SPECIES"
+          v-for="s in offered"
           :key="s.key"
           type="button"
           class="odc-btn odc-btn--soft odc-btn--sm"
@@ -146,7 +182,16 @@ const level = waste => 22 + 64 * waste
           <span class="block" data-testid="births-price">{{ t('EconomyBirths.Price', { price }) }}</span>
         </div>
       </div>
+
+      <BirthRecordBar
+        v-if="book?.can_record"
+        :book="book"
+        :birth="{ species, ingredient, quantity, taken: result.real, wasted: result.waste }"
+        :record="record"
+        @recorded="refresh"
+      />
     </div>
+    </template>
   </div>
 </template>
 
