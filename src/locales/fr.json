@@ -1030,7 +1030,7 @@
         "Coverage": "Bilan partiel : {covered} jour couvert sur {days}, il ne compte que les jours où le registre a des données. | Bilan partiel : {covered} jours couverts sur {days}, il ne compte que les jours où le registre a des données."
       },
       "HelpStep7": "Relevés inscrits : tout ce qui a été enregistré, remplacements compris, replié sous l'historique des niveaux.",
-      "HelpStep8": "Prix : le commissaire au commerce, le commissaire aux mines et le bailli les fixent par date d'effet — un prix reste en vigueur jusqu'au suivant. « Gérer les prix » met à jour ceux d'aujourd'hui ; « Historique des prix » montre les jeux passés et permet de corriger ceux de votre mandat, jusqu'à 7 jours après sa fin. Le dirigeant les consulte.",
+      "HelpStep8": "Prix : le commissaire au commerce, le commissaire aux mines et le bailli les fixent par date d'effet — un prix reste en vigueur jusqu'au suivant. « Gérer les prix » met à jour ceux d'aujourd'hui ; « Historique des prix » montre les jeux passés et permet de corriger ceux de votre mandat, jusqu'à son terme. Le dirigeant les consulte.",
       "HelpStep9": "Export : « Confier au scribe » copie en BBCode, pour le forum du jeu, le bilan d'une semaine complète, valorisé avec les prix de chaque jour.",
       "PastMandates": {
         "Select": "Choisir un mandat",
