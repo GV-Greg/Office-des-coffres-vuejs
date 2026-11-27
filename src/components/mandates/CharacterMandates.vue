@@ -35,13 +35,15 @@
   const ENDED = ['expired', 'revoked']
   const samePost = (a, b) => a.level === b.level && a.place?.id === b.place?.id
   const isNewer = (a, b) => (a.started_at ?? '') > (b.started_at ?? '')
-  const isSuperseded = (m) => ENDED.includes(m.status)
+  // Fin passée mais poste conservé en attendant le successeur (`kept_until`, dit par le serveur) : le mandat reste en vue.
+  const isKept = (m) => !!m.kept_until
+  const isSuperseded = (m) => ENDED.includes(m.status) && !isKept(m)
     && mandates.value.some(o => o.id !== m.id && samePost(o, m) && o.status !== 'rejected' && isNewer(o, m))
   const previousTerms = (mandate) => isSuperseded(mandate) ? [] : mandates.value
-    .filter(m => m.id !== mandate.id && samePost(m, mandate) && ENDED.includes(m.status) && isNewer(mandate, m))
+    .filter(m => m.id !== mandate.id && samePost(m, mandate) && ENDED.includes(m.status) && !isKept(m) && isNewer(mandate, m))
     .sort((a, b) => (b.started_at ?? '').localeCompare(a.started_at ?? ''))
 
-  const isPast = (m) => m.status === 'expired' && !m.renewable
+  const isPast = (m) => m.status === 'expired' && !m.renewable && !isKept(m)
   const current = computed(() => mandates.value.filter(m => !isPast(m) && !isSuperseded(m)))
   const past = computed(() => mandates.value.filter(m => isPast(m) && !isSuperseded(m)))
   const requestable = computed(() => (store.characters ?? []).find(c => c.id === props.character.id)?.requestable ?? null)
@@ -83,8 +85,10 @@
     expired: 'border-gray-300 bg-gray-50 text-gray-800',
     rejected: 'border-red-200 bg-red-50 text-red-800',
     revoked: 'border-red-200 bg-red-50 text-red-800',
+    kept: 'border-yellow-300 bg-yellow-50 text-yellow-900',
   }
-  const statusText = (mandate) => t(`Profil.Mandates.Status.${mandate.status}`, {
+  const statusKey = (mandate) => (isKept(mandate) ? 'kept' : mandate.status)
+  const statusText = (mandate) => t(`Profil.Mandates.Status.${statusKey(mandate)}`, {
     date: mandate.status === 'extended' ? fieldDate('holds_until', mandate.holds_until) : fieldDate('valid_until', mandate.valid_until),
   })
 
@@ -140,11 +144,14 @@
                   <template #place>{{ mandate.place.name }}</template>
                   <template #office><strong class="font-bold text-slate-900">{{ officeLabel(mandate) }}</strong></template>
                 </i18n-t>
-                <span class="shrink-0 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="STATUS_CLASS[mandate.status]" data-testid="mandate-status">
+                <span class="shrink-0 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="STATUS_CLASS[statusKey(mandate)]" data-testid="mandate-status">
                   {{ statusText(mandate) }}
                 </span>
               </div>
 
+              <p v-if="isKept(mandate)" class="mt-1 text-xs text-slate-700 dark:text-slate-700" data-testid="mandate-kept">
+                {{ t('Profil.Mandates.KeptUntil', { date: fieldDate('holds_until', mandate.holds_until), until: fieldDate('holds_until', mandate.kept_until) }) }}
+              </p>
               <p v-if="mandate.decision_reason" class="mt-1 text-xs text-red-800 dark:text-red-800" data-testid="mandate-reason">
                 {{ t('Profil.Mandates.Reason', { reason: label(mandate.decision_reason_label) }) }}
                 <template v-if="mandate.decision_message">
@@ -213,7 +220,7 @@
         <ul class="mt-2 space-y-1">
           <li v-for="mandate in past" :key="mandate.level + mandate.id" class="flex flex-wrap items-center justify-between gap-2 rounded-md px-3 py-1.5 bg-white/60" data-testid="mandate-past">
             <span class="text-slate-700 dark:text-slate-700">{{ post(mandate) }}</span>
-            <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="STATUS_CLASS[mandate.status]" data-testid="mandate-status">
+            <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold" :class="STATUS_CLASS[statusKey(mandate)]" data-testid="mandate-status">
               {{ statusText(mandate) }}
             </span>
           </li>
