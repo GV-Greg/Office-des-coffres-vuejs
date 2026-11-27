@@ -27,6 +27,7 @@
   const dataRows = computed(() => tm('Legal.Privacy.Section4.Rows'))
   const mineRegistryFields = computed(() => tm('Legal.Privacy.Section3.MineRegistryFields'))
   const minePricesFields = computed(() => tm('Legal.Privacy.Section3.MinePricesFields'))
+  const birthFields = computed(() => tm('Legal.Privacy.Section3.BirthFields'))
   const animFields = computed(() => tm('Legal.Privacy.Section3.AnimFields'))
   const animActivities = computed(() => tm('Legal.Privacy.Section3.AnimActivities'))
   const inventoryFields = computed(() => tm('Legal.Privacy.Section3.InventoryFields'))
@@ -118,6 +119,13 @@
             <p class="mt-4">{{ t('Legal.Privacy.Section3.MinePricesIntro') }}</p>
             <ul class="list-disc list-inside space-y-1" data-testid="privacy-mine-prices">
               <li v-for="(field, index) in minePricesFields" :key="`mine-prices-${index}`">
+                <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
+              </li>
+            </ul>
+
+            <p class="mt-4">{{ t('Legal.Privacy.Section3.BirthIntro') }}</p>
+            <ul class="list-disc list-inside space-y-1" data-testid="privacy-births">
+              <li v-for="(field, index) in birthFields" :key="`birth-${index}`">
                 <strong>{{ rt(field.Label) }}</strong> — {{ rt(field.Text) }}
               </li>
             </ul>
@@ -220,6 +228,7 @@
               <li>{{ t('Legal.Privacy.Section5.Mandates') }}</li>
               <li>{{ t('Legal.Privacy.Section5.MineRegistry') }}</li>
             <li>{{ t('Legal.Privacy.Section5.MinePrices') }}</li>
+              <li>{{ t('Legal.Privacy.Section5.Births') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Animation', { email: contactEmail }) }}</li>
               <li>{{ t('Legal.Privacy.Section5.Inventory') }}</li>
               <li>{{ t('Legal.Privacy.Section5.Security') }}</li>
@@ -237,6 +246,7 @@
               <!-- Avant « Personne d'autre en dehors de ce qui précède », qui clôt l'énumération. -->
               <li>{{ t('Legal.Privacy.Section6.MineRegistryHolders') }}</li>
             <li>{{ t('Legal.Privacy.Section6.MinePricesHolders') }}</li>
+              <li>{{ t('Legal.Privacy.Section6.BirthsHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.AnimationHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.InventoryHolders') }}</li>
               <li>{{ t('Legal.Privacy.Section6.SecurityHolders') }}</li>

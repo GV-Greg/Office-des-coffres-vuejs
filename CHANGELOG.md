@@ -6,6 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [À dater au merge] — PR à venir (Politique : historique des naissances)
+
+### Added
+- Politique de confidentialité (FR et EN) : naissances d'animaux et prix du grain d'une province (§3, §4, §5, §6) ; « Vos données » : sections « Livre des naissances » et « Historique des naissances ». À mettre en ligne avant le code.
+
 ## [2026-11-27] — PR #175 (Profil : poste conservé en attendant le successeur)
 
 ### Added

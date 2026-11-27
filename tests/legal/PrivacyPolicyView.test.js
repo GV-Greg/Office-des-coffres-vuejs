@@ -43,6 +43,8 @@ const messages = {
         Offices: { Title: 'Postes déclarés et Ma province' },
         MinesReport: { Title: 'Bilan des mines' },
         MineRegistry: { Title: 'Registre des mines' },
+        BirthRegister: { Title: 'Livre des naissances' },
+        BirthHistory: { Title: 'Historique des naissances' },
         Inventory: { Title: 'Gestion des stocks' },
         InventoryBalance: { Title: 'La Balance des stocks' },
         InventoryRegistry: { Title: 'Registre des stocks' },
@@ -79,6 +81,10 @@ Security: { Title: 'La Salle des gardes' },
           MinePricesIntro: 'Si vous gérez les prix, l’Office conserve :',
           MinePricesFields: [
             { Label: 'Les prix', Text: 'avec leur date.' },
+          ],
+          BirthIntro: 'Si vous inscrivez une naissance, l’Office conserve :',
+          BirthFields: [
+            { Label: 'La naissance', Text: 'chiffrée.' },
           ],
           AnimIntro: 'Les activités d’Animation se jouent de deux façons.',
           AnimFields: [
@@ -123,6 +129,7 @@ Security: { Title: 'La Salle des gardes' },
           Mandates: 'Postes : tout est effacé SAUF l’historique.',
           MineRegistry: 'Registre : sans limite.',
           MinePrices: 'Prix : sans limite.',
+          Births: 'Naissances : sans limite.',
           Animation: 'Animation : contactez {email}.',
           Inventory: 'Stocks : tant que le personnage existe.',
           Security: 'Sécurité : sans limite.',
@@ -134,6 +141,7 @@ Security: { Title: 'La Salle des gardes' },
           Editor: "L'éditeur.",
           MineRegistryHolders: 'Le commissaire et le bailli.',
           MinePricesHolders: 'Les trois postes des prix.',
+          BirthsHolders: 'Le bailli et le dirigeant.',
           AnimationHolders: 'Animation : page visible de tous.',
           InventoryHolders: 'Stocks : le maire et le commissaire au commerce.',
           SecurityHolders: 'Sécurité : le trio et les douaniers.',
@@ -280,6 +288,10 @@ describe('PrivacyPolicyView', () => {
   })
 
 
+  it('rend ce que conserve l’historique des naissances (§3)', () => {
+    expect(mountView().findAll('[data-testid="privacy-births"] li').map(li => li.text())).toEqual(['La naissance — chiffrée.'])
+  })
+
   // Registre des mines (texte validé le 06/10/2026) : posé AVANT l'ouverture de l'écriture.
   it('rend ce que conserve le Registre des mines (§3)', () => {
     const items = mountView().findAll('[data-testid="privacy-mine-registry"] li').map(li => li.text())
@@ -293,7 +305,9 @@ describe('PrivacyPolicyView', () => {
     expect(items.indexOf('Sécurité : le trio et les douaniers.')).toBe(items.indexOf("Personne d'autre.") - 1)
     expect(items.indexOf('Stocks : le maire et le commissaire au commerce.')).toBe(items.indexOf('Sécurité : le trio et les douaniers.') - 1)
     expect(items.indexOf('Animation : page visible de tous.')).toBe(items.indexOf('Stocks : le maire et le commissaire au commerce.') - 1)
-    expect(items.indexOf('Les trois postes des prix.')).toBe(items.indexOf('Animation : page visible de tous.') - 1)
+    expect(items.indexOf('Naissances : sans limite.')).toBe(items.indexOf('Prix : sans limite.') + 1)
+    expect(items.indexOf('Le bailli et le dirigeant.')).toBe(items.indexOf('Animation : page visible de tous.') - 1)
+    expect(items.indexOf('Les trois postes des prix.')).toBe(items.indexOf('Le bailli et le dirigeant.') - 1)
     expect(items.indexOf('Le commissaire et le bailli.')).toBe(items.indexOf('Les trois postes des prix.') - 1)
   })
 
@@ -304,7 +318,7 @@ describe('PrivacyPolicyView', () => {
     expect(wrapper.findAll('[data-testid="privacy-anim-activities"] li').map(li => li.text()))
       .toEqual(['Décode le code — les coffres.', 'Grille des lots — les lots.'])
     const items = wrapper.findAll('li').map(li => li.text())
-    expect(items.indexOf(items.find(t => t.startsWith('Animation : contactez ')))).toBe(items.indexOf('Prix : sans limite.') + 1)
+    expect(items.indexOf(items.find(t => t.startsWith('Animation : contactez ')))).toBe(items.indexOf('Naissances : sans limite.') + 1)
     expect(items.find(t => t.startsWith('Animation : contactez '))).not.toContain('{email}')
   })
   // Gestion des stocks (inventaires) : texte de Cowork validé par Greg le 11/11/2026 (fil inventaire-scopes).
@@ -322,7 +336,7 @@ describe('PrivacyPolicyView', () => {
     const links = mountView().findAll('[data-testid="privacy-tools-links"] a')
     expect(links.map(a => a.text())).toEqual([
       'Compte et personnages', 'Postes déclarés et Ma province', 'Bilan des mines',
-      'Registre des mines', 'Gestion des stocks', 'La Balance des stocks', 'Registre des stocks', 'Le Guet', 'La Salle des gardes', 'Carte des royaumes', 'Animation',
+      'Registre des mines', 'Livre des naissances', 'Historique des naissances', 'Gestion des stocks', 'La Balance des stocks', 'Registre des stocks', 'Le Guet', 'La Salle des gardes', 'Carte des royaumes', 'Animation',
     ])
     expect(links[2].attributes('href')).toBe(JSON.stringify({ name: 'legal-data', hash: '#bilan-des-mines' }))
   })
@@ -332,7 +346,7 @@ describe('PrivacyPolicyView', () => {
   it('garde l’exception des postes juste après le compte supprimé (§5), et les joueurs de la province avant les tenants du registre et « Personne d’autre » (§6)', () => {
     const items = mountView().findAll('li').map(li => li.text())
     expect(items.indexOf('Postes : tout est effacé SAUF l’historique.')).toBe(items.indexOf('Compte supprimé : effacé.') + 1)
-    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 6)
+    expect(items.indexOf('Les joueurs de la province.')).toBe(items.indexOf("Personne d'autre.") - 7)
   })
 
   // La Salle des gardes (fil module-securite, v2 validée par Greg le 22/11/2026) : durée au §5 juste après les stocks, destinataires au §6
