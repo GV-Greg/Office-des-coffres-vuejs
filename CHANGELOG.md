@@ -6,6 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-27] — PR #174 (Aide du Registre des mines : un prix se corrige jusqu'au terme du mandat)
+
+### Changed
+- L'aide du Registre des mines (FR et EN) ne promet plus de corriger un prix jusqu'à 7 jours après le mandat : jusqu'à son terme.
+
 ## [2026-11-27] — PR #173 (Politique : un conseiller reste en poste jusqu'à son successeur)
 
 ### Changed
