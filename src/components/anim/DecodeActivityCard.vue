@@ -4,6 +4,7 @@
   import { RouterLink } from 'vue-router'
   import { push } from 'notivue'
   import { apiMessage } from '@/stores/mandateStore'
+  import { signBBcode } from '@/modules/bbcodeSignature'
   import useNavigationLoading from '@/use/useNavigationLoading'
   import DecodeHero from '@/components/anim/DecodeHero.vue'
   import DecodeCodeVisual from '@/components/anim/DecodeCodeVisual.vue'
@@ -96,9 +97,10 @@
   async function doExport(kind) {
     const text = await run(() => (kind === 'rules' ? props.gestures.exportRules(props.activity) : props.gestures.exportResults(props.activity)))
     if (text === null) return
-    exported.value = text
+    // Le message vient du serveur ; la signature de l'Office, elle, ne s'écrit qu'ici, pour tous les exports.
+    exported.value = signBBcode(text, { activity: true })
     try {
-      await navigator.clipboard.writeText(text)
+      await navigator.clipboard.writeText(exported.value)
       push.success(t('Animation.Mine.Copied'))
     } catch {
       push.warning(t('Animation.Mine.CopyFailed')) // le texte reste affiché, à sélectionner à la main

@@ -205,7 +205,7 @@ describe('EconomyInventory — export BBCode', () => {
     await w.find('[data-testid="export-btn"]').trigger('click')
     await w.vm.$nextTick()
     expect(written[0]).toMatch(/^\[rp\]/)
-    expect(written[0]).toMatch(/\[\/rp\]$/)
+    expect(written[0]).toContain('[/rp]\n\n[spoiler][code]') // le cadre se ferme avant le collage et la signature
   })
 
   it('le wrapper quote encadre chaque catégorie', async () => {
@@ -323,8 +323,11 @@ describe('EconomyInventory — visibilité (Phase A)', () => {
     await w.find('[data-testid="hide-all-btn"]').trigger('click')
     await w.find('[data-testid="export-btn"]').trigger('click')
     await w.vm.$nextTick()
-    expect(written[0]).not.toContain('Miches de pain')
-    expect(written[0]).not.toContain('Hiéroglyphes violets')
+    // Masqué dans le message, mais le collage entier l'accompagne, replié, pour être repris.
+    const [message, paste] = written[0].split('[spoiler]')
+    expect(message).not.toContain('Miches de pain')
+    expect(message).not.toContain('Hiéroglyphes violets')
+    expect(paste).toContain('Miches de pain')
   })
 
   it('masquer une catégorie grise uniquement ses items', async () => {

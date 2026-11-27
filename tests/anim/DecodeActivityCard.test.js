@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { push } from 'notivue'
 import DecodeActivityCard from '../../src/components/anim/DecodeActivityCard.vue'
+import { ACTIVITY_SIGNATURE } from '../../src/modules/bbcodeSignature'
 
 // La carte de l'organisateur, la même pour le mode privé et le mode sans compte : elle reçoit des gestes et ne suit que l'état.
 // Sans compte : pas de « Rouvrir » ni de « Supprimer » (D19, D13), et une clôture demande confirmation (elle est définitive).
@@ -153,14 +154,15 @@ describe('DecodeActivityCard — sans compte', () => {
     expect(push.error).toHaveBeenCalledWith('Refusal EN')
   })
 
-  it('exporte le BBCode et l\'affiche', async () => {
+  it('exporte le BBCode du serveur, signé par le site, et l\'affiche', async () => {
     const w = mountCard()
 
     await w.find('[data-testid="export-rules-1"]').trigger('click')
     await flushPromises()
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('[b]Règles[/b]')
-    expect(w.find('[data-testid="export-text-1"]').element.value).toBe('[b]Règles[/b]')
+    const signed = `[b]Règles[/b]\n\n${ACTIVITY_SIGNATURE}`
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(signed)
+    expect(w.find('[data-testid="export-text-1"]').element.value).toBe(signed)
   })
 
   it('dit si l\'adresse email est confirmée, en attente, ou absente', () => {

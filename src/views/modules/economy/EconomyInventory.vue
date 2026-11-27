@@ -230,6 +230,7 @@ async function doExport() {
         totalEcus: totalEcus.value,
         icons,
       },
+      sources: parsedItems.value.length ? [pastedText.value] : [],
     },
   )
   try {

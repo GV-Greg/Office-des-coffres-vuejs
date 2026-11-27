@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 import { parseInventoryText, resolveItems } from '../../src/modules/inventoryParser'
 import { compareInventories, formatDiff, formatEcusDiff, STATUS } from '../../src/modules/inventoryCompare'
 import { exportBalanceToBBCode, annotation, BALANCE_COLORS } from '../../src/modules/inventoryBalanceBBcode'
+import { SIGNATURES } from '../../src/modules/bbcodeSignature'
 
 /*
   La Balance des stocks, logique pure :
@@ -91,7 +92,7 @@ describe('exportBalanceToBBCode', () => {
     expect(out).toContain(`[*][b]Miches de pain (x13)[/b] [color=${BALANCE_COLORS.up}]▲ +3[/color]`)
     expect(out).toContain(`[*][b]Cailloux (x1)[/b] [color=${BALANCE_COLORS.down}]▼ -2[/color]`)
     expect(out).toContain('[*][b]Morceaux de viande (x5)[/b]\n')
-    expect(out).not.toContain('—')
+    expect(out.replace(SIGNATURES.fr, '')).not.toContain('—')
   })
 
   it('un nouvel item n\'a que la flèche verte : jamais de badge « Nouveau » dans l\'export', () => {
@@ -121,7 +122,7 @@ describe('exportBalanceToBBCode', () => {
       categoryKeys: ['divers'], getCategoryLabel: () => 'Divers', options: { ecus: same.ecus, totalEcus: 1120.5 },
     })
     expect(out).toMatch(/^\[b\]Trésor : [^\n]*écus\[\/b\]\n/)
-    expect(out).not.toContain('—')
+    expect(out.replace(SIGNATURES.fr, '')).not.toContain('—')
     expect(out).not.toContain('▲')
     expect(out).not.toContain('▼')
   })

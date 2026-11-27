@@ -162,7 +162,7 @@ const dateFr = iso => formatFieldDate('inventory_snapshot_date', iso, 'fr')
 const placeFr = computed(() => placeLabelFr(level.value, placeName.value))
 async function exportInscription() {
   if (!selected.value) return
-  const bbcode = await registryExport.inscriptionBBcode(level.value, inventoryOf(selected.value.raw))
+  const bbcode = await registryExport.inscriptionBBcode(level.value, inventoryOf(selected.value.raw), selected.value.raw)
   await registryExport.copy(withTitle(entryTitle(dateFr(selected.value.taken_on), placeFr.value), bbcode))
 }
 async function exportBilan(bilan) {

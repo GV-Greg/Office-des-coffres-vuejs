@@ -8,10 +8,14 @@ import { fileURLToPath } from 'node:url'
 import { push } from 'notivue'
 import MyDecodeActivities from '../../src/views/modules/animation/MyDecodeActivities.vue'
 import { http } from '../../src/api.js'
+import { signBBcode } from '../../src/modules/bbcodeSignature'
 
 // Décode le code — « Mes activités » (mode PRIVÉ). Le formulaire de création est testé à part (DecodeCreateForm.test.js) : ici il est
 // remplacé par une doublure qui émet « confirm ». Aucune règle côté site : on vérifie que l'écran envoie ce qu'il faut et affiche ce
 // que l'API répond.
+
+// Le message du serveur, tel que le site le rend : signé à son arrivée.
+const signed = bbcode => signBBcode(bbcode, { activity: true })
 
 vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn(), warning: vi.fn() } }))
 vi.mock('../../src/api.js', () => ({ http: { get: vi.fn(), post: vi.fn(), delete: vi.fn() } }))
@@ -280,8 +284,8 @@ describe('MyDecodeActivities — export BBCode', () => {
     await flushPromises()
 
     expect(http.get).toHaveBeenLastCalledWith('decode-activities/1/export/rules', expect.anything())
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('[b]Coffre des Marches[/b]')
-    expect(w.find('[data-testid="export-text-1"]').element.value).toBe('[b]Coffre des Marches[/b]')
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(signed('[b]Coffre des Marches[/b]'))
+    expect(w.find('[data-testid="export-text-1"]').element.value).toBe(signed('[b]Coffre des Marches[/b]'))
     expect(push.success).toHaveBeenCalledWith('BBCode copié dans le presse-papiers.')
   })
 
@@ -293,7 +297,7 @@ describe('MyDecodeActivities — export BBCode', () => {
     await flushPromises()
 
     expect(http.get).toHaveBeenLastCalledWith('decode-activities/1/export/results', expect.anything())
-    expect(w.find('[data-testid="export-text-1"]').element.value).toBe('[b]Résultats[/b]')
+    expect(w.find('[data-testid="export-text-1"]').element.value).toBe(signed('[b]Résultats[/b]'))
   })
 
   it('presse-papiers indisponible : le texte reste affiché et un avertissement le dit', async () => {
@@ -305,6 +309,6 @@ describe('MyDecodeActivities — export BBCode', () => {
     await flushPromises()
 
     expect(push.warning).toHaveBeenCalledWith('La copie a échoué : sélectionnez le texte ci-dessous.')
-    expect(w.find('[data-testid="export-text-1"]').element.value).toBe('[b]X[/b]')
+    expect(w.find('[data-testid="export-text-1"]').element.value).toBe(signed('[b]X[/b]'))
   })
 })

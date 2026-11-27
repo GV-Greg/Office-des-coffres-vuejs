@@ -1,4 +1,5 @@
 import { formatFieldDate } from '@/modules/playerDates'
+import { signBBcode } from '@/modules/bbcodeSignature'
 
 /*
   Export forum de « Ma province » :
@@ -34,5 +35,5 @@ export function provinceHistoryToBBcode(history) {
   if (history.cities_without_mandate.length) {
     out.push(`Villes sans mandat déclaré : ${history.cities_without_mandate.join(', ')}.`)
   }
-  return out.join('\n')
+  return signBBcode(out.join('\n'))
 }

@@ -2,6 +2,8 @@
 // le Registre (bilans hebdomadaires revus, lot 2 des prix). Extraite d'EconomyMines.vue : un seul gabarit
 // pour deux écrans, le forum du jeu ne doit jamais voir deux mises en page.
 //
+import { signBBcode } from '@/modules/bbcodeSignature'
+
 // `t` est la fonction de traduction de l'écran appelant (vue-i18n) : les libellés suivent la langue de
 // l'interface, les clés sont celles d'`EconomyMines.*`.
 
@@ -40,12 +42,13 @@ export function signed(n) {
 
 /**
  * @param {object} b      bilan (computePeriodBilan)
- * @param {{ title: string, week: string, t: Function, coverage?: string|null }} options
+ * @param {{ title: string, week: string, t: Function, coverage?: string|null, locale?: string, sources?: string[] }} options
+ *   `locale` : la langue de l'interface, que le message suit — la signature aussi. `sources` : le collage de l'écran, s'il y en a un.
  *   `week` : le libellé de la période, déjà dit en dates du JEU (le même que le sélecteur de l'écran).
  *   `coverage` : une ligne qui dit qu'un bilan est PARTIEL (« 27 jours couverts sur 60 ») — les bilans de mi-mandat et de fin de mandat le sont presque
  *   toujours ; elle suit la période, jamais absente quand le bilan l'est. Une semaine, elle, ne s'exporte que complète : pas de `coverage`.
  */
-export function bilanToBBcode(b, { title, week, t, coverage = null }) {
+export function bilanToBBcode(b, { title, week, t, coverage = null, locale = 'fr', sources = [] }) {
   // Une copie de ce que le titulaire a vu : la table par mine, la ligne Total et la convention
   // (fil bilan-mines, Q11). Jamais l'alerte de seuil (Q9 bis), jamais une semaine incomplète (Q10).
   // Mise en page : UN seul [quote] (un cadre par mine alourdissait le forum — Greg, 05/10/2026), l'unité
@@ -84,5 +87,5 @@ export function bilanToBBcode(b, { title, week, t, coverage = null }) {
   ])
   bb += `[size=18][b]${t('EconomyMines.NetLabel')} : ${signed(b.net)} ${t('EconomyMines.Currency')}[/b][/size]\n`
   bb += `[size=9][i]${t('EconomyMines.Convention')}[/i][/size][/quote]`
-  return bb
+  return signBBcode(bb, { locale, sources })
 }

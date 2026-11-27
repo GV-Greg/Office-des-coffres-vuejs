@@ -13,6 +13,7 @@
 //   [*][b]Morceaux de viande (x121)[/b][/list][/quote]
 
 import { itemIconUrl } from '@/modules/itemIcons'
+import { signBBcode } from '@/modules/bbcodeSignature'
 
 export const EXPORT_DEFAULT_COLOR = 'darkcyan'
 
@@ -56,11 +57,12 @@ export const EXPORT_COLORS = [
  *     color?: string,
  *     totalEcus?: number|null,
  *     icons?: Record<string, number>,
- *   }
+ *   },
+ *   sources?: string[],   // le collage d'origine, joint en spoiler avant la signature
  * }} opts
  * @returns {string}
  */
-export function exportInventoryToBBCode(items, getCategoryFn, { categoryKeys, getCategoryLabel, options = {} } = {}) {
+export function exportInventoryToBBCode(items, getCategoryFn, { categoryKeys, getCategoryLabel, options = {}, sources = [] } = {}) {
   const {
     qtyFormat = 'suffix',
     showEcus = true,
@@ -114,5 +116,5 @@ export function exportInventoryToBBCode(items, getCategoryFn, { categoryKeys, ge
     body = `[rp]${body}[/rp]`
   }
 
-  return body
+  return signBBcode(body, { sources })
 }

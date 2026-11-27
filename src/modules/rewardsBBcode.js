@@ -4,6 +4,8 @@
  * (contenu de forum francophone, comme SecurityGuet et EconomyMines).
  */
 
+import { signBBcode } from '@/modules/bbcodeSignature'
+
 /** Formatte le nom du lieu selon son type. */
 function placeLine(place) {
   if (!place) return null
@@ -45,7 +47,7 @@ export function exportResults(grid, baseUrl) {
     lines.push(`[size=10][url=${baseUrl}/public/activite/grille/${slug}]Voir la grille complète[/url][/size]`)
   }
 
-  return lines.join('\n')
+  return signBBcode(lines.join('\n'), { activity: true })
 }
 
 /**
@@ -76,5 +78,5 @@ export function exportRules(grid, baseUrl) {
     lines.push(`[size=10][url=${baseUrl}/public/activite/grille/${slug}]Voir la grille en ligne[/url][/size]`)
   }
 
-  return lines.join('\n')
+  return signBBcode(lines.join('\n'), { activity: true })
 }

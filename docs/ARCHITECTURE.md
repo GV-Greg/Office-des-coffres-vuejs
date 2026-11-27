@@ -1,7 +1,7 @@
 # Architecture technique — Frontend (Vue 3)
 
 > Référence structurelle chargée automatiquement (voir `CLAUDE.md` racine). Mise à jour :
-> 25/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
+> 27/11/2026. Vérifier le code avant de citer un détail précis si ce fichier date de plus de
 > quelques semaines.
 
 Vue 3 (Composition API, `<script setup>`) + Vite 6 + Tailwind 3 + Pinia 2 + Vue Router 4 +
@@ -130,6 +130,7 @@ Namespaces : `Cookies`, `Common`, `Profil`, `Validation`, `Welcome`, `Home`, `No
 
 ## Modules transverses (`src/modules/`) et autres
 
+- **`bbcodeSignature.js`** — la fin de **tout** export BBCode (`signBBcode`) : les collages en `[spoiler][code]` (un bloc par collage), puis la signature avec le badge `public/img/odc-badge.png` — « Rédigé avec l'aide de… » (FR ; EN pour le seul bilan des mines, qui suit la langue de l'interface), « Organisé avec l'aide de… » pour l'Animation (`activity`). 🔴 **Hors `[hrp]`, sans « non officiel »**. 🔴 L'appelant ne passe que des collages **reconnus** par son lecteur, mais **entiers**, lignes masquées comprises (ils servent à être repris). Tout nouvel export l'appelle. 🔴 La signature ne s'écrit **qu'au frontend** : le message de Décode le code, produit par le serveur, la reçoit dans `DecodeActivityCard` (Greg, 27/11/2026 : un seul endroit à changer). Tests `bbcodeSignature.unit.test.js`.
 - **`mineParser.js`** — logique pure : parsing relevé, bilan, semaine, seuils. 🔴 **Décalage d'un jour** (production[D], heures[D+1]). Fusion sur `mineKey` (nœud), jamais sur numéro. `todayIso()` = date de Paris. **Bilingue** (lit FR ou EN selon le texte collé). 🔴 **Aucune conversion d'unité**.
 - **`gameCalendar.js`** — 2026 → 1474, transverse. ⚠️ **Jumeau** de `GameCalendar.php` backend, gardé par `gameCalendarTwin`.
 - **`playerDates.js`** — **seule déclaration** de l'année par champ (`game` → 1474, `real` → 2026).

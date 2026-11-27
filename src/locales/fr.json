@@ -793,7 +793,7 @@
     "HelpStep1": "Ouvre l'onglet Inventaire de ton personnage dans le jeu et copie tout le texte de la page.",
     "HelpStep2": "Colle le texte dans la zone de saisie — les articles sont automatiquement groupés par catégorie.",
     "HelpStep3": "Pour chaque article mal classé, utilise le menu déroulant à droite pour le déplacer dans la bonne catégorie.",
-    "HelpStep4": "Masque les catégories ou les articles que tu ne veux pas exporter avec l'icône œil — ils n'apparaîtront pas dans le BBCode.",
+    "HelpStep4": "Masque les catégories ou les articles que tu ne veux pas exporter avec l'icône œil — ils n'apparaîtront pas dans le message. Ton collage complet l'accompagne toutefois, replié, pour qu'il puisse être repris.",
     "HelpStep5": "Clique sur « Confier au scribe » pour copier le BBCode dans le presse-papier, prêt à coller sur le forum.",
     "ExpandItemsFor": "Articles de la catégorie « {cat} »",
     "ItemsInCategory": "Articles de cette catégorie",

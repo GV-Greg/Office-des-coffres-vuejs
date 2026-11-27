@@ -140,7 +140,7 @@ describe('exportInventoryToBBCode — le [img] dans le gras, devant le texte', (
 
   it('sans icônes (réglage éteint ou aucune demande) : export identique à avant', () => {
     expect(run()).toBe(run({}))
-    expect(run()).not.toContain('[img]')
+    expect(run()).not.toContain('cdn.oxv.fr')
     expect(run()).toContain('[*][b]Miches de pain (x175)[/b]')
   })
 
@@ -148,7 +148,7 @@ describe('exportInventoryToBBCode — le [img] dans le gras, devant le texte', (
     const out = run({ 'Miches de pain': 50 })
     expect(out).toContain('[*][b][img]https://lesroyaumes.cdn.oxv.fr/images/items/item50.png[/img] Miches de pain (x175)[/b]')
     expect(out).toContain('[*][b]Cailloux (x3)[/b]')
-    expect(out.match(/\[img\]/g)).toHaveLength(1)
+    expect(out.match(/cdn\.oxv\.fr/g)).toHaveLength(1)
   })
 
   it('fonctionne aussi avec le nombre devant', () => {
@@ -159,7 +159,7 @@ describe('exportInventoryToBBCode — le [img] dans le gras, devant le texte', (
   })
 
   it('un ID invalide ne s\'écrit jamais en URL', () => {
-    expect(run({ 'Miches de pain': '50/../x' })).not.toContain('[img]')
+    expect(run({ 'Miches de pain': '50/../x' })).not.toContain('cdn.oxv.fr')
   })
 })
 
