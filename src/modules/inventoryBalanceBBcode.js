@@ -13,6 +13,7 @@
 import { itemIconUrl } from '@/modules/itemIcons'
 import { EXPORT_DEFAULT_COLOR } from '@/modules/inventoryBBcode'
 import { STATUS, formatDiff, formatEcusDiff } from '@/modules/inventoryCompare'
+import { signBBcode } from '@/modules/bbcodeSignature'
 
 export const BALANCE_COLORS = Object.freeze({ up: '#16a34a', down: '#dc2626' })
 export const BALANCE_DISAPPEARED_LABEL = 'Disparus'
@@ -42,11 +43,12 @@ function itemText(name, quantity, qtyFormat) {
  *     ecus?: { after: number, diff: number }|null,   // écart du trésor, seulement si les deux inventaires en portent un
  *     totalEcus?: number|null,                      // trésor de l'inventaire actuel, sans écart (ancien inventaire sans trésor)
  *     icons?: Record<string, number>,
- *   }
+ *   },
+ *   sources?: string[],   // les collages d'origine (ancien, actuel), joints en spoiler avant la signature
  * }} opts
  * @returns {string}
  */
-export function exportBalanceToBBCode(rows, disappeared, getCategoryFn, { categoryKeys, getCategoryLabel, options = {} } = {}) {
+export function exportBalanceToBBCode(rows, disappeared, getCategoryFn, { categoryKeys, getCategoryLabel, options = {}, sources = [] } = {}) {
   const {
     qtyFormat = 'suffix',
     showEcus = true,
@@ -99,5 +101,5 @@ export function exportBalanceToBBCode(rows, disappeared, getCategoryFn, { catego
 
   if (wrapper === 'rp') body = `[rp]${body}[/rp]`
 
-  return body
+  return signBBcode(body, { sources })
 }

@@ -276,7 +276,7 @@ describe('Relevé de guet — les cinq types de collage, sans compte', () => {
     expect(bbcode(w)).toContain('Habitants (')
     expect(bbcode(w)).toContain('Visions en chemin')
     expect(bbcode(w)).toContain('Groupe à surveiller')
-    expect(bbcode(w)).not.toContain('Admission libre') // le détail d'un groupe n'est pas exporté
+    expect(bbcode(w).split('[spoiler]')[0]).not.toContain('Admission libre') // le détail d'un groupe n'est pas mis en forme (le collage replié le porte)
     expect(previewCalls()).toHaveLength(0)
   })
 

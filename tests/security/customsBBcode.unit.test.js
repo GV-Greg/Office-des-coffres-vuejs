@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { customsReportToBBCode, CUSTOMS_EXPORT_DEFAULTS, CUSTOMS_COLORS } from '../../src/modules/customsBBcode.js'
+import { SIGNATURES } from '../../src/modules/bbcodeSignature.js'
 
 /*
   Export BBCode d'un bilan de défense (brief §7). Français fixe, dates en année du jeu, le SIGNE porte l'information (la couleur n'est qu'un repère),
@@ -104,7 +105,7 @@ describe('export BBCode d\'un bilan', () => {
     hostile.sections.armies_groups.armies[0].name = '[url=http://x]piège[/url]'
     hostile.sections.guet.diff.arrivals[0].pseudo = 'Mal[b]in'
     const text = customsReportToBBCode(hostile, ctx({ villagers: true }))
-    expect(text).not.toContain('[url=')
+    expect(text.replace(SIGNATURES.fr, '')).not.toContain('[url=')
     expect(text).toContain('(url=http://x)piège(/url)')
     expect(text).toContain('[char]Mal(b)in[/char]')
   })
@@ -119,14 +120,14 @@ describe('export BBCode d\'un bilan', () => {
   })
 
   it('un bilan sans section ne donne que son titre', () => {
-    expect(customsReportToBBCode({ sections: {} }, ctx())).toBe('[b][size=20]Relevé de défense de la nuit du 21/11/1474 au 22/11/1474 - Ville : Arras[/size][/b]')
+    expect(customsReportToBBCode({ sections: {} }, ctx())).toBe(`[b][size=20]Relevé de défense de la nuit du 21/11/1474 au 22/11/1474 - Ville : Arras[/size][/b]\n\n${SIGNATURES.fr}`)
   })
 
   // Relevé unique (PR 3-2) : le relevé d'un joueur SANS titre de sécurité n'a ni ville ni bilan antérieur.
   it('sans ville : le titre ne dit pas « Ville : »', () => {
     const text = customsReportToBBCode({ sections: {} }, { cityName: '', dayLabel: '22/11/1474', nightFromLabel: '21/11/1474', options: {} })
 
-    expect(text).toBe('[b][size=20]Relevé de défense de la nuit du 21/11/1474 au 22/11/1474[/size][/b]')
+    expect(text).toBe(`[b][size=20]Relevé de défense de la nuit du 21/11/1474 au 22/11/1474[/size][/b]\n\n${SIGNATURES.fr}`)
   })
 
   it('un différentiel fait à la liste d\'hier collée le dit, sans date inventée', () => {

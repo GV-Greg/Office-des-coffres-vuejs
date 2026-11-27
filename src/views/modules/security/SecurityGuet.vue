@@ -128,7 +128,14 @@ import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
   const bbcode = ref('')
   const copyFailed = ref(false)
   const sealed = ref(null)
-  function buildBBCode(built) {
+  // Les collages reconnus, dans l'ordre des champs : ils accompagnent le message en spoiler.
+  const recognisedPastes = (next, pastes) => [
+    next.yesterday?.villagers.length && pastes.yesterday,
+    next.guet?.villagers.length && pastes.guet,
+    next.visions?.kept.length && pastes.visions,
+    (next.block?.armies.length || next.block?.groups.length || next.block?.zone) && pastes.armiesGroups,
+  ].filter(Boolean)
+  function buildBBCode(built, sources) {
     const diff = built.sections?.guet?.diff
     const withDates = diff?.compared_to
       ? { ...built, sections: { ...built.sections, guet: { ...built.sections.guet, diff: { ...diff, comparedLabel: formatFieldDate('customs_report_day', diff.compared_to, 'fr') } } } }
@@ -138,6 +145,7 @@ import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
       dayLabel: formatFieldDate('customs_report_day', built.reported_on, 'fr'),
       nightFromLabel: formatFieldDate('customs_report_day', shiftIso(built.reported_on, -1), 'fr'),
       options: { ...CUSTOMS_EXPORT_DEFAULTS },
+      sources,
     })
   }
   async function copyBBCode() {
@@ -156,7 +164,8 @@ import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
     busy.value = true
     previewError.value = ''
     const withTitle = !!access.value
-    const next = parseReleve({ guet: today.value, yesterday: yesterday.value, visions: visions.value, armiesGroups: armiesGroups.value }, withTitle ? day.value : null)
+    const pastes = { guet: today.value, yesterday: yesterday.value, visions: visions.value, armiesGroups: armiesGroups.value }
+    const next = parseReleve(pastes, withTitle ? day.value : null)
     parsed.value = next
 
     // Couleurs et dernier bilan de la ville : seulement avec un titre de sécurité, et seulement des PSEUDOS (le serveur n'écrit rien).
@@ -174,7 +183,7 @@ import ExistingReportNotice from '@/components/customs/ExistingReportNotice.vue'
     }
     report.value = buildLocalReport(next, { day: withTitle ? day.value : localGameDay(), colours, previous })
     sealed.value = null
-    bbcode.value = report.value.sections_present.length ? buildBBCode(report.value) : ''
+    bbcode.value = report.value.sections_present.length ? buildBBCode(report.value, recognisedPastes(next, pastes)) : ''
     if (bbcode.value) await copyBBCode()
 
     // Confort : le dernier collage de chaque type. No-op silencieux sans le consentement « Préférences » : le Relevé reste utilisable.

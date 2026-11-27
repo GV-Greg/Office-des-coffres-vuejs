@@ -200,6 +200,8 @@ async function doExport() {
         totalEcus: current.value.totalEcus,
         icons,
       },
+      // La comparaison n'existe que si les deux champs sont reconnus : les deux partent.
+      sources: [previousText.value, currentText.value],
     },
   )
   try {

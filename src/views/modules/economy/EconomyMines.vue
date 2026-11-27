@@ -11,6 +11,7 @@
     getWeekBounds, filterToWeek, shiftWeek, todayIso, defaultWeek,
   } from '@/modules/mineParser'
   import { toGameDateIso } from '@/modules/gameCalendar'
+  import { signBBcode } from '@/modules/bbcodeSignature'
   import { bilanToBBcode, formatNum, productionWithUnit as unitedProduction, RESOURCE_COLOR } from '@/modules/mineBBcode'
   import { priceResolver, setForDay } from '@/modules/minePrices'
   import { push } from 'notivue'
@@ -21,7 +22,7 @@
   import AccessLoader from '@/components/loading/AccessLoader.vue'
   import MineRegistrySave from '@/components/mines/MineRegistrySave.vue'
 
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const productionWithUnit = line => unitedProduction(line, t)
 
   // Toute date montrée à un joueur (interface ou export forum) porte l'année du jeu ;
@@ -206,6 +207,9 @@
       // être daté sans dépendre du message qui l'accompagne (même libellé que le sélecteur de semaine).
       week: t('EconomyMines.WeekLabel', { monday: formatGameDateFr(selectedMonday.value), sunday: formatGameDateFr(selectedSunday.value) }),
       t,
+      locale: locale.value,
+      // Le collage encore dans le champ, s'il se lit, accompagne le bilan.
+      sources: parseMinesText(pastedText.value).length ? [pastedText.value] : [],
     }))
   }
 
@@ -242,8 +246,7 @@
   // dans le jeu — pas un bilan calculé, pas de prix. Les libellés de boutons
   // du jeu ("Diminuer le niveau de la mine", "Fermer la mine") et les phrases
   // explicatives répétitives sont volontairement exclus, ce n'est pas de la
-  // donnée. Le texte brut complet part dans un [spoiler][code] pour
-  // référence/partage.
+  // donnée. Le texte brut complet part en spoiler, avant la signature.
   //
   // BBcode en français fixe : posté tel quel sur le forum du jeu (francophone),
   // indépendant de la langue de l'UI — même exception que SecurityGuet.vue.
@@ -295,8 +298,7 @@
       }
       bb += '[/quote]\n'
     }
-    bb += `[spoiler][code]${raw}[/code][/spoiler]`
-    copyToClipboard(bb)
+    copyToClipboard(signBBcode(bb, { sources: [raw] }))
   }
 </script>
 

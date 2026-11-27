@@ -793,7 +793,7 @@
     "HelpStep1": "Open your character's Inventory tab in the game and copy all the text from the page.",
     "HelpStep2": "Paste the text into the input area — items are automatically grouped by category.",
     "HelpStep3": "For any misclassified item, use the dropdown on the right to move it to the correct category.",
-    "HelpStep4": "Hide categories or items you don't want to export using the eye icon — they won't appear in the BBCode.",
+    "HelpStep4": "Hide categories or items you don't want to export using the eye icon — they won't appear in the message. Your full paste is still attached, folded away, so it can be reused.",
     "HelpStep5": "Click 'Hand to the scribe' to copy the BBCode to your clipboard, ready to paste on the forum.",
     "ExpandItemsFor": "Items in category \"{cat}\"",
     "ItemsInCategory": "Items in this category",

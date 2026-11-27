@@ -101,7 +101,7 @@ describe('l\'interrupteur « Sans illustration / Avec illustration »', () => {
     expect(w.find('[data-testid="export-icons-toggle"]').text()).toBe('Sans illustration')
 
     const bbcode = await exportBBCode(w)
-    expect(bbcode).not.toContain('[img]')
+    expect(bbcode).not.toContain('cdn.oxv.fr') // le badge de la signature, lui, reste
     expect(iconCalls()).toHaveLength(0)
   })
 
@@ -139,7 +139,7 @@ describe('l\'interrupteur « Sans illustration / Avec illustration »', () => {
 
     const bbcode = await exportBBCode(w)
     expect(bbcode).toContain('596 Miches de pain')
-    expect(bbcode).not.toContain('[img]')
+    expect(bbcode).not.toContain('cdn.oxv.fr') // le badge de la signature, lui, reste
     expect(push.warning).toHaveBeenCalledTimes(1)
     expect(push.success).toHaveBeenCalled()
   })
@@ -182,7 +182,7 @@ describe('l\'interrupteur « Sans illustration / Avec illustration »', () => {
 
     const bbcode = await exportBBCode(w)
     expect(bbcode).toContain('596 Miches de pain')
-    expect(bbcode).not.toContain('[img]')
+    expect(bbcode).not.toContain('cdn.oxv.fr') // le badge de la signature, lui, reste
     expect(http.get).not.toHaveBeenCalled()
   })
 

@@ -7,6 +7,7 @@ import {
 import { computePeriodBilan, periodDates } from '../../src/modules/mineParser'
 import { currentPeriodBilan, weeklyBilan, weekRange, mandateBilans } from '../../src/modules/mineRegistry'
 import { bilanToBBcode } from '../../src/modules/mineBBcode'
+import { SIGNATURES } from '../../src/modules/bbcodeSignature'
 
 // Prix des mines par période — logique pure.
 // Un jeu entre en vigueur à sa date d'effet et le reste jusqu'au suivant ; le bilan se calcule JOUR PAR JOUR.
@@ -194,7 +195,7 @@ describe('export BBCode d\'un bilan', () => {
     expect(bb).toContain('Semaine du 4 au 10')
     expect(bb).toContain('EconomyMines.Bb.Amounts(0,5)')
     expect(bb).toContain('(6 h × 0,5)')
-    expect(bb.trimEnd()).toMatch(/\[\/quote\]$/)
+    expect(bb.endsWith(`[/quote]\n\n${SIGNATURES.fr}`)).toBe(true)
     expect(bb.match(/\[quote\]/g)).toHaveLength(1)
   })
 

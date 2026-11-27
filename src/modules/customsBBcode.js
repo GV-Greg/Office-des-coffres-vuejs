@@ -8,6 +8,8 @@
 // Un bilan n'est jamais public (politique §6) : l'exporter sur un forum le rend public — c'est le geste de celui qui exporte, et l'écran le dit.
 // L'auteur d'un bilan n'est jamais nommé. Rien n'est gardé : le texte part au presse-papiers.
 
+import { signBBcode } from '@/modules/bbcodeSignature'
+
 export const CUSTOMS_COLORS = Object.freeze({ red: '#dc2626', green: '#16a34a' })
 
 /** Options de l'export : ce que le joueur choisit d'inclure. Rien n'est enregistré. */
@@ -37,10 +39,11 @@ const names = (entries, colours) => entries.map(entry => name(entry, colours))
 
 /**
  * @param {object} report un bilan tel que l'API le sert (`sections.guet|visions|armies_groups`, pseudos `{ pseudo, colour }`)
- * @param {{ cityName: string, dayLabel: string, nightFromLabel?: string, options?: object }} context `dayLabel` : le jour du bilan en année du jeu, déjà formaté (jj/mm/1474)
- * @returns {string} le BBCode, ou '' s'il n'y a rien à exporter
+ * @param {{ cityName: string, dayLabel: string, nightFromLabel?: string, options?: object, sources?: string[] }} context `dayLabel` : le jour du bilan en année du jeu, déjà formaté (jj/mm/1474) ;
+ *   `sources` : les collages reconnus, joints en spoiler avant la signature
+ * @returns {string} le BBCode
  */
-export function customsReportToBBCode(report, { cityName, dayLabel, nightFromLabel = '', options = {} }) {
+export function customsReportToBBCode(report, { cityName, dayLabel, nightFromLabel = '', options = {}, sources = [] }) {
   const o = { ...CUSTOMS_EXPORT_DEFAULTS, ...options }
   const sections = report?.sections ?? {}
   const blocks = []
@@ -103,5 +106,5 @@ export function customsReportToBBCode(report, { cityName, dayLabel, nightFromLab
     if (block.zone) blocks.push(`${heading('Contrôle de la zone')}\n${oneLine(block.zone)}`)
   }
 
-  return blocks.join('\n\n')
+  return signBBcode(blocks.join('\n\n'), { sources })
 }

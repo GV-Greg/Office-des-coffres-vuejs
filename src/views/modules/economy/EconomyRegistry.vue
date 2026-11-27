@@ -207,7 +207,7 @@
   /** Seule une semaine complète s'exporte, comme dans le Bilan public (§2.4). */
   function exportWeek() {
     if (!week.value?.complete) return
-    const text = bilanToBBcode(week.value.bilan, { title: t('EconomyMines.Title'), week: weekLabel.value, t })
+    const text = bilanToBBcode(week.value.bilan, { title: t('EconomyMines.Title'), week: weekLabel.value, t, locale: locale.value })
     navigator.clipboard.writeText(text)
       .then(() => push.success(t('EconomyMines.RegistryPage.Export.Copied')))
       .catch(() => push.error(t('EconomyMines.CopyError')))
@@ -227,6 +227,7 @@
       week: t('EconomyMines.RegistryPage.BilanPeriod', { label: bilanLabel(b.kind), from: gameDate(b.from), to: gameDate(dayBefore(b.at)) }),
       coverage: covered < days ? t('EconomyMines.RegistryPage.Export.Coverage', { covered, days }, covered) : null,
       t,
+      locale: locale.value,
     })
     navigator.clipboard.writeText(text)
       .then(() => push.success(t('EconomyMines.RegistryPage.Export.Copied')))

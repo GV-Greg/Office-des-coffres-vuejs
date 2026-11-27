@@ -53,14 +53,15 @@ export default function useRegistryExport() {
     }
   }
 
-  /** Le BBCode d'une inscription : le même que celui du Bilan des stocks. `inventory` = { totalEcus, items } (déjà lu et fusionné). */
-  async function inscriptionBBcode(level, inventory) {
+  /** Le BBCode d'une inscription : le même que celui du Bilan des stocks. `inventory` = { totalEcus, items } (déjà lu et fusionné), `raw` = le collage inscrit. */
+  async function inscriptionBBcode(level, inventory, raw) {
     const s = await settings(level)
     const icons = await iconsFor(s.wantsIcons, inventory.items.map(item => item.name))
     return exportInventoryToBBCode(inventory.items, name => suggestCategory(name, s.customCats), {
       categoryKeys: s.categoryKeys,
       getCategoryLabel: s.getCategoryLabel,
       options: { ...s.options, totalEcus: inventory.totalEcus, icons },
+      sources: [raw],
     })
   }
 
