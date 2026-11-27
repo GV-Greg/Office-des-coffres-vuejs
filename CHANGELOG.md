@@ -6,6 +6,11 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-27] — PR #175 (Profil : poste conservé en attendant le successeur)
+
+### Added
+- Profil : un mandat dont la fin est passée mais dont le poste est conservé reste en vue, avec « Poste conservé » et la date limite (FR et EN), d'après `kept_until` servi par l'API.
+
 ## [2026-11-27] — PR #174 (Aide du Registre des mines : un prix se corrige jusqu'au terme du mandat)
 
 ### Changed
