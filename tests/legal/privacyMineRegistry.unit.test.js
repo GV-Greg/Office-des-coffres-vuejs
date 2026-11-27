@@ -72,15 +72,25 @@ describe('Politique — Registre des mines', () => {
   it('les engagements sur les prix sont écrits tels quels, dans les deux langues', () => {
     const fr = privacy('fr'), en = privacy('en')
     expect(fr.Section5.MinePrices).toContain('sans limite de durée')
-    expect(fr.Section5.MinePrices).toContain('jusqu\'à 7 jours après la fin de votre mandat')
+    expect(fr.Section5.MinePrices).toContain('Vous pouvez corriger un prix pendant votre mandat ; à son terme, il est verrouillé')
+    expect(fr.Section5.MinePrices).not.toContain('7 jours')
     expect(fr.Section5.MinePrices).toContain('l\'ancienne valeur n\'est pas conservée')
     expect(fr.Section5.MinePrices).toContain('le lien avec votre compte est supprimé')
     expect(fr.Section6.MinePricesHolders).toContain('une fois par jour')
     expect(en.Section5.MinePrices).toContain('no time limit')
-    expect(en.Section5.MinePrices).toContain('up to 7 days after your term ends')
+    expect(en.Section5.MinePrices).toContain('You can correct a price during your term; once it ends, the price is locked')
+    expect(en.Section5.MinePrices).not.toContain('7 days')
     expect(en.Section5.MinePrices).toContain('the previous value is not kept')
     expect(en.Section5.MinePrices).toContain('their link to your account is removed')
     expect(en.Section6.MinePricesHolders).toContain('once a day')
+  })
+
+  // 27/11/2026 : un conseiller reste en poste jusqu'à son successeur, 30 jours au plus, sans pouvoir modifier un prix.
+  it.each([
+    ['fr', ['tant qu\'aucun successeur n\'est connu de l\'Office, pendant 30 jours au plus', 'ne peut plus ajouter ni corriger un prix']],
+    ['en', ['as long as the Office knows no successor, for 30 days at most', 'can no longer add or correct a price']],
+  ])('%s : l\'attente du successeur est dite au §6', (lang, sentences) => {
+    for (const sentence of sentences) expect(privacy(lang).Section6.CouncilOffices).toContain(sentence)
   })
 
   it('la ligne des prix du relevé ne dit plus que le joueur les renseigne', () => {
