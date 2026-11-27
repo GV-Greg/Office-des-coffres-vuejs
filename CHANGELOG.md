@@ -6,7 +6,7 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
-## [À dater au merge] — PR à venir (Signature des exports BBCode et collage d'origine en spoiler)
+## [2026-11-27] — PR #171 (Signature des exports BBCode et collage d'origine en spoiler)
 
 ### Added
 - **`src/modules/bbcodeSignature.js`** et le badge **`public/img/odc-badge.png`** (16 × 16, tiré du favicon) : chaque export BBCode se termine par « Rédigé avec l'aide de l'Office des Coffres » (« Written with the help of… » pour le bilan des mines en anglais), ou « Organisé avec l'aide de… » pour la Grille des lots. Écrite dans le jeu, hors `[hrp]`, sans mention « non officiel » (elle reste sur le site). Décode le code, dont le message vient du serveur, reçoit la sienne sur le site : aucun changement au backend.
