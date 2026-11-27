@@ -5,7 +5,7 @@
 //   liste rouge  [color=#dc2626]⚠ [char]Pseudo[/char][/color]
 //   liste verte  [color=#16a34a]✔ [char]Pseudo[/char][/color]
 //   groupe à surveiller (« Groupe de PSEUDO » seul) : jamais « brigand » (Greg, P8)
-// Un bilan n'est jamais public (politique §6) : l'exporter sur un forum le rend public — c'est le geste de celui qui exporte, et l'écran le dit.
+// Un bilan n'est jamais public (politique §6) : l'exporter sur un forum le rend public — c'est le geste de celui qui exporte.
 // L'auteur d'un bilan n'est jamais nommé. Rien n'est gardé : le texte part au presse-papiers.
 
 import { signBBcode } from '@/modules/bbcodeSignature'

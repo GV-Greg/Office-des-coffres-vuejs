@@ -126,5 +126,13 @@
     "type": "feature",
     "fr": "Dans la Salle des gardes, le Registre de douane permet de revenir sur vos relevés de guet et la Table des douanes donne une vision globale des relevés de toute la province.",
     "en": "In the Guardroom, the Customs Register lets you look back at your watch reports, and the Customs Table gives an overview of the reports from the whole province."
+  },
+  {
+    "id": "bbcode-office-signature",
+    "date": "2026-11-27",
+    "scope": "public",
+    "type": "improvement",
+    "fr": "Les parchemins du scribe sont désormais signés de l'Office, et gardent repliée la copie d'origine pour qui voudra la reprendre.",
+    "en": "The scribe's scrolls are now signed by the Office, and keep the original copy folded away for anyone who wants to take it up again."
   }
 ]
