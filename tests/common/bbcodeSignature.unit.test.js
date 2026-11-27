@@ -20,7 +20,7 @@ describe('signBBcode', () => {
     const out = signBBcode('message')
     expect(out).toBe(`message\n\n${SIGNATURES.fr}`)
     expect(SIGNATURES.fr).toContain('[img]https://officedescoffres.creacube.be/img/odc-badge.png[/img]')
-    expect(SIGNATURES.fr).toContain('[url=https://officedescoffres.creacube.be]Office des Coffres[/url]')
+    expect(SIGNATURES.fr).toContain('[url=https://officedescoffres.creacube.be][b][color=#9a3412]Office des Coffres[/color][/b][/url]')
     // Écrite dans le jeu : ni cadre hors rôle-play, ni mention « non officiel » (Greg, 27/11/2026).
     for (const signature of Object.values(SIGNATURES)) expect(signature).not.toMatch(/\[hrp\]|officiel|official/i)
   })

@@ -7,14 +7,16 @@
 
 const SITE = 'https://officedescoffres.creacube.be'
 const BADGE = `[img]${SITE}/img/odc-badge.png[/img]`
+// Le nom de l'Office en gras, dans un orangé-rouge sombre pris au dégradé de l'écu, lisible sur le fond clair du forum.
+const LINK = `[url=${SITE}][b][color=#9a3412]Office des Coffres[/color][/b][/url]`
 
 export const SIGNATURES = Object.freeze({
-  fr: `${BADGE} [i]Rédigé avec l'aide de l'[url=${SITE}]Office des Coffres[/url][/i]`,
-  en: `${BADGE} [i]Written with the help of the [url=${SITE}]Office des Coffres[/url][/i]`,
+  fr: `${BADGE} [size=9][i]Rédigé avec l'aide de l'${LINK}[/i][/size]`,
+  en: `${BADGE} [size=9][i]Written with the help of the ${LINK}[/i][/size]`,
 })
 
 /** La signature d'un export d'Animation : français seul, comme ses messages. */
-export const ACTIVITY_SIGNATURE = `${BADGE} [i]Organisé avec l'aide de l'[url=${SITE}]Office des Coffres[/url][/i]`
+export const ACTIVITY_SIGNATURE = `${BADGE} [size=9][i]Organisé avec l'aide de l'${LINK}[/i][/size]`
 
 // Un collage qui porterait la balise fermante sortirait de son cadre.
 const spoiler = raw => `[spoiler][code]${raw.trim().replace(/\[\/(code|spoiler)\]/gi, '(/$1)')}[/code][/spoiler]`
