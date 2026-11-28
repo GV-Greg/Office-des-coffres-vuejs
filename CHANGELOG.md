@@ -12,6 +12,9 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 - Salle des comptes : le Livre des naissances, calculateur public du coût des animaux (nourriture à prévoir, gaspillage, prix payé par l'éleveur), FR et EN.
 - Pour le bailli et le dirigeant : les espèces de la province (réglées dans Mon bureau, « Cheptel »), l'inscription des naissances par le bailli, leur historique et leur coût, le prix de la nourriture ; les anciens titulaires relisent leur période.
 
+### Changed
+- Titres des pages d'Économie centrés, au gabarit de la Salle des gardes ; « Balance des stocks » et « Registre des mines » comme titres (la province ne figure plus dans le second).
+
 ⚠️ **Production** : le backend (tables et routes `livestock`) et la politique de confidentialité doivent être en ligne avant.
 
 ## [2026-11-27] — PR #175 (Profil : poste conservé en attendant le successeur)

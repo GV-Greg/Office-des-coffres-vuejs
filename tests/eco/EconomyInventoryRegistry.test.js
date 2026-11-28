@@ -77,7 +77,7 @@ describe('Registre des stocks — accès', () => {
   it('un seul niveau : pas de sélecteur, le lieu est nommé ; deux niveaux : un bouton chacun, la ville d\'abord', async () => {
     const solo = await mountPage({ scopes: SCOPES({ city: null }) })
     expect(find(solo, 'registry-levels').exists()).toBe(false)
-    expect(solo.find('h2').text()).toBe('Registre des stocks : Artois') // le lieu est dans le titre, comme « Registre de Franche-Comté »
+    expect(solo.find('h1').text()).toBe('Registre des stocks : Artois') // le lieu est dans le titre
 
     const both = await mountPage()
     expect(['city', 'province'].map(l => find(both, `registry-level-${l}`).text())).toEqual(['Ville : Arras', 'Province : Artois'])

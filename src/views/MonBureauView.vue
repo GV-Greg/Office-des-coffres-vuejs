@@ -352,7 +352,6 @@ const activeSection = computed(() => {
             <h2 id="panel-livestock" class="flex-1 !mt-0 !mb-0 !text-left text-base font-bold text-yellow-800 dark:text-yellow-800 leading-tight">
               {{ t('MonBureau.Livestock.Title', { province: livestock.province.name }) }}
             </h2>
-            <RouterLink :to="{ name: 'economy-births' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate">{{ t('Economy.BirthsLink') }}</RouterLink>
           </div>
           <div class="px-4 pb-3 pt-2">
             <LivestockOfficeSection :book="livestock" :api="livestockApi" />

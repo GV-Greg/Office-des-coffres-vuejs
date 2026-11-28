@@ -8,18 +8,19 @@
   */
   defineProps({
     title: { type: String, required: true },
-    tone: { type: String, default: 'rose' }, // rose | blue | teal | violet | alert | muted
+    tone: { type: String, default: 'rose' }, // rose | blue | teal | violet | gold | alert | muted
+    fill: { type: Boolean, default: false }, // prend toute la hauteur de sa colonne : deux cartes voisines s'alignent
     testid: { type: String, default: '' },
   })
 </script>
 
 <template>
-  <section class="report-panel" :data-tone="tone" :data-testid="testid || undefined">
+  <section class="report-panel" :class="{ 'flex h-full flex-col': fill }" :data-tone="tone" :data-testid="testid || undefined">
     <header class="report-plate flex items-center gap-2 px-3 py-1.5">
       <span class="report-dot shrink-0" aria-hidden="true"></span>
       <h3 class="report-title !m-0 text-sm font-bold">{{ title }}</h3>
     </header>
-    <div class="report-body px-3 py-3">
+    <div class="report-body px-3 py-3" :class="{ 'flex flex-1 flex-col': fill }">
       <slot />
     </div>
   </section>
@@ -43,6 +44,7 @@
   /* La teinte de la rubrique : une pastille, pas un fond. */
   .report-dot { width: 0.65rem; height: 0.65rem; border-radius: 9999px; background: #fb7185; }
   .report-panel[data-tone='blue'] .report-dot { background: #60a5fa; }
+  .report-panel[data-tone='gold'] .report-dot { background: #eab308; }
   .report-panel[data-tone='teal'] .report-dot { background: #2dd4bf; }
   .report-panel[data-tone='violet'] .report-dot { background: #a78bfa; }
   .report-panel[data-tone='alert'] .report-dot { background: #fb923c; }

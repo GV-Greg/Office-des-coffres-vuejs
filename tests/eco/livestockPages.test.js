@@ -7,13 +7,12 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import EconomyBirths from '../../src/views/modules/economy/EconomyBirths.vue'
-import EconomyBirthsHistory from '../../src/views/modules/economy/EconomyBirthsHistory.vue'
 import MonBureauView from '../../src/views/MonBureauView.vue'
 import { useAuthStore } from '../../src/stores/authStore'
 import { http } from '../../src/api.js'
 
 /*
-  Le Livre des naissances avec un poste : espèces de la province, inscription, historique et réglages dans Mon bureau.
+  Le Livre des naissances avec un poste : espèces de la province, inscription, registre du jour (même page) et réglages dans Mon bureau.
   ⚠️ Aucune règle côté site : le serveur dit qui peut quoi (`can_record`, `can_price`, `can_withdraw`, `editable`).
 */
 vi.mock('notivue', () => ({ push: { success: vi.fn(), error: vi.fn() } }))
@@ -53,7 +52,6 @@ async function mountPage(component, url = '/', locale = 'fr') {
     routes: [
       { path: '/', component: { template: '<div/>' } },
       { path: '/app/eco/naissances', name: 'economy-births', component: { template: '<div/>' } },
-      { path: '/app/eco/naissances/historique', name: 'economy-births-history', component: { template: '<div/>' } },
       { path: '/app/mon-bureau/:section?', name: 'province', component: { template: '<div/>' } },
       { path: '/app/eco/registre/prix', name: 'economy-prices', component: { template: '<div/>' } },
       { path: '/app/profil', name: 'profil', component: { template: '<div/>' } },
@@ -75,13 +73,13 @@ async function mountPage(component, url = '/', locale = 'fr') {
 const find = (w, id) => w.find(`[data-testid="${id}"]`)
 
 describe('le calculateur, avec un poste', () => {
-  it('ne propose que les espèces de la province et ouvre sur la première', async () => {
+  it('ne propose que les espèces de la province, ouvre sur la première et montre le registre', async () => {
     const w = await mountPage(EconomyBirths)
 
     expect(find(w, 'births-species-pig').attributes('aria-pressed')).toBe('true')
     expect(find(w, 'births-species-bees').exists()).toBe(true)
     expect(find(w, 'births-species-cow').exists()).toBe(false)
-    expect(find(w, 'births-tabs').exists()).toBe(true)
+    expect(find(w, 'births-ledger').exists()).toBe(true)
   })
 
   it('province sans espèce : pas de calculateur, le chemin vers Mon bureau', async () => {
@@ -93,48 +91,76 @@ describe('le calculateur, avec un poste', () => {
     expect(find(w, 'births-result').exists()).toBe(false)
   })
 
-  it('le bailli inscrit le lot choisi, au jour du jeu, avec son coût', async () => {
+  it('le coût compte les unités entières au prix du jour choisi', async () => {
+    book = { ...BOOK, prices: [{ ...PRICE, effective_from: '2026-11-25', prices: { ...PRICE.prices, wheat: 12 } }, PRICE] }
+    const w = await mountPage(EconomyBirths)
+    await find(w, 'births-ingredient-wheat').trigger('click')
+    await find(w, 'births-quantity-3').trigger('click')
+
+    expect(find(w, 'births-cost').text()).toBe('Coût : 5 sacs à 12 écus l\'unité, soit 60 écus')
+    await find(w, 'births-record-day').setValue('1474-11-20')
+    expect(find(w, 'births-cost').text()).toBe('Coût : 5 sacs à 10 écus l\'unité, soit 50 écus')
+    await find(w, 'births-record-day').setValue('1474-10-01')
+    expect(find(w, 'births-cost').text()).toBe('Aucun prix de la nourriture à cette date.')
+  })
+
+  it('le bailli inscrit le lot choisi, au jour du jeu, et le registre va au jour de la naissance', async () => {
     const w = await mountPage(EconomyBirths)
     await find(w, 'births-ingredient-wheat').trigger('click')
     await find(w, 'births-quantity-3').trigger('click')
 
     expect(find(w, 'births-record-day').element.value).toBe('1474-11-27')
     expect(find(w, 'births-record-day').attributes('min')).toBe('1474-11-03')
-    expect(find(w, 'births-record-cost').text()).toBe('Coût : 50 écus')
     await find(w, 'births-record').trigger('submit')
     await flushPromises()
 
     expect(http.post).toHaveBeenCalledWith('characters/7/livestock/births',
       { born_on: '2026-11-27', species: 'pig', ingredient: 'wheat', quantity: 3, taken: 5, wasted: 0 }, expect.anything())
     expect(find(w, 'births-record-done').exists()).toBe(true)
+    // La réponse simulée date la naissance du 20/11 : le registre s'y place.
+    expect(find(w, 'births-day').text()).toBe('20/11/1474')
   })
 
-  it('le dirigeant calcule mais n\'inscrit rien ; sans poste, toutes les espèces', async () => {
+  it('le dirigeant calcule mais n\'inscrit rien ; sans poste, toutes les espèces et aucun registre', async () => {
     book = { ...BOOK, can_record: false }
-    expect(find(await mountPage(EconomyBirths), 'births-record').exists()).toBe(false)
+    const leader = await mountPage(EconomyBirths)
+    expect(find(leader, 'births-record').exists()).toBe(false)
+    expect(find(leader, 'births-cost').text()).toContain('l\'unité')
 
     book = NOBODY
     const w = await mountPage(EconomyBirths)
     expect(find(w, 'births-species-cow').exists()).toBe(true)
-    expect(find(w, 'births-tabs').exists()).toBe(false)
+    expect(find(w, 'births-ledger').exists()).toBe(false)
+    expect(find(w, 'births-cost').exists()).toBe(false)
   })
 })
 
-describe('l\'historique', () => {
-  it('totalise la nourriture dépensée et liste les naissances en année du jeu', async () => {
-    const w = await mountPage(EconomyBirthsHistory)
+describe('le registre des naissances, un jour à la fois', () => {
+  it('s\'ouvre sur aujourd\'hui, puis les flèches vont aux jours qui ont des naissances', async () => {
+    const w = await mountPage(EconomyBirths)
 
+    expect(find(w, 'births-day').text()).toBe('27/11/1474')
+    expect(find(w, 'births-empty').text()).toBe('Aucune naissance inscrite ce jour-là.')
+    expect(find(w, 'births-newer').attributes('disabled')).toBeDefined()
+    await find(w, 'births-older').trigger('click')
+
+    expect(find(w, 'births-day').text()).toBe('20/11/1474')
+    expect(find(w, 'births-row').text()).toContain('Cochon × 3')
     expect(find(w, 'births-total').text()).toBe('50 écus')
-    expect(find(w, 'births-total-animals').text()).toBe('pour 3 animaux nés')
-    expect(find(w, 'births-row').text()).toContain('20/11/1474')
+    expect(find(w, 'births-total-animals').text()).toBe('3 animaux nés')
     expect(find(w, 'births-unpriced').exists()).toBe(false)
+    expect(find(w, 'births-current-prices').text()).toContain('1474')
   })
 
   it('retire une naissance après confirmation seulement', async () => {
-    const w = await mountPage(EconomyBirthsHistory)
+    const w = await mountPage(EconomyBirths)
+    await find(w, 'births-older').trigger('click')
     await find(w, 'births-withdraw').trigger('click')
     expect(http.post).not.toHaveBeenCalled()
+    await find(w, 'births-withdraw-cancel').trigger('click')
+    expect(find(w, 'births-withdraw-confirm').exists()).toBe(false)
 
+    await find(w, 'births-withdraw').trigger('click')
     await find(w, 'births-withdraw-confirm').trigger('click')
     await flushPromises()
 
@@ -143,18 +169,13 @@ describe('l\'historique', () => {
 
   it('un ancien titulaire s\'ouvre sur son mandat passé, en lecture seule, total partiel sans prix', async () => {
     book = { ...NOBODY, past_mandates: [{ id: 12, province: { id: 5, name: 'Flandre' }, in_office_from: '2026-01-01', holds_until: '2026-03-02' }] }
-    const w = await mountPage(EconomyBirthsHistory)
+    const w = await mountPage(EconomyBirths)
 
     expect(find(w, 'births-read-only').exists()).toBe(true)
+    expect(find(w, 'births-day').text()).toBe('01/02/1474')
     expect(find(w, 'births-withdraw').exists()).toBe(false)
     expect(find(w, 'births-unpriced').text()).toBe('Total partiel : 1 naissance sans prix.')
-  })
-
-  it('sans poste ni mandat passé : accès refusé', async () => {
-    book = NOBODY
-    const w = await mountPage(EconomyBirthsHistory)
-
-    expect(find(w, 'access-denied').text()).toContain('bailli')
+    expect(find(w, 'births-species-cow').exists()).toBe(true) // sans poste en cours : le calculateur reste public
   })
 })
 

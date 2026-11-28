@@ -221,10 +221,10 @@ function clearAll() {
 
 <template>
   <div>
-    <h2 class="text-lg font-semibold text-yellow-600 dark:text-yellow-500 mb-1">
-      {{ t('EconomyBalance.PageTitle') }}
-    </h2>
-    <p class="text-sm italic text-slate-600 dark:text-slate-400 mb-3">{{ t('EconomyBalance.Intro') }}</p>
+    <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+      <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl title-eco">{{ t('EconomyBalance.PageTitle') }}</h1>
+    </div>
+    <p class="text-center text-sm italic text-slate-600 dark:text-slate-600 mb-3">{{ t('EconomyBalance.Intro') }}</p>
 
     <!-- Niveau : au-dessus, comme dans la Gestion des stocks — seulement si le personnage actif a un poste qui en ouvre d'autres que le sien. -->
     <AccessLoader v-if="!scopesReady" min-height="3.5rem" class="mb-3" />

@@ -27,24 +27,29 @@ const click = (w, id) => find(w, id).trigger('click')
 beforeEach(() => vi.clearAllMocks())
 
 describe('EconomyBirths', () => {
-  it('s\'ouvre sur une vache au maïs : 12 sacs, 0,75 perdu', () => {
+  it('s\'ouvre sur une vache au maïs : 12 sacs, 0,75 perdu, sans coût faute de prix', () => {
     const w = mountPage()
 
-    expect(find(w, 'births-real').text()).toBe('Pour 1 naissance, sortez 12 sacs de maïs.')
-    expect(find(w, 'births-theoretical').text()).toContain('11,25')
+    expect(find(w, 'births-quantity-1').attributes('aria-pressed')).toBe('true')
+    expect(find(w, 'births-quantity-1').text()).toContain('12')
+    expect(find(w, 'births-quantity-1').text()).toContain('sacs de maïs')
     expect(find(w, 'births-waste').text()).toBe('Attention, vous allez gaspiller 0,75 sac de maïs pour 1 naissance.')
-    expect(find(w, 'births-price').text()).toContain('45 écus')
+    expect(find(w, 'births-price').text()).toBe('Payé par l\'éleveur : 45 écus')
+    expect(find(w, 'births-cost').exists()).toBe(false)
   })
 
-  it('3 cochons au blé : 5 sacs, rien ne se perd', async () => {
+  it('3 cochons au blé : 5 sacs, rien ne se perd, la case est marquée entière ; le total de l\'éleveur', async () => {
     const w = mountPage()
     await click(w, 'births-species-pig')
     await click(w, 'births-ingredient-wheat')
     await click(w, 'births-quantity-3')
 
-    expect(find(w, 'births-real').text()).toContain('5')
+    expect(find(w, 'births-quantity-3').text()).toContain('5')
+    expect(find(w, 'births-quantity-3').classes()).toContain('birth-lot--whole')
+    expect(find(w, 'births-quantity-1').classes()).not.toContain('birth-lot--whole')
     expect(find(w, 'births-waste').exists()).toBe(false)
     expect(find(w, 'births-no-waste').text()).toBe('Rien ne se perd.')
+    expect(find(w, 'births-price').text()).toBe('Payé par l\'éleveur : 75 écus (3 × 25)')
     expect(find(w, 'births-quantity-3').attributes('aria-pressed')).toBe('true')
   })
 
@@ -57,9 +62,9 @@ describe('EconomyBirths', () => {
     await click(w, 'births-species-bees')
     expect(find(w, 'births-ingredient-wheat').exists()).toBe(false)
     expect(find(w, 'births-ingredient-marjoram').attributes('aria-pressed')).toBe('true')
-    expect(find(w, 'births-real').text()).toContain('69')
+    expect(find(w, 'births-quantity-1').text()).toContain('69')
     await click(w, 'births-ingredient-elderberry')
-    expect(find(w, 'births-real').text()).toContain('22')
+    expect(find(w, 'births-quantity-1').text()).toContain('22')
   })
 
   it('les quatre lots se comparent côte à côte, et la colonne est le choix du nombre', async () => {

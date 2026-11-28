@@ -96,18 +96,20 @@
 </script>
 
 <template>
-  <div class="w-full max-w-5xl text-slate-800 dark:text-slate-800">
+  <div class="w-full max-w-5xl mx-auto text-slate-800 dark:text-slate-800">
     <p v-if="!character" class="text-slate-700 dark:text-slate-700">{{ t('EconomyMines.RegistryPage.NoCharacter') }}</p>
     <AccessDenied v-else-if="denied" :message="denied" testid="prices-error" />
     <ChestLoader v-else :loading="loading" :error="error" accent="gold" error-testid="prices-error" @retry="load">
     <template v-if="province">
+      <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl title-eco">{{ t('EconomyMines.RegistryPage.Prices.PageTitle', { province: province.name }) }}</h1>
+      </div>
       <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-slate-300 pb-2">
-        <!-- Retour à gauche, en bouton avec icône (Greg, 15/10/2026) ; le titre le suit, l'ajout est à droite. -->
+        <!-- Retour à gauche, en bouton avec icône (Greg, 15/10/2026), l'ajout à droite ; le titre est au-dessus. -->
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
           <RouterLink :to="{ name: 'economy-registry' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="prices-back">
             <v-icon name="fa-reply" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.BackToRegistry') }}
           </RouterLink>
-          <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Prices.PageTitle', { province: province.name }) }}</h2>
         </div>
         <button v-if="canWrite" type="button" class="odc-btn odc-btn--soft odc--green odc-btn--sm" data-testid="prices-add" @click="startAdd">
           <v-icon name="fa-plus" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.AddPrice') }}

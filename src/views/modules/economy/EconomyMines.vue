@@ -304,6 +304,9 @@
 
 <template>
   <div class="w-full">
+    <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mb-2">
+      <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl title-eco" data-testid="mines-title">{{ t('Economy.MinesLink') }}</h1>
+    </div>
     <div class="w-full flex items-center justify-center gap-3 mb-4">
       <button
         type="button"

@@ -8,6 +8,9 @@ import { SPECIES } from './birthCosts'
 /** Les quatre nourritures du cheptel, dans l'ordre d'affichage. */
 export const FEEDS = Object.freeze(['maize', 'wheat', 'marjoram', 'elderberry'])
 
+/** Forme du mot « écu » pour un montant (choix vue-i18n : 1 = singulier) : « 0,5 écu » en français, en anglais le seul 1. */
+export const ecusChoice = (amount, locale) => ((locale === 'fr' ? amount > 0 && amount < 2 : amount === 1) ? 1 : 2)
+
 /** Jeu de prix en vigueur à un jour (le plus récent `effective_from` ≤ jour), ou null. */
 export function feedSetForDay(sets, day) {
   let found = null
