@@ -954,7 +954,7 @@
     "HelpStep2": "Choose the number of animals, from 1 to 4.",
     "HelpStep3": "Read what to set aside, and compare the four batches. The sack drawn is the last one you open: its hatched part is lost.",
     "NotConfigured": "No animal species is set up for the province: {province}.",
-    "Configure": "Set the species in My office",
+    "Configure": "Set the species in My desk",
     "Record": {
       "Day": "Born on",
       "Save": "Record the birth",
@@ -992,7 +992,7 @@
       "Total": "Total",
       "CardTitle": "Births recorded"
     },
-    "HelpStep4": "Sheriff in office: “Record the birth” adds it to the province’s register, on the same page; it can be withdrawn there the same day. Species and food prices are set in My office.",
+    "HelpStep4": "Sheriff in office: “Record the birth” adds it to the province’s register, on the same page; it can be withdrawn there the same day. Species and food prices are set in My desk.",
     "CalculatorTitle": "Prepare a birth",
     "PriceMany": "Paid by the breeder: {total} ({n} × {price})",
     "FoodCost": "Cost: {real} {unit} at {price} each, {total}",
