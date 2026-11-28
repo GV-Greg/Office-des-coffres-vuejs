@@ -426,7 +426,7 @@
     "HelpStep5": "To enter a new report, \"Enter a report\" (if your title allows it) leads to the Watch Report. \"Entrust to the scribe\" exports the displayed report as BBCode: publishing it on a forum makes it public.",
     "Registry": {
       "Title": "Customs Register",
-        "Existing": "A report for {date} already exists for this town.",
+      "Existing": "A report for {date} already exists for this town.",
       "ReportOf": "Report of {date}",
       "Save": "Record in the register",
       "Sealing": "Recording…",
@@ -1649,6 +1649,19 @@
         "Purpose": "Keep a province's mine management record, handed from one office-holder to the next: the Mines Superintendent and the Sheriff save their reports to it, and the Trade Minister and the province's leader (count, duke…) may read them. You must hold one of these offices in the province, and have had it validated in the Office. Without that, the tool is not available. Once their term has ended, the former holders of these offices may re-read, read-only, the reports from the period of their term, for as long as those reports exist. It also holds the province's mine prices, set by the Trade Minister, the Mines Superintendent and the Sheriff.",
         "Input": "The same text as for the Mines report: the contents of the \"Management of the mines\" tab, copied from the game. For prices: the price of each resource and the hourly wage, with the date they take effect."
       },
+      "BirthRegister": {
+        "Title": "Birth Register",
+        "Purpose": "Work out what to set aside for animals to be born, and what would be lost.",
+        "Input": "A species, what feeds it and a number of animals.",
+        "Stored": "Nothing: it is worked out in your browser."
+      },
+      "BirthHistory": {
+        "Title": "Births recorded",
+        "Purpose": "Keep what a province's births cost, handed from one office-holder to the next. Writing requires the office of Sheriff there, reading that of Sheriff or leader, validated in the Office.",
+        "Input": "Births (date, species, number, food) and grain prices.",
+        "Stored": "The birth, encrypted, with the quantity taken and lost; the prices and their date; the province and the character who recorded them.",
+        "Deletion": "This data is attached to the province, not to your account: it is not part of your data export and stays when you leave office. The link to your account is removed with it."
+      },
       "Inventory": {
         "Title": "Stock Report",
         "Purpose": "Paste the inventory of your character, your city or your province, sort it by category, order it and write up its state for the game forum. The tool works without an account; an account lets you find your settings and your last inventory from one device to another. A city's inventory opens to its acting mayor, a province's to the Trade Minister (who writes it) and to the province's leader (who may read it), with an office validated in the Office.",
@@ -1709,7 +1722,7 @@
       },
       "Section3": {
         "Title": "3. When you create an account",
-        "Intro": "Creating a user account is optional. The site can be browsed freely without an account, with access to public tools (Watch Report, Mines Report). A free account unlocks additional features tied to your game history (Mines Registry, Stock Registry, Guardroom).",
+        "Intro": "Creating a user account is optional. The site can be browsed freely without an account, with access to public tools (Watch Report, Mines Report). A free account unlocks additional features tied to your game history (Mines Registry, Stock Registry, Guardroom, births recorded).",
         "AccountFieldsIntro": "To create an account, only two pieces of information are requested:",
         "AccountFields": [
           {
@@ -1772,6 +1785,25 @@
           {
             "Label": "Who recorded it",
             "Text": "the character who recorded the price and the one who last corrected it, with the date and time."
+          }
+        ],
+        "BirthIntro": "If you are a province's Sheriff and you record a birth in the Birth Register, or a grain price in “My desk”, the Office keeps:",
+        "BirthFields": [
+          {
+            "Label": "The birth",
+            "Text": "the game date, the species, the number of animals, what feeds them, the quantity taken and the quantity lost. This information is encrypted in the database."
+          },
+          {
+            "Label": "Grain prices",
+            "Text": "the price of maize, wheat, marjoram and black elderberry, with the date they take effect. A price stays in force until the next one."
+          },
+          {
+            "Label": "The province",
+            "Text": "your office's province, not your city of residence."
+          },
+          {
+            "Label": "Who recorded it",
+            "Text": "the character who recorded the birth or the price and, where applicable, the one who withdrew or corrected it, with the date and time. This name is not shown to other readers."
           }
         ],
         "AnimIntro": "The Animation module offers activities that you run for the community: Crack the Code (chests sealed by a secret combination) and the Prize Grid (a grid of prizes to draw). Each activity can be played two ways. In private mode, the activity is linked to your character, which carries everything needed: nothing more is asked, and the activity disappears with your character or your account (see §5). In public mode, to create and manage an activity without using a character, the Office stores:",
@@ -1904,6 +1936,11 @@
             "Data": "Red and green lists, defence reports",
             "Purpose": "Let a province's authorised office-holders follow its defence and compare one day with the next",
             "LegalBasis": "Legitimate interest"
+          },
+          {
+            "Data": "Animal births and grain prices",
+            "Purpose": "Keeping a province's record of what its births cost, from one office-holder to the next",
+            "LegalBasis": "Performance of the contract"
           }
         ],
         "NoCommercialUse": "No personal data is used for commercial, advertising, aggregate statistics, or profiling purposes."
@@ -1919,6 +1956,7 @@
         "Mandates": "Declared offices: your requests and terms, including ended, rejected or revoked ones with their reason, are kept as long as your account exists. When your character or your account is deleted, everything is erased EXCEPT the history of offices held: your character's name, the office, the province or city, the dates and how the office ended. This information is public in the game; what remains is a pseudonym and a role, and the Office no longer keeps anything linking that pseudonym to you (no email address, no account).",
         "MineRegistry": "Mine Registry: the reports you save are kept with no time limit, because together they form a province's management record, handed from one office-holder to the next. If you delete your character or your account, the report remains, but its link to your account is removed: it keeps its date, its province and the office used, and no longer names any character. We say \"the link is removed\" rather than \"the report is anonymised\": the province's office history remains available, and it may allow a date and an office to be matched to a character name. Finally, no report can be deleted, not even by the person who wrote it: an incorrect report is replaced, and the replacement stays visible.",
         "MinePrices": "Mine prices: recorded prices are kept with no time limit, because they are used to compute the province's reports, from one office-holder to the next. You can correct a price during your term; once it ends, the price is locked. Successive price sets form a history and all remain viewable; however, correcting a set replaces its values, and the previous value is not kept. Nobody can delete a price. When your character or account is deleted, the prices stay, but their link to your account is removed: they keep their date and province and no longer name any character. Again, \"the link is removed\", not \"anonymised\": the province's office history may let someone match a date to a character's name.",
+        "Births": "Births recorded: births and grain prices are kept with no time limit, because they form a province's management record, handed from one office-holder to the next. You can record a birth while you hold the office, for a day of your term. You can withdraw a birth on the game day you recorded it: it is no longer counted, but is kept; after that it no longer changes. You can correct a price during your term; the previous value is not kept. After your term ends, as long as no successor is in office and for 30 days at most, you can still record or withdraw a birth, waiting days included, but no longer add or correct a price; after that nothing changes. When your character or account is deleted, this data stays, but its link to your account is removed: it keeps its date and province and no longer names any character. We write “the link is removed”, not “anonymised”: the province's office history may let someone match a date to a character's name.",
         "Animation": "Animation (Crack the Code, Prize Grid): in private mode, the activity and its content — the chests and the proposals you entered (Crack the Code), the prizes (Prize Grid) — are kept for as long as you do not delete the activity, the character, or the account that created it — deleting any of those deletes the activity with them, content included. In both modes, an activity with no action for 30 days is automatically closed; in private mode you can reopen it and everything is kept, whereas in public mode this closure is final: no reopening is possible. In public mode, on closing, whether manual or automatic, the fingerprint of your connection, your email address, your password and any pending reset request are erased; for Crack the Code, a report including all proposals received is first sent to your email address if you confirmed one. What stays visible to the community for 5 years after closing: the activity's name, your organiser nickname and the location, plus, for Crack the Code, the chests cracked with the nickname of who found them and the final standings — never the proposals received, which are erased on closing — and, for the Prize Grid, the dimensions, all the prizes and the names of the characters who chose a cell. After that period, the page and the nickname are deleted. To request the removal of a name entered on one of these pages before that period, contact {email}.",
         "Inventory": "Stock Report: your personal settings and inventory are kept as long as your character exists, and deleted with it. A city's or a province's settings and inventory are kept as long as that city or province exists in the game's reference data, and stay in place when their author leaves office. A province's or city's inventory history is kept with no time limit, because it forms the office's management memory, handed from one office-holder to the next. If you delete your character or your account, what concerns a city or a province remains, but its link to your account is removed: we say \"the link is removed\" rather than \"anonymised\", as for the Mine Registry.",
         "Security": "The Guardroom: your customs officer status is kept as long as your character exists and deleted with it. The entries of the red and green lists, as long as they have not been removed (a removal deletes them permanently), and the defence reports are kept without any time limit, because they form the province's defence memory: reports are used to compare one day with the next (arrivals and departures) and to hand a follow-up from one office-holder to the next; an expiry date would make these uses inoperable. When your character or your account is deleted, what you entered stays, but the link with your account is removed: we write \"the link is removed\" and not \"anonymised\", as for the Mine Registry. The third-party nicknames in the lists and reports are not linked to any account: deleting an account does not remove them."
@@ -1933,6 +1971,7 @@
         "ProvincePlayers": "Other players whose character resides in the same province, for that province's office history (character names, offices, dates, how each office ended) — including after your account is deleted, and which they may copy to the game forum. Never your email address, your pending requests, your rejections or the administration's notes.",
         "MineRegistryHolders": "The Mines Superintendent and the Sheriff of the province concerned, who keep that province's Mine Registry, as well as its Trade Minister and its leader (count, duke…), who may read it, as well as the former holders of these offices, who may re-read the reports from the period of their term, with no time limit, for as long as those reports exist — including the office-holders who succeed you, and including after your account is deleted. That is the registry's very purpose: a province's mines pass from hand to hand, and every office is vacated at each election. Never the other councillors, never a player from another province.",
         "MinePricesHolders": "Mine prices: the province's Trade Minister, Mines Superintendent and Sheriff, who manage them, and its leader (count, duke…), who may read them — including the office-holders who succeed you, and including after your account is deleted. The other holders of these three offices also receive, once a day, an email summarising the prices that changed and naming the character who changed them. Never the other councillors, never a player from another province.",
+        "BirthsHolders": "Births recorded: the province's Sheriff, who keeps it, and its leader (count, duke…), who may read it, as well as former holders of these offices, who may read again what concerns their term — including the office-holders who succeed you, and including after your account is deleted. Never the other councillors, never a player from another province.",
         "AnimationHolders": "Animation (Crack the Code, Prize Grid): an activity's public page is visible to everyone, whether created in private or public mode — that is the point of these tools, shared on the game's forum. It shows the name, the location and the organiser's nickname, plus, for Crack the Code, the chests cracked and the standings; for the Prize Grid, visible from the draw onwards, the cells and, for each chosen cell, the revealed prize and the name of the character who chose it (the contents of unchosen cells stay hidden until closing, when all prizes become visible). Your password is never visible to anyone, not even the site administrator. Your email address, if you confirmed one, is visible to the site administrator in the administration panel — to help you if you forget your password and for the technical administration of the service. Your organiser nickname and, if applicable, the date of the last password reset are also visible there.",
         "InventoryHolders": "Stock Report: your personal inventory, you alone. A city's inventory and settings: the acting mayor of that city, including those who succeed you. A province's inventory and settings, history included: the acting Trade Minister and the province's leader (count, duke…), the latter read-only — including those who succeed you, and including after your account is deleted. Never the other councillors, never a player from another city or province, and no site administration interface (see §3).",
         "SecurityHolders": "The Guardroom: the lists and the reports are never public. The security trio (Constable, Sergeant and Captain, in office): read and write, lists and reports, across the whole province; the author of a report can correct it on the game day itself; only the Constable and the Sergeant correct someone else's report or enter a past day. Validated customs officers: read and enter the reports of every town in their province, read the lists; write to the lists only if no member of the trio is known to the Office for the province. The mayor: read and enter the reports of their town (of the whole province if also a validated customs officer), read the lists, write under the same condition as customs officers. The Judge: read the lists and add to the red list, never remove. The Public Prosecutor and the province leader (count, duke…): read-only, lists and reports — including those who succeed you, and including after your account is deleted. The author of a list entry is visible only to the trio; others see \"added by me\" on their own entries and nothing on others'. The author of a report is never displayed. Never the other councillors, never a player without a title, and no site administration interface (see §3)."
