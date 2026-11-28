@@ -16,7 +16,7 @@
   // à chaque modification substantielle (Legal.Privacy.Section10 / draft).
   // Date de MISE EN LIGNE de la dernière modification : la page « Vos données » (front #90), qui lui
   // ajoute une ligne par outil (§3) — même date que DataPageView.vue.
-  const LAST_UPDATED = '2026-11-27'
+  const LAST_UPDATED = '2026-11-28'
   const lastUpdated = computed(() => new Intl.DateTimeFormat(
     locale.value === 'fr' ? 'fr-FR' : 'en-GB',
     { year: 'numeric', month: 'long', day: 'numeric' }
