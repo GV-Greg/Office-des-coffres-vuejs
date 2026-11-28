@@ -24,6 +24,9 @@ export const DATA_PAGE_SECTIONS = [
   { id: 'postes', key: 'Offices', access: 'account' },
   { id: 'bilan-des-mines', key: 'MinesReport', access: 'none' },
   { id: 'registre-des-mines', key: 'MineRegistry', access: 'office' },
+  // Le Livre des naissances calcule sans rien conserver ; son historique (naissances et prix du grain d'une province) exige un poste.
+  { id: 'livre-des-naissances', key: 'BirthRegister', access: 'none' },
+  { id: 'registre-des-naissances', key: 'BirthHistory', access: 'office' },
   // Gestion des stocks (les inventaires) : sans compte tout reste dans le navigateur ; avec un compte, en base ; la ville et la province
   // exigent un poste, mais l'outil lui-même s'ouvre à tous — le badge dit l'accès à l'outil (fil inventaire-scopes, 11/11/2026).
   { id: 'gestion-des-stocks', key: 'Inventory', access: 'none' },

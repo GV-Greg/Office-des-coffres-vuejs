@@ -18,6 +18,11 @@ foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `adm
 
 ⚠️ **Production** : le backend (tables et routes `livestock`) et la politique de confidentialité doivent être en ligne avant.
 
+## [2026-11-28] — PR #176 (Politique : Registre des naissances)
+
+### Added
+- Politique de confidentialité (FR et EN) : naissances d'animaux et prix du grain d'une province (§3, §4, §5, §6) ; « Vos données » : sections « Livre des naissances » et « Registre des naissances ». À mettre en ligne avant le code.
+
 ## [2026-11-27] — PR #175 (Profil : poste conservé en attendant le successeur)
 
 ### Added
