@@ -134,5 +134,13 @@
     "type": "improvement",
     "fr": "Les parchemins du scribe sont désormais signés de l'Office, et gardent repliée la copie d'origine pour qui voudra la reprendre.",
     "en": "The scribe's scrolls are now signed by the Office, and keep the original copy folded away for anyone who wants to take it up again."
+  },
+  {
+    "id": "economy-birth-register",
+    "date": "2026-11-28",
+    "scope": "private",
+    "type": "feature",
+    "fr": "Salle des comptes : le Livre des naissances est maintenant à la disposition des baillis afin de pouvoir notifier les changements du cheptel de leur province.",
+    "en": "The Counting Room: the Birth Register is now available to Sheriffs, so they can record the changes to their province's livestock."
   }
 ]
