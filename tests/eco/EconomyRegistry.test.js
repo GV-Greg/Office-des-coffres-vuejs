@@ -62,7 +62,7 @@ describe('EconomyRegistry', () => {
   it('lit le registre du personnage actif et dit l\'âge du dernier relevé', async () => {
     const wrapper = await mountPage()
     expect(http.get).toHaveBeenCalledWith('characters/7/mine-registry/reports', { headers: { Authorization: 'Bearer jeton' } })
-    expect(wrapper.find('h2').text()).toBe('Registre de Franche-Comté')
+    expect(wrapper.find('h1').text()).toBe('Registre des mines')
     expect(wrapper.find('[data-testid="registry-age"]').text()).toBe('Dernier relevé : hier, le 09/05.')
   })
 

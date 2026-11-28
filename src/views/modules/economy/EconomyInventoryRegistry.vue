@@ -194,8 +194,10 @@ const ecusView = computed(() => {
     <AccessDenied v-if="!levels.length" :message="t('EconomyInventoryRegistry.NoAccess')" testid="registry-no-access" />
 
     <template v-else>
+      <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl title-eco">{{ t('EconomyInventoryRegistry.PageTitle', { name: placeName }) }}</h1>
+      </div>
       <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
-        <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyInventoryRegistry.PageTitle', { name: placeName }) }}</h2>
         <!-- Niveau : deux boutons si le personnage a un poste pour chacun (ville ET province), sinon le lieu seul. -->
         <div v-if="levels.length > 1" role="group" :aria-label="t('EconomyInventory.LevelNav')" class="flex flex-wrap items-center gap-2" data-testid="registry-levels">
           <button

@@ -256,9 +256,11 @@
     <AccessDenied v-else-if="denied" :message="denied" testid="registry-denied" />
     <ChestLoader v-else :loading="loading" :error="error || ''" accent="gold" error-testid="registry-error" block-class="laptop:mt-14 laptop:w-[calc((100%-2rem)*3/5)]" @retry="load">
     <template v-if="registry">
-      <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
-        <h2 class="!mb-0 text-2xl font-bold text-slate-800 dark:text-slate-800">{{ t('EconomyMines.RegistryPage.Title', { province: registry.province.name }) }}</h2>
-        <div v-if="!readOnly" class="flex flex-wrap items-center gap-3">
+      <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl title-eco">{{ t('EconomyMines.RegistryPage.Title') }}</h1>
+      </div>
+      <header v-if="!readOnly" class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-b border-slate-300 pb-2">
+        <div class="flex flex-wrap items-center gap-3">
           <RouterLink :to="{ name: 'economy-prices' }" class="odc-btn odc-btn--soft odc-btn--sm odc--slate" data-testid="prices-history-link">
             <v-icon name="fa-history" aria-hidden="true" />{{ t('EconomyMines.RegistryPage.Prices.PageTitleShort') }}
           </RouterLink>

@@ -60,10 +60,10 @@ describe('MainEconomy — menu', () => {
     expect(mines.element.tagName).toBe('SPAN')
   })
 
-  it('le Registre des mines est dans le groupe Mines, le Bilan et la Balance des stocks dans le groupe Inventaires', async () => {
+  it('le Registre des mines est dans le groupe Mines, le Bilan et la Balance des stocks dans le groupe Inventaires, le Livre des naissances dans Finances', async () => {
     const w = await mountPage()
     const labels = w.findAll('a, [data-testid^="menu-group-"]').map(n => n.text())
-    expect(labels).toEqual(['Coffres Économie', 'Mines', 'Bilan des mines', 'Registre des mines', 'Inventaires', 'Bilan des stocks', 'Balance des stocks'])
+    expect(labels).toEqual(['Coffres Économie', 'Mines', 'Bilan des mines', 'Registre des mines', 'Inventaires', 'Bilan des stocks', 'Balance des stocks', 'Finances', 'Livre des naissances'])
   })
 
   it('le Registre des stocks : lien sous Inventaires, seulement pour le maire, le commissaire au commerce ou le dirigeant', async () => {
@@ -72,7 +72,7 @@ describe('MainEconomy — menu', () => {
     const mayor = await mountPage('fr', { ...NO_SCOPES, city: { id: 1, name: 'Arras', can_write: true, can_read: true } })
     expect(mayor.find('[data-testid="stock-registry-link"]').text()).toBe('Registre des stocks')
     const labels = mayor.findAll('a, [data-testid^="menu-group-"]').map(n => n.text())
-    expect(labels.slice(-4)).toEqual(['Inventaires', 'Bilan des stocks', 'Balance des stocks', 'Registre des stocks'])
+    expect(labels.slice(-6)).toEqual(['Inventaires', 'Bilan des stocks', 'Balance des stocks', 'Registre des stocks', 'Finances', 'Livre des naissances'])
 
     const leader = await mountPage('fr', { ...NO_SCOPES, province: { id: 3, name: 'Artois', can_write: false, can_read: true } })
     expect(leader.find('[data-testid="stock-registry-link"]').exists()).toBe(true)

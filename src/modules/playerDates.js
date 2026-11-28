@@ -32,6 +32,12 @@ export const DATE_FIELDS = Object.freeze({
   // Historique des inventaires de la province (API characters/{id}/inventory/province) : jour où l'inventaire a été collé,
   // lu en année du JEU comme les relevés des mines.
   inventory_snapshot_date: 'game',
+  // Livre des naissances (API characters/{id}/livestock) : jour d'une naissance, date d'effet d'un prix de la nourriture et
+  // bornes d'un mandat passé — des faits de jeu, en année du JEU.
+  livestock_birth_day: 'game',
+  livestock_price_from: 'game',
+  livestock_mandate_from: 'game',
+  livestock_mandate_until: 'game',
   // Registre de douane (module Sécurité) : jour du jeu d'un bilan et jour d'ajout d'une entrée de liste, lus en année du JEU (comme les relevés
   // des mines et les inventaires).
   // Registre des mines, mandats PASSÉS (fil bilans-passes-mines) : entrée en fonction et fin d'un mandat — des faits de jeu, en année du JEU.

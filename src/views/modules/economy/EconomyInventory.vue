@@ -316,9 +316,9 @@ async function recordRegistry(confirmReplace = false) {
 
 <template>
   <div>
-    <h2 class="!mt-0 !mb-2 text-lg font-semibold text-yellow-600 dark:text-yellow-500">
-      {{ t('EconomyInventory.PageTitle') }}
-    </h2>
+    <div class="-mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mb-2">
+      <h1 class="!mt-0 bg-none text-3xl laptop:text-4xl title-eco">{{ t('EconomyInventory.PageTitle') }}</h1>
+    </div>
 
     <!-- Ligne du haut : input (moitié) + contrôles (moitié) -->
     <div class="laptop:grid laptop:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] laptop:gap-6 laptop:items-start">

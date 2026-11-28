@@ -6,6 +6,18 @@ versionnage sémantique — chaque merge sur `main` déclenche un déploiement, 
 foi. L'historique détaillé (raisonnement, incidents, décisions) vit dans `admin/suivi/*.md` et
 `admin/archives/` à la racine du workspace ; ce fichier n'en retient que le résumé daté.
 
+## [2026-11-28] — PR #177 (Le Livre des naissances)
+
+### Added
+- Salle des comptes : le Livre des naissances, calculateur public du coût des animaux (nourriture à prévoir, gaspillage, prix payé par l'éleveur), FR et EN.
+- Pour le bailli et le dirigeant : les espèces de la province (réglées dans Mon bureau, « Cheptel »), l'inscription des naissances par le bailli, leur registre jour par jour et leur coût, le prix de la nourriture ; les anciens titulaires relisent leur période.
+- Chronique de l'Office (membres) : le Livre des naissances est à la disposition des baillis.
+
+### Changed
+- Titres des pages d'Économie centrés, au gabarit de la Salle des gardes ; « Balance des stocks » et « Registre des mines » comme titres (la province ne figure plus dans le second).
+
+⚠️ **Production** : suppose le backend (tables et routes `livestock`) et la politique de confidentialité en ligne.
+
 ## [2026-11-28] — PR #176 (Politique : Registre des naissances)
 
 ### Added

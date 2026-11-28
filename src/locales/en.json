@@ -681,12 +681,18 @@
       "prices": {
         "Name": "Prices & Wages",
         "Description": "View and manage the province's price list, so each report is calculated at the fair rate of the day."
+      },
+      "births": {
+        "Name": "Birth Register",
+        "Description": "Before opening the grain sacks, count what your births will cost and avoid waste."
       }
-    }
+    },
+    "BirthsLink": "Birth Register"
   },
   "EconomyMenu": {
     "MinesGroup": "Mines",
-    "InventoriesGroup": "Inventories"
+    "InventoriesGroup": "Inventories",
+    "FinancesGroup": "Finances"
   },
   "EconomyInventoryRegistry": {
     "PageTitle": "Stock Registry: {name}",
@@ -867,7 +873,7 @@
     }
   },
   "EconomyBalance": {
-    "PageTitle": "The Stock Balance",
+    "PageTitle": "Stock Balance",
     "Intro": "Place your new inventory on the scales: the Office weighs what gained, lost or vanished compared with an older inventory.",
     "PreviousLabel": "Old inventory",
     "CurrentLabel": "Current inventory",
@@ -903,6 +909,99 @@
     "HelpStep3": "The comparison shows by itself: ▲ increased, ▼ decreased, nothing when the quantity is the same. New items carry a badge, disappeared ones are struck through in a section of their own.",
     "HelpStep4": "If you hold an office, choose the level (personal, city or province) at the top of the page so that \"Load\" brings back the right inventory.",
     "HelpStep5": "Click \"Entrust it to the scribe\" to copy the annotated BBCode, ready to paste on the forum. Nothing is saved."
+  },
+  "EconomyBirths": {
+    "PageTitle": "Birth Register",
+    "Intro": "Before opening the grain sacks, count what each birth will cost the county.",
+    "SpeciesLabel": "Species",
+    "IngredientLabel": "Fed with",
+    "QuantityLabel": "Number of animals",
+    "Species": {
+      "cow": "Cow",
+      "goat": "Goat",
+      "sheep": "Sheep",
+      "ewe": "Ewe",
+      "pig": "Pig",
+      "bees": "Bees"
+    },
+    "Ingredients": {
+      "maize": "Maize",
+      "wheat": "Wheat",
+      "marjoram": "Marjoram",
+      "elderberry": "Black elderberry"
+    },
+    "Units": {
+      "maize": "sacks of maize",
+      "wheat": "sacks of wheat",
+      "marjoram": "sprigs of marjoram",
+      "elderberry": "black elderberries"
+    },
+    "UnitsOne": {
+      "maize": "sack of maize",
+      "wheat": "sack of wheat"
+    },
+    "Births": "{n} birth | {n} births",
+    "Lost": "{waste} lost",
+    "NothingLost": "nothing lost",
+    "Price": "Paid by the breeder: {total}",
+    "Waste": "Beware, you will waste {waste} {unit} for {n} birth. | Beware, you will waste {waste} {unit} for {n} births.",
+    "NoWaste": "Nothing is lost.",
+    "HelpButton": "How do I read the Birth Register?",
+    "HelpTitle": "The Birth Register",
+    "HelpPurpose": "The Birth Register works out what animals cost before you have them born in the game.",
+    "HelpOverview": "The game takes a whole number of sacks, sprigs or berries, rounded up: anything left over is lost. Without the Sheriff’s office, nothing is recorded.",
+    "HelpStep1": "Choose the species, then what feeds it: one ingredient at a time.",
+    "HelpStep2": "Choose the number of animals, from 1 to 4.",
+    "HelpStep3": "Read what to set aside, and compare the four batches. The sack drawn is the last one you open: its hatched part is lost.",
+    "NotConfigured": "No animal species is set up for the province: {province}.",
+    "Configure": "Set the species in My desk",
+    "Record": {
+      "Day": "Born on",
+      "Save": "Record the birth",
+      "Saved": "Birth recorded in the Register.",
+      "Done": "Recorded.",
+      "NoPrice": "No food price on this date."
+    },
+    "History": {
+      "Mandate": "Term",
+      "CurrentMandate": "Current term",
+      "PastMandate": "{province}, from {from} to {to}",
+      "ReadOnly": "Ended term, read only",
+      "Ecus": "{amount} écu | {amount} écus",
+      "Animals": "{n} animal born | {n} animals born",
+      "Partial": "Partial total: {n} birth without a price. | Partial total: {n} births without a price.",
+      "PricesSince": "Food prices since {date}",
+      "NoPrices": "No food price recorded.",
+      "ListTitle": "The day's births",
+      "Empty": "No birth recorded on this day.",
+      "Unpriced": "no price",
+      "Withdraw": "Withdraw",
+      "ConfirmWithdraw": "Withdraw this birth from the Register?",
+      "Withdrawn": "Birth withdrawn from the Register.",
+      "Cancel": "Cancel",
+      "Confirm": "Confirm",
+      "WithdrawLabel": "Withdraw the birth: {species} × {n}",
+      "DayTitle": "Births of",
+      "Older": "Previous day",
+      "Newer": "Next day",
+      "Columns": {
+        "Birth": "Birth",
+        "Food": "Food",
+        "Cost": "Cost"
+      },
+      "Total": "Total",
+      "CardTitle": "Births recorded"
+    },
+    "HelpStep4": "Sheriff in office: “Record the birth” adds it to the province’s register, on the same page; it can be withdrawn there the same day. Species and food prices are set in My desk.",
+    "CalculatorTitle": "Prepare a birth",
+    "PriceMany": "Paid by the breeder: {total} ({n} × {price})",
+    "FoodCost": "Cost: {real} {unit} at {price} each, {total}",
+    "UnitsShort": {
+      "maize": "sacks",
+      "wheat": "sacks",
+      "marjoram": "sprigs",
+      "elderberry": "berries"
+    }
   },
   "EconomyMines": {
     "Title": "Mines report",
@@ -940,7 +1039,7 @@
       "HelpStep4": "Days without data: the days no report covers. A paste contains the game's last 7 days, so a day without a paste is not necessarily lost.",
       "HelpStep5": "Before you took office: the reports recorded by other characters in the 30 days before. This section only appears when there are some.",
       "HelpStep6": "Level history: a rise is an improvement; a drop with no upkeep recorded while the threshold had been reached is shown in red; any other drop is a deliberate choice. A mine whose level changed several times unfolds.",
-      "Title": "Registry of {province}",
+      "Title": "Mine Registry",
       "Loading": "Opening the registry…",
       "NoCharacter": "Choose a character in the top bar.",
       "LastReport": "Last report: {age}, on {date}.",
@@ -2132,7 +2231,25 @@
     "ManagePrices": "Edit prices",
     "PricesHistory": "Price history",
     "CatPersoPanel": "Inventory categories — Personal",
-    "TabOfficers": "Customs officers"
+    "TabOfficers": "Customs officers",
+    "TabLivestock": "Livestock",
+    "Livestock": {
+      "Title": "Livestock: {province}",
+      "SpeciesTitle": "Species raised in the province",
+      "SpeciesDesc": "The Birth Register only offers the ones you tick.",
+      "Save": "Save",
+      "SpeciesSaved": "Province species saved.",
+      "PricesTitle": "Food prices, in écus per unit",
+      "PricesDesc": "A price set applies from its date until the next one. Leave empty what the province does not buy.",
+      "PricesReadOnly": "Prices are kept by the Sheriff, during their term.",
+      "EffectiveFrom": "From",
+      "AddPrice": "Add these prices",
+      "Update": "Update",
+      "Cancel": "Cancel",
+      "Edit": "Correct",
+      "PriceSaved": "Food prices saved.",
+      "NoPrices": "No price recorded."
+    }
   },
   "Chest": {
     "Opening": "Opening the chest…",

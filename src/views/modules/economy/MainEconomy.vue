@@ -16,6 +16,8 @@
   const showRegistryHelp = ref(false)
   const showBalanceHelp = ref(false)
   const showStockRegistryHelp = ref(false)
+  const showBirthsHelp = ref(false)
+  const birthsHelpSteps = computed(() => [1, 2, 3, 4].map(n => t(`EconomyBirths.HelpStep${n}`)))
   const inventoryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventory.HelpStep${n}`)))
   const balanceHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyBalance.HelpStep${n}`)))
   const stockRegistryHelpSteps = computed(() => [1, 2, 3, 4, 5].map(n => t(`EconomyInventoryRegistry.HelpStep${n}`)))
@@ -138,6 +140,24 @@
             <v-icon name="fa-info-circle" scale="0.9" />
           </button>
         </div>
+
+        <span class="block mt-3 mb-1 border-b border-slate-300 dark:border-slate-600 pb-0.5 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400" data-testid="menu-group-finances">{{ t('EconomyMenu.FinancesGroup') }}</span>
+        <div class="inline-flex items-center gap-1.5 mt-2">
+          <RouterLink :to="{ name: 'economy-births' }" class="inline-flex items-center font-bold" data-testid="births-link">
+            <v-icon name="gi-chest" scale="2" class="mr-1"/>
+            {{ t('Economy.BirthsLink') }}
+          </RouterLink>
+          <button
+            type="button"
+            @click="showBirthsHelp = true"
+            class="text-slate-500 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
+            :aria-label="t('EconomyBirths.HelpButton')"
+            :title="t('EconomyBirths.HelpButton')"
+            data-testid="births-help"
+          >
+            <v-icon name="fa-info-circle" scale="0.9" />
+          </button>
+        </div>
       </div>
       <div class="w-full laptop:w-auto laptop:flex-1 laptop:min-w-0 mt-2 laptop:mt-0 laptop:ml-2 p-1">
         <RouterView />
@@ -179,6 +199,15 @@
       :overview="t('EconomyInventoryRegistry.HelpOverview')"
       :steps="stockRegistryHelpSteps"
       @close="showStockRegistryHelp = false"
+    />
+
+    <HelpModal
+      :show="showBirthsHelp"
+      :title="t('EconomyBirths.HelpTitle')"
+      :purpose="t('EconomyBirths.HelpPurpose')"
+      :overview="t('EconomyBirths.HelpOverview')"
+      :steps="birthsHelpSteps"
+      @close="showBirthsHelp = false"
     />
 
     <HelpModal

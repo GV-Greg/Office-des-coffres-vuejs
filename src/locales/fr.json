@@ -681,12 +681,18 @@
       "prices": {
         "Name": "Prix et salaires",
         "Description": "Consultez et tenez à jour le barème des prix de la province, pour que chaque bilan soit calculé au juste tarif."
+      },
+      "births": {
+        "Name": "Livre des naissances",
+        "Description": "Avant d'ouvrir les sacs de grain, comptez ce que coûtent vos naissances et évitez le gaspillage."
       }
-    }
+    },
+    "BirthsLink": "Livre des naissances"
   },
   "EconomyMenu": {
     "MinesGroup": "Mines",
-    "InventoriesGroup": "Inventaires"
+    "InventoriesGroup": "Inventaires",
+    "FinancesGroup": "Finances"
   },
   "EconomyInventoryRegistry": {
     "PageTitle": "Registre des stocks : {name}",
@@ -867,7 +873,7 @@
     }
   },
   "EconomyBalance": {
-    "PageTitle": "La Balance des stocks",
+    "PageTitle": "Balance des stocks",
     "Intro": "Posez votre nouvel inventaire sur les balances : l'Office pèse ce qui a gagné, perdu ou disparu par rapport à un ancien inventaire.",
     "PreviousLabel": "Ancien inventaire",
     "CurrentLabel": "Inventaire actuel",
@@ -903,6 +909,99 @@
     "HelpStep3": "La comparaison s'affiche d'elle-même : ▲ en hausse, ▼ en baisse, rien si la quantité est identique. Les nouveaux articles portent un badge, les disparus sont barrés dans une section à part.",
     "HelpStep4": "Si tu tiens un poste, choisis le niveau (personnel, ville ou province) en haut de la page pour que « Récupérer » reprenne le bon inventaire.",
     "HelpStep5": "Clique sur « Confier au scribe » pour copier le BBCode annoté, prêt à coller sur le forum. Rien n'est enregistré."
+  },
+  "EconomyBirths": {
+    "PageTitle": "Livre des naissances",
+    "Intro": "Avant d'ouvrir les sacs de grain, comptez ce que chaque naissance coûtera au comté.",
+    "SpeciesLabel": "Espèce",
+    "IngredientLabel": "Nourri avec",
+    "QuantityLabel": "Nombre d'animaux",
+    "Species": {
+      "cow": "Vache",
+      "goat": "Chèvre",
+      "sheep": "Mouton",
+      "ewe": "Brebis",
+      "pig": "Cochon",
+      "bees": "Abeilles"
+    },
+    "Ingredients": {
+      "maize": "Maïs",
+      "wheat": "Blé",
+      "marjoram": "Marjolaine",
+      "elderberry": "Sureau noir"
+    },
+    "Units": {
+      "maize": "sacs de maïs",
+      "wheat": "sacs de blé",
+      "marjoram": "brins de marjolaine",
+      "elderberry": "baies de sureau noir"
+    },
+    "UnitsOne": {
+      "maize": "sac de maïs",
+      "wheat": "sac de blé"
+    },
+    "Births": "{n} naissance | {n} naissances",
+    "Lost": "{waste} perdu",
+    "NothingLost": "rien de perdu",
+    "Price": "Payé par l'éleveur : {total}",
+    "Waste": "Attention, vous allez gaspiller {waste} {unit} pour {n} naissance. | Attention, vous allez gaspiller {waste} {unit} pour {n} naissances.",
+    "NoWaste": "Rien ne se perd.",
+    "HelpButton": "Comment lire le Livre des naissances ?",
+    "HelpTitle": "Le Livre des naissances",
+    "HelpPurpose": "Le Livre des naissances calcule ce que coûtent les animaux avant de les faire naître en jeu.",
+    "HelpOverview": "Le jeu prend un nombre entier de sacs, de brins ou de baies, arrondi au supérieur : ce qui dépasse est perdu. Sans poste de bailli, rien n'est enregistré.",
+    "HelpStep1": "Choisissez l'espèce, puis ce qui la nourrit : un seul ingrédient à la fois.",
+    "HelpStep2": "Choisissez le nombre d'animaux, de 1 à 4.",
+    "HelpStep3": "Lisez ce qu'il faut prévoir, et comparez les quatre lots. Le sac dessiné est le dernier que vous ouvrez : sa partie hachurée est perdue.",
+    "NotConfigured": "Aucune espèce animale n'est configurée pour la province : {province}.",
+    "Configure": "Définir les espèces dans Mon bureau",
+    "Record": {
+      "Day": "Née le",
+      "Save": "Inscrire la naissance",
+      "Saved": "Naissance inscrite au Livre.",
+      "Done": "Inscrite.",
+      "NoPrice": "Aucun prix de la nourriture à cette date."
+    },
+    "History": {
+      "Mandate": "Mandat",
+      "CurrentMandate": "Mandat en cours",
+      "PastMandate": "{province}, du {from} au {to}",
+      "ReadOnly": "Mandat terminé, lecture seule",
+      "Ecus": "{amount} écu | {amount} écus",
+      "Animals": "{n} animal né | {n} animaux nés",
+      "Partial": "Total partiel : {n} naissance sans prix. | Total partiel : {n} naissances sans prix.",
+      "PricesSince": "Prix de la nourriture depuis le {date}",
+      "NoPrices": "Aucun prix de la nourriture inscrit.",
+      "ListTitle": "Les naissances du jour",
+      "Empty": "Aucune naissance inscrite ce jour-là.",
+      "Unpriced": "sans prix",
+      "Withdraw": "Retirer",
+      "ConfirmWithdraw": "Retirer cette naissance du Livre ?",
+      "Withdrawn": "Naissance retirée du Livre.",
+      "Cancel": "Annuler",
+      "Confirm": "Confirmer",
+      "WithdrawLabel": "Retirer la naissance : {species} × {n}",
+      "DayTitle": "Naissances du",
+      "Older": "Jour précédent",
+      "Newer": "Jour suivant",
+      "Columns": {
+        "Birth": "Naissance",
+        "Food": "Nourriture",
+        "Cost": "Coût"
+      },
+      "Total": "Total",
+      "CardTitle": "Registre des naissances"
+    },
+    "HelpStep4": "Bailli en poste : « Inscrire la naissance » l'ajoute au registre de la province, sur la même page ; elle s'y retire le jour même. Les espèces et les prix de la nourriture se règlent dans Mon bureau.",
+    "CalculatorTitle": "Préparer une naissance",
+    "PriceMany": "Payé par l'éleveur : {total} ({n} × {price})",
+    "FoodCost": "Coût : {real} {unit} à {price} l'unité, soit {total}",
+    "UnitsShort": {
+      "maize": "sacs",
+      "wheat": "sacs",
+      "marjoram": "brins",
+      "elderberry": "baies"
+    }
   },
   "EconomyMines": {
     "Title": "Bilan des mines",
@@ -940,7 +1039,7 @@
       "HelpStep4": "Jours sans données : les jours qu'aucun relevé ne couvre. Un collage contient les 7 derniers jours du jeu ; un jour sans collage n'est donc pas forcément perdu.",
       "HelpStep5": "Avant votre entrée en fonction : les relevés inscrits par d'autres personnages dans les 30 jours qui précèdent. Cette section n'apparaît que s'il y en a.",
       "HelpStep6": "Historique des niveaux : une hausse est une amélioration ; une baisse sans entretien relevé, alors que le seuil était atteint, est signalée en rouge ; toute autre baisse est un choix assumé. Une mine dont le niveau a changé plusieurs fois se déplie.",
-      "Title": "Registre de {province}",
+      "Title": "Registre des mines",
       "Loading": "Ouverture du registre…",
       "NoCharacter": "Choisissez un personnage dans la barre du haut.",
       "LastReport": "Dernier relevé : {age}, le {date}.",
@@ -2132,7 +2231,25 @@
     "ManagePrices": "Modifier les prix",
     "PricesHistory": "Historique des prix",
     "CatPersoPanel": "Catégories d'inventaire — Personnel",
-    "TabOfficers": "Douaniers"
+    "TabOfficers": "Douaniers",
+    "TabLivestock": "Cheptel",
+    "Livestock": {
+      "Title": "Cheptel : {province}",
+      "SpeciesTitle": "Espèces élevées dans la province",
+      "SpeciesDesc": "Le Livre des naissances ne propose que celles que vous cochez.",
+      "Save": "Enregistrer",
+      "SpeciesSaved": "Espèces de la province enregistrées.",
+      "PricesTitle": "Prix de la nourriture, en écus l’unité",
+      "PricesDesc": "Un jeu de prix vaut à partir de sa date, jusqu’au suivant. Laissez vide ce que la province n’achète pas.",
+      "PricesReadOnly": "Les prix sont tenus par le bailli, pendant son mandat.",
+      "EffectiveFrom": "À partir du",
+      "AddPrice": "Ajouter ces prix",
+      "Update": "Mettre à jour",
+      "Cancel": "Annuler",
+      "Edit": "Corriger",
+      "PriceSaved": "Prix de la nourriture enregistrés.",
+      "NoPrices": "Aucun prix inscrit."
+    }
   },
   "Chest": {
     "Opening": "Ouverture du coffre…",

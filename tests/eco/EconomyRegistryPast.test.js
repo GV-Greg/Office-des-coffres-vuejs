@@ -82,7 +82,7 @@ describe('Registre — bilans de mandat passés : ancien titulaire sans mandat e
     expect(calls('mine-registry/reports')).toHaveLength(0)
     expect(calls('mine-registry/mandates/42')).toEqual(['characters/7/mine-registry/mandates/42'])
     expect(find(w, 'registry-readonly').text()).toBe('Bilan du mandat terminé le 30/04/1474 — lecture seule')
-    expect(w.find('h2').text()).toContain('Franche-Comté')
+    expect(w.find('[data-testid="registry-mandate-select"]').text()).toContain('Franche-Comté') // la province d'un mandat passé se lit dans le sélecteur
   })
 
   it('le sélecteur dit le poste, la province et la période (année du jeu)', async () => {

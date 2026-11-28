@@ -96,6 +96,6 @@ describe('Mon bureau — l\'onglet Douaniers', () => {
   it('l\'ancienne adresse /app/secu/douaniers renvoie vers l\'onglet ; la route « security-officers » n\'existe plus', () => {
     expect(routerSource).toMatch(/path: 'douaniers',\s*redirect: \{ name: 'province', params: \{ section: 'douaniers' \} \}/)
     expect(routerSource).not.toContain('security-officers')
-    expect(routerSource).toContain(':section(province|prix|douaniers|categories)?')
+    expect(routerSource).toContain(':section(province|prix|cheptel|douaniers|categories)?')
   })
 })
