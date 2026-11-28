@@ -5,14 +5,14 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /*
-  Garde-fou — le texte de l'historique des naissances (validé par Greg le 27/11/2026). Les engagements : chiffrement des
+  Garde-fou — le texte du Registre des naissances (validé par Greg le 27/11/2026, noms ajustés à l'écran le 28/11/2026). Les engagements : chiffrement des
   naissances, nom non montré aux autres lecteurs, retrait le jour même seulement, prix verrouillés au terme, attente de 30 jours
   au plus. Ni cheptel ni ventes : ils ne sont pas enregistrés.
 */
 const localesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../src/locales')
 const legal = lang => JSON.parse(readFileSync(resolve(localesDir, `${lang}.json`), 'utf-8')).Legal
 
-describe('Politique — historique des naissances', () => {
+describe('Politique — Registre des naissances', () => {
   it.each(['fr', 'en'])('%s : les insertions existent (§3, §5, §6) et les deux sections de « Vos données »', (lang) => {
     const { Privacy, Data } = legal(lang)
     expect(Privacy.Section3.BirthIntro).toBeTruthy()

@@ -65,7 +65,7 @@ describe('DataPageView', () => {
     const withLink = DATA_PAGE_SECTIONS
       .filter(section => wrapper.find(`section#${section.id} [data-testid="see-policy"]`).exists())
       .map(section => section.id)
-    expect(withLink).toEqual(['postes', 'registre-des-mines', 'historique-des-naissances', 'registre-des-stocks', 'salle-des-gardes'])
+    expect(withLink).toEqual(['postes', 'registre-des-mines', 'registre-des-naissances', 'registre-des-stocks', 'salle-des-gardes'])
     // Ni durée ni destinataires recopiés : la politique les énumère (version B).
     for (const id of withLink) {
       expect(wrapper.findAll(`section#${id} dt`).map(dt => dt.text())).not.toContain('Combien de temps')

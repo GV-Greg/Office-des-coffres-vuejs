@@ -44,7 +44,7 @@ const messages = {
         MinesReport: { Title: 'Bilan des mines' },
         MineRegistry: { Title: 'Registre des mines' },
         BirthRegister: { Title: 'Livre des naissances' },
-        BirthHistory: { Title: 'Historique des naissances' },
+        BirthHistory: { Title: 'Registre des naissances' },
         Inventory: { Title: 'Gestion des stocks' },
         InventoryBalance: { Title: 'La Balance des stocks' },
         InventoryRegistry: { Title: 'Registre des stocks' },
@@ -288,7 +288,7 @@ describe('PrivacyPolicyView', () => {
   })
 
 
-  it('rend ce que conserve l’historique des naissances (§3)', () => {
+  it('rend ce que conserve le Registre des naissances (§3)', () => {
     expect(mountView().findAll('[data-testid="privacy-births"] li').map(li => li.text())).toEqual(['La naissance — chiffrée.'])
   })
 
@@ -336,7 +336,7 @@ describe('PrivacyPolicyView', () => {
     const links = mountView().findAll('[data-testid="privacy-tools-links"] a')
     expect(links.map(a => a.text())).toEqual([
       'Compte et personnages', 'Postes déclarés et Ma province', 'Bilan des mines',
-      'Registre des mines', 'Livre des naissances', 'Historique des naissances', 'Gestion des stocks', 'La Balance des stocks', 'Registre des stocks', 'Le Guet', 'La Salle des gardes', 'Carte des royaumes', 'Animation',
+      'Registre des mines', 'Livre des naissances', 'Registre des naissances', 'Gestion des stocks', 'La Balance des stocks', 'Registre des stocks', 'Le Guet', 'La Salle des gardes', 'Carte des royaumes', 'Animation',
     ])
     expect(links[2].attributes('href')).toBe(JSON.stringify({ name: 'legal-data', hash: '#bilan-des-mines' }))
   })
